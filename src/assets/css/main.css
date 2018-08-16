@@ -123,6 +123,7 @@ body.menuDisabled #topBar{
 	position: fixed;
 	left:0;top:0;bottom: 0;
 	width:280px;
+	overflow: auto;
 }
 body.menuHidden #menu {
 	left:-100%;
@@ -220,6 +221,7 @@ body.menuHidden #page,body.menuDisabled #page{
 	left:0;right:0;
 	margin-left:280px;
 	text-align: center;
+	width: 100%;
 }
 body.menuDisabled #copyright{
 	margin-left:0;
