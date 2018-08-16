@@ -20,6 +20,9 @@ Translations:
 - French: gnock
 - Serbian cyrillic: girugameshh
 - German: F0sching
+- Hungarian: Gelesztaa
+- Greek: GeraltOfTrivia
+- Russian, Ukrainian: Aiwe
 
 # Contributing
 - You can help Masari by translation the wallet in your native language, it's really easy!  
@@ -49,4 +52,6 @@ The code is readable, it should be enough for you to use it.
 - Basic network stats
 
 # Roadmap
+
+See Github [issues.](https://github.com/masari-project/masari-webwallet/issues)
 
