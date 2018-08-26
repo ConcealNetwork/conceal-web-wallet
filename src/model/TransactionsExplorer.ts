@@ -38,9 +38,8 @@ type RawOutForTx = {
 	amount: number,
 	public_key: string,
 	index: number,
-	global_index: number,
-	rct: string,
-	tx_pub_key: string,
+    global_index: number,
+    tx_pub_key: string
 };
 
 type TxExtra = {
@@ -50,119 +49,17 @@ type TxExtra = {
 
 export class TransactionsExplorer {
 
-	static parseExtra(oextra: number[]): TxExtra[] {
-		let extra = oextra.slice();
-		let extras: TxExtra[] = [];
-		let hasFoundPubKey = false;
-
-		// console.log('extra', oextra);
-		while (extra.length > 0) {
-			let extraSize = 0;
-			let startOffset = 0;
-			if (
-				extra[0] === TX_EXTRA_NONCE ||
-				extra[0] === TX_EXTRA_MERGE_MINING_TAG ||
-				extra[0] === TX_EXTRA_MYSTERIOUS_MINERGATE_TAG
-			) {
-				extraSize = extra[1];
-				startOffset = 2;
-			} else if (extra[0] === TX_EXTRA_TAG_PUBKEY) {
-				extraSize = 32;
-				startOffset = 1;
-				hasFoundPubKey = true;
-			} else if (extra[0] === TX_EXTRA_TAG_PADDING) {
-				let iExtra = 2;
-				let fextras = {
-					type: extra[0],
-					data: [extra[1]]
-				};
-
-				while (extra.length > iExtra && extra[iExtra++] == 0) {
-					fextras.data.push(0);
-				}
-
-				continue;
-			} else if (extra[0] === TX_EXTRA_TAG_ADDITIONAL_PUBKEYS) {
-				extraSize = extra[0] * 32;
-				startOffset = 2;
-			}
-
-			if (extraSize === 0) {
-				if(!hasFoundPubKey)
-					throw 'Invalid extra size' + extra[0];
-				break;
-			}
-
-			let data = extra.slice(startOffset, startOffset + extraSize);
-			extras.push({
-				type: extra[0],
-				data: data
-			});
-			extra = extra.slice(startOffset + extraSize);
-			// console.log(extra, extras);
-		}
-
-		return extras;
-	}
-
-	static isMinerTx(rawTransaction: RawDaemonTransaction) {
-		if (rawTransaction.vin.length > 0)
-			return false;
-		return rawTransaction.vout[0].amount !== 0;
-	}
-
 	static parse(rawTransaction: RawDaemonTransaction, wallet: Wallet): Transaction | null {
 		let transaction: Transaction | null = null;
 
 		let tx_pub_key = '';
 		let paymentId: string | null = null;
 
-		let tx_extras = [];
-		try {
-			tx_extras = this.parseExtra(rawTransaction.extra);
-		} catch (e) {
-			console.error(e);
-			console.log('Error when scanning transaction on block ' + rawTransaction.height, rawTransaction);
-			return null;
-		}
-		for (let extra of tx_extras) {
-			if (extra.type === TX_EXTRA_TAG_PUBKEY) {
-				for (let i = 0; i < 32; ++i) {
-					tx_pub_key += String.fromCharCode(extra.data[i]);
-				}
-				break;
-			}
-		}
-
-		if (tx_pub_key === '')
-			throw 'MISSING TX PUB KEY';
-		tx_pub_key = CryptoUtils.bintohex(tx_pub_key);
-
-		let encryptedPaymentId: string | null = null;
-
-		for (let extra of tx_extras) {
-			if (extra.type === TX_EXTRA_NONCE) {
-				if (extra.data[0] === TX_EXTRA_NONCE_PAYMENT_ID) {
-					paymentId = '';
-					for (let i = 1; i < extra.data.length; ++i) {
-						paymentId += String.fromCharCode(extra.data[i]);
-					}
-					paymentId = CryptoUtils.bintohex(paymentId);
-					break;
-				} else if (extra.data[0] === TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID) {
-					encryptedPaymentId = '';
-					for (let i = 1; i < extra.data.length; ++i) {
-						encryptedPaymentId += String.fromCharCode(extra.data[i]);
-					}
-					encryptedPaymentId = CryptoUtils.bintohex(encryptedPaymentId);
-					break;
-				}
-			}
-		}
+        tx_pub_key = rawTransaction.extra.publicKey;
+        paymentId = rawTransaction.paymentId;
 
 		let derivation = null;
 		try {
-			// derivation = cnUtil.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);//9.7ms
 			derivation = CnUtilNative.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
 		} catch (e) {
 			console.log('UNABLE TO CREATE DERIVATION', e);
@@ -172,10 +69,10 @@ export class TransactionsExplorer {
 		let outs: TransactionOut[] = [];
 		let ins: TransactionIn[] = [];
 
-		for (let iOut = 0; iOut < rawTransaction.vout.length; ++iOut) {
-			let out = rawTransaction.vout[iOut];
-			let txout_k = out.target;
-			let amount = out.amount;
+		for (let iOut = 0; iOut < rawTransaction.outputs.length; ++iOut) {
+			let out = rawTransaction.outputs[iOut];
+			let txout_k = out.output.target.data;
+			let amount = out.output.amount;
 			let output_idx_in_tx = iOut;
 
 			// let generated_tx_pubkey = cnUtil.derive_public_key(derivation,output_idx_in_tx,wallet.keys.pub.spend);//5.5ms
@@ -184,26 +81,27 @@ export class TransactionsExplorer {
 			// check if generated public key matches the current output's key
 			let mine_output = (txout_k.key == generated_tx_pubkey);
 
-			if (mine_output) {
-				let minerTx = false;
+            if (mine_output) {
 
-				if (amount !== 0) {//miner tx
-					minerTx = true;
-				} else {
-					let mask = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].mask;
-					let r = CryptoUtils.decode_ringct(rawTransaction.rct_signatures,
-						tx_pub_key,
-						wallet.keys.priv.view,
-						output_idx_in_tx,
-						mask,
-						amount,
-						derivation);
+				//let minerTx = false;
 
-					if (r === false)
-						console.error("Cant decode ringCT!");
-					else
-						amount = r;
-				}
+				//if (amount !== 0) {//miner tx
+				//	minerTx = true;
+				//} else {
+				//	let mask = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].mask;
+				//	let r = CryptoUtils.decode_ringct(rawTransaction.rct_signatures,
+				//		tx_pub_key,
+				//		wallet.keys.priv.view,
+				//		output_idx_in_tx,
+				//		mask,
+				//		amount,
+				//		derivation);
+
+				//	if (r === false)
+				//		console.error("Cant decode ringCT!");
+				//	else
+				//		amount = r;
+				//}
 
 				let transactionOut = new TransactionOut();
 				if (typeof rawTransaction.global_index_start !== 'undefined')
@@ -211,16 +109,16 @@ export class TransactionsExplorer {
 				else
 					transactionOut.globalIndex = output_idx_in_tx;
 
-				transactionOut.amount = amount;
+                transactionOut.amount = amount;
 				transactionOut.pubKey = txout_k.key;
 				transactionOut.outputIdx = output_idx_in_tx;
 
-				if (!minerTx) {
-					transactionOut.rtcOutPk = rawTransaction.rct_signatures.outPk[output_idx_in_tx];
-					transactionOut.rtcMask = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].mask;
-					transactionOut.rtcAmount = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].amount;
-				}
-
+				//if (!minerTx) {
+				//	transactionOut.rtcOutPk = rawTransaction.rct_signatures.outPk[output_idx_in_tx];
+				//	transactionOut.rtcMask = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].mask;
+				//	transactionOut.rtcAmount = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].amount;
+				//}
+                //THIS is super slow and causing issues
 				if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
 					let m_key_image = CryptoUtils.generate_key_image_helper({
 						view_secret_key: wallet.keys.priv.view,
@@ -229,34 +127,34 @@ export class TransactionsExplorer {
 					}, tx_pub_key, output_idx_in_tx, derivation);
 
 					transactionOut.keyImage = m_key_image.key_image;
-					transactionOut.ephemeralPub = m_key_image.ephemeral_pub;
+					//transactionOut.ephemeralPub = m_key_image.ephemeral_pub;
 				}
+                if (transactionOut.amount !== 0) { //fusion
+                    outs.push(transactionOut);
+                }
 
-				outs.push(transactionOut);
-
-				if (minerTx)
-					break;
+				//if (minerTx)
+				//	break;
 			} //  if (mine_output)
 		}
 
 		//check if no read only wallet
 		if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
 			let keyImages = wallet.getTransactionKeyImages();
-			for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
-				let vin = rawTransaction.vin[iIn];
-				if (keyImages.indexOf(vin.key.k_image) != -1) {
+			for (let iIn = 0; iIn < rawTransaction.inputs.length; ++iIn) {
+                let input = rawTransaction.inputs[iIn];
+                if (keyImages.indexOf(input.data.input.k_image) != -1) {
 					// console.log('found in', vin);
 					let walletOuts = wallet.getAllOuts();
 					for (let ut of walletOuts) {
-						if (ut.keyImage == vin.key.k_image) {
+                        if (ut.keyImage == input.data.input.k_image) {
 							// ins.push(vin.key.k_image);
 							// sumIns += ut.amount;
 
 							let transactionIn = new TransactionIn();
 							transactionIn.amount = ut.amount;
-							transactionIn.keyImage = ut.keyImage;
-
-							ins.push(transactionIn);
+                            transactionIn.keyImage = ut.keyImage;
+                            ins.push(transactionIn);
 							// console.log(ut);
 							break;
 						}
@@ -265,10 +163,10 @@ export class TransactionsExplorer {
 			}
 		} else {
 			let txOutIndexes = wallet.getTransactionOutIndexes();
-			for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
-				let vin = rawTransaction.vin[iIn];
+            for (let iIn = 0; iIn < rawTransaction.inputs.length; ++iIn) {
+                let input = rawTransaction.inputs[iIn];
 
-				let absoluteOffets = vin.key.key_offsets.slice();
+                let absoluteOffets = input.data.input.key_offsets.slice();
 				for (let i = 1; i < absoluteOffets.length; ++i) {
 					absoluteOffets[i] += absoluteOffets[i - 1];
 				}
@@ -287,26 +185,21 @@ export class TransactionsExplorer {
 						let transactionIn = new TransactionIn();
 						transactionIn.amount = -txOut.amount;
 						transactionIn.keyImage = txOut.keyImage;
-
-						ins.push(transactionIn);
+                        ins.push(transactionIn);
 					}
 				}
 			}
 		}
 
-		if (outs.length > 0 || ins.length) {
+		if (outs.length > 0 || ins.length > 0) {
 			transaction = new Transaction();
 			if (typeof rawTransaction.height !== 'undefined') 	transaction.blockHeight = rawTransaction.height;
-			if (typeof rawTransaction.ts !== 'undefined') 		transaction.timestamp = rawTransaction.ts;
+			if (typeof rawTransaction.timestamp !== 'undefined')    transaction.timestamp = rawTransaction.timestamp;
 			if (typeof rawTransaction.hash !== 'undefined') 	transaction.hash = rawTransaction.hash;
 			transaction.txPubKey = tx_pub_key;
-
-			if (paymentId !== null)
+            if (paymentId !== null && paymentId != '0000000000000000000000000000000000000000000000000000000000000000')
 				transaction.paymentId = paymentId;
-			if (encryptedPaymentId !== null) {
-				transaction.paymentId = cnUtil.decrypt_payment_id(encryptedPaymentId, tx_pub_key, wallet.keys.priv.view);
-			}
-			transaction.fees = rawTransaction.rct_signatures.txnFee;
+			transaction.fees = rawTransaction.fee;
 			transaction.outs = outs;
 			transaction.ins = ins;
 		}
@@ -319,20 +212,6 @@ export class TransactionsExplorer {
 	static formatWalletOutsForTx(wallet: Wallet, blockchainHeight: number): RawOutForTx[] {
 		let unspentOuts = [];
 
-		//rct=rct_outpk + rct_mask + rct_amount
-		// {"amount"          , out.amount},
-		// {"public_key"      , out.out_pub_key},
-		// {"index"           , out.out_index},
-		// {"global_index"    , out.global_index},
-		// {"rct"             , rct},
-		// {"tx_id"           , out.tx_id},
-		// {"tx_hash"         , tx.hash},
-		// {"tx_prefix_hash"  , tx.prefix_hash},
-		// {"tx_pub_key"      , tx.tx_pub_key},
-		// {"timestamp"       , static_cast<uint64_t>(out.timestamp)},
-		// {"height"          , tx.height},
-		// {"spend_key_images", json::array()}
-
 		console.log(wallet.getAll());
 		for (let tr of wallet.getAll()) {
 			//todo improve to take into account miner tx
@@ -342,20 +221,13 @@ export class TransactionsExplorer {
 			}
 
 			for (let out of tr.outs) {
-				let rct = '';
-				if (out.rtcAmount !== '') {
-					rct = out.rtcOutPk + out.rtcMask + out.rtcAmount;
-				} else {
-					rct = cnUtil.zeroCommit(cnUtil.d2s(out.amount));
-				}
 				unspentOuts.push({
 					keyImage: out.keyImage,
 					amount: out.amount,
 					public_key: out.pubKey,
 					index: out.outputIdx,
 					global_index: out.globalIndex,
-					rct: rct,
-					tx_pub_key: tr.txPubKey,
+					tx_pub_key: tr.txPubKey
 				});
 			}
 		}
@@ -411,7 +283,7 @@ export class TransactionsExplorer {
 					splittedDsts, usingOuts,
 					mix_outs, mixin, neededFee,
 					payment_id, pid_encrypt,
-					realDestViewKey, 0, rct);
+					realDestViewKey, 0);
 
 			} catch (e) {
 				reject("Failed to create transaction: " + e);
@@ -523,7 +395,7 @@ export class TransactionsExplorer {
 
 			console.log("Selected outs:", usingOuts);
 			if (usingOuts.length > 1) {
-				let newNeededFee = JSBigInt(Math.ceil(cnUtil.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(feePerKB).multiply(fee_multiplayer);
+                let newNeededFee = 10000000; //JSBigInt(Math.ceil(cnUtil.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(feePerKB).multiply(fee_multiplayer);
 				totalAmount = totalAmountWithoutFee.add(newNeededFee);
 				//add outputs 1 at a time till we either have them all or can meet the fee
 				while (usingOuts_amount.compare(totalAmount) < 0 && unusedOuts.length > 0) {
@@ -531,16 +403,20 @@ export class TransactionsExplorer {
 					usingOuts.push(out);
 					usingOuts_amount = usingOuts_amount.add(out.amount);
 					console.log("Using output: " + cnUtil.formatMoney(out.amount) + " - " + JSON.stringify(out));
-					newNeededFee = JSBigInt(Math.ceil(cnUtil.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(feePerKB).multiply(fee_multiplayer);
+					newNeededFee = JSBigInt(Math.ceil((usingOuts.length, mixin, 2) / 1024)).multiply(feePerKB).multiply(fee_multiplayer);
 					totalAmount = totalAmountWithoutFee.add(newNeededFee);
 				}
 				console.log("New fee: " + cnUtil.formatMoneySymbol(newNeededFee) + " for " + usingOuts.length + " inputs");
 				neededFee = newNeededFee;
 			}
 
+            if (neededFee < 10000000) {
+                neededFee = 10000000;
+            }
+
 			// neededFee = neededFee / 3 * 2;
 
-			console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / 1000000000000));
+			console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / 100000000));
 			confirmCallback(totalAmountWithoutFee, neededFee).then(function () {
 				if (usingOuts_amount.compare(totalAmount) < 0) {
 					console.log("Not enough spendable outputs / balance too low (have "
@@ -574,7 +450,7 @@ export class TransactionsExplorer {
 
 				let amounts: string[] = [];
 				for (let l = 0; l < usingOuts.length; l++) {
-					amounts.push(usingOuts[l].rct ? "0" : usingOuts[l].amount.toString());
+					amounts.push(usingOuts[l].amount.toString());
 				}
 
 				obtainMixOutsCallback(amounts.length * (mixin + 1)).then(function (lotsMixOuts: any[]) {

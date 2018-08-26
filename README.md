@@ -1,4 +1,4 @@
-# TurtleCoin fork of Masari Web Wallet - Fully client-side 
+# Plenteum fork of Masari Web Wallet - Fully client-side 
 This web wallet is doing everything client-side to give the best privacy to users.
 The server is currently only used to optimize the communication with the daemon and compress the blockchain.  
 
@@ -48,4 +48,4 @@ The code is readable, it should be enough for you to use it.
 - Basic network stats
 
 # Roadmap
-See Github [issues.](https://github.com/masari-project/masari-webwallet/issues)
+

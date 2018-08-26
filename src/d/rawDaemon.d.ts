@@ -1,46 +1,48 @@
-type EcdhInfo = {
-	mask: string,
-	amount: string
+type Inputs = {
+    data: {
+        input: {
+            amount: number,
+            k_image: string,
+            key_offsets: number[],
+            mixin: number
+        },
+        output: {
+            number: number, 
+            transactionHash: string
+        },
+        type: string
+    }
 }
 
-type RctSignature = {
-	ecdhInfo:EcdhInfo[]
-	outPk:string[],
-	psuedoOuts:string[],
-	txnFee:number,
-	type:number
+type Outputs = {
+    globalIndex: number, 
+    output: {
+        amount: 0,
+        target: {
+            data: {
+                key: string
+            }
+        }
+    }
 }
 
-type Vin = {
-	key:{
-		amount:number,
-		k_image:string,
-		key_offsets:number[]
-	}
-}
-
-type Vout = {
-	amount: 0,
-	target:{
-		key:string
-	}
+type Extra = {
+    nonce: number[],
+    publicKey: string,
+    raw: string
 }
 
 type RawDaemonTransaction = {
-
-	extra : number[],
-
-	vout : Vout[],
-	vin : Vin[],
-
-	rct_signatures:RctSignature,
-	unlock_time:number,
-	version:number,
-	ctsig_prunable:any,
-	global_index_start?:number,
-	height?:number,
-	ts?:number
-	hash?:string
+    extra: Extra,
+    outputs: Outputs[],
+    inputs: Inputs[],
+    fee : number,
+    unlockTime: number,
+    global_index_start?: number,
+    height?: number,
+    timestamp?: number
+    hash?: string,
+    paymentId: string
 };
 
 type RawDaemonBlock = any;

@@ -54,12 +54,10 @@ interface CnUtilClass{
 			public_key:string,
 			index:number,
 			global_index:number,
-			rct:string,
 			tx_pub_key:string,
 		}[],
 		mix_outs:{
 			outputs:{
-				rct: string,
 				public_key:string,
 				global_index:number
 			}[],
@@ -70,22 +68,14 @@ interface CnUtilClass{
 		payment_id : string,
 		pid_encrypt : boolean,
 		realDestViewKey : string|undefined,
-		unlock_time : number,
-		rct:boolean
+		unlock_time : number
 		) : {
 			extra:string,
 			prvkey:string,
-			rct_signatures:{
-				type:number,
-				message:string,
-				outPk:any,
-				p:any,
-				ecdhInfo:any
-			},
 			unlock_time:number,
 			version:number,
-			vin:any,
-			vout:any,
+			inputs:any,
+			outputs:any,
 	};
 
 	serialize_rct_tx_with_hash(signed : any) : {

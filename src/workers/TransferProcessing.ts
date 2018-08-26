@@ -27,19 +27,17 @@ onmessage = function(data : MessageEvent){
 				return;
 			}
 
-			let readMinersTx = typeof currentWallet.options.checkMinerTx !== 'undefined' && currentWallet.options.checkMinerTx;
-
 			let rawTransactions : RawDaemonTransaction[] = event.transactions;
-			let transactions : any[] = [];
+            let transactions: any[] = [];
+            
 			for(let rawTransaction of rawTransactions){
-				if(!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
-					continue;
-				}
-
-				let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
+                let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
 				if(transaction !== null){
-					currentWallet.addNew(transaction);
-					transactions.push(transaction.export());
+                    currentWallet.addNew(transaction);
+                    //if (transaction.getAmount() !== 0) //fusion
+                    //{
+                        transactions.push(transaction.export());
+                    //}
 				}
 			}
 

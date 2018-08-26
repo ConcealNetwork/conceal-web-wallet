@@ -2,6 +2,6 @@
 
 $testnet = false;
 $cacheLocation = __DIR__.'/'.($testnet ? 'cache-testnet' : 'cache');
-$daemonAddress = 'localhost';
-$rpcPort = $testnet ? 48081 : 38081;
-$coinSymbol = 'msr';
+$daemonAddress = '127.0.0.1';
+$rpcPort = $testnet ? 44026 : 44016;
+$coinSymbol = 'ple';
