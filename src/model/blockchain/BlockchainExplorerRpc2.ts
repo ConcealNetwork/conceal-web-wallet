@@ -68,7 +68,7 @@ export class WalletWatchdog {
         this.lastBlockLoading = -1;//reset scanning
         this.workerProcessing.postMessage({
             type: 'initWallet',
-            wallet: this.wallet.exportToRaw(true)
+            wallet:this.wallet.exportToRaw()
         });
         clearInterval(this.intervalTransactionsProcess);
         this.intervalTransactionsProcess = setInterval(function () {

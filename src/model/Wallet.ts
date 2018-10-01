@@ -140,6 +140,9 @@ export class Wallet extends Observable{
 		if(typeof raw.coinAddressPrefix !== 'undefined') wallet.coinAddressPrefix = raw.coinAddressPrefix;
 		else wallet.coinAddressPrefix = config.addressPrefix;
 
+		if(typeof raw.coinAddressPrefix !== 'undefined') wallet.coinAddressPrefix = raw.coinAddressPrefix;
+		else wallet.coinAddressPrefix = config.addressPrefix;
+
 		wallet.recalculateKeyImages();
 		return wallet;
 	}
