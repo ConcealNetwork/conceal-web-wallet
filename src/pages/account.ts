@@ -70,6 +70,12 @@ class AccountView extends DestructableView{
 			paymentId = `<div>`+i18n.t('accountPage.txDetails.paymentId')+`: `+transaction.paymentId+`</a></div>`;
 		}
 
+		let txPrivKeyMessage = '';
+		let txPrivKey = wallet.findTxPrivateKeyWithHash(transaction.hash);
+		if(txPrivKey !== null){
+			txPrivKeyMessage = `<div>`+i18n.t('accountPage.txDetails.txPrivKey')+`: `+txPrivKey+`</a></div>`;
+		}
+
 		swal({
 			title:i18n.t('accountPage.txDetails.title'),
 			html:`
