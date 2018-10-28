@@ -35,7 +35,7 @@
 				<div class="header-title" >{{ $t("accountPage.historyBlock.title") }}</div>
 				<div class="content" >
 
-					<div class="transactions" >
+					<div class="transactions" id="accountTransactions">
 						<table>
 							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked()">
 								<tr class="transaction" :class="(transaction.blockHeight === 0 ? 'pending' : '')">

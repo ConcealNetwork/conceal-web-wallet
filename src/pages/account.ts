@@ -60,7 +60,7 @@ class AccountView extends DestructableView{
 	}
 
 	moreInfoOnTx(transaction : Transaction){
-		let explorerUrl = config.testnet ? config.testnetExplorerUrl : config.mainnetExplorerUrl;
+		let explorerUrl = config.testnet ? config.testnetExplorerUrlHash : config.mainnetExplorerUrlHash;
 		let feesHtml = '';
 		if(transaction.getAmount() < 0)
 			feesHtml = `<div>`+i18n.t('accountPage.txDetails.feesOnTx')+`: `+(transaction.fees / Math.pow(10, config.coinUnitPlaces))+`</a></div>`;
@@ -73,7 +73,7 @@ class AccountView extends DestructableView{
 			title:i18n.t('accountPage.txDetails.title'),
 			html:`
 <div class="tl" >
-	<div>`+i18n.t('accountPage.txDetails.txHash')+`: <a href="`+explorerUrl+`tx/`+transaction.hash+`" target="_blank">`+transaction.hash+`</a></div>
+	<div>`+i18n.t('accountPage.txDetails.txHash')+`: <a href="`+explorerUrl.replace('{ID}', transaction.hash)+`" target="_blank">`+transaction.hash+`</a></div>
 	`+paymentId+`
 	`+feesHtml+`
 	<div>`+i18n.t('accountPage.txDetails.blockHeight')+`: `+transaction.blockHeight+`</a></div>

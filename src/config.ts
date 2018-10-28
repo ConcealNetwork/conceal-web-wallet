@@ -1,8 +1,12 @@
 let global : any = typeof window !== 'undefined' ? window : self;
 global.config = {
-	apiUrl:typeof window !== 'undefined' && window.location ? window.location.href.substr(0,window.location.href.lastIndexOf('/')+1)+'api/' : 'https://www.wallet.karbo.org/api/',
-	mainnetExplorerUrl: "http://explorer.karbo.org/",
-	testnetExplorerUrl: "http://explorer.karbo.org/",
+	apiUrl:typeof window !== 'undefined' && window.location ? window.location.href.substr(0,window.location.href.lastIndexOf('/')+1)+'api/' : 'https://wallet.karbo.org/api/',
+	mainnetExplorerUrl: "http://explorer.karbowanec.com/",
+	mainnetExplorerUrlHash: "https://explorer.karbowanec.com/transaction.html?hash={ID}",
+	mainnetExplorerUrlBlock: "https://explorer.karbowanec.com/block.html?hash={ID}",
+	testnetExplorerUrl: "http://testnet.karbo.org/",
+	testnetExplorerUrlHash: "http://testnet.karbo.org/transaction.html?hash={ID}",
+	testnetExplorerUrlBlock: "http://testnet.karbo.org/block.html?hash={ID}",
 	testnet: false,
     coinUnitPlaces: 12,
     coinDisplayUnitPlaces: 2,
