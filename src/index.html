@@ -73,10 +73,10 @@
 
 <div id="page" ></div>
 
-<div id="copyright" v-cloak="" class="hideOnNative">
+<div id="copyright" v-cloak="">
 	<div>© 2018 www.karbo.org</div>
-	<div class="right" >
-		<select v-model="language">
+	<div class="links" >
+		<select v-model="language" class="hideOnNative">
 			<option value="en">English</option>
 			<option value="sr">Српски</option>
 			<option value="de">Deutch</option>
@@ -86,11 +86,12 @@
 			<option value="ru">Русский</option>
 		</select>
 		<a href="#!termsOfUse" >{{ $t("bottom.termsOfUse") }}</a>
+		<a href="#!privacyPolicy" >{{ $t("bottom.privacyPolicy") }}</a>
 		<a href="#!support" >{{ $t("bottom.support") }}</a>
-		<a href="#!donate" >{{ $t("bottom.donate") }}</a>
-		<a href="#!network" >{{ $t("bottom.network") }}</a>
-		<a href="https://pool.karbowanec.com" target="_blank" >{{ $t("bottom.miningPool") }}</a>
-		<a href="https://github.com/aivve/karbo-webwallet-js" target="_blank">{{ $t("bottom.github") }}</a>
+		<a class="hideOnNative" href="#!donate" >{{ $t("bottom.donate") }}</a>
+		<a class="hideOnNative" href="#!network" >{{ $t("bottom.network") }}</a>
+		<a class="hideOnNative" href="https://pool.karbowanec.com" target="_blank" >{{ $t("bottom.miningPool") }}</a>
+		<a class="hideOnNative" href="https://github.com/aivve/karbo-webwallet-js" target="_blank">{{ $t("bottom.github") }}</a>
 	</div>
 	<div class="cb" ></div>
 </div>
