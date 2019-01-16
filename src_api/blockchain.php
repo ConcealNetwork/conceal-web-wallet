@@ -1,8 +1,15 @@
 <?php
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include 'config.php';
-if ($_GET['gen'] == "1"){
-	putenv("generate=true");
+
+if(!empty($_GET["gen"]) && $_GET['gen'] == "1"){
+  putenv("generate=true");
+} else {
+  putenv("generate=false");
 }
 
 function getTxWithHashes($txHashes){
@@ -82,7 +89,7 @@ function createOptimizedBock($startHeight, $endHeight){
 		$txs = $blockJson['transactions'];
 		foreach($txs as $tx){
 			$blockTxHashes[] = $tx["hash"];
-			$tx["block_timestamp"] = $blockJson['timestamp'];
+			//$tx["block_timestamp"] = $blockJson['timestamp'];
 		}
 		$txHashesPerBlock[$height] = $blockTxHashes;
 		
@@ -137,7 +144,7 @@ function createOptimizedBock($startHeight, $endHeight){
 				unset($finalTransaction['unlockTime']);
 				unset($finalTransaction['signaturesSize']);
 				$finalTransaction['global_index_start'] = $outCount;
-				$finalTransaction['ts'] = $rawTransaction['block_timestamp'];
+				$finalTransaction['ts'] = $blockJson['timestamp']; //$rawTransaction['block_timestamp'];
 				$finalTransaction['height'] = $height;
 				$finalTransaction['hash'] = $rawTransaction['hash'];
 				//				var_dump('-->'.$txHashesMap[$txHashes[$iTransaction]]);
@@ -145,7 +152,7 @@ function createOptimizedBock($startHeight, $endHeight){
 				
 				
 				$voutCount = count($finalTransaction['outputs']);
-				var_dump('vout of ' . $voutCount . ' at height ' . $finalTransaction["height"]);
+				//var_dump('vout of ' . $voutCount . ' at height ' . $finalTransaction["height"]);
 				$outCount += $voutCount;
 //			}
 		}
@@ -297,7 +304,7 @@ if(getenv('generate') !== 'true'){
 					if(count($decodedContent) > 0){
 						$lastTr = $decodedContent[count($decodedContent) - 1];
 						$outCount = $lastTr['global_index_start'] + count($lastTr['outputs']);
-						var_dump('out count='.$outCount.' '.$lastTr['global_index_start'].' '.count($lastTr['outputs']));
+						//var_dump('out count='.$outCount.' '.$lastTr['global_index_start'].' '.count($lastTr['outputs']));
 					}else{
 						var_dump('Missing compacted block file. Weird case');
 						exit;
