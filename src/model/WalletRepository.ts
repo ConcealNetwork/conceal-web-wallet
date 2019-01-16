@@ -163,7 +163,7 @@ export class WalletRepository{
 		let c : HTMLCanvasElement|null = <HTMLCanvasElement>document.getElementById('canvasExport');
 		if(c !== null) {
 			let ctx = c.getContext("2d");
-			let img: ImageBitmap | null = <ImageBitmap | null>document.getElementById("verticalMasariLogo");
+			let img: ImageBitmap | null = <ImageBitmap | null>document.getElementById("verticalLogo");
 			if (ctx !== null && img !== null) {
 				c.width = img.width;
 				c.height = img.height;

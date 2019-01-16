@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Official Masari Web Wallet",
-	"description":"Official online wallet for Masari currency - anonymous, secured, and fully handled in your browser for optimal security"
+	"title":"Client-side Karbo Web Wallet",
+	"description":"Official online wallet for Karbo currency - fully handled in your browser for optimal security"
   },
   "messages": {
 	"menu": {
@@ -62,8 +62,8 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Secured Masari Wallet",
-	  "tagLine": "The simplest way to use Masari - anywhere and any time",
+	  "mainTitle": "Secure Karbo Wallet",
+	  "tagLine": "The simplest way to use Karbo – anywhere and any time",
 	  "actions": {
 		"loadWallet": "Load my wallet",
 		"importWallet": "Import a wallet",
@@ -80,12 +80,12 @@
 		  "description": "Send Everywhere, Anytime!"
 		},
 		"technology": {
-		  "title": "Unique Technology",
-		  "description": "Connected directly to the Masari blockchain!"
+		  "title": "Local",
+		  "description": "Keys on your device"
 		},
 		"openSource": {
-		  "title": "Fully Open-source",
-		  "description": "Available on Github!"
+		  "title": "Open-source",
+		  "description": "Verify on Github!"
 		}
 	  }
 	},
@@ -105,7 +105,7 @@
 		"emptyWallet": "You currently have no funds in this wallet.",
 		"waitSync": "Please wait until the wallet is updated",
 		"beReallyPatient": "The initial setup can take some time...",
-		"getMSRAddress": "Receive MSR"
+		"getMSRAddress": "Receive KRB"
 	  },
 	  "txDetails":{
 		"title":"Transaction details",
@@ -141,7 +141,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"That was simple. Your account is ready!",
-		"subtitle":"Be ready to use Masari like you never have",
+		"subtitle":"Be ready to use Karbo like you never have",
 		"passwordSelectionBlock":{
 		  "label":"Protect your wallet"
 		},
@@ -164,8 +164,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Risk of Using MasariWallet",
-		"content":"MasariWallet is a web-based interface. It helps you use Masari without running a full Masari node. <br/>We recommend you treat MasariWallet like you will treat your actual wallet."
+		"title":"Risk of Using KarboWallet",
+		"content":"KarboWallet is a web-based interface. It helps you use Karbo without running a full Karbo node. <br/>We recommend you treat KarboWallet like you will treat your actual wallet."
 	  }
 	},
 	"donatePage":{
@@ -176,8 +176,8 @@
 		"content":"This Web wallet is developed by Gnock on his free time.<br/>If you want to help the development, help to pay for the servers, and like this app, please consider a donation: <br/><br/>"
 	  },
 	  "masariFundBlock":{
-		"title":"Masari Dev fund",
-		"content":"To help Masari, you can donate at these addresses"
+		"title":"Karbo Dev fund",
+		"content":"To help Karbo, you can donate at these addresses"
 	  }
 	},
 	"supportPage":{
@@ -186,12 +186,12 @@
 	  "getInTouchBlock":{
 		"title":"Let's Get In Touch!",
 		"content":"Do you have ideas or feedback that could help us improve the wallet? Contact us!",
-		"discord":"Masari Discord Channel"
+		"discord":"Karbo Discord Channel"
 	  }
 	},
 	"networkPage":{
 	  "title":"Network stats",
-	  "subtitle":"Insights on the Masari network",
+	  "subtitle":"Insights on the Karbo network",
 	  "statsBlock":{
 		"hashrate":"Network hashrate",
 		"height":"Blockchain height",
@@ -201,7 +201,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"Send MSR",
+	  "title":"Send KRB",
 	  "sendBlock":{
 		"address":{
 		  "label":"Destination address",
@@ -231,7 +231,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Thank you for your donation!",
-		"content":"Your help is appreciated. <br/>This donation will help make Masari better",
+		"content":"Your help is appreciated. <br/>This donation will help make Karbo better",
 		"confirmText":"OK"
 	  },
 	  "transferSentModal":{
@@ -268,7 +268,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"Receive MSR",
+	  "title":"Receive KRB",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Your address to receive funds:",
@@ -296,7 +296,7 @@
 	},
 	"miningPage":{
 	  "title":"Mine directly in your browser",
-	  "subtitle":"Support the network by mining and be rewarded with MSR",
+	  "subtitle":"Support the network by mining and be rewarded with KRB",
 	  "parameterBlock":{
 		"title":"Parameters",
 		"labelDestinationAddress":"Wallet to mine",

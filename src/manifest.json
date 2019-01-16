@@ -1,6 +1,6 @@
 {
-  "name": "Plenteum Web Wallet",
-  "short_name": "Plenteum",
+  "name": "Karbo Web Wallet",
+  "short_name": "KarboWallet",
   "icons": [{
 	"src": "assets/img/icons/icon-128x128.png",
 	"sizes": "128x128",

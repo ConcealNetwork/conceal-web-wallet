@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Portefeuille officiel en ligne pour Masari ",
-	"description":"Portefeuille en ligne officiel pour la monnaie Masari, anonyme, sécurisé et entièrement géré dans votre navigateur for une sécurité optimale"
+	"title":"Portefeuille officiel en ligne pour Karbo ",
+	"description":"Portefeuille en ligne officiel pour la monnaie Karbo, anonyme, sécurisé et entièrement géré dans votre navigateur for une sécurité optimale"
   },
   "messages": {
 	"menu": {
@@ -62,8 +62,8 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Portefeuille sécurisé pour Masari",
-	  "tagLine": "Le moyen le plus simple d'utiliser Masari, n'importe où, n'importe quand",
+	  "mainTitle": "Portefeuille sécurisé pour Karbo",
+	  "tagLine": "Le moyen le plus simple d'utiliser Karbo, n'importe où, n'importe quand",
 	  "actions": {
 		"loadWallet": "Charger mon portefeuille",
 		"importWallet": "Importer un portefeuille",
@@ -81,7 +81,7 @@
 		},
 		"technology": {
 		  "title": "Technologie unique",
-		  "description": "Connectée directement à la Blockchain Masari !"
+		  "description": "Connectée directement à la Blockchain Karbo !"
 		},
 		"openSource": {
 		  "title": "Entièrement open-source",
@@ -105,7 +105,7 @@
 		"emptyWallet": "Vous n'avez aucun fond sur ce portefeuille",
 		"waitSync": "Veuillez attendre la fin de la synchronisation",
 		"beReallyPatient": "La première synchronisation peut prendre quelques minutes...",
-		"getMSRAddress": "Obtenir mon adresse pour recevoir des MSR"
+		"getMSRAddress": "Obtenir mon adresse pour recevoir des KRB"
 	  },
 	  "txDetails":{
 		"title":"Détails de la transaction",
@@ -141,7 +141,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"C'était simple. Votre portefeuille est prêt !",
-		"subtitle":"Soyer près à utiliser Masari le plus simplement possible",
+		"subtitle":"Soyer près à utiliser Karbo le plus simplement possible",
 		"passwordSelectionBlock":{
 		  "label":"Sécuriser mon portefeuille"
 		},
@@ -164,8 +164,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Risques liés à l'utilisation de MasariWallet",
-		"content":"MasariWallet est un service web. Il vous aide à utiliser Masari facilement sans avoir un installer des logiciels. <br/>Nous vous conseillons de traiter ce site comme vous traiteriez votre portefeuille."
+		"title":"Risques liés à l'utilisation de KarboWallet",
+		"content":"KarboWallet est un service web. Il vous aide à utiliser Karbo facilement sans avoir un installer des logiciels. <br/>Nous vous conseillons de traiter ce site comme vous traiteriez votre portefeuille."
 	  }
 	},
 	"donatePage":{
@@ -176,8 +176,8 @@
 		"content":"Ce portefeuille est développé par Gnock sur son temps libre.<br/>Si vous voulez aider au développement, payer les serveur et que vous aimez ce service, considérez une petite donation: <br/><br/>"
 	  },
 	  "masariFundBlock":{
-		"title":"Fond de développement de Masari",
-		"content":"Pour aidez Masari globalement, vous pouvez donner à cette adresse"
+		"title":"Fond de développement de Karbo",
+		"content":"Pour aidez Karbo globalement, vous pouvez donner à cette adresse"
 	  }
 	},
 	"supportPage":{
@@ -186,12 +186,12 @@
 	  "getInTouchBlock":{
 		"title":"Reston en contact !",
 		"content":"Vous avez des idées, des retours pour aider à améliorer le service ? Contactez nous !",
-		"discord":"Discord Officiel de Masari"
+		"discord":"Discord Officiel de Karbo"
 	  }
 	},
 	"networkPage":{
 	  "title":"Statistiques du réseau",
-	  "subtitle":"Détails sur le réseaux Masari",
+	  "subtitle":"Détails sur le réseaux Karbo",
 	  "statsBlock":{
 		"hashrate":"Hashrate du réseau",
 		"height":"Hauteur de la Blockchain",
@@ -201,7 +201,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"Envoyer des MSR",
+	  "title":"Envoyer des KRB",
 	  "sendBlock":{
 		"address":{
 		  "label":"Adresse de destination",
@@ -231,7 +231,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Merci pour votre donation !",
-		"content":"Votre aide est apprécié. <br/>Cette donation contribuera à améliorer Masari",
+		"content":"Votre aide est apprécié. <br/>Cette donation contribuera à améliorer Karbo",
 		"confirmText":"Fermer"
 	  },
 	  "transferSentModal":{
@@ -268,7 +268,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"Recevoir des MSR",
+	  "title":"Recevoir des KRB",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Votre adresse pour recevoir des fonds",
@@ -296,7 +296,7 @@
 	},
 	"miningPage":{
 	  "title":"Miner directement depuis votre navigateur",
-	  "subtitle":"Supportez lé réseau en minant et en améliorant la stabilité du réseau tout en étant réponsé en MSR",
+	  "subtitle":"Supportez lé réseau en minant et en améliorant la stabilité du réseau tout en étant réponsé en KRB",
 	  "parameterBlock":{
 		"title":"Paramètres",
 		"labelDestinationAddress":"Portefeuille de destination",

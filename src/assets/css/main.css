@@ -78,7 +78,7 @@ body.native .hideOnNonNative{
 	height:34px;line-height:34px;
 	position: fixed;
 	top:0;
-	background: #36393f;
+	background: #30466C;
 	color:white;
 	font-size:16px;
 	font-weight: bold;
@@ -119,7 +119,7 @@ body.menuHidden #menu {
 }
 
 #menu{
-	background: #36393f;
+	background: #30466C;
 	color: white;
 	padding:10px 15px;
 }
@@ -476,11 +476,10 @@ body.transparent #copyright{
 .indexTab .mainBlock{
 	min-height:90vh;
 	position: relative;
-	/*background: url(../img/binary-background.jpg) #146DBD;*/
 	text-align: center;
-	background-image: -webkit-linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/75-usersthink-stock-image.jpg);
-	background-image: -o-linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/75-usersthink-stock-image.jpg);
-	background-image: linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/75-usersthink-stock-image.jpg);
+	background-image: -webkit-linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/balancing.jpg);
+	background-image: -o-linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/balancing.jpg);
+	background-image: linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/balancing.jpg);
 	background-position: center center;
 	background-size: cover;
 	margin-bottom:160px;
@@ -593,16 +592,16 @@ body.native .indexTab .mainBlock > .actions{
 	text-align: center;
 	padding-top: 36px;
 	padding-bottom: 31px;
-	border-radius: 5px;
+	border-radius: 20px;
 	-webkit-box-shadow: 0 10px 25px 0 rgba(88, 102, 128, 0.1);
 	box-shadow: 0 10px 25px 0 rgba(88, 102, 128, 0.1);
 }
 .indexTab .block i{
 	font-size: 40px;
-	color:#75829e;
+	color:#00A0E3;
 }
 .indexTab .block h3{
-	color:#212529;
+	color:#30466C;
 	font-size: 24px;
 	margin: 0;
 	margin-bottom:5px;margin-top:8px;
@@ -612,7 +611,7 @@ body.native .indexTab .mainBlock > .actions{
 	text-decoration: none;
 }
 .indexTab .block h4{
-	color:#868e96;
+	color:#30466C;
 	font-size: 14px;
 	margin: 0;
 	font-weight: normal;

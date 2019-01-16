@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Hivatalos Masari webtárca",
-	"description":"A Masari hivatalos online tárcája - névtelen, biztonságos és teljes mértékben böngészőből kezelt az optimális biztonság érdekében"
+	"title":"Hivatalos Karbo webtárca",
+	"description":"A Karbo hivatalos online tárcája - névtelen, biztonságos és teljes mértékben böngészőből kezelt az optimális biztonság érdekében"
   },
   "messages": {
 	"menu": {
@@ -62,8 +62,8 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Biztonságos Masari tárca",
-	  "tagLine": "A Masari használatának legegyszerűbb módja - bárhol és bármikor",
+	  "mainTitle": "Biztonságos Karbo tárca",
+	  "tagLine": "A Karbo használatának legegyszerűbb módja - bárhol és bármikor",
 	  "actions": {
 		"loadWallet": "Tárca betöltése",
 		"importWallet": "Tárcaimportálás",
@@ -81,7 +81,7 @@
 		},
 		"technology": {
 		  "title": "Egyedi technológia",
-		  "description": "Közvetlen kapcsolat a Masari blokklánccal!"
+		  "description": "Közvetlen kapcsolat a Karbo blokklánccal!"
 		},
 		"openSource": {
 		  "title": "Teljesen nyílt forrású",
@@ -105,7 +105,7 @@
 		"emptyWallet": "Jelenleg nincsen egyenleged ebben a tárcában.",
 		"waitSync": "Kérlek, várj, míg a tárca naprakész lesz",
 		"beReallyPatient": "A kezdeti beállítás némi időbe telhet...",
-		"getMSRAddress": "MSR fogadása"
+		"getMSRAddress": "KRB fogadása"
 	  },
 	  "txDetails":{
 		"title":"Tranzakciórészletek",
@@ -141,7 +141,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"Ez egyszerű volt. A számlád rendelkezésre áll!",
-		"subtitle":"Állj készen a Masari használatára",
+		"subtitle":"Állj készen a Karbo használatára",
 		"passwordSelectionBlock":{
 		  "label":"Védd a tárcád"
 		},
@@ -165,7 +165,7 @@
 	  },
 	  "disclaimerBlock":{
 		"title":"A MasariWallet használatának kockázatai",
-		"content":"A MasariWallet egy webes felület, mely lehetővé teszi a Masari használatát teljes csomópont futtatása nélkül.<br/>Kezeld úgy a MasariWalletet, mintha az a valódi pénztárcád lenne."
+		"content":"A KarboWallet egy webes felület, mely lehetővé teszi a Karbo használatát teljes csomópont futtatása nélkül.<br/>Kezeld úgy a KarboWalletet, mintha az a valódi pénztárcád lenne."
 	  }
 	},
 	"donatePage":{
@@ -176,8 +176,8 @@
 		"content":"A webtárcát Gnock fejleszti szabadidejében.<br/>Ha szeretnéd segíteni a fejlesztést, a szerverek fizetését és tetszik az applikáció, úgy vedd fontolóra az adományozást:<br/><br/>"
 	  },
 	  "masariFundBlock":{
-		"title":"Masari fejlesztési alap",
-		"content":"Ha szeretnél segíteni a Masarinak, az alábbi címekre adományozhatsz"
+		"title":"Karbo fejlesztési alap",
+		"content":"Ha szeretnél segíteni a Karbonak, az alábbi címekre adományozhatsz"
 	  }
 	},
 	"supportPage":{
@@ -186,12 +186,12 @@
 	  "getInTouchBlock":{
 		"title":"Lépjünk kapcsolatba!",
 		"content":"Visszajelzésed vagy ötleted van a tárcával kapcsolatban? Keress fel bennünket!",
-		"discord":"Masari Discord-csatorna"
+		"discord":"Karbo Discord-csatorna"
 	  }
 	},
 	"networkPage":{
 	  "title":"Hálózati statisztika",
-	  "subtitle":"Betekintés a Masari hálózatába",
+	  "subtitle":"Betekintés a Karbo hálózatába",
 	  "statsBlock":{
 		"hashrate":"Hálózati hashrate",
 		"height":"Blokklánc hossza",
@@ -201,7 +201,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"MSR küldése",
+	  "title":"KRB küldése",
 	  "sendBlock":{
 		"address":{
 		  "label":"Kedvezményezett címe",
@@ -231,7 +231,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Köszönjük az adományt!",
-		"content":"Értékeljük a segítséged.<br/>Ez az adomány is segít jobbá tenni a Masarit.",
+		"content":"Értékeljük a segítséged.<br/>Ez az adomány is segít jobbá tenni a Karbot.",
 		"confirmText":"OK"
 	  },
 	  "transferSentModal":{
@@ -268,7 +268,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"MSR fogadása",
+	  "title":"KRB fogadása",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Pénz fogadására szolgáló cím:",
@@ -296,7 +296,7 @@
 	},
 	"miningPage":{
 	  "title":"Bányássz közvetlenül böngészőből",
-	  "subtitle":"Támogasd a hálózatot a bányászással és szerezz érte jutalmat Masariban",
+	  "subtitle":"Támogasd a hálózatot a bányászással és szerezz érte jutalmat Karboban",
 	  "parameterBlock":{
 		"title":"Paraméterek",
 		"labelDestinationAddress":"Céltárca",
