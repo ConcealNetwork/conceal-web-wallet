@@ -1,4 +1,4 @@
-# Plenteum fork of Masari Web Wallet - Fully client-side 
+# Karbo fork of Masari Web Wallet - Fully client-side
 This web wallet is doing everything client-side to give the best privacy to users.
 The server is currently only used to optimize the communication with the daemon and compress the blockchain.  
 
@@ -13,6 +13,7 @@ Encryption is done with a certified library, [Tweetnacl.Js.](https://github.com/
 Developers:
 - gnock (main)
 - cryptochangements
+- davehlong (PHP Api for Bytecoin based coins)
 
 Translations:
 - English: too many people
