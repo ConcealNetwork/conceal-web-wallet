@@ -416,7 +416,7 @@ export class TransactionsExplorer {
 
 			// neededFee = neededFee / 3 * 2;
 
-			console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / 100000000));
+			console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)));
 			confirmCallback(totalAmountWithoutFee, neededFee).then(function () {
 				if (usingOuts_amount.compare(totalAmount) < 0) {
 					console.log("Not enough spendable outputs / balance too low (have "

@@ -20,12 +20,10 @@ import {DestructableView} from "../lib/numbersLab/DestructableView";
 import {Constants} from "../model/Constants";
 import {AppState} from "../model/AppState";
 import {Transaction, TransactionIn} from "../model/Transaction";
-import {VueFilterPiconero} from "../filters/Filters";
 
 let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name,'default', false);
 let blockchainExplorer = DependencyInjectorInstance().getInstance(Constants.BLOCKCHAIN_EXPLORER);
 
-@VueRequireFilter('piconero', VueFilterPiconero)
 class AccountView extends DestructableView{
 	@VueVar([]) transactions !: Transaction[];
 	@VueVar(0) walletAmount !: number;
@@ -33,7 +31,7 @@ class AccountView extends DestructableView{
 
 	@VueVar(0) currentScanBlock !: number;
 	@VueVar(0) blockchainHeight !: number;
-	@VueVar(100000000) currencyDivider !: number;
+	@VueVar(Math.pow(10, config.coinUnitPlaces)) currencyDivider !: number;
 
 	intervalRefresh : number = 0;
 
