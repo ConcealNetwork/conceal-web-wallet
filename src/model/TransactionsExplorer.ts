@@ -289,7 +289,8 @@ export class TransactionsExplorer {
 				reject("Failed to create transaction: " + e);
 			}
 			console.log("signed tx: ", signed);
-			let raw_tx_and_hash = cnUtil.serialize_rct_tx_with_hash(signed);
+			//let raw_tx_and_hash = cnUtil.serialize_rct_tx_with_hash(signed);
+			let raw_tx_and_hash = cnUtil.serialize_tx_with_hash(signed);
 			resolve({raw: raw_tx_and_hash, signed: signed});
 		});
 	}
@@ -310,7 +311,7 @@ export class TransactionsExplorer {
 			let feePerKB = new JSBigInt((<any>window).config.feePerKB);
 			let priority = default_priority;
 			let fee_multiplayer = fee_multiplayers[priority - 1];
-			let neededFee = feePerKB.multiply(13).multiply(fee_multiplayer);
+			let neededFee = config.coinFee; // feePerKB.multiply(13).multiply(fee_multiplayer);
 			let pid_encrypt = false; //don't encrypt payment ID unless we find an integrated one
 
 			let totalAmountWithoutFee = new JSBigInt(0);
@@ -474,7 +475,7 @@ export class TransactionsExplorer {
 					}
 					console.log('mix_outs', mix_outs);
 
-					TransactionsExplorer.createRawTx(dsts, wallet, true, usingOuts, pid_encrypt, mix_outs, mixin, neededFee, paymentId).then(function (data: { raw: { hash: string, prvKey: string, raw: string }, signed: any }) {
+					TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, mix_outs, mixin, neededFee, paymentId).then(function (data: { raw: { hash: string, prvKey: string, raw: string }, signed: any }) {
 						resolve(data);
 					}).catch(function (e) {
 						reject(e);

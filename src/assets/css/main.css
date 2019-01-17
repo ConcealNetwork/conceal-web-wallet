@@ -225,14 +225,27 @@ body.transparent #copyright{
 	padding-top:10px;
 }
 
+.walletAmount {
+	font-size: 30px;
+}
+
 .transactions table{
 	width: 100%;
 	border-collapse: collapse;
 	table-layout: fixed;
 }
-.transactions .transaction{
-	border-bottom: 1px solid #E2E2E2;
+
+#accountTransactions {
+	padding: 10px 35px;
 }
+
+.transactions .transaction{
+	border-top: 1px solid #E2E2E2;
+}
+.transactions table tr:first-child {
+	border-top: 0 none;
+}
+
 .transactions .transaction td{
 	padding:8px 0;
 }
@@ -250,7 +263,7 @@ body.transparent #copyright{
 }
 .transactions .transaction .timestamp{
 	width: 45%;
-	font-size: 20px;
+	font-size: 18px;
 }
 .transactions .transaction .amount{
 	font-size: 20px;
@@ -265,6 +278,7 @@ body.transparent #copyright{
 	width: 8%;
 	text-align: right;
 	padding-right: 10px;
+	cursor: pointer;
 }
 
 .receiveTab .qrCode{

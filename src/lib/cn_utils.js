@@ -1474,6 +1474,20 @@ var cnUtil = (function(initConfig) {
 		return buf;
 	};
 
+
+	this.serialize_tx_with_hash = function(tx) {
+		var hashes = "";
+		var buf = "";
+		buf += this.serialize_tx(tx, false);
+		hashes += this.cn_fast_hash(buf);
+
+		return {
+			raw: buf,
+			hash: hashes,
+			prvkey: tx.prvkey
+		};
+	};
+
 	this.serialize_rct_tx_with_hash = function(tx) {
 		var hashes = "";
 		var buf = "";

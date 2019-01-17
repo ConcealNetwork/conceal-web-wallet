@@ -63,8 +63,7 @@ class AccountView extends DestructableView{
 		let explorerUrl = config.testnet ? config.testnetExplorerUrl : config.mainnetExplorerUrl;
 		let feesHtml = '';
 		if(transaction.getAmount() < 0)
-			feesHtml = `<div>`+i18n.t('accountPage.txDetails.feesOnTx')+`: `+Vue.options.filters.piconero(transaction.fees)+`</a></div>`;
-
+			feesHtml = `<div>`+i18n.t('accountPage.txDetails.feesOnTx')+`: `+(transaction.fees / Math.pow(10, config.coinUnitPlaces))+`</a></div>`;
 		let paymentId = '';
 		if(transaction.paymentId !== ''){
 			paymentId = `<div>`+i18n.t('accountPage.txDetails.paymentId')+`: `+transaction.paymentId+`</a></div>`;
