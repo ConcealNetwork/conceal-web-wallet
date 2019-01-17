@@ -306,12 +306,12 @@ export class TransactionsExplorer {
 		Promise<{ raw: { hash: string, prvKey: string, raw: string }, signed: any }> {
 		return new Promise<{ raw: { hash: string, prvKey: string, raw: string }, signed: any }>(function (resolve, reject) {
 			// few multiplayers based on uint64_t wallet2::get_fee_multiplier
-			let fee_multiplayers = [1, 4, 20, 166];
-			let default_priority = 2;
-			let feePerKB = new JSBigInt((<any>window).config.feePerKB);
-			let priority = default_priority;
-			let fee_multiplayer = fee_multiplayers[priority - 1];
-			let neededFee = config.coinFee; // feePerKB.multiply(13).multiply(fee_multiplayer);
+			//let fee_multiplayers = [1, 4, 20, 166];
+			//let default_priority = 2;
+			//let feePerKB = new JSBigInt((<any>window).config.feePerKB);
+			//let priority = default_priority;
+			//let fee_multiplayer = fee_multiplayers[priority - 1];
+			let neededFee = new JSBigInt((<any>window).config.coinFee); // feePerKB.multiply(13).multiply(fee_multiplayer);
 			let pid_encrypt = false; //don't encrypt payment ID unless we find an integrated one
 
 			let totalAmountWithoutFee = new JSBigInt(0);
@@ -395,21 +395,21 @@ export class TransactionsExplorer {
 			};
 
 			console.log("Selected outs:", usingOuts);
-			if (usingOuts.length > 1) {
-                let newNeededFee = 10000000; //JSBigInt(Math.ceil(cnUtil.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(feePerKB).multiply(fee_multiplayer);
-				totalAmount = totalAmountWithoutFee.add(newNeededFee);
+			//if (usingOuts.length > 1) {
+            //    let newNeededFee = 10000000; //JSBigInt(Math.ceil(cnUtil.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(feePerKB).multiply(fee_multiplayer);
+			//	totalAmount = totalAmountWithoutFee.add(newNeededFee);
 				//add outputs 1 at a time till we either have them all or can meet the fee
-				while (usingOuts_amount.compare(totalAmount) < 0 && unusedOuts.length > 0) {
-					let out = pop_random_value(unusedOuts);
-					usingOuts.push(out);
-					usingOuts_amount = usingOuts_amount.add(out.amount);
-					console.log("Using output: " + cnUtil.formatMoney(out.amount) + " - " + JSON.stringify(out));
-					newNeededFee = JSBigInt(Math.ceil((usingOuts.length, mixin, 2) / 1024)).multiply(feePerKB).multiply(fee_multiplayer);
-					totalAmount = totalAmountWithoutFee.add(newNeededFee);
-				}
-				console.log("New fee: " + cnUtil.formatMoneySymbol(newNeededFee) + " for " + usingOuts.length + " inputs");
-				neededFee = newNeededFee;
-			}
+			//	while (usingOuts_amount.compare(totalAmount) < 0 && unusedOuts.length > 0) {
+			//		let out = pop_random_value(unusedOuts);
+			//		usingOuts.push(out);
+			//		usingOuts_amount = usingOuts_amount.add(out.amount);
+			//		console.log("Using output: " + cnUtil.formatMoney(out.amount) + " - " + JSON.stringify(out));
+			//		newNeededFee = JSBigInt(Math.ceil((usingOuts.length, mixin, 2) / 1024)).multiply(feePerKB).multiply(fee_multiplayer);
+			//		totalAmount = totalAmountWithoutFee.add(newNeededFee);
+			//	}
+			//	console.log("New fee: " + cnUtil.formatMoneySymbol(newNeededFee) + " for " + usingOuts.length + " inputs");
+			//	neededFee = newNeededFee;
+			//}
 
             if (neededFee < 10000000) {
                 neededFee = 10000000;
