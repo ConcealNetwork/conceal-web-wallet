@@ -401,9 +401,10 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                     }
 
                     for (let output_idx_in_tx = 0; output_idx_in_tx < tx.outputs.length; ++output_idx_in_tx) {
-                        let globalIndex = output_idx_in_tx;
-                        if (typeof tx.global_index_start !== 'undefined')
-                            globalIndex += tx.global_index_start;
+                        //let globalIndex = output_idx_in_tx;
+                        //if (typeof tx.global_index_start !== 'undefined')
+                        //    globalIndex += tx.global_index_start;
+						let globalIndex = tx.outputs[output_idx_in_tx].globalIndex;
                        
                         let newOut = {
                             public_key: tx.outputs[output_idx_in_tx].output.target.data.key,
