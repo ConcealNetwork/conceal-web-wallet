@@ -82,7 +82,7 @@ export class WalletWatchdog {
         if (this.intervalMempool === 0) {
             this.intervalMempool = setInterval(function () {
                 self.checkMempool();
-            }, 2 * 60 * 1000);
+            }, 30 * 1000);
         }
         self.checkMempool();
     }
@@ -103,10 +103,10 @@ export class WalletWatchdog {
         }
 
         this.wallet.txsMem = [];
-        this.explorer.getTransactionPool().then(function (data: any) {
-            if (typeof data.transactions !== 'undefined')
-                for (let rawTx of data.transactions) {
-                    let tx = TransactionsExplorer.parse(rawTx.tx_json, self.wallet);
+        this.explorer.getTransactionPool().then(function (pool: any) {
+            if (typeof pool !== 'undefined')
+                for (let rawTx of pool) {
+                    let tx = TransactionsExplorer.parse(rawTx, self.wallet);
                     if (tx !== null) {
                         self.wallet.txsMem.push(tx);
                     }
