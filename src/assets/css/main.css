@@ -93,6 +93,19 @@ body.native .hideOnNonNative{
 	height: 100%;
 	padding: 0 15px;
 }
+
+#main_logo img{
+	max-width: 100%;
+	max-height: 33px;
+	display: inline-block;
+	vertical-align: middle;
+	margin: -5px -1px 0 -2px;
+}
+
+#main_logo {
+	font-size: 24px;
+}
+
 @media screen and (max-width: 600px) {
 	#topBar{
 		display: block;
@@ -131,7 +144,6 @@ body.menuHidden #menu {
 }
 #menu a{
 	display: block;
-	border-bottom:1px solid #a1a1a1;
 	color:white;
 	font-size: 20px;
 	padding:14px 0;
@@ -150,7 +162,14 @@ body.menuHidden #menu {
 #menu a .icon{display:inline-block;width:30px;text-align: center;}
 #menu img{
 	max-width: 100%;
-	max-height: 40px;
+	max-height: 33px;
+	display: inline-block;
+	vertical-align: middle;
+	margin: -5px -1px 0 -2px;
+}
+
+#menu #menu_logo {
+	font-size: 24px;
 }
 
 #pageLoading{
