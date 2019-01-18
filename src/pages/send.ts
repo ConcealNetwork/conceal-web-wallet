@@ -129,7 +129,7 @@ class SendView extends DestructableView {
 	startScan() {
 		let self = this;
 		if(typeof window.QRScanner !== 'undefined') {
-			window.QRScanner.scan(function(err : any, result : any){
+			window.QRScanner.scan(function (err : any, result : any){
 				if (err) {
 					if(err.name === 'SCAN_CANCELED'){
 
@@ -193,7 +193,7 @@ class SendView extends DestructableView {
 
 	stopScan() {
 		if(typeof window.QRScanner !== 'undefined') {
-			window.QRScanner.cancelScan(function(status:any){
+			window.QRScanner.cancelScan(function (status:any){
 				console.log(status);
 			});
 			window.QRScanner.hide();
@@ -333,6 +333,7 @@ class SendView extends DestructableView {
 							confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
 						});
 					});
+					swal.close();
 				}).catch(function (error: any) {
 					console.log(error);
 					if (error && error !== '') {
