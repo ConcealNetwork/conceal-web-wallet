@@ -78,6 +78,12 @@ interface CnUtilClass{
 			outputs:any,
 	};
 
+	serialize_tx_with_hash(signed : any) : {
+		hash:string,
+		prvKey:string,
+		raw:string
+	}
+
 	serialize_rct_tx_with_hash(signed : any) : {
 		hash:string,
 		prvKey:string,

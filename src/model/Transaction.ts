@@ -19,6 +19,7 @@ export class TransactionOut {
     keyImage: string = '';
     outputIdx: number = 0;
     globalIndex: number = 0;
+	ephemeralPub:string='';
     pubKey: string = '';
 
     static fromRaw(raw: any) {
@@ -28,6 +29,7 @@ export class TransactionOut {
         nout.globalIndex = raw.globalIndex;
         nout.amount = raw.amount;
         if (typeof raw.pubKey !== 'undefined') nout.pubKey = raw.pubKey;
+		if(typeof raw.ephemeralPub !== 'undefined') nout.ephemeralPub = raw.ephemeralPub;
         return nout;
     }
 
