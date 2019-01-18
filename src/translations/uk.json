@@ -1,0 +1,491 @@
+{
+  "website":{
+	"title":"Веб-гаманець Карбо",
+	"description":"Офіційний онлайн гаманець криптовалюти Карбованець - анонімний, надійний, працює повністю у вашому браузері для найвищої безпеки"
+  },
+  "messages": {
+	"menu": {
+	  "home": "Огляд",
+	  "account": "Аккаунт",
+	  "send": "Надіслати",
+	  "receive": "Отримати",
+	  "export": "Експорт",
+	  "donate": "Пожертвувати",
+	  "settings": "Налаштування",
+	  "disconnect": "Відключитися",
+	  "network": "Статистика мережі",
+	  "mining": "Майнінг"
+	},
+	"global": {
+	  "loading": "Триває завантаження",
+	  "disableSecurity":"Відключити цю пересторогу, я розумію ризик",
+	  "passwordInvalidRequirements":"Пароль повинен складатися принаймні з 8 символів - 1 великої літери, 1 маленької, одного числа, одного спецсимвола",
+	  "passwordConfirmationNotMatching":"Підтвердження пароля не збігається з першим",
+	  "download":"Завантажити",
+	  "newVersionModal":{
+		"title":"Є нова версія",
+		"content":"Хочете перезавантажити щоб оновити версію?",
+		"confirmText":"Так",
+		"cancelText":"Назад"
+	  },
+	  "openWalletModal":{
+		"title":"Пароль гаманця",
+		"confirmText":"Відкрити",
+		"cancelText":"Скасувати"
+	  },
+	  "invalidPasswordModal":{
+		"title":"Ой...",
+		"content":"Здається пароль невірний",
+		"confirmText":"Гаразд"
+	  },
+	  "invalidMnemonicModal":{
+		"title":"Ой...",
+		"content":"Фраза для відновлення невірна",
+		"confirmText":"Гаразд"
+	  },
+	  "passwordNotComplexEnoughModal":{
+		"title":"Пароль недостатньо складний",
+		"confirmText":"Гаразд"
+	  },
+	  "permissionRequiredForCameraModal":{
+		"title":"Ой...",
+		"content":"Потрібен дозвіл на доступ до камери для сканування QR коду",
+		"confirmText":"Гаразд"
+	  }
+	},
+	"bottom": {
+	  "termsOfUse": "Умови використання",
+	  "privacyPolicy": "Політика конфіденційності",
+	  "support": "Допомога",
+	  "donate": "Пожертвувати",
+	  "network": "Мережа",
+	  "miningPool": "Майнінг",
+	  "github": "GitHub"
+	},
+	"homepage": {
+	  "mainTitle": "Безпечний Гаманець Карбованця",
+	  "tagLine": "Найпростіший спосіб використання карбованців – в будь-який час, в будь-якому місці",
+	  "actions": {
+		"loadWallet": "Завантажити мій гаманець",
+		"importWallet": "Імпортувати гаманець",
+		"create": "Створити",
+		"createWallet": "Створити гаманець"
+	  },
+	  "notes": {
+		"secure": {
+		  "title": "Безпечний",
+		  "description": "Без серверів, повністю зашифрований!"
+		},
+		"fast": {
+		  "title": "Швидкий",
+		  "description": "Доступний коли треба!"
+		},
+		"technology": {
+		  "title": "Локальний",
+		  "description": "Ключі в браузері"
+		},
+		"openSource": {
+		  "title": "Open-source",
+		  "description": "Не довіряй - перевіряй!"
+		}
+	  }
+	},
+	"accountPage": {
+	  "title": "Аккаунт",
+	  "subtitle": "Огляд вашого профілю та історії транзакцій",
+	  "synchronizingBlock": {
+		"text": "Синхронізація..."
+	  },
+	  "balanceBlock": {
+		"title": "Ваш баланс",
+		"unlocked": "Доступно"
+	  },
+	  "historyBlock": {
+		"title": "Історія транзакцій",
+		"pendingTxStatus": "Очікується",
+		"emptyWallet": "У цьому гаманці поки немає коштів.",
+		"waitSync": "Будь ласка, зачекайте гаманець оновлює дані",
+		"beReallyPatient": "Початкова установка може зайняти деякий час...",
+		"getKRBAddress": "Отримати KRB"
+	  },
+	  "txDetails":{
+		"title":"Деталі транзакції",
+		"txHash":"Хеш",
+		"feesOnTx":"Комісія",
+		"blockHeight":"Висота блоку",
+		"paymentId":"Ідентифікатор платежу",
+        "txPrivKey":"Секретний ключ транзакції"
+	  }
+	},
+	"changeWalletPasswordPage":{
+	  "title":"Змінити ваш пароль",
+	  "oldPassword":{
+		"label":"Старий пароль",
+		"invalid":"Пароль недійсний"
+	  },
+	  "newPassword":{
+		"label":"Виберіть новий пароль для захисту вашого гаманця"
+	  },
+	  "newPasswordConfirm":{
+		"label":"Підтвердіть новий пароль"
+	  },
+	  "confirm":"Змінити пароль",
+	  "modalSuccess":{
+		"title":"Пароль змінений!",
+		"confirmText":"Гаразд"
+	  }
+	},
+	"createWalletPage":{
+	  "generatingStep":{
+		"title":"Створюється гаманець...",
+		"subtitle":"Майже готово",
+		"waitingMessage":"Генерується гаманець..."
+	  },
+	  "finalizationStep":{
+		"title":"Все. Ваш гаманець готовий!",
+		"subtitle":"Приготуйтеся використовувати Карбо як ніколи до цього",
+		"passwordSelectionBlock":{
+		  "label":"Захистіть ваш гаманець"
+		},
+		"passwordConfirmBlock":{
+		  "label":"Підтвердіть пароль"
+		},
+		"validPassword":"Використовувати цей пароль",
+		"backupBlock":{
+		  "title":"Збережіть ваші приватні дані щоб мати можливість відновлення.",
+		  "option1":"Опція 1: ",
+		  "option2":"Опція 2: ",
+		  "titlePdf":"Завантажити PDF",
+		  "titleManualWrite":"Записати ключі",
+		  "privateKeys":"Приватний ключ",
+		  "mnemonicPhrase":"Мнемонічна фраза",
+		  "separatorManualMethodsSolution":" або ",
+		  "confirmManuallyWritten":"Я записав собі мнемонічну фразу",
+		  "warningMessage":"**Hе втратьте!** Вона не може бути відновлена якщо ви її втратите.<br/>**Нікому не передавайте!** Ваші кошти можуть бути вкрадені якщо скористаєтеся цим файлом або фразою на шкідливому / фішинговому сайті.<br/>**Зробіть резервну копію!** Бережіть як мільйон доларів, якого воно може одного прекрасного дня коштувати.<br/>",
+		  "finishButton":"Я зрозумів. Продовжити."
+		}
+	  },
+	  "disclaimerBlock":{
+		"title":"Ризики використання KarboWallet",
+		"content":"KarboWallet це веб-інтерфейс. Він допомагає вам використовувати Карбо без необхідності тримати повний вузол мережі Карбо. <br/>Ми рекомендуємо ставитися до KarboWallet з усією серйозністю, як до вашого гаманця."
+	  }
+	},
+	"donatePage":{
+	  "title":"Пожертвувати",
+	  "subtitle":"Допоможіть профінансувати розробку і оплату рахунків",
+	  "webwalletBlock":{
+		"title":"Допомога Веб-гаманцю",
+		"content":"Якщо ви хочете підтримати розробку, допомогти з оплатою хостингу, якщо вам подобається аплікація, будь ласка зробіть пожертву: <br/><br/>"
+	  },
+	  "devFundBlock":{
+		"title":"Офіційний фонд Карбо",
+		"content":"Щоб підтримати Карбованець, ви можете зробити пожертвування на ці адреси"
+	  }
+	},
+	"supportPage":{
+	  "title":"Підтримка",
+	  "subtitle":"Ми тут щоб допомогти!",
+	  "getInTouchBlock":{
+		"title":"Зв'яжіться з нами!",
+		"content":"Є ідеї або побажання щодо поліпшення гаманця? Напишіть нам!",
+		"discord":"Канал Karbo в Discord"
+	  }
+	},
+	"networkPage":{
+	  "title":"Статистика мережі",
+	  "subtitle":"Огляд мережі Карбо",
+	  "statsBlock":{
+		"hashrate":"Хешрейт",
+		"height":"Висота блокчейну",
+		"difficulty":"Складність",
+		"lastTimeBlock":"Час останнього блоку",
+		"lastReward":"Нагорода за останній блок"
+	  }
+	},
+	"sendPage":{
+	  "title":"Надіслати KRB",
+	  "sendBlock":{
+		"address":{
+		  "label":"Адреса одержувача",
+		  "invalid":"Адреса одержувача неправильна",
+		  "fundsTo":"Кошти будуть відправлені на",
+		  "receiver":"Одержувач",
+		  "description":"Опис"
+		},
+		"amount":{
+		  "label":"Сума",
+		  "invalid":"Сума неправильна"
+		},
+		"paymentId":{
+		  "label":"Payment ID (не обов'язково)",
+		  "invalid":"Ідентифікатор платежу невірний. Довжина повинна бути 16 або 64 символи"
+		},
+		"sendButton":"Надіслати",
+		"cancelButton":"Скасувати"
+	  },
+	  "qrCodeScanning":{
+		"explication":"Показати QR код"
+	  },
+	  "notEnoughMoneyModal":{
+		"title":"Ой...",
+		"content":"У гаманці недостатньо коштів для здійснення цього перекладу",
+		"confirmText":"Гаразд"
+	  },
+	  "thankYouDonationModal":{
+		"title":"Спасибі за ваше пожертвування!",
+		"content":"Ми цінуємо вашу підтримку. <br/>Це пожертвування допоможе зробити Карбо краще",
+		"confirmText":"Гаразд"
+	  },
+	  "transferSentModal":{
+		"title":"Переказ успішно відправлений!",
+		"confirmText":"Гаразд"
+	  },
+	  "transferExceptionModal":{
+		"title":"Ой...",
+		"content":"Сталася помилка. Будь ласка повідомте про неї: {details}",
+		"confirmText":"Гаразд"
+	  },
+	  "invalidAmountModal":{
+		"title":"Ой...",
+		"content":"Неправильна сума",
+		"confirmText":"Гаразд"
+	  },
+	  "creatingTransferModal":{
+		"title":"Створюється переказ...",
+		"content":"Будь ласка зачекайте..."
+	  },
+	  "finalizingTransferModal":{
+		"title":"Завершується переказ...",
+		"content":"Будь ласка зачекайте..."
+	  },
+	  "confirmTransactionModal":{
+		"title":"Підтвердити переказ?",
+		"content":"Сума: {amount}<br/>Комісії: {fees}<br/>Всього: {total}",
+		"confirmText":"Підтвердити",
+		"cancelText":"Скасувати"
+	  },
+	  "waitingNfcModal":{
+		"title":"Очікування Nfc",
+		"content":"Піднесіть ближче до іншого пристрою"
+	  }
+	},
+	"receivePage":{
+	  "title":"Отримати KRB",
+	  "receiveBlock":{
+		"address":{
+		  "title":"Ваша адреса для отримання:",
+		  "label":"Дайте цю адресу щоб отримати кошти"
+		},
+		"qrCode":{
+		  "title":"Або персоналізуйте QR код:",
+		  "labelAmount":"Сума (не обов'язково)",
+		  "labelRecipient":"Название получателя (не обов'язково)",
+		  "labelDescription":"Описание транзакции (не обов'язково)",
+		  "updateButton":"Оновити"
+		}
+	  },
+	  "qrBlock":{
+		"title":"Ваш персональний QR код"
+	  },
+	  "waitingNfcToWriteModal":{
+		"title":"Очікування Nfc",
+		"titleSuccess":"Nfc тег записано",
+		"content":"Піднесіть NFC тег ближче для запису"
+	  },
+	  "nfcErrorModal":{
+		"titleInsufficientCapacity":"Місткість тега недостатня"
+	  }
+	},
+	"miningPage":{
+	  "title":"Інформація про майнінг",
+	  "subtitle":"Підтримайте мережу майнінгом і отримайте в нагороду KRB",
+	  "parameterBlock":{
+		"title":"Параметри",
+		"labelDestinationAddress":"Гаманець на який майнити",
+		"labelThreads":"Кількість потоків (більше = вище швидкість)",
+		"start":"Старт",
+		"stop":"Стоп"
+	  },
+	  "statisticsBlocks":{
+		"title":"Статистика",
+		"validShares":"Валідні частки",
+		"hashrate":"Хешрейт",
+		"maxHashrate":"Макс. Хешрейт",
+		"dedicatedHardware":"Майнінг допомагає в децентралізації мережі і дозволяє вам заробити карбованці.",
+		"miningHandledBy":"Майнінг проходить на пулі pool.karbowanec.com"
+	  }
+	},
+	"settingsPage":{
+	  "title":"Налаштування",
+	  "subtitle":"Тут ви можете змінити параметри",
+	  "versionBlock":{
+		"versionNumber":"Номер версії: ",
+		"versionCode":"Код версії: "
+	  },
+	  "settingsBlock":{
+		"speed":{
+		  "label":"Швидкість оновлення гаманця (споживатиме більше ресурсів)",
+		  "fastest":"Найшвидша",
+		  "fast":"Швидка",
+		  "medium":"Середня",
+		  "slow":"Повільна"
+		},
+		"language":{
+		  "label":"Мова"
+		},
+		"readMinerTx":{
+		  "label":"Зчитувати транзакції майнінгу (тільки для соло майнінгу)"
+		}
+	  },
+	  "changePasswordButton":"Змінити пароль мого гаманця",
+	  "deleteWalletButton":"Видалити мій гаманець (локальну копію)",
+	  "walletSettings":{
+		"creationHeight":{
+		  "label":"Висота створення гаманця"
+		},
+		"currentScanningHeight": {
+		  "label": "Поточна висота сканування"
+		},
+		"updateButton":"Оновити"
+	  },
+	  "deleteWalletModal":{
+		"title":"Видалити мій гаманець (локальну копію)",
+		"content":"Ви ДІЙСНО впевнені що хочете видалити свій гаманець?",
+		"confirmText":"Так, я знаю що роблю",
+		"cancelButtonText":"Скасувати"
+	  }
+	},
+	"importBasePage":{
+	  "parametersBlock":{
+		"title":"Параметри",
+		"password":{
+		  "label":"Пароль для захисту вашого гаманця"
+		},
+		"passwordConfirm":{
+		  "label":"Підтвердіть пароль",
+		  "invalid":"Пароль не збігається з першим введенням паролем"
+		},
+		"importHeight":{
+		  "label":"З якої висоти почати імпорт:"
+		}
+	  }
+	},
+	"importFromQrPage":{
+	  "title":"Імпортувати гаманець з QR коду",
+	  "subtitle":"Імпортувати гаманець з офлайнової резервної копії",
+	  "qrCodeBlock":{
+		"title":"QR код",
+		"startScanButton":"Почати сканування",
+		"importButton":"Імпортувати"
+	  },
+	  "qrScanningBlock":{
+		"title":"Покажіть QR код"
+	  }
+	},
+	"exportPage":{
+	  "title":"Зробити резервну копію ваших даних",
+	  "publicAddressBlock":{
+		"title":"Ваша публічна адреса"
+	  },
+	  "pdfBlock":{
+		"title":"Резервна копія PDF",
+		"downloadButton":"Завантажити"
+	  },
+	  "warningBlock":{
+		"title":"Увага",
+		"content":"Якщо ви вирішите зберегти приватні ключі або мнемонічну фразу, гаманець НЕ ЗБЕРЕЖЕ їх в текстовому вигляді для вашої безпеки.<br/>Файл є альтернативним рішенням де ваші ключі зашифровані і містить резервну копію всіх ваших транзакцій для прискорення синхронізації при відновленні."
+	  },
+	  "exportBlock":{
+		"title":"Експортувати сирі дані",
+		"privateKeysButton":"Отримати мої приватні ключі",
+		"mnemonicKeysButton":"Отримати мою мнемонічну фразу",
+		"fileButton":"Експортувати у файл"
+	  },
+	  "walletKeysModal":{
+		"title":"Приватні ключі",
+		"confirmText":"Гаразд",
+		"content":"Будь ласка поставтеся серйозно до збереження цих ключів. <b>Той хто їх має, володіє коштами на гаманці</b>!<br/>Ключ витрачання: {privSpendKey}<br/>Ключ стеження: {privViewKey}"
+	  },
+	  "mnemonicKeyModal":{
+		"title":"Мнемонічна фраза",
+		"confirmText":"Гаразд",
+		"content":"Будь ласка поставтеся серйозно до збереження цієї мнемонічною фрази. <b>Той хто її має, володіє коштами на гаманці</b> ! Фраза:<br/>{mnemonic}"
+	  },
+	  "mnemonicLangSelectionModal":{
+		"title":"Виберіть мову мнемонічної фрази",
+		"confirmText":"Експортувати"
+	  }
+	},
+	"importPage":{
+	  "title":"Створити гаманець",
+	  "subtitle":"З раніше створених ключів, файлу або мнемонічною фрази",
+	  "chooseMethod":"Виберіть метод імпорту:",
+	  "fromKeys":"З ключів",
+	  "fromFile":"З файлу",
+	  "fromMnemonic":"З мнемонічної фрази",
+	  "fromQr":"З QR коду"
+	},
+	"termsOfUsePage":{
+	  "title":"Умови використання",
+	  "subtitle":"Уважно їх прочитайте."
+	},
+	"importFromFilePage":{
+	  "title":"Імпорт гаманця з резервного фала",
+	  "subtitle":"Використати резервний файл для створення гаманця",
+	  "walletBlock":{
+		"title":"Файл гаманця",
+		"label":"Виберіть файл",
+		"importButton":"Імпортувати"
+	  }
+	},
+	"importFromMnemonicPage":{
+	  "title":"Імпорт гаманця з мнемонічної фрази",
+	  "subtitle":"Використати мнемонічну фразу для створення гаманця",
+	  "mnemonicBlock":{
+		"title":"Мнемонічна фраза",
+		"mnemonic":{
+		  "label":"Мнемонічна фраза: 25 слів",
+		  "invalid":"Мнемонічна фраза неправильна",
+		  "language":"Мова"
+		},
+		"importButton":"Імпортувати"
+	  }
+	},
+	"importFromKeysPage":{
+	  "title":"Імпорт гаманця з ключів",
+	  "subtitle":"Використати приватні ключі для створення гаманця",
+	  "parametersBlock":{
+      "viewOnlyWallet": {
+        "label": "Хочете створити гаманець стеження?",
+        "info": "Зверніть увагу, гаманець стеження призначений тільки для перегляду вхідних платежів, так що баланс може відображатися неправильно!"
+      }
+	  },
+	  "keysBlock":{
+		"titleNotViewOnly":"Ключі гаманця",
+		"titleViewOnly":"Гаманець стеження",
+		"privateSpend":{
+		  "label":"Приватний ключ витрачання"
+		},
+		"privateView":{
+		  "label":"Приватний ключ стеження",
+		  "optional":"(не обов'язково)"
+		},
+		"publicKey":{
+		  "label":"Публічний ключ"
+		},
+		"importButton":"Імпортувати"
+	  }
+	}
+  },
+  "number":{
+  },
+  "date":{
+	"short": {
+	  "year": "numeric", "month": "short", "day": "numeric"
+	},
+	"long": {
+	  "year": "numeric", "month": "short", "day": "numeric",
+	  "weekday": "short", "hour": "numeric", "minute": "numeric", "hour12": true
+	}
+  }
+}

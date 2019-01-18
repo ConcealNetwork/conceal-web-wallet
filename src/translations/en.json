@@ -175,9 +175,9 @@
 	  "subtitle":"Help to fund the development and pay the bills",
 	  "webwalletBlock":{
 		"title":"Webwallet",
-		"content":"This Web wallet is developed by Gnock on his free time.<br/>If you want to help the development, help to pay for the servers, and like this app, please consider a donation: <br/><br/>"
+		"content":"If you want to help to pay for the servers, to support new features development, and like this app, please consider a donation: <br/><br/>"
 	  },
-	  "masariFundBlock":{
+	  "devFundBlock":{
 		"title":"Karbo Dev fund",
 		"content":"To help Karbo, you can donate at these addresses"
 	  }
@@ -207,6 +207,7 @@
 	  "sendBlock":{
 		"address":{
 		  "label":"Destination address",
+		  "placeholder":"Write the address where you want to send funds",
 		  "invalid":"The destination address is invalid",
 		  "fundsTo":"The funds will be sent to",
 		  "receiver":"Receiver",

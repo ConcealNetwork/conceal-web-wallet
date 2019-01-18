@@ -55,7 +55,7 @@
 	},
 	"bottom": {
 	  "termsOfUse": "Nutzungsbedingungen",
-	  "privacyPolicy": "Privacy Policy",
+	  "privacyPolicy": "Datenschutzrichtlinie",
 	  "support": "Support",
 	  "donate": "Spenden",
 	  "network": "Netzwerkstatus",
@@ -114,7 +114,7 @@
 		"feesOnTx":"Gebühren der tx",
 		"blockHeight":"Blockhöhe",
 		"paymentId":"Payment ID",
-		"txPrivKey":"Transaction Private Key"
+        "txPrivKey":"Privater Schlüssel für die Transaktion"
 	  }
 	},
 	"changeWalletPasswordPage":{
@@ -177,7 +177,7 @@
 		"title":"Webwallet",
 		"content":"Diese Webwallet ist von Gnock in seiner Freizeit entwickelt.<br/>Bitte denk über eine Spende nach wenn dir die App gefällt und du bei der Bezahlung der Server und der Enwicklung helfen willst.: <br/><br/>"
 	  },
-	  "masariFundBlock":{
+	  "devFundBlock":{
 		"title":"Karbo Entwicklerfonds",
 		"content":"Spende an diese Adresse um Karbo zu helfen"
 	  }
@@ -207,6 +207,7 @@
 	  "sendBlock":{
 		"address":{
 		  "label":"Zieladresse",
+		  "placeholder":"Schreiben Sie die Adresse, wo Sie wollen Mittel schicken",
 		  "invalid":"Die Zieladresse ist ungültig",
 		  "fundsTo":"Das Guthaben wird an folgende Adresse gesendet werden",
 		  "receiver":"Empfänger",

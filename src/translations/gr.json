@@ -55,7 +55,7 @@
 	},
 	"bottom": {
 	  "termsOfUse": "Όροι χρήσης",
-	  "privacyPolicy": "Privacy Policy",
+	  "privacyPolicy": "Πολιτική Απορρήτου",
 	  "support": "Υποστήριξη",
 	  "donate": "Δωρεά",
 	  "network": "Στατιστικά Δικτύου",
@@ -113,7 +113,8 @@
 		"txHash":"Αναγνωριστικό συναλλαγής",
 		"feesOnTx":"Τέλη συναλλαγής",
 		"blockHeight":"Block height",
-		"paymentId":"Payment ID"
+		"paymentId":"Payment ID",
+        "txPrivKey":"Ιδιωτικό κλειδί συναλλαγής"
 	  }
 	},
 	"changeWalletPasswordPage":{
@@ -206,6 +207,7 @@
 	  "sendBlock":{
 		"address":{
 		  "label":"Διεύθυνση παραλήπτη",
+		  "placeholder":"Γράψτε τη διεύθυνση όπου θέλετε να στείλετε χρήματα",
 		  "invalid":"Η διεύθυνση παραλήπτη είναι άκυρη",
 		  "fundsTo":"Τα χρήματά θα σταλούν στην ακόλουθη διεύθυνση",
 		  "receiver":"Παραλήπτης",

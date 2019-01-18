@@ -54,7 +54,7 @@
 	},
 	"bottom": {
 	  "termsOfUse": "Termini di utilizzo",
-	  "privacyPolicy": "Privacy Policy",
+	  "privacyPolicy": "politica sulla riservatezza",
 	  "support": "Supporto",
 	  "donate": "Dona",
 	  "network": "Statistiche del network",
@@ -206,6 +206,7 @@
 	  "sendBlock":{
 		"address":{
 		  "label":"Indirizzo di destinazione",
+		  "placeholder":"Scrivi l'indirizzo nel quale vuoi inviare i fondi",
 		  "invalid":"L'indirizzo di destinazione è errato",
 		  "fundsTo":"I fondi verranno inviati a ",
 		  "receiver":"Destinatario",

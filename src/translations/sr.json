@@ -55,7 +55,7 @@
 	},
 	"bottom": {
 	  "termsOfUse": "Правила коришћења",
-	  "privacyPolicy": "Privacy Policy",
+	  "privacyPolicy": "Правила о приватности",
 	  "support": "Подршка",
 	  "donate": "Донирај",
 	  "network": "Статистика Мреже",
@@ -74,18 +74,18 @@
 	  "notes": {
 		"secure": {
 		  "title": "Сигурност",
-		  "description": "Без сервера, потпуна енкрипција !"
+		  "description": "Без сервера, потпуна енкрипција!"
 		},
 		"fast": {
 		  "title": "Брзина",
-		  "description": "Шаљите било где, било када !"
+		  "description": "Шаљите било где, било када!"
 		},
 		"technology": {
 		  "title": "Јединствена технологија",
 		  "description": "Повезан директно са Карбо Блокчејном!"
 		},
 		"openSource": {
-		  "title": "Код је у потпуности доступан (open-source)",
+		  "title": "Open-source",
 		  "description": "Доступно на ГитХаб"
 		}
 	  }
@@ -114,7 +114,7 @@
 		"feesOnTx":"Fees on the tx",
 		"blockHeight":"Block height",
 		"paymentId":"Payment ID",
-		"txPrivKey":"Transaction Private Key"
+        "txPrivKey":"Transaction Private Key"
 	  }
 	},
 	"changeWalletPasswordPage":{
@@ -178,7 +178,7 @@
 		"title":"Веб новчаник",
 		"content":"Овај сервис је дело контрибутора под именом Gnock.<br/>Уколико желите да помогнете при даљем развоју ове апликације, молимо вас да размислите о донацији.<br/><br/>"
 	  },
-	  "masariFundBlock":{
+	  "devFundBlock":{
 		"title":"Карбо новчаник за донације",
 		"content":"Уколико сте заинтересовани да помогнете, можете то учинити слањем средстава на следећу адресу"
 	  }
@@ -208,6 +208,7 @@
 	  "sendBlock":{
 		"address":{
 		  "label":"Пошаљи на адресу",
+		  "placeholder":"Напишите адресу на коју желите да пошаљете средства",
 		  "invalid":"Адреса неисправна",
 		  "fundsTo":"Средства ће бити послата на",
 		  "receiver":"Прималац",

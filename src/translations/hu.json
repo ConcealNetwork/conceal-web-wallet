@@ -55,7 +55,7 @@
 	},
 	"bottom": {
 	  "termsOfUse": "Felhasználási feltételek",
-	  "privacyPolicy": "Privacy Policy",
+	  "privacyPolicy": "Adatvédelmi irányelvek",
 	  "support": "Ügyfélszolgálat",
 	  "donate": "Adományozás",
 	  "network": "Hálózati statisztika",
@@ -114,7 +114,7 @@
 		"feesOnTx":"Tranzakció díjai",
 		"blockHeight":"Blokk",
 		"paymentId":"Fizetési azonosító",
-		"txPrivKey":"Transaction Private Key"
+        "txPrivKey":"Tranzakció magánkulcs"
 	  }
 	},
 	"changeWalletPasswordPage":{
@@ -177,7 +177,7 @@
 		"title":"Webtárca",
 		"content":"A webtárcát Gnock fejleszti szabadidejében.<br/>Ha szeretnéd segíteni a fejlesztést, a szerverek fizetését és tetszik az applikáció, úgy vedd fontolóra az adományozást:<br/><br/>"
 	  },
-	  "masariFundBlock":{
+	  "devFundBlock":{
 		"title":"Karbo fejlesztési alap",
 		"content":"Ha szeretnél segíteni a Karbonak, az alábbi címekre adományozhatsz"
 	  }
@@ -207,6 +207,7 @@
 	  "sendBlock":{
 		"address":{
 		  "label":"Kedvezményezett címe",
+		  "placeholder":"Írja be azt a címet, ahová pénzt szeretne küldeni",
 		  "invalid":"A kedvezményezett címe érvénytelen",
 		  "fundsTo":"A pénz ide kerül küldésre:",
 		  "receiver":"Fogadás",

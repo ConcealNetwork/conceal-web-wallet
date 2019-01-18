@@ -55,7 +55,7 @@
 	},
 	"bottom": {
 	  "termsOfUse": "Conditions générales d'utilisation",
-	  "privacyPolicy": "Privacy Policy",
+	  "privacyPolicy": "Politique de confidentialité",
 	  "support": "Support",
 	  "donate": "Contribuer",
 	  "network": "Stats du réseau",
@@ -114,7 +114,7 @@
 		"feesOnTx":"Frais sur la tx",
 		"blockHeight":"Hauteur sur la blockchain",
 		"paymentId":"ID du paiement",
-		"txPrivKey":"Clé privée de la transaction"
+        "txPrivKey":"Clé privée de transaction"
 	  }
 	},
 	"changeWalletPasswordPage":{
@@ -177,7 +177,7 @@
 		"title":"Portefeuille en ligne",
 		"content":"Ce portefeuille est développé par Gnock sur son temps libre.<br/>Si vous voulez aider au développement, payer les serveur et que vous aimez ce service, considérez une petite donation: <br/><br/>"
 	  },
-	  "masariFundBlock":{
+	  "devFundBlock":{
 		"title":"Fond de développement de Karbo",
 		"content":"Pour aidez Karbo globalement, vous pouvez donner à cette adresse"
 	  }
@@ -207,6 +207,7 @@
 	  "sendBlock":{
 		"address":{
 		  "label":"Adresse de destination",
+		  "placeholder":"Écrivez l'adresse où vous voulez envoyer des fonds",
 		  "invalid":"L'adresse de destination est invalide",
 		  "fundsTo":"Les fonds seront envoyé à ",
 		  "receiver":"Destinataire",
