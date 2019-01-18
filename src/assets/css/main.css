@@ -216,15 +216,12 @@ body.menuHidden #page,body.menuDisabled #page{
 	padding:30px 0;
 	color: #474E5D;
 	font-size: 14px;
-	padding-left:10px;
-	position: relative;
-	left:280px;right:0;
-	margin-left:280px;
+	padding-left:280px;
 	text-align: center;
 	width: 100%;
 }
 body.menuDisabled #copyright{
-	left:0;
+	padding-left: 0;
 }
 body.transparent #copyright{
 	display: none;
@@ -232,6 +229,7 @@ body.transparent #copyright{
 /* computer */
 @media screen and (max-width: 600px) {
 	body.menuHidden #copyright{
+		padding-left: 0;
 		margin-left:0;
 		left: 0;
 	}
