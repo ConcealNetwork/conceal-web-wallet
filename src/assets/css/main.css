@@ -166,7 +166,7 @@ body.menuHidden #menu {
 	max-height: 33px;
 	display: inline-block;
 	vertical-align: middle;
-	margin: -5px -1px 0 -2px;
+	margin: -5px -2px 0 -2px;
 }
 
 #menu #menu_logo {
