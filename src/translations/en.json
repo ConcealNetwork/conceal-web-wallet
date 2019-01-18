@@ -106,7 +106,7 @@
 		"emptyWallet": "You currently have no funds in this wallet.",
 		"waitSync": "Please wait until the wallet is updated",
 		"beReallyPatient": "The initial setup can take some time...",
-		"getMSRAddress": "Receive KRB"
+		"getCoinAddress": "Receive KRB"
 	  },
 	  "txDetails":{
 		"title":"Transaction details",

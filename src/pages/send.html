@@ -18,7 +18,7 @@
 					<div class="field action" >
 						<label>{{ $t("sendPage.sendBlock.address.label") }}</label>
 						<div class="subfield" >
-							<input type="text" v-model="destinationAddressUser" placeholder="Write the address where you want to send funds" :readonly="lockedForm" :class="{ twoActions: nfcAvailable}"/>
+							<input type="text" v-model="destinationAddressUser" v-bind:placeholder="$t('sendPage.sendBlock.address.placeholder')" :readonly="lockedForm" :class="{ twoActions: nfcAvailable}"/>
 							<span class="action" @click="startScan()"><i class="scanButton fa fa-camera" aria-hidden="true"></i></span>
 							<span class="action" @click="startNfcScan()" v-if="nfcAvailable"><i class="scanButton fa fa-rss" aria-hidden="true"></i></span>
 						</div>

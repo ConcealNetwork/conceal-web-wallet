@@ -106,7 +106,7 @@
 		"emptyWallet": "Jelenleg nincsen egyenleged ebben a tárcában.",
 		"waitSync": "Kérlek, várj, míg a tárca naprakész lesz",
 		"beReallyPatient": "A kezdeti beállítás némi időbe telhet...",
-		"getMSRAddress": "KRB fogadása"
+		"getCoinAddress": "KRB fogadása"
 	  },
 	  "txDetails":{
 		"title":"Tranzakciórészletek",

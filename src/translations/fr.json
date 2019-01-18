@@ -106,7 +106,7 @@
 		"emptyWallet": "Vous n'avez aucun fond sur ce portefeuille",
 		"waitSync": "Veuillez attendre la fin de la synchronisation",
 		"beReallyPatient": "La première synchronisation peut prendre quelques minutes...",
-		"getMSRAddress": "Obtenir mon adresse pour recevoir des KRB"
+		"getCoinAddress": "Obtenir mon adresse pour recevoir des KRB"
 	  },
 	  "txDetails":{
 		"title":"Détails de la transaction",

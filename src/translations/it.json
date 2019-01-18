@@ -105,7 +105,7 @@
 		"emptyWallet": "Al momento non disponi di fondi su questo portafoglio",
 		"waitSync": "Si prega di attendere la fine della sincronizzazione",
 		"beReallyPatient": "La prima sincronizzazione potrebbe richiedere alcuni minuti ...",
-		"getMSRAddress": "Ricevi MSR"
+		"getCoinAddress": "Ricevi MSR"
 	  },
 	  "txDetails":{
 		"title":"Dettagli transazione",

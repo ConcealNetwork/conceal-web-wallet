@@ -24,7 +24,7 @@
 				<div class="content" >
 					<span class="walletAmount" >{{ $n(walletAmount / currencyDivider) }}</span> KRB
 					<tempate class="amount unlocked" v-if="unlockedWalletAmount !== walletAmount" >
-						<br/><span class="walletAmount" >{{ $t("accountPage.balanceBlock.unlocked") }}: {{ $n(unlockedWalletAmount / currencyDivider) }}</span> KRB
+						<br/>{{ $t("accountPage.balanceBlock.unlocked") }}: <span class="walletAmount" >{{ $n(unlockedWalletAmount / currencyDivider) }}</span> KRB
 					</tempate>
 				</div>
 			</div>
@@ -64,7 +64,7 @@
 										</template>
 									</span><br>
 									<div class="actions tc" >
-										<a href="#receive" class="btn">{{ $t("accountPage.historyBlock.getMSRAddress") }}</a>
+										<a href="#receive" class="btn">{{ $t("accountPage.historyBlock.getCoinAddress") }}</a>
 									</div>
 								</td>
 							</tr>
