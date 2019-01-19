@@ -13,7 +13,8 @@ Encryption is done with a certified library, [Tweetnacl.Js.](https://github.com/
 Developers:
 - gnock (main)
 - cryptochangements
-- davehlong (PHP Api for Bytecoin based coins)
+- davehlong (initial adaptation of PHP Api for Bytecoin based coins)
+- aiwe (adapted for Bytecoin/CryptoNote from Monero codebase)
 
 Translations:
 - English: too many people
@@ -50,8 +51,4 @@ The code is readable, it should be enough for you to use it.
 - Export private keys, mnemonic phrase, or json file (which include all the history)
 - View only wallet
 - Basic network stats
-
-# Roadmap
-
-See Github [issues.](https://github.com/masari-project/masari-webwallet/issues)
 
