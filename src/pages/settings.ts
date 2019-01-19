@@ -81,8 +81,8 @@ class SendView extends DestructableView{
 			title: i18n.t('settingsPage.deleteWalletModal.title'),
 			html: i18n.t('settingsPage.deleteWalletModal.content'),
 			showCancelButton: true,
-			confirmButtonText: i18n.t('global.deleteWalletModal.confirmText'),
-			cancelButtonText: i18n.t('global.deleteWalletModal.cancelText'),
+			confirmButtonText: i18n.t('settingsPage.deleteWalletModal.confirmText'),
+			cancelButtonText: i18n.t('settingsPage.deleteWalletModal.cancelText'),
 		}).then((result:any) => {
 			if (result.value) {
 				AppState.disconnect();
