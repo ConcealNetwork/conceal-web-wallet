@@ -352,7 +352,7 @@
 		"title":"Elimina il mio wallet (copia locale)",
 		"content":"Sei VERAMENTE sicuro di voler canecellare il tuo portafoglio?",
 		"confirmText":"Si, sono sicuro",
-		"cancelButtonText":"Annulla"
+		"cancelText":"Annulla"
 	  }
 	},
 	"importBasePage":{

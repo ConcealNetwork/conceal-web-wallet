@@ -353,7 +353,7 @@
 		"title":"Supprimer mon portefeuille (copie locale)",
 		"content":"Etes vous VRAIMENT sûr de vouloir supprimer votre portefeuille ?",
 		"confirmText":"Oui je suis sûr",
-		"cancelButtonText":"Annuler"
+		"cancelText":"Annuler"
 	  }
 	},
 	"importBasePage":{

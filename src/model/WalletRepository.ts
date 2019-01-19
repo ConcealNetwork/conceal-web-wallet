@@ -146,7 +146,7 @@ export class WalletRepository{
 		let doc = new jsPDF('landscape');
 
 		//creating background
-		doc.setFillColor(35,31,39);
+		doc.setFillColor(48,70,108);
 		doc.rect(0,0,297,210, 'F');
 
 		//white blocks
@@ -154,12 +154,12 @@ export class WalletRepository{
 		doc.rect(108,10,80,80, 'F');
 		doc.rect(10,115,80,80, 'F');
 
-		//green blocks
-		doc.setFillColor(76, 184, 96);
+		//blue blocks
+		doc.setFillColor(0, 160, 227);
 		doc.rect(108,115,80,80, 'F');
 
-		//green background for texts
-		doc.setFillColor(76, 184, 96);
+		//blue background for texts
+		doc.setFillColor(0, 160, 227);
 
 		doc.rect(108,15,80,20, 'F');
 		doc.rect(10,120,80,20, 'F');
@@ -184,11 +184,11 @@ export class WalletRepository{
 		doc.setTextColor(255, 255, 255);
 		doc.setFontSize(10);
 		doc.text(110, 120, "To deposit funds to this paper wallet, send ");
-		doc.text(110, 125, "Masari to the public address");
+		doc.text(110, 125, "Karbo to the public address");
 
 		doc.text(110, 135, "DO NOT REVEAL THE PRIVATE KEY");
 
-		//adding masari logo
+		//adding karbo logo
 		let c : HTMLCanvasElement|null = <HTMLCanvasElement>document.getElementById('canvasExport');
 		if(c !== null) {
 			let ctx = c.getContext("2d");

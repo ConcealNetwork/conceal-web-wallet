@@ -353,7 +353,7 @@
 		"title":"Tárca törlése (helyi másolat)",
 		"content":"Biztosan törölni szeretnéd a tárcádat?",
 		"confirmText":"Igen, biztosan",
-		"cancelButtonText":"Mégsem"
+		"cancelText":"Mégsem"
 	  }
 	},
 	"importBasePage":{

@@ -353,7 +353,7 @@
 		"title":"Lösche meine Wallet (lokale Kopie)",
 		"content":"Bist du SICHER das du deine Wallet löschen möchtest?",
 		"confirmText":"Ja, ich bin sicher",
-		"cancelButtonText":"Abbrechen"
+		"cancelText":"Abbrechen"
 	  }
 	},
 	"importBasePage":{

@@ -353,7 +353,7 @@
 		"title":"Delete My Wallet (local copy)",
 		"content":"Are you sure you REALLY want to delete your wallet ?",
 		"confirmText":"Yes I'm sure",
-		"cancelButtonText":"Cancel"
+		"cancelText":"Cancel"
 	  }
 	},
 	"importBasePage":{
