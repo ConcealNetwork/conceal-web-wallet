@@ -24,6 +24,7 @@ Translations:
 - Hungarian: Gelesztaa
 - Greek: GeraltOfTrivia
 - Russian, Ukrainian: Aiwe
+- Persian: M4hdi1995
 
 # Contributing
 - You can help Masari by translation the wallet in your native language, it's really easy!  
