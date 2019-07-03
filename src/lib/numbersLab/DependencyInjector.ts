@@ -30,7 +30,7 @@ export class DependencyInjector{
 
     returnBest(name:string, subname:string):any{
         let found : any = this.searchFromRequireJs(name);
-        console.log(name, subname,found);
+        //console.log(name, subname,found);
         if(found != null){
             this.register(name, new found(), subname);
         }
@@ -42,22 +42,22 @@ export class DependencyInjector{
         let loaded = (<any>window).require.s.contexts._.defined;
         let dependency = null;
 
-        console.log(loaded);
+        //console.log(loaded);
 
         for(let containerName in loaded){
             let container = loaded[containerName];
-            // console.log('type', typeof container, container, container[name]);
+            //console.log('type', typeof container, container, container[name]);
             if(typeof container[name] != 'undefined') {
                 if(!DependencyInjector.debug)
                     return container[name];
                 else{
                     if(dependency != null){
-                        console.log('%c/!\\ Dependency injector : Multiple Classes Have the same name !! Conflict when resolving dependencies', 'background: white;color: red');
+                        //console.log('%c/!\\ Dependency injector : Multiple Classes Have the same name !! Conflict when resolving dependencies', 'background: white;color: red');
                     }
                 }
                 dependency = container[name];
             }else{
-				// console.log('default->', typeof container['default']);
+				//console.log('default->', typeof container['default']);
 				if(
 					typeof container['default'] === 'function' ||
 					typeof container['default'] === 'object'
@@ -67,7 +67,7 @@ export class DependencyInjector{
 							return container['default'];
 						else{
 							if(dependency != null){
-								console.log('%c/!\\ Dependency injector : Multiple Classes Have the same name !! Conflict when resolving dependencies', 'background: white;color: red');
+								//console.log('%c/!\\ Dependency injector : Multiple Classes Have the same name !! Conflict when resolving dependencies', 'background: white;color: red');
 							}
 						}
 						dependency = container['default'];
@@ -87,7 +87,7 @@ export function DependencyInjectorInstance() : DependencyInjector{
 	){
 		let Inj : DependencyInjector = new DependencyInjector();
 		Context.getGlobalContext()['di'] = Inj;
-		console.log('register');
+		//console.log('register');
 	}
 	return Context.getGlobalContext()['di'];
 }

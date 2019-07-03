@@ -87,7 +87,7 @@ export class Router {
 				let content = data[0];
 				self.injectNewPage(content, jsContentPath);
 			}).catch(function (error) {
-				console.log(error);
+				//console.log(error);
 				$('#pageLoading').hide();
 				// self.changePage('errors/404', true);
 			});
@@ -108,7 +108,7 @@ export class Router {
 				$('#page').show();
 				$('#pageLoading').hide();
 			}, function (err) {
-				console.log(err);
+				//console.log(err);
 				$('#page').show();
 				$('#pageLoading').hide();
 			});
@@ -139,10 +139,10 @@ export class Router {
 	 * @param moduleName
 	 */
 	unloadRequirejs(moduleName: string) {
-		// console.log('unload '+moduleName);
+		//console.log('unload '+moduleName);
 		let context = Context.getGlobalContext()['requirejs'].s.contexts['_'];
 
-		console.log('unload', moduleName, context.defined[moduleName], context.defined);
+		//console.log('unload', moduleName, context.defined[moduleName], context.defined);
 		if (typeof context.defined[moduleName] !== 'undefined') {
 			delete context.defined[moduleName];
 		}

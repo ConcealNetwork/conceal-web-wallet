@@ -283,21 +283,21 @@ export class Wallet extends Observable{
 			}
 		}
 
-		// console.log(this.txsMem);
+		//console.log(this.txsMem);
 		for(let transaction of this.txsMem){
-			// console.log(transaction.paymentId);
+			//console.log(transaction.paymentId);
 			// for(let out of transaction.outs){
 			// 	amount += out.amount;
 			// }
 			if(transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1)
 				for(let nout of transaction.outs){
 					amount += nout.amount;
-					// console.log('+'+nout.amount);
+					//console.log('+'+nout.amount);
 				}
 
 			for(let nin of transaction.ins){
 				amount -= nin.amount;
-				// console.log('-'+nin.amount);
+				//console.log('-'+nin.amount);
 			}
 		}
 
@@ -356,7 +356,7 @@ export class Wallet extends Observable{
 
 					if(vin.amount < 0) {
 						if (this.keyImages.indexOf(vin.keyImage) != -1) {
-							// console.log('found in', vin);
+							//console.log('found in', vin);
 							let walletOuts = this.getAllOuts();
 							for (let ut of walletOuts) {
 								if (ut.keyImage == vin.keyImage) {

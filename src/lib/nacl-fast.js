@@ -2446,14 +2446,14 @@
 		var crypto = typeof self !== 'undefined' ? (self.crypto || self.msCrypto) : null;
 
 		if(typeof crypto === 'undefined' || crypto === null){
-			console.log('trying global');
+			//console.log('trying global');
 			if(typeof global !== 'undefined'){
-				console.log('trying global', global.crypto, global.msCrypto);
+				//console.log('trying global', global.crypto, global.msCrypto);
 				if(typeof global.crypto !== 'undefined') {
-					console.log('trying global crypto', global.crypto.getRandomValues);
+					//console.log('trying global crypto', global.crypto.getRandomValues);
 				}
-				console.log(global.crypto.getRandomValues);
-				console.log(JSON.stringify(global));
+				//console.log(global.crypto.getRandomValues);
+				//console.log(JSON.stringify(global));
 			}
 			crypto = typeof global !== 'undefined' ? (global.crypto || global.msCrypto) : null;
 		}

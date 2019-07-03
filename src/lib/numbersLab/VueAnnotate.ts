@@ -117,7 +117,7 @@ export function VueWatched(listenedPropertyOrDeep:string|null|boolean='', deep:b
 				}
 			}
 		}
-		// console.log(listenedProperty);
+		//console.log(listenedProperty);
 		target['metadata'].watch[listenedProperty] = {funcName:propertyKey, deep:deep};
 	}
 }

@@ -193,7 +193,7 @@ class ImportView extends DestructableView{
 	stopScan(){
 		if(typeof window.QRScanner !== 'undefined') {
 			window.QRScanner.cancelScan(function(status:any){
-				console.log(status);
+				//console.log(status);
 			});
 			window.QRScanner.hide();
 			$('body').removeClass('transparent');

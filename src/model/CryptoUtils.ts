@@ -41,7 +41,7 @@ export class CryptoUtils{
 		let res = new Uint8Array(hex.length / 2);
 		for (let i = 0; i < hex.length / 2; ++i) {
 			res[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
-			// console.log(hex.slice(i * 2, i * 2 + 2), res[i]);
+			//console.log(hex.slice(i * 2, i * 2 + 2), res[i]);
 		}
 		return res;
 	}
@@ -84,12 +84,12 @@ export class CryptoUtils{
 		return vali;*/
 		// return JSBigInt.parse(test,16);
 		// let bytes = Crypto.hextobin(test);
-		// console.log('bytes',bytes, test,swapEndianC(test));
-		// console.log(JSBigInt.parse(swapEndianC(test),16).valueOf());
-		// console.log(JSBigInt.parse(test.substr(0,12),16).valueOf());
+		//console.log('bytes',bytes, test,swapEndianC(test));
+		//console.log(JSBigInt.parse(swapEndianC(test),16).valueOf());
+		//console.log(JSBigInt.parse(test.substr(0,12),16).valueOf());
 		let vali = 0;
 		for (let j = 7; j >= 0; j--) {
-			// console.log(vali,vali*256,bytes[j]);
+			//console.log(vali,vali*256,bytes[j]);
 			vali = (vali * 256 + parseInt(test.slice(j*2, j*2+2), 16));
 		}
 		return vali;
@@ -99,19 +99,19 @@ export class CryptoUtils{
 		// CHECK_AND_ASSERT_MES(rv.type == RCTTypeSimple || rv.type == RCTTypeSimpleBulletproof, false, "decodeRct called on non simple rctSig");
 		// CHECK_AND_ASSERT_THROW_MES(i < rv.ecdhInfo.size(), "Bad index");
 		// CHECK_AND_ASSERT_THROW_MES(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
-// console.log(i < rv.ecdhInfo.length ? undefined : 'Bad index');
-// console.log(rv.outPk.length == rv.ecdhInfo.length ? undefined : 'Mismatched sizes of rv.outPk and rv.ecdhInfo');
+//console.log(i < rv.ecdhInfo.length ? undefined : 'Bad index');
+//console.log(rv.outPk.length == rv.ecdhInfo.length ? undefined : 'Mismatched sizes of rv.outPk and rv.ecdhInfo');
 
 		//mask amount and mask
-		// console.log('decode',rv.ecdhInfo[i], sk, h2d(rv.ecdhInfo[i].amount));
+		//console.log('decode',rv.ecdhInfo[i], sk, h2d(rv.ecdhInfo[i].amount));
 		let ecdh_info = cnUtil.decode_rct_ecdh(rv.ecdhInfo[i], sk);
-		// console.log('ecdh_info',ecdh_info);
+		//console.log('ecdh_info',ecdh_info);
 		// mask = ecdh_info.mask;
 		let amount = ecdh_info.amount;
 		let C = rv.outPk[i].mask;
 
-		// console.log('amount', amount);
-		// console.log('C', C);
+		//console.log('amount', amount);
+		//console.log('C', C);
 		// DP("C");
 		// DP(C);
 		// key Ctmp;
@@ -144,11 +144,11 @@ export class CryptoUtils{
 
 		try
 		{
-			// console.log(rv.type,'RCTTypeSimple='+RCTTypeSimple,'RCTTypeFull='+RCTTypeFull);
+			//console.log(rv.type,'RCTTypeSimple='+RCTTypeSimple,'RCTTypeFull='+RCTTypeFull);
 			switch (rv.type)
 			{
 				case CryptoUtils.RCTTypeSimple:
-					// console.log('RCTTypeSimple');
+					//console.log('RCTTypeSimple');
 					let realAmount = amount;
 					// for(let i = 0; i < 1000; ++i)
 					amount = CryptoUtils.decodeRctSimple(rv,
@@ -159,21 +159,21 @@ export class CryptoUtils{
 
 					break;
 				case CryptoUtils.RCTTypeFull:
-					// console.log('RCTTypeSimple');
+					//console.log('RCTTypeSimple');
 					amount = CryptoUtils.decodeRctSimple(rv,
 						scalar1,
 						i,
 						mask);
 					break;
 				// case RCTTypeFull:
-				// 	console.log('RCTTypeFull');
+				// 	//console.log('RCTTypeFull');
 				// 	amount = decodeRct(rv,
 				// 	rct::sk2rct(scalar1),
 				// i,
 				// mask);
 				// break;
 				default:
-					console.log('Unsupported rc type', rv.type);
+					//console.log('Unsupported rc type', rv.type);
 					// cerr << "Unsupported rct type: " << rv.type << endl;
 					return false;
 			}
@@ -181,7 +181,7 @@ export class CryptoUtils{
 		catch (e)
 		{
 			console.error(e);
-			console.log("Failed to decode input " +i);
+			//console.log("Failed to decode input " +i);
 			return false;
 		}
 
@@ -205,7 +205,7 @@ export class CryptoUtils{
 		if(recv_derivation === null)
 			// recv_derivation = cnUtil.generate_key_derivation(tx_public_key, ack.view_secret_key);
 			recv_derivation = CnUtilNative.generate_key_derivation(tx_public_key, ack.view_secret_key);
-		// console.log('recv_derivation', recv_derivation);
+		//console.log('recv_derivation', recv_derivation);
 
 		// CHECK_AND_ASSERT_MES(r, false, "key image helper: failed to generate_key_derivation(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
 		//
@@ -214,21 +214,21 @@ export class CryptoUtils{
 
 		// let in_ephemeral_pub = cnUtil.derive_public_key(recv_derivation, real_output_index, ack.public_spend_key);
 		let in_ephemeral_pub = CnUtilNative.derive_public_key(recv_derivation, real_output_index, ack.public_spend_key);
-		// console.log('in_ephemeral_pub',in_ephemeral_pub);
+		//console.log('in_ephemeral_pub',in_ephemeral_pub);
 
 
 		// CHECK_AND_ASSERT_MES(r, false, "key image helper: failed to derive_public_key(" << recv_derivation << ", " << real_output_index <<  ", " << ack.m_account_address.m_spend_public_key << ")");
 		//
 		// let in_ephemeral_sec = cnUtil.derive_secret_key(recv_derivation, real_output_index, ack.spend_secret_key);
 		let in_ephemeral_sec = cnUtil.derive_secret_key(recv_derivation, real_output_index, ack.spend_secret_key);
-		// console.log('in_ephemeral_sec',in_ephemeral_sec);
+		//console.log('in_ephemeral_sec',in_ephemeral_sec);
 
 
 
 		let ki = cnUtil.generate_key_image_2(in_ephemeral_pub, in_ephemeral_sec);
 
 		// let end = Date.now();
-		// console.log(end-start);
+		//console.log(end-start);
 
 		return {
 			ephemeral_pub:in_ephemeral_pub,

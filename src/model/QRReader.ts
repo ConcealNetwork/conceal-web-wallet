@@ -87,9 +87,9 @@ class QRReader{
 		// if (!window.iOS) {
 		navigator.mediaDevices.enumerateDevices()
 			.then(function (devices) {
-				console.log(devices);
+				//console.log(devices);
 				let supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
-				console.log(supportedConstraints);
+				//console.log(supportedConstraints);
 				let device = devices.filter(function(device) {
 					let deviceLabel = device.label.split(',')[1];
 					if (device.kind == "videoinput") {
@@ -141,7 +141,7 @@ class QRReader{
 					confirmButtonText:i18n.t('global.permissionRequiredForCameraModal.confirmText'),
 				});
 			}
-			console.log('unable access camera');
+			//console.log('unable access camera');
 		}
 	}
 
@@ -164,7 +164,7 @@ class QRReader{
 			if(self.ctx === null || self.webcam === null || self.canvas === null || self.decoder === null)
 				return;
 
-//			console.log('new frame');
+//			//console.log('new frame');
 			if (!self.active) return;
 			try {
 				self.ctx.drawImage(self.webcam, 0, 0, self.canvas.width, self.canvas.height);

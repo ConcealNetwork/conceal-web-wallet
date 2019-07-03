@@ -158,7 +158,7 @@ class SendView extends DestructableView {
 	}
 
 	handleScanResult(result : string){
-		console.log('Scan result:', result);
+		//console.log('Scan result:', result);
 		let self = this;
 		let parsed = false;
 		try {
@@ -194,7 +194,7 @@ class SendView extends DestructableView {
 	stopScan() {
 		if(typeof window.QRScanner !== 'undefined') {
 			window.QRScanner.cancelScan(function (status:any){
-				console.log(status);
+				//console.log(status);
 			});
 			window.QRScanner.hide();
 			$('body').removeClass('transparent');
@@ -335,7 +335,7 @@ class SendView extends DestructableView {
 					});
 					swal.close();
 				}).catch(function (error: any) {
-					console.log(error);
+					//console.log(error);
 					if (error && error !== '') {
 						if (typeof error === 'string')
 							swal({

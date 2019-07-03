@@ -38,7 +38,7 @@ export class WalletWatchdog {
         this.workerProcessing = new Worker('./workers/TransferProcessingEntrypoint.js');
         this.workerProcessing.onmessage = function (data: MessageEvent) {
             let message: string | any = data.data;
-            // console.log(message);
+            //console.log(message);
             if (message === 'ready') {
                 self.signalWalletUpdate();
             } else if (message === 'readyWallet') {
@@ -163,7 +163,7 @@ export class WalletWatchdog {
         //we destroy the worker in charge of decoding the transactions every 250 transactions to ensure the memory is not corrupted
         //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
         if (this.workerCountProcessed >= 250) {
-            console.log('Recreate worker..');
+            //console.log('Recreate worker..');
             this.terminateWorker();
             this.initWorker();
             return;
@@ -228,16 +228,16 @@ export class WalletWatchdog {
             return;
         }
 
-        // console.log('checking');
+        //console.log('checking');
         this.explorer.getHeight().then(function (height) {
-            // console.log(self.lastBlockLoading,height);
+            //console.log(self.lastBlockLoading,height);
             if (height > self.lastMaximumHeight) self.lastMaximumHeight = height;
 
             if (self.lastBlockLoading !== height) {
                 let previousStartBlock = self.lastBlockLoading;
                 let startBlock = Math.floor(self.lastBlockLoading / 100) * 100;
-                // console.log('=>',self.lastBlockLoading, endBlock, height, startBlock, self.lastBlockLoading);
-                console.log('load block from ' + startBlock);
+                //console.log('=>',self.lastBlockLoading, endBlock, height, startBlock, self.lastBlockLoading);
+                //console.log('load block from ' + startBlock);
                 self.explorer.getTransactionsForBlocks(previousStartBlock).then(function (transactions: RawDaemonTransaction[]) {
                     //to ensure no pile explosion
                     if (transactions.length > 0) {
@@ -341,16 +341,16 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                 method: 'GET',
             }).done(function (transactions: any) {
                 if (transactions !== null) {
-                    console.log("tx pool:");
-                    console.log(transactions);
+                    //console.log("tx pool:");
+                    //console.log(transactions);
                     resolve(transactions);
                 }
             }).fail(function (data: any) {
-                console.log('REJECT');
+                //console.log('REJECT');
                 try {
-                    console.log(JSON.parse(data.responseText));
+                    //console.log(JSON.parse(data.responseText));
                 } catch (e) {
-                    console.log(e);
+                    //console.log(e);
                 }
                 reject(data);
             });
@@ -416,16 +416,16 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                     }
                 }
 
-                console.log(txCandidates);
+                //console.log(txCandidates);
 
                 let selectedOuts = [];
                 for (let txsOutsHeight in txCandidates) {
                     let outIndexSelect = MathUtil.getRandomInt(0, txCandidates[txsOutsHeight].length - 1);
-                    console.log('select ' + outIndexSelect + ' for ' + txsOutsHeight + ' with length of ' + txCandidates[txsOutsHeight].length);
+                    //console.log('select ' + outIndexSelect + ' for ' + txsOutsHeight + ' with length of ' + txCandidates[txsOutsHeight].length);
                     selectedOuts.push(txCandidates[txsOutsHeight][outIndexSelect]);
                 }
 
-                console.log(selectedOuts);
+                //console.log(selectedOuts);
 
                 return selectedOuts;
             });

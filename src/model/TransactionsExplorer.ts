@@ -62,7 +62,7 @@ export class TransactionsExplorer {
 		try {
 			derivation = CnUtilNative.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
 		} catch (e) {
-			console.log('UNABLE TO CREATE DERIVATION', e);
+			//console.log('UNABLE TO CREATE DERIVATION', e);
 			return null;
 		}
 
@@ -144,7 +144,7 @@ export class TransactionsExplorer {
 			for (let iIn = 0; iIn < rawTransaction.inputs.length; ++iIn) {
                 let input = rawTransaction.inputs[iIn];
                 if (keyImages.indexOf(input.data.input.k_image) != -1) {
-					// console.log('found in', vin);
+					//console.log('found in', vin);
 					let walletOuts = wallet.getAllOuts();
 					for (let ut of walletOuts) {
                         if (ut.keyImage == input.data.input.k_image) {
@@ -155,7 +155,7 @@ export class TransactionsExplorer {
 							transactionIn.amount = ut.amount;
                             transactionIn.keyImage = ut.keyImage;
                             ins.push(transactionIn);
-							// console.log(ut);
+							//console.log(ut);
 							break;
 						}
 					}
@@ -212,7 +212,7 @@ export class TransactionsExplorer {
 	static formatWalletOutsForTx(wallet: Wallet, blockchainHeight: number): RawOutForTx[] {
 		let unspentOuts = [];
 
-		console.log(wallet.getAll());
+		//console.log(wallet.getAll());
 		for (let tr of wallet.getAll()) {
 			//todo improve to take into account miner tx
 			//only add outs unlocked
@@ -222,7 +222,7 @@ export class TransactionsExplorer {
 
 			for (let out of tr.outs) {
 				
-				console.log("out.globalIndex: " + out.globalIndex);
+				//console.log("out.globalIndex: " + out.globalIndex);
 				
 				unspentOuts.push({
 					keyImage: out.keyImage,
@@ -235,9 +235,9 @@ export class TransactionsExplorer {
 			}
 		}
 
-		console.log('outs count before spend:', unspentOuts.length, unspentOuts);
+		//console.log('outs count before spend:', unspentOuts.length, unspentOuts);
 		for (let tr of wallet.getAll().concat(wallet.txsMem)) {
-			console.log(tr.ins);
+			//console.log(tr.ins);
 			for (let i of tr.ins) {
 				for (let iOut = 0; iOut < unspentOuts.length; ++iOut) {
 					let out = unspentOuts[iOut];
@@ -267,7 +267,7 @@ export class TransactionsExplorer {
 		return new Promise<{ raw: { hash: string, prvKey: string, raw: string }, signed: any }>(function (resolve, reject) {
 			let signed;
 			try {
-				console.log('Destinations: ');
+				//console.log('Destinations: ');
 				//need to get viewkey for encrypting here, because of splitting and sorting
 				let realDestViewKey = undefined;
 				if (pid_encrypt) {
@@ -291,7 +291,7 @@ export class TransactionsExplorer {
 			} catch (e) {
 				reject("Failed to create transaction: " + e);
 			}
-			console.log("signed tx: ", signed);
+			//console.log("signed tx: ", signed);
 			//let raw_tx_and_hash = cnUtil.serialize_rct_tx_with_hash(signed);
 			let raw_tx_and_hash = cnUtil.serialize_tx_with_hash(signed);
 			resolve({raw: raw_tx_and_hash, signed: signed});
@@ -369,7 +369,7 @@ export class TransactionsExplorer {
 
 			let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(wallet, blockchainHeight);
 
-			console.log('outs available:', unspentOuts.length, unspentOuts);
+			//console.log('outs available:', unspentOuts.length, unspentOuts);
 
 			let usingOuts: RawOutForTx[] = [];
 			let usingOuts_amount = new JSBigInt(0);
@@ -389,7 +389,7 @@ export class TransactionsExplorer {
 				let out = pop_random_value(unusedOuts);
 				usingOuts.push(out);
 				usingOuts_amount = usingOuts_amount.add(out.amount);
-				console.log("Using output: " + out.amount + " - " + JSON.stringify(out));
+				//console.log("Using output: " + out.amount + " - " + JSON.stringify(out));
 			}
 
 			const calculateFeeWithBytes = function (fee_per_kb: number, bytes: number, fee_multiplier: number) {
@@ -397,7 +397,7 @@ export class TransactionsExplorer {
 				return kB * fee_per_kb * fee_multiplier;
 			};
 
-			console.log("Selected outs:", usingOuts);
+			//console.log("Selected outs:", usingOuts);
 			//if (usingOuts.length > 1) {
             //    let newNeededFee = 10000000; //JSBigInt(Math.ceil(cnUtil.estimateRctSize(usingOuts.length, mixin, 2) / 1024)).multiply(feePerKB).multiply(fee_multiplayer);
 			//	totalAmount = totalAmountWithoutFee.add(newNeededFee);
@@ -420,9 +420,10 @@ export class TransactionsExplorer {
 
 			// neededFee = neededFee / 3 * 2;
 
-			console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)));
+			//console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)));
 			confirmCallback(totalAmountWithoutFee, neededFee).then(function () {
 				if (usingOuts_amount.compare(totalAmount) < 0) {
+					/*
 					console.log("Not enough spendable outputs / balance too low (have "
 						+ cnUtil.formatMoneyFull(usingOuts_amount) + " but need "
 						+ cnUtil.formatMoneyFull(totalAmount)
@@ -450,7 +451,7 @@ export class TransactionsExplorer {
 						amount: 0
 					});
 				}
-				console.log('destinations', dsts);
+				//console.log('destinations', dsts);
 
 				let amounts: string[] = [];
 				for (let l = 0; l < usingOuts.length; l++) {
@@ -458,9 +459,9 @@ export class TransactionsExplorer {
 				}
 
 				obtainMixOutsCallback(amounts.length * (mixin + 1)).then(function (lotsMixOuts: any[]) {
-					console.log('------------------------------mix_outs', lotsMixOuts);
-					console.log('amounts', amounts);
-					console.log('lots_mix_outs', lotsMixOuts);
+					//console.log('------------------------------mix_outs', lotsMixOuts);
+					//console.log('amounts', amounts);
+					//console.log('lots_mix_outs', lotsMixOuts);
 
 					let mix_outs = [];
 					let iMixOutsIndexes = 0;
@@ -476,7 +477,7 @@ export class TransactionsExplorer {
 							amount: 0
 						});
 					}
-					console.log('mix_outs', mix_outs);
+					//console.log('mix_outs', mix_outs);
 
 					TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, mix_outs, mixin, neededFee, paymentId).then(function (data: { raw: { hash: string, prvKey: string, raw: string }, signed: any }) {
 						resolve(data);
