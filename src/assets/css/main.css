@@ -520,14 +520,13 @@ body.native .indexTab .mainBlock {
 .indexTab .mainBlock h1{
 	display: inline-block;
 	color:white;
-	border-bottom:1px solid white;
 	padding: 0 20px;
 	margin-bottom: 0;
-	font-size: 40px;
+	font-size: 50px;
 }
 
 .indexTab .mainBlock h2{
-	color:#c8cacf;
+	color:white;
 	font-size:18px;
 }
 .indexTab .mainBlock > .actions{
@@ -616,7 +615,7 @@ body.native .indexTab .mainBlock > .actions{
 }
 .indexTab .block h3{
 	color:#30466C;
-	font-size: 24px;
+	font-size: 20px;
 	margin: 0;
 	margin-bottom:5px;margin-top:8px;
 	font-weight: normal;
@@ -626,7 +625,7 @@ body.native .indexTab .mainBlock > .actions{
 }
 .indexTab .block h4{
 	color:#30466C;
-	font-size: 14px;
+	font-size: 12px;
 	margin: 0;
 	font-weight: normal;
 }

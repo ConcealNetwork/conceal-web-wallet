@@ -73,19 +73,19 @@
 	  "notes": {
 		"secure": {
 		  "title": "Sicuro",
-		  "description": "Nessun server, completamente crittografato!"
+		  "description": "Completamente crittografato!"
 		},
 		"fast": {
-		  "title": "Veloce",
+		  "title": "Accessibile",
 		  "description": "Invia ovunque e in qualsiasi momento!"
 		},
 		"technology": {
-		  "title": "Tecnologia unica",
-		  "description": "Collegato direttamente alla blockchain di Karbo!"
+		  "title": "Lato client",
+		  "description": "Le chiavi sono sul vostro dispositivo!"
 		},
 		"openSource": {
-		  "title": "Completamente open-source",
-		  "description": "Disponibile su Github!"
+		  "title": "Open-source",
+		  "description": "Verifica su Github!"
 		}
 	  }
 	},

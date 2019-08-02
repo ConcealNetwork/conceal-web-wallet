@@ -77,12 +77,12 @@
 		  "description": "Без серверов, полностью зашифрован!"
 		},
 		"fast": {
-		  "title": "Быстрый",
-		  "description": "Доступен когда надо!"
+		  "title": "Доступный",
+		  "description": "Когда надо и где угодно!"
 		},
 		"technology": {
 		  "title": "Локальный",
-		  "description": "Ключи в браузере"
+		  "description": "Ключи на вашем устройстве!"
 		},
 		"openSource": {
 		  "title": "Open-source",

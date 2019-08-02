@@ -73,19 +73,19 @@
    "notes": {
     "secure": {
      "title": "Bezpieczny",
-     "description": "Brak serwerów, w pełny szyfrowany!"
+     "description": "W pełni zaszyfrowany!"
    },
    "fast": {
-     "title": "Szybki",
-     "description": "Wyślij wszędzie, zawsze!"
+     "title": "Dostępny",
+     "description": "Wszędzie i zawsze!"
    },
    "technology": {
-     "title": "Unikalna Technologia",
-     "description": "Podłączony bezpośrednio do sieci Karbowaniec"
+     "title": "Po stronie klienta",
+     "description": "Klucze na twoim urządzeniu!"
    },
     "openSource": {
-     "title": "W pełni Open-source",
-     "description": "Dostępny on Github!"
+     "title": "Open-source",
+     "description": "Sprawdź na Github!"
    }
    }
 },

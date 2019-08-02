@@ -77,16 +77,16 @@
 		  "description": "Χωρίς διακομιστές, πλήρως κρυπτογραφημένο!"
 		},
 		"fast": {
-		  "title": "Γρήγορο",
-		  "description": "Στείλε οπουδήποτε, οποτεδήποτε!"
+		  "title": "Προσιτός",
+		  "description": "Χρήση παντού, Οποτεδήποτε!"
 		},
 		"technology": {
-		  "title": "Μοναδική Τεχνολογία",
-		  "description": "Συνδεδεμένο κατευθείαν στο Karbo blockchain!"
+		  "title": "Υπολογιστή-πελάτη",
+		  "description": "Κλειδιά στη συσκευή σας!"
 		},
 		"openSource": {
-		  "title": "100% ανοιχτού κώδικα",
-		  "description": "Διαθέσιμο στο Github!"
+		  "title": "Ανοιχτή πηγή",
+		  "description": "Επαληθεύστε στο Github!"
 		}
 	  }
 	},

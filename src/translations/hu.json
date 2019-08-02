@@ -77,16 +77,16 @@
 		  "description": "Nincsenek szerverek, teljesen titkosított!"
 		},
 		"fast": {
-		  "title": "Gyors",
+		  "title": "Hozzáférhető",
 		  "description": "Küldj bárhonnan, bármikor!"
 		},
 		"technology": {
-		  "title": "Egyedi technológia",
-		  "description": "Közvetlen kapcsolat a Karbo blokklánccal!"
+		  "title": "Ügyfél oldal",
+		  "description": "Kulcsok a készüléken!"
 		},
 		"openSource": {
-		  "title": "Teljesen nyílt forrású",
-		  "description": "Elérhető a Githubon!"
+		  "title": "Nyílt forráskód",
+		  "description": "Ellenőrizze a Githubon!"
 		}
 	  }
 	},

@@ -70,7 +70,25 @@
         "importWallet": "导入钱包",
         "create": "创建",
         "createWallet": "创建一个钱包"
-      }
+      },
+	  "notes": {
+		"secure": {
+		  "title": "稳当",
+		  "description": "没有服务器，完全加密！"
+		},
+		"fast": {
+		  "title": "无障碍",
+		  "description": "随时随地使用！"
+		},
+		"technology": {
+		  "title": "客户端",
+		  "description": "钥匙在您的设备上"
+		},
+		"openSource": {
+		  "title": "开源",
+		  "description": "在Github上验证！"
+		}
+	  }
     },
     "accountPage": {
       "title": "帐户",
@@ -118,7 +136,7 @@
         "title": "密码已更改！",
         "confirmText": "确认"
       }
-    }
+    },
     "createWalletPage": {
       "generatingStep": {
         "title": "您的钱包正在生成......",

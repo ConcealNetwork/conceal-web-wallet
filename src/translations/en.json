@@ -74,15 +74,15 @@
 	  "notes": {
 		"secure": {
 		  "title": "Secure",
-		  "description": "No servers, fully encrypted!"
+		  "description": "Fully encrypted!"
 		},
 		"fast": {
-		  "title": "Fast",
-		  "description": "Send Everywhere, Anytime!"
+		  "title": "Accessible",
+		  "description": "Use everywhere, Anytime!"
 		},
 		"technology": {
-		  "title": "Local",
-		  "description": "Keys on your device"
+		  "title": "Client-side",
+		  "description": "Keys on your device!"
 		},
 		"openSource": {
 		  "title": "Open-source",

@@ -70,7 +70,25 @@
         "importWallet": "지갑 가져오기",
         "create": "지갑 만들기",
         "createWallet": "지갑 만들기"
-      }
+      },
+	  "notes": {
+		"secure": {
+		  "title": "안전한",
+		  "description": "완전 암호화!"
+		},
+		"fast": {
+		  "title": "얻기 쉬운",
+		  "description": "언제 어디서나 보내기!"
+		},
+		"technology": {
+		  "title": "고객 입장에서",
+		  "description": "기기에 키가 있습니다"
+		},
+		"openSource": {
+		  "title": "오픈 소스",
+		  "description": "Github에서 확인하십시오!"
+		}
+	  }
     },
     "accountPage": {
       "title": "계정",

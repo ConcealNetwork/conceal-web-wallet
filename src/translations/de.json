@@ -73,20 +73,20 @@
 	  },
 	  "notes": {
 		"secure": {
-		  "title": "Sicher",
-		  "description": "Keine Server, voll verschlüsselt!"
+		  "title": "Sichern",
+		  "description": "Voll verschlüsselt!"
 		},
 		"fast": {
-		  "title": "Schnell",
+		  "title": "Zugänglich",
 		  "description": "Sende jederzeit, von überall!"
 		},
 		"technology": {
-		  "title": "Einzigartige Technologie",
-		  "description": "Direkt mit der Karbo Blockchain verbunden!"
+		  "title": "Clientseitige",
+		  "description": "Schlüssel werden auf Ihrem Gerät aufbewahrt!"
 		},
 		"openSource": {
-		  "title": "Komplett open-source",
-		  "description": "Vergügbar auf Github"
+		  "title": "Open-source",
+		  "description": "Überprüfen Sie auf Github"
 		}
 	  }
 	},
