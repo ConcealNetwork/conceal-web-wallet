@@ -423,11 +423,10 @@ export class TransactionsExplorer {
 			//console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)));
 			confirmCallback(totalAmountWithoutFee, neededFee).then(function () {
 				if (usingOuts_amount.compare(totalAmount) < 0) {
-					/*
-					console.log("Not enough spendable outputs / balance too low (have "
-						+ cnUtil.formatMoneyFull(usingOuts_amount) + " but need "
-						+ cnUtil.formatMoneyFull(totalAmount)
-						+ " (estimated fee " + cnUtil.formatMoneyFull(neededFee) + " included)");
+					//console.log("Not enough spendable outputs / balance too low (have "
+					//	+ cnUtil.formatMoneyFull(usingOuts_amount) + " but need "
+					//	+ cnUtil.formatMoneyFull(totalAmount)
+					//	+ " (estimated fee " + cnUtil.formatMoneyFull(neededFee) + " included)");
 					// return;
 					reject({error: 'balance_too_low'});
 					return;
@@ -435,8 +434,8 @@ export class TransactionsExplorer {
 				else if (usingOuts_amount.compare(totalAmount) > 0) {
 					let changeAmount = usingOuts_amount.subtract(totalAmount);
 					//add entire change for rct
-					console.log("1) Sending change of " + cnUtil.formatMoneySymbol(changeAmount)
-						+ " to " /*+ AccountService.getAddress()*/);
+					//console.log("1) Sending change of " + cnUtil.formatMoneySymbol(changeAmount) 
+					//	+ " to " /*+ AccountService.getAddress()*/);
 					dsts.push({
 						address: wallet.getPublicAddress(),
 						amount: changeAmount
@@ -444,12 +443,12 @@ export class TransactionsExplorer {
 				}
 				else if (usingOuts_amount.compare(totalAmount) === 0) {
 					//create random destination to keep 2 outputs always in case of 0 change
-					let fakeAddress = cnUtil.create_address(cnUtil.random_scalar()).public_addr;
-					console.log("Sending 0 KRB to a fake address to keep tx uniform (no change exists): " + fakeAddress);
-					dsts.push({
-						address: fakeAddress,
-						amount: 0
-					});
+					//let fakeAddress = cnUtil.create_address(cnUtil.random_scalar()).public_addr;
+					//console.log("Sending 0 KRB to a fake address to keep tx uniform (no change exists): " + fakeAddress);
+					//dsts.push({
+					//	address: fakeAddress,
+					//	amount: 0
+					//});
 				}
 				//console.log('destinations', dsts);
 
