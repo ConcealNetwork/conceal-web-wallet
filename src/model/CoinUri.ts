@@ -27,8 +27,9 @@ export class CoinUri{
 		description?:string,
 	}|null {
 		if(str.indexOf(CoinUri.coinTxPrefix) === 0){
-			let data = str.replace(this.coinTxPrefix,'').trim();
-			let exploded = data.split('?');
+			let data = str.replace(this.coinTxPrefix,'');
+			let temp = data.replace(/&/g, '?').trim();
+			let exploded = temp.split('?');
 
 			if(exploded.length == 0)
 				throw 'missing_address';
@@ -40,20 +41,29 @@ export class CoinUri{
 				address:exploded[0]
 			};
 
-			for(let i = 1; i < exploded.length; ++i){
+			for(let i = 0; i < exploded.length; ++i){
 				let optionParts = exploded[i].split('=');
 				if(optionParts.length === 2){
 					switch (optionParts[0].trim()){
+						case 'payment_id':
+							decodedUri.paymentId=optionParts[1];
+							break;
 						case 'tx_payment_id':
 							decodedUri.paymentId=optionParts[1];
 							break;
 						case 'recipient_name':
 							decodedUri.recipientName=optionParts[1];
 							break;
+						case 'amount':
+							decodedUri.amount=optionParts[1];
+							break;
 						case 'tx_amount':
 							decodedUri.amount=optionParts[1];
 							break;
 						case 'tx_description':
+							decodedUri.description=optionParts[1];
+							break;
+						case 'label':
 							decodedUri.description=optionParts[1];
 							break;
 					}
@@ -78,10 +88,10 @@ export class CoinUri{
 		if(address.length !== this.coinAddressLength)
 			throw 'invalid_address_length';
 
-		if(paymentId !== null) encoded += '?tx_payment_id='+paymentId;
-		if(amount !== null) encoded+= '?tx_amount='+amount;
+		if(paymentId !== null) encoded += '?payment_id='+paymentId;
+		if(amount !== null) encoded+= '?amount='+amount;
 		if(recipientName !== null) encoded += '?recipient_name='+recipientName;
-		if(description !== null) encoded += '?tx_description='+description;
+		if(description !== null) encoded += '?label='+description;
 		return encoded;
 	}
 

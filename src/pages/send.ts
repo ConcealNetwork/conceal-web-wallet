@@ -171,7 +171,7 @@ class SendView extends DestructableView {
 					self.amountToSend = txDetails.amount;
 					self.lockedForm = true;
 				}
-				// if(typeof txDetails.paymentId !== 'undefined')self.paymentId = txDetails.paymentId;
+				if(typeof txDetails.paymentId !== 'undefined')self.paymentId = txDetails.paymentId;
 				parsed = true;
 			}
 		} catch (e) {
