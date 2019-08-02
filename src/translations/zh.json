@@ -1,0 +1,489 @@
+{
+  "website": {
+    "title": "卡博币钱包 - 简单，无缝，安全。",
+    "description": "卡博币币的官方在线钱包 - 完全在浏览器端处理，兼顾最优化的安全性。"
+  },
+  "messages": {
+    "menu": {
+      "home": "主页",
+      "account": "帐户",
+      "send": "发送",
+      "receive": "接收",
+      "export": "导出",
+      "donate": "捐助",
+      "settings": "设置",
+      "disconnect": "断开",
+      "network": "网络",
+      "mining": "挖矿"
+    },
+    "global": {
+      "loading": "载入中",
+      "disableSecurity": "禁用此安全性，我已完全了解风险",
+      "passwordInvalidRequirements": "密码长度需要大于8位 - 至少包含1个大写字母，1个小写字母，1个数字，以及1个特殊字符。",
+      "passwordConfirmationNotMatching": "两次输入的密码不匹配",
+      "download": "下载",
+      "newVersionModal": {
+        "title": "有新版本可以更新",
+        "content": "要重新加载新版本吗？",
+        "confirmText": "是",
+        "cancelText": "返回"
+      },
+      "openWalletModal": {
+        "title": "钱包密码",
+        "confirmText": "打开",
+        "cancelText": "取消"
+      },
+      "invalidPasswordModal": {
+        "title": "糟糕！",
+        "content": "您的密码似乎无效",
+        "confirmText": "确认"
+      },
+      "invalidMnemonicModal": {
+        "title": "糟糕！",
+        "content": "助记词无效",
+        "confirmText": "确认"
+      },
+      "passwordNotComplexEnoughModal": {
+        "title": "密码太简单",
+        "confirmText": "确认"
+      },
+      "permissionRequiredForCameraModal": {
+        "title": "糟糕！",
+        "content": "扫描二维码需要访问您相机的权限",
+        "confirmText": "确认"
+      }
+    },
+    "bottom": {
+      "termsOfUse": "使用条款",
+      "privacyPolicy": "隐私政策",
+      "support": "支持",
+      "donate": "捐助",
+      "network": "网络统计",
+      "miningPool": "矿池",
+      "github": "GitHub"
+    },
+    "homepage": {
+      "mainTitle": "卡博币钱包",
+      "tagLine": "使用卡博币最简单的方法 无论何时、何地、何种设备。",
+      "actions": {
+        "loadWallet": "加载我的钱包",
+        "importWallet": "导入钱包",
+        "create": "创建",
+        "createWallet": "创建一个钱包"
+      }
+    },
+    "accountPage": {
+      "title": "帐户",
+      "subtitle": "您的帐户概览和交易记录",
+      "synchronizingBlock": {
+        "text": "同步中..."
+      },
+      "balanceBlock": {
+        "title": "您的余额",
+        "unlocked": "解锁"
+      },
+      "historyBlock": {
+        "title": "交易记录",
+        "pendingTxStatus": "等待中",
+        "emptyWallet": "您的钱包目前没有资金。",
+        "waitSync": "请等待钱包更新完毕",
+        "beReallyPatient": "初始化设置可能比较耗时......",
+        "getCoinAddress": "收到KRB"
+      },
+      "txDetails": {
+        "title": "交易明细",
+        "txHash": "交易哈希",
+        "feesOnTx": "手续费",
+        "blockHeight": "区块高度",
+        "paymentId": "付款ID",
+        "unlockStatus": "状态",
+        "unlockConfirm": "确认数",
+        "txPrivKey": "交易私钥"
+      }
+    },
+    "changeWalletPasswordPage": {
+      "title": "更改您的密码",
+      "oldPassword": {
+        "label": "旧密码",
+        "invalid": "密码无效"
+      },
+      "newPassword": {
+        "label": "选择一个新密码来保护您的钱包"
+      },
+      "newPasswordConfirm": {
+        "label": "确认新密码"
+      },
+      "confirm": "更改密码",
+      "modalSuccess": {
+        "title": "密码已更改！",
+        "confirmText": "确认"
+      }
+    }
+    "createWalletPage": {
+      "generatingStep": {
+        "title": "您的钱包正在生成......",
+        "subtitle": "差不多快好了",
+        "waitingMessage": "正在生成您的钱包......"
+      },
+      "finalizationStep": {
+        "title": "这很简单，您的帐户已准备就绪！",
+        "subtitle": "准备迎接卡博币钱包的全新体验吧！",
+        "passwordSelectionBlock": {
+          "label": "保护您的钱包"
+        },
+        "passwordConfirmBlock": {
+          "label": "确认密码"
+        },
+        "validPassword": "使用此密码",
+        "backupBlock": {
+          "title": "保存您的私人凭据以便后期用于恢复钱包。",
+          "option1": "选项1：",
+          "option2": "选项2：",
+          "titlePdf": "下载PDF副本",
+          "titleManualWrite": "在纸上写下我的私钥",
+          "privateKeys": "私钥",
+          "mnemonicPhrase": "助记词",
+          "separatorManualMethodsSolution": " 或者 ",
+          "confirmManuallyWritten": "我已经将我的助记词写下来了",
+          "warningMessage": "**千万别弄丢了!** 如果您弄丢了将无法恢复您的钱包I。<br/>**不要跟任何人分享!** 如果您在可疑电脑或者钓鱼网站上使用这个文件或者助记词，那么您钱包里的资产将很可能会被盗走。<br/>**做好备份!** 将它看做未来的某一天将会价值百万那样备份好，保护好。<br/>",
+          "finishButton": "我确认知悉，点击继续。"
+        }
+      },
+      "disclaimerBlock": {
+        "title": "卡博币钱包安全风险须知",
+        "content": "卡博币钱包是一个基于Web的界面. 它能帮助你在无须运行一个完整的卡博币节点就可以使用卡博币。 <br/>我们建议像对待您真实的钱包那样对待卡博币钱包。"
+      }
+    },
+    "donatePage": {
+      "title": "捐助",
+      "subtitle": "帮助资助开发并支付账单",
+      "webwalletBlock": {
+        "title": "Webwallet",
+        "content": "如果您愿意帮助支付服务器费用，用来支持开发新的功能，或者您喜欢这个应用，那么可以考虑捐助我们: <br/><br/>"
+      },
+      "devFundBlock": {
+        "title": "卡博币开发者基金",
+        "content": "想捐助卡博币, 您可以捐助到如下这些地址"
+      }
+    },
+    "supportPage": {
+      "title": "支持",
+      "subtitle": "我们在这里提供帮助！",
+      "getInTouchBlock": {
+        "title": "让我们联系吧！",
+        "content": "您若有能帮助我们改善钱包哦的建议或者想法，欢迎联系我们!",
+        "discord": "卡博币 Discord频道"
+      }
+    },
+    "networkPage": {
+      "title": "网络统计",
+      "subtitle": "卡博币网络详情",
+      "statsBlock": {
+        "connectNode": "连接的Masternode",
+        "hashrate": "网络哈希值",
+        "height": "区块高度",
+        "difficulty": "网络难度",
+        "lastTimeBlock": "最新出块",
+        "lastReward": "最新出块奖励"
+      }
+    },
+    "sendPage": {
+      "title": "发送KRB",
+      "sendBlock": {
+        "address": {
+          "label": "目标地址",
+          "placeholder": "写下您要汇款目标地址",
+          "invalid": "非法的目标地址",
+          "fundsTo": "资金将被发送到",
+          "receiver": "接收者",
+          "description": "描述"
+        },
+        "amount": {
+          "label": "发送金额",
+          "invalid": "金额无效"
+        },
+        "paymentId": {
+          "label": "付款ID（可选）",
+          "invalid": "非法的付款ID. 长度必须是64位。"
+        },
+        "sendButton": "发送",
+        "cancelButton": "取消"
+      },
+      "qrCodeScanning": {
+        "explication": "展示二维码"
+      },
+      "notEnoughMoneyModal": {
+        "title": "糟糕！",
+        "content": "您没有足够的资金，转账无法完成。",
+        "confirmText": "确认"
+      },
+      "thankYouDonationModal": {
+        "title": "感谢您的捐赠！",
+        "content": "感谢您的帮助。您的捐助将会使卡博币变得更好。",
+        "confirmText": "确认"
+      },
+      "transferSentModal": {
+        "title": "转移成功!",
+        "confirmText": "确认"
+      },
+      "transferExceptionModal": {
+        "title": "糟糕！",
+        "content": "发生错误，请上报此错误: {details}",
+        "confirmText": "确认"
+      },
+      "invalidAmountModal": {
+        "title": "糟糕！",
+        "content": "不合法的数量",
+        "confirmText": "确认"
+      },
+      "creatingTransferModal": {
+        "title": "转账创建中......",
+        "content": "请耐心等待..."
+      },
+      "finalizingTransferModal": {
+        "title": "转账完成......",
+        "content": "请耐心等待..."
+      },
+      "confirmTransactionModal": {
+        "title": "确认转账？",
+        "content": "数量: {amount}<br/>交易费: {fees}<br/>总额: {total}",
+        "confirmText": "确认",
+        "cancelText": "取消"
+      },
+      "waitingNfcModal": {
+        "title": "等待Nfc",
+        "content": "靠近其他设备一些"
+      }
+    },
+    "receivePage": {
+      "title": "收到KRB",
+      "receiveBlock": {
+        "address": {
+          "title": "您收到资金的地址：",
+          "label": "给这个地址接收资金"
+        },
+        "qrCode": {
+          "title": "或者个性化二维码:",
+          "labelAmount": "金额（可选）",
+          "labelRecipient": "收据名称 (可选)",
+          "labelDescription": "交易描述 (可选)",
+          "updateButton": "更新"
+        }
+      },
+      "qrBlock": {
+        "title": "您的自定义二维码"
+      },
+      "waitingNfcToWriteModal": {
+        "title": "等待 Nfc",
+        "titleSuccess": "Nfc标签识别成功",
+        "content": "请靠近NFC标签来识别"
+      },
+      "nfcErrorModal": {
+        "titleInsufficientCapacity": "标签剩余不足"
+      }
+    },
+    "miningPage": {
+      "title": "直接在浏览器中挖矿",
+      "subtitle": "通过挖矿为网络做贡献，并得到KRB奖励",
+      "parameterBlock": {
+        "title": "参数",
+        "labelDestinationAddress": "挖矿的钱包",
+        "labelThreads": "线程数 (more=更高的算力)",
+        "start": "开始",
+        "stop": "停止"
+      },
+      "statisticsBlocks": {
+        "title": "统计数据",
+        "validShares": "有效份额",
+        "hashrate": "算力",
+        "maxHashrate": "最大算力",
+        "dedicatedHardware": "使用算力贡献的挖矿硬件和挖矿软件，你可以获得更多奖励，帮助去中心化的网络。",
+        "miningHandledBy": "本次挖矿由矿池pool.karbowanec.com处理"
+      }
+    },
+    "settingsPage": {
+      "title": "设置",
+      "subtitle": "在这里更改您的参数",
+      "versionBlock": {
+        "versionNumber": "版本号：",
+        "versionCode": "版本代码："
+      },
+      "settingsBlock": {
+        "speed": {
+          "label": "更新钱包的速度（将会消耗更多资源）",
+          "fastest": "最快",
+          "fast": "快",
+          "medium": "中等",
+          "slow": "慢"
+        },
+        "language": {
+          "label": "语言"
+        },
+        "currency": {
+          "label": "本国货币"
+        },
+        "readMinerTx": {
+          "label": "读取挖矿交易信息（仅适用于Solo挖矿）"
+        }
+      },
+      "changePasswordButton": "更改我的钱包密码",
+      "deleteWalletButton": "删除我的钱包（本地副本）",
+      "walletSettings": {
+        "creationHeight": {
+          "label": "钱包创建的区块高度"
+        },
+        "currentScanningHeight": {
+          "label": "当前扫描高度"
+        },
+        "updateButton": "更新"
+      },
+      "deleteWalletModal": {
+        "title": "删除我的钱包（本地副本)",
+        "content": "确定要删除您的钱包吗？",
+        "confirmText": "是的，我确定",
+        "cancelText": "取消"
+      }
+    },
+    "importBasePage": {
+      "parametersBlock": {
+        "title": "参数",
+        "password": {
+          "label": "保护您的钱包的密码"
+        },
+        "passwordConfirm": {
+          "label": "确认密码",
+          "invalid": "2次密码不匹配"
+        },
+        "importHeight": {
+          "label": "从该区块高度开始导入："
+        }
+      }
+    },
+    "importFromQrPage": {
+      "title": "从二维码导入钱包",
+      "subtitle": "从线下备份导入钱包",
+      "qrCodeBlock": {
+        "title": "二维码",
+        "startScanButton": "开始扫描",
+        "importButton": "导入"
+      },
+      "qrScanningBlock": {
+        "title": "展示二维码"
+      }
+    },
+    "exportPage": {
+      "title": "备份您的证书",
+      "publicAddressBlock": {
+        "title": "您的公开地址"
+      },
+      "pdfBlock": {
+        "title": "PDF备份",
+        "downloadButton": "下载"
+      },
+      "warningBlock": {
+        "title": "警告",
+        "content": "如果您选择保存您的私钥和助记词，为了您的资金安全，请务必不要将它们明文存储在任何地方。<br/>这些文件是您的私钥，包含您的之后用来钱包同步所需的所有交易信息内容。The file is an alternate solution where your keys are encrypted。"
+      },
+      "exportBlock": {
+        "title": "导出证书",
+        "privateKeysButton": "获取我的私钥",
+        "mnemonicKeysButton": "获取我的助记词",
+        "fileButton": "导出到一个文件"
+      },
+      "walletKeysModal": {
+        "title": "私钥",
+        "confirmText": "确认",
+        "content": "请妥善保存好您的私钥。<b>保存好私钥就等于保存好了它所关联的账户资金</b> !<br/>Spend key: {privSpendKey}<br/>Private view key: {privViewKey}"
+      },
+      "mnemonicKeyModal": {
+        "title": "助记词",
+        "confirmText": "确认",
+        "content": "请妥善保存好您的助记词。<b>保存好助记词就等于保存好了它所关联的账户资金</b> ! 您的助记词是:<br/>{mnemonic}"
+      },
+      "mnemonicLangSelectionModal": {
+        "title": "你想用哪种语言写你的助记词？",
+        "confirmText": "导出"
+      }
+    },
+    "importPage": {
+      "title": "创建一个钱包",
+      "subtitle": "从以前创建过的密钥，文件或助记词",
+      "chooseMethod": "选择导入方法：",
+      "fromKeys": "从秘钥",
+      "fromFile": "从文件",
+      "fromMnemonic": "从助记词",
+      "fromQr": "从二维码"
+    },
+    "termsOfUsePage": {
+      "title": "使用条款",
+      "subtitle": "请仔细阅读。"
+    },
+    "privacyPolicyPage": {
+      "title": "隐私政策",
+      "subtitle": "请仔细阅读。"
+    },
+    "importFromFilePage": {
+      "title": "从备份文件导入钱包",
+      "subtitle": "使用备份文件创建钱包",
+      "walletBlock": {
+        "title": "钱包文件",
+        "label": "选择文件",
+        "importButton": "导入"
+      }
+    },
+    "importFromMnemonicPage": {
+      "title": "从助记词导入钱包",
+      "subtitle": "使用您的助记词来创建钱包",
+      "mnemonicBlock": {
+        "title": "助记词",
+        "mnemonic": {
+          "label": "助记词：25个字",
+          "invalid": "助记词无效",
+          "language": "语言"
+        },
+        "importButton": "导入"
+      }
+    },
+    "importFromKeysPage": {
+      "title": "从秘钥导入钱包",
+      "subtitle": "使用您的密钥创建钱包",
+      "parametersBlock": {
+        "viewOnlyWallet": {
+          "label": "你想要一个只允许查看的钱包吗？"
+        }
+      },
+      "keysBlock": {
+        "titleNotViewOnly": "钱包钥匙",
+        "titleViewOnly": "仅查看钱包",
+        "privateSpend": {
+          "label": "私人消费钥匙"
+        },
+        "privateView": {
+          "label": "私人视图密钥",
+          "optional": "（可选的)"
+        },
+        "publicKey": {
+          "label": "公钥"
+        },
+        "importButton": "导入"
+      }
+    }
+  },
+  "number": {},
+  "date": {
+    "short": {
+      "year": "numeric",
+      "month": "short",
+      "day": "numeric"
+    },
+    "long": {
+      "year": "numeric",
+      "month": "short",
+      "day": "numeric",
+      "weekday": "short",
+      "hour": "numeric",
+      "minute": "numeric",
+      "hour12": true
+    }
+  }
+}

@@ -1,7 +1,7 @@
 {
   "website":{
 	"title":"Offizielle Karbo Web Wallet",
-	"description":"Offizielle Online Wallet für Karbo currency, anonym, sicher und für optimale Sicherheit vollständig in deinem Browser verwaltet"
+	"description":"Offizielle Online Wallet für Karbo Kryptowährung, anonym, sicher und für optimale Sicherheit vollständig in deinem Browser verwaltet"
   },
   "messages": {
 	"menu": {
@@ -12,7 +12,7 @@
 	  "export": "Export",
 	  "donate": "Spenden",
 	  "settings": "Einstellungen",
-	  "disconnect": "Verbindung trennen",
+	  "disconnect": "Ausloggen",
 	  "network": "Netzwerkstatus",
 	  "mining": "Minen"
 	},

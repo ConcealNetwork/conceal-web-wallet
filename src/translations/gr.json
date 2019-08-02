@@ -106,7 +106,7 @@
 		"emptyWallet": "Αυτή τη στιγμή δεν έχετε χρήματα σε αυτό το πορτοφόλι.",
 		"waitSync": "Παρακαλώ περιμένετε μέχρι να ανανεωθεί το πορτοφόλι",
 		"beReallyPatient": "Η αρχική ρύθμιση μπορεί να διαρκέσει λίγη ώρα...",
-		"getCoinAddress": "Λήψη MSR"
+		"getCoinAddress": "Λήψη KRB"
 	  },
 	  "txDetails":{
 		"title":"Λεπτομέρειες συναλλαγής",
@@ -203,7 +203,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"Στείλτε MSR",
+	  "title":"Στείλτε KRB",
 	  "sendBlock":{
 		"address":{
 		  "label":"Διεύθυνση παραλήπτη",
@@ -271,7 +271,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"Λήψη MSR",
+	  "title":"Λήψη KRB",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Η διεύθυνσή σας για λήψη χρημάτων:",
@@ -299,7 +299,7 @@
 	},
 	"miningPage":{
 	  "title":"Κάντε mining μέσω του φυλλομετρητή σας",
-	  "subtitle":"Υποστηρίξτε το δίκτυο και αμοιφθείτε με MSR",
+	  "subtitle":"Υποστηρίξτε το δίκτυο και αμοιφθείτε με KRB",
 	  "parameterBlock":{
 		"title":"Παράμετροι",
 		"labelDestinationAddress":"Πορτοφόλι για κατάθεση αμοιβών από mining",
