@@ -64,13 +64,13 @@ function createOptimizedBock($startHeight, $endHeight){
 	
 	for($height = $startHeight; $height <= $endHeight; ++$height){
 		//get the block hash
-		$body = json_encode(array("jsonrpc" => "2.0", "id" => "0", "method" => "on_getblockhash", "params" => array($height)));
+		$body = json_encode(array("jsonrpc" => "2.0", "id" => "0", "method" => "getblockhash", "params" => array($height)));
 		curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => 'http://'.$daemonAddress.':'.$rpcPort.'/json_rpc', CURLOPT_POST => 1, CURLOPT_POSTFIELDS => $body));
 		$resp = curl_exec($curl);
 		$array = json_decode($resp, true);
 		$hash = $array["result"];
 		//get the block details
-		$body = json_encode(array("jsonrpc" => "2.0", "id" => "0", "method" => "f_block_json", "params" => array("hash" => $hash)));
+		$body = json_encode(array("jsonrpc" => "2.0", "id" => "0", "method" => "getblockbyhash", "params" => array("hash" => $hash)));
 		curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => 'http://'.$daemonAddress.':'.$rpcPort.'/json_rpc', CURLOPT_POST => 1, CURLOPT_POSTFIELDS => $body));
 		$resp = curl_exec($curl);
 		$array = json_decode($resp, true);
