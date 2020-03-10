@@ -17,7 +17,7 @@
 include 'config.php';
 
 $curl = curl_init();
-$body = json_encode(array("jsonrpc" => "2.0", "id" => "0", "method" => "f_on_transactions_pool_json", "params" => ''));
+$body = json_encode(array("jsonrpc" => "2.0", "id" => "0", "method" => "gettransactionspool", "params" => ''));
 curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => 'http://'.$daemonAddress.':'.$rpcPort.'/json_rpc', CURLOPT_POST => 1, CURLOPT_POSTFIELDS => $body));
 $resp = curl_exec($curl);
 
