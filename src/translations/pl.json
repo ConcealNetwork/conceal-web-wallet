@@ -194,7 +194,8 @@
     "title":"Statystki Sieci",
     "subtitle":"Informacja o sieci Karbowańca",
     "statsBlock":{
-      "hashrate":"Prędkość sieci",
+      "connectNode": "Podłączony do",
+	  "hashrate":"Prędkość sieci",
       "height":"Wysokośc bloku",
       "difficulty":"Trudność wydobycia",
       "lastTimeBlock":"Ostatni znaleziony blok",

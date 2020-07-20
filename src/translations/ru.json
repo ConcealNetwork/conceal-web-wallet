@@ -195,6 +195,7 @@
 	  "title":"Статистика сети",
 	  "subtitle":"Обзор сети Karbo",
 	  "statsBlock":{
+	    "connectNode": "Подключено к узлу",
 		"hashrate":"Хешрейт",
 		"height":"Высота блокчейна",
 		"difficulty":"Сложность",

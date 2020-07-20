@@ -1,6 +1,8 @@
 let global : any = typeof window !== 'undefined' ? window : self;
 global.config = {
-	apiUrl:typeof window !== 'undefined' && window.location ? window.location.href.substr(0,window.location.href.lastIndexOf('/')+1)+'api/' : 'https://wallet.karbo.org/api/',
+	apiUrl: [
+        "https://wallet.karbo.org/api/"
+    ],
 	mainnetExplorerUrl: "http://explorer.karbowanec.com/",
 	mainnetExplorerUrlHash: "http://explorer.karbowanec.com/?hash={ID}#blockchain_transaction",
 	mainnetExplorerUrlBlock: "http://explorer.karbowanec.com/?hash={ID}#blockchain_block",

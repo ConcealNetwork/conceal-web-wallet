@@ -31,6 +31,7 @@ class NetworkView extends DestructableView{
 	@VueVar(0) networkDifficulty !: number;
 	@VueVar(0) lastReward !: number;
 	@VueVar(0) lastBlockFound !: number;
+	@VueVar(0) connectedNode !: string;
 
 	private intervalRefreshStat = 0;
 
@@ -51,14 +52,16 @@ class NetworkView extends DestructableView{
 
 	refreshStats() {
 		let self = this;
+		let randInt = Math.floor(Math.random() * Math.floor(config.apiUrl.length));
 		$.ajax({
-			url:config.apiUrl+'network.php'
+			url:config.apiUrl[randInt]+'network.php'
 		}).done(function(data : any){
 			self.networkDifficulty = data.difficulty;
 			self.networkHashrate = data.difficulty/config.avgBlockTime/1000000;
 			self.blockchainHeight = data.height;
 			self.lastReward = data.reward/Math.pow(10, config.coinUnitPlaces);
 			self.lastBlockFound = parseInt(data.timestamp);
+			self.connectedNode = data.daemon;
 		});
 	}
 

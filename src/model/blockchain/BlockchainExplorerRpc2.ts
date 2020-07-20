@@ -274,7 +274,8 @@ export class WalletWatchdog {
 export class BlockchainExplorerRpc2 implements BlockchainExplorer {
 
     // testnet : boolean = true;
-    serverAddress = config.apiUrl;
+    randInt = Math.floor(Math.random() * Math.floor(config.apiUrl.length));
+    serverAddress = config.apiUrl[this.randInt];
 
     heightCache = 0;
     heightLastTimeRetrieve = 0;

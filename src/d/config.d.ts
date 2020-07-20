@@ -1,5 +1,5 @@
 declare var config : {
-	apiUrl:string,
+	apiUrl:string[],
 	mainnetExplorerUrl: string,
 	mainnetExplorerUrlHash: string,
 	mainnetExplorerUrlBlock: string,

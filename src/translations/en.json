@@ -195,6 +195,7 @@
 	  "title":"Network stats",
 	  "subtitle":"Insights on the Karbo network",
 	  "statsBlock":{
+		"connectNode": "Connected to node",
 		"hashrate":"Network hashrate",
 		"height":"Blockchain height",
 		"difficulty":"Network difficulty",
