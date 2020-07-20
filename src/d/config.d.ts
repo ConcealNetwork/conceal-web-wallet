@@ -1,5 +1,6 @@
 declare var config : {
 	apiUrl:string[],
+	nodeList: string[],
 	mainnetExplorerUrl: string,
 	mainnetExplorerUrlHash: string,
 	mainnetExplorerUrlBlock: string,

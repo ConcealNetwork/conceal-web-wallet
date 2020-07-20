@@ -52,16 +52,26 @@ class NetworkView extends DestructableView{
 
 	refreshStats() {
 		let self = this;
-		let randInt = Math.floor(Math.random() * Math.floor(config.apiUrl.length));
+		let randInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
 		$.ajax({
-			url:config.apiUrl[randInt]+'network.php'
+			//url:config.apiUrl[randInt]+'network.php'
+			url:config.nodeList[randInt]+'json_rpc',
+			method: 'POST',
+			data: JSON.stringify(
+				{
+					"jsonrpc": "2.0",
+					"id": 0,
+					"method": "getlastblockheader",
+					"params": {}
+				}
+			)
 		}).done(function(data : any){
-			self.networkDifficulty = data.difficulty;
-			self.networkHashrate = data.difficulty/config.avgBlockTime/1000000;
-			self.blockchainHeight = data.height;
-			self.lastReward = data.reward/Math.pow(10, config.coinUnitPlaces);
-			self.lastBlockFound = parseInt(data.timestamp);
-			self.connectedNode = config.apiUrl[randInt];
+			self.networkDifficulty = data['result']['block_header'].difficulty;
+			self.networkHashrate = data['result']['block_header'].difficulty/config.avgBlockTime/1000000;
+			self.blockchainHeight = data['result']['block_header'].height;
+			self.lastReward = data['result']['block_header'].reward/Math.pow(10, config.coinUnitPlaces);
+			self.lastBlockFound = parseInt(data['result']['block_header'].timestamp);
+			self.connectedNode = config.nodeList[randInt];
 		});
 	}
 
