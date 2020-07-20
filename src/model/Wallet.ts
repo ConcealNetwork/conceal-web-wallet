@@ -254,7 +254,7 @@ export class Wallet extends Observable{
 	}
 
 	getTransactionsCopy() : Transaction[]{
-		let news = [];
+		let news: any[] = [];
 		for(let transaction of this.transactions){
 			news.push(Transaction.fromRaw(transaction.export()));
 		}

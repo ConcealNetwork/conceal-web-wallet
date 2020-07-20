@@ -61,7 +61,7 @@ class NetworkView extends DestructableView{
 			self.blockchainHeight = data.height;
 			self.lastReward = data.reward/Math.pow(10, config.coinUnitPlaces);
 			self.lastBlockFound = parseInt(data.timestamp);
-			self.connectedNode = data.daemon;
+			self.connectedNode = config.apiUrl[randInt];
 		});
 	}
 
