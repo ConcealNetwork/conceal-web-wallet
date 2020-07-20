@@ -2,7 +2,8 @@
 
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+//error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(0);
 
 include 'config.php';
 
@@ -233,7 +234,8 @@ function saveCache($startHeight, $endHeight, $content){
 	file_put_contents($cacheLocation.'/'.$startHeight.'-'.$endHeight, json_encode($content));
 }
 
-if(getenv('generate') !== 'true'){
+//if(getenv('generate') !== 'true'){
+if($_ENV['generate'] !== 'true' || getenv('generate') !== 'true'){
 	if(!is_int($_GET['height']+0)){
 		http_response_code(400);
 		exit;

@@ -29,6 +29,8 @@ By default the configuration looks at domainname.com/api/
 The API stores precomputed data for performances in a directory called cache/ in the same directory of the API code (PHP code).
 You will need to create this directory with the write permissions.
 
+There is a PHP configuration setting in php.ini called `variables_order` that needs to include the character ‘E’ to access environment variables.
+
 # Cron task / Process
 Precomputed data are build by another process. This process will call the Masari daemon and compute blocks into chunks of blocks to reduce network latency.
 In order to do so, you will need to run the file blockchain.php with an environment variable "export=true". 
