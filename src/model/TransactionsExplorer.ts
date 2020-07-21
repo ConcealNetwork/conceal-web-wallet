@@ -75,8 +75,8 @@ export class TransactionsExplorer {
 			let amount = out.output.amount;
 			let output_idx_in_tx = iOut;
 
-			let generated_tx_pubkey = cnUtil.derive_public_key(derivation,output_idx_in_tx,wallet.keys.pub.spend);//5.5ms
-			//let generated_tx_pubkey = CnUtilNative.derive_public_key(derivation,output_idx_in_tx,wallet.keys.pub.spend);//5.5ms
+			// let generated_tx_pubkey = cnUtil.derive_public_key(derivation,output_idx_in_tx,wallet.keys.pub.spend);//5.5ms
+			let generated_tx_pubkey = CnUtilNative.derive_public_key(derivation,output_idx_in_tx,wallet.keys.pub.spend);//5.5ms
 
 			// check if generated public key matches the current output's key
 			let mine_output = (txout_k.key == generated_tx_pubkey);
@@ -193,7 +193,7 @@ export class TransactionsExplorer {
 
 		if (outs.length > 0 || ins.length > 0) {
 			transaction = new Transaction();
-			if (typeof rawTransaction.height !== 'undefined') 	transaction.blockHeight = rawTransaction.height;
+			if (typeof rawTransaction.blockIndex !== 'undefined') 	transaction.blockHeight = rawTransaction.blockIndex;
 			if (typeof rawTransaction.timestamp !== 'undefined')    transaction.timestamp = rawTransaction.timestamp;
 			if (typeof rawTransaction.hash !== 'undefined') 	transaction.hash = rawTransaction.hash;
 			transaction.txPubKey = tx_pub_key;

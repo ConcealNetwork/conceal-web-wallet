@@ -53,7 +53,7 @@ export class WalletWatchdog {
                         self.signalWalletUpdate();
                     }
                     if (self.workerCurrentProcessing.length > 0) {
-                        let transactionHeight = self.workerCurrentProcessing[self.workerCurrentProcessing.length - 1].height;
+                        let transactionHeight = self.workerCurrentProcessing[self.workerCurrentProcessing.length - 1].blockIndex;
                         if (typeof transactionHeight !== 'undefined')
                             self.wallet.lastHeight = transactionHeight;
                     }
@@ -135,7 +135,7 @@ export class WalletWatchdog {
 
     checkTransactions(rawTransactions: RawDaemonTransaction[]) {
         for (let rawTransaction of rawTransactions) {
-            let height = rawTransaction.height;
+            let height = rawTransaction.blockIndex;
             if (typeof height !== 'undefined') {
                 let transaction = TransactionsExplorer.parse(rawTransaction, this.wallet);
                 if (transaction !== null) {
@@ -189,8 +189,8 @@ export class WalletWatchdog {
         let transactionsToAdd = [];
 
         for (let tr of transactions) {
-            if (typeof tr.height !== 'undefined')
-                if (tr.height >= this.wallet.lastHeight) {
+            if (typeof tr.blockIndex !== 'undefined')
+                if (tr.blockIndex >= this.wallet.lastHeight) {
                     transactionsToAdd.push(tr);
                 }
         }
@@ -235,7 +235,7 @@ export class WalletWatchdog {
             if (height > self.lastMaximumHeight) self.lastMaximumHeight = height;
 
             if (self.lastBlockLoading !== height) {
-                let previousStartBlock = self.lastBlockLoading;
+                let previousStartBlock = Number(self.lastBlockLoading);
                 let startBlock = Math.floor(self.lastBlockLoading / 100) * 100;
                 //console.log('=>',self.lastBlockLoading, endBlock, height, startBlock, self.lastBlockLoading);
                 //console.log('load block from ' + startBlock);
@@ -243,8 +243,8 @@ export class WalletWatchdog {
                     //to ensure no pile explosion
                     if (transactions.length > 0) {
                         let lastTx = transactions[transactions.length - 1];
-                        if (typeof lastTx.height !== 'undefined') {
-                            self.lastBlockLoading = lastTx.height + 1;
+                        if (typeof lastTx.blockIndex !== 'undefined') {
+                            self.lastBlockLoading = lastTx.blockIndex + 1;
                         }
                     }
 					self.processTransactions(transactions);
@@ -303,10 +303,6 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
         });
     }
 
-    // getDaemonUrl(){
-    // 	return this.testnet ? 'http://localhost:48081/' : 'http://localhost:38081/';
-    // }
-
     scannedHeight: number = 0;
 
     getScannedHeight(): number {
@@ -319,45 +315,55 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
         return watchdog;
     }
 
-    getTransactionsForBlocks(startBlock: number): Promise<RawDaemonTransaction[]> {
+    getTransactionsForBlocks(start_block: number): Promise<RawDaemonTransaction[]> {
         let self = this;
         let transactions: RawDaemonTransaction[] = [];
-		
+		let startBlock = Number(start_block);
         return new Promise<RawDaemonTransaction[]>(function (resolve, reject) {
-            //let outCount: any;
-            //let txHashesPerBlock: any[] = [];
-            let finalTxs: any[] = [];
-            //let blockTimes: any[] = [];
-
-            let tempHeight;
+			let tempHeight;
             let operator = 100;
             if (self.heightCache - startBlock > operator) {
                 tempHeight = startBlock + operator;
             } else {
                 tempHeight = self.heightCache;
             }
-
-			let blockHeights = [];
+			
+			let blockHeights: number[] = [];		
 			for (let i = startBlock; i <= tempHeight; i++) {
 				blockHeights.push(i);
 			}
-			//let c = tempHeight - startBlock + 1, tempTempHeight = tempHeight;
-			//while ( c-- ) {
-			// blockHeights[c] = tempTempHeight--
-			//}
 
 			self.postData(self.nodeAddress + 'json_rpc', {
 				"jsonrpc": "2.0",
 				"id": 0,
 				"method": "getblocksbyheights",
-				"params": [
-					blockHeights: blockHeights
-				]
-			}).then(data => {
-				for (let i 0; i < data.blocks.length; i++) {
-					let blk = data.blocks[i];
-					finalTxs.push(data.blocks[i].transactions);
+				"params": {
+					"blockHeights": blockHeights
 				}
+			}).then(data => {
+				for (let i = 0; i < data.result.blocks.length; i++) {
+					let outCount: any;
+					let finalTxs: any[] = data.result.blocks[i].transactions;
+					for (let j = 0; j < finalTxs.length; j++) {
+						let finalTx = finalTxs[j];
+						
+						delete finalTx.signatures;
+						delete finalTx.unlockTime;
+						delete finalTx.signatureSize;
+						delete finalTx.ts;
+						
+						finalTx.global_index_start = outCount;
+						finalTx.ts = finalTx.timestamp;
+						finalTx.height = finalTx.blockIndex;
+						finalTx.hash = finalTx.hash;
+				
+						let vOutCount = finalTx.outputs.length;
+						outCount += vOutCount;
+
+						transactions.push(finalTx);
+					}
+				}
+				resolve(transactions);
 			}).catch(error => {
 				console.log('REJECT');
 				try {
@@ -387,17 +393,16 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                     txHashes.push(rawTxs[iTx].hash);
                 }
 
-                self.postData(self.nodeAddress + 'gettransactionsbyhashes', {
-                    'transactionHashes': txHashes
-                }).then(detailTx => {
+				self.postData(self.nodeAddress + 'json_rpc', {
+					"jsonrpc": "2.0",
+					"id": 0,
+					"method": "gettransactionsbyhashes",
+					"params": {
+						"transactionHashes": txHashes
+					}
+				}).then(detailTx => {
                     let response = detailTx.transactions;
-                    if (response !== null) {
-                        if (Constants.DEBUG_STATE) {
-                            console.log("tx mempool:");
-                            console.log(response);
-                            console.log("node:");
-                            console.log(self.nodeAddress);
-                        }
+                    if (response !== null) {                       
                         resolve(response);
                     }
                 }).catch(error => {
@@ -412,8 +417,6 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
 			});
 		});	
     }
-
-    nonRandomBlockConsumed = false;
 
     existingOuts: any[] = [];
     getRandomOuts(nbOutsNeeded: number, initialCall = true): Promise<any[]> {
@@ -450,8 +453,8 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                     let tx = txs[iOut];
 
                     if (
-                        (typeof tx.height !== 'undefined' && randomBlocksIndexesToGet.indexOf(tx.height) === -1) ||
-                        typeof tx.height === 'undefined'
+                        (typeof tx.blockIndex !== 'undefined' && randomBlocksIndexesToGet.indexOf(tx.blockIndex) === -1) ||
+                        typeof tx.blockIndex === 'undefined'
                     ) {
                         continue;
                     }
@@ -467,8 +470,8 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                             global_index: globalIndex,
                             // global_index: count,
                         };
-                        if (typeof txCandidates[tx.height] === 'undefined') txCandidates[tx.height] = [];
-                        txCandidates[tx.height].push(newOut);
+                        if (typeof txCandidates[tx.blockIndex] === 'undefined') txCandidates[tx.blockIndex] = [];
+                        txCandidates[tx.blockIndex].push(newOut);
                     }
                 }
 
@@ -499,8 +502,6 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                     resolve(transactions);
                 } else {
                     reject(transactions);
-            }).fail(function (data: any) {
-                reject(data);
                 }
             }).catch(error => {
                 reject(error);

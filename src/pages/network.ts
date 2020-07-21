@@ -54,7 +54,6 @@ class NetworkView extends DestructableView{
 		let self = this;
 		let randInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
 		$.ajax({
-			//url:config.apiUrl[randInt]+'network.php'
 			url:config.nodeList[randInt]+'json_rpc',
 			method: 'POST',
 			data: JSON.stringify(

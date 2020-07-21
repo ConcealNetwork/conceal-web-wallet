@@ -6,7 +6,6 @@ global.config = {
     nodeList: [
         "http://node.karbo.org:32348/",
         "free.rublin.org:32348/",
-        "http://51.15.252.228:32348/",
         "http://108.61.198.115:32348/",
         "http://45.32.232.11:32348/",
         "http://178.63.69.60:32348/",
