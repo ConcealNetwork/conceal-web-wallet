@@ -190,7 +190,7 @@ export class WalletWatchdog {
 
         for (let tr of transactions) {
             if (typeof tr.blockIndex !== 'undefined')
-                if (tr.blockIndex >= this.wallet.lastHeight) {
+                if (tr.blockIndex > this.wallet.lastHeight) {
                     transactionsToAdd.push(tr);
                 }
         }
