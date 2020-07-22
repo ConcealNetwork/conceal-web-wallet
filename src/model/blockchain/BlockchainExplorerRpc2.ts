@@ -345,10 +345,6 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
 					let finalTxs: any[] = data.result.blocks[i].transactions;
 					for (let j = 0; j < finalTxs.length; j++) {
 						let finalTx = finalTxs[j];
-						
-						delete finalTx.signatures;
-						delete finalTx.signatureSize;
-						
 						transactions.push(finalTx);
 					}
 				}
