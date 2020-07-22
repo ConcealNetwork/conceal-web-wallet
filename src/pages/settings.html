@@ -22,7 +22,7 @@
 				<div class="content" >
 					<div class="field">
 						<label>{{ $t("settingsPage.settingsBlock.language.label") }}</label>
-						<select v-model="language">						
+						<select v-model="language">
 							<option value="en">English</option>
 							<option value="zh">Chinese (中文)</option>
 							<option value="fr">French (Français)</option>
@@ -46,6 +46,21 @@
 		<div class="panel">
 			<div class="body" >
 				<div class="content" >
+					<div class="field checkbox toggle">
+						<input type="checkbox" name="customNode" v-model="customNode">
+						<label>{{ $t("settingsPage.settingsBlock.customNode.label") }}</label>
+					</div>
+					<div class="field">
+						<label>{{ $t("settingsPage.walletSettings.nodeUrl.label") }}</label>
+						<input type="url" placeholder="http://node.karbo.io:32348/" v-model="nodeUrl" />
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="content" >
 					<div class="field">
 						<label>{{ $t("settingsPage.settingsBlock.speed.label") }}</label>
 						<select v-model="readSpeed" >
@@ -55,26 +70,10 @@
 							<option value="100" >{{ $t("settingsPage.settingsBlock.speed.slow") }}</option>
 						</select>
 					</div>
-					<div class="field checkbox toggle">
+					<!--div class="field checkbox toggle">
 						<input type="checkbox" name="public" v-model="checkMinerTx">
 						<label>{{ $t("settingsPage.settingsBlock.readMinerTx.label") }}</label>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="panel inline">
-			<div class="body" >
-				<div class="content tc" >
-					<a href="#!changeWalletPassword" class="btn" >{{ $t("settingsPage.changePasswordButton") }}</a>
-				</div>
-			</div>
-		</div>
-
-		<div class="panel inline">
-			<div class="body" >
-				<div class="content tc" >
-					<button class="btn" @click="deleteWallet()" >{{ $t("settingsPage.deleteWalletButton") }}</button>
+					</div-->
 				</div>
 			</div>
 		</div>
@@ -93,6 +92,22 @@
 					<div class="actions tc">
 						<button @click="updateWalletSettings()" class="btn" >{{ $t("settingsPage.walletSettings.updateButton") }}</button>
 					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="content tc" >
+					<a href="#!changeWalletPassword" class="btn" >{{ $t("settingsPage.changePasswordButton") }}</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="content tc" >
+					<button class="btn" @click="deleteWallet()" >{{ $t("settingsPage.deleteWalletButton") }}</button>
 				</div>
 			</div>
 		</div>

@@ -336,6 +336,12 @@
 		},
 		"readMinerTx":{
 		  "label":"Miner Transaktionen lesen (nur für Leute die solo minen)"
+		},
+		"customNode":{
+		  "label":"Use custom node"
+		},
+		"nodeUrl":{
+		  "label":"Node URL"
 		}
 	  },
 	  "changePasswordButton":"Ändere mein Wallet Passwort",

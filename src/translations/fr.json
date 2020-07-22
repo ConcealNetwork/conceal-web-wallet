@@ -336,7 +336,13 @@
 		},
 		"readMinerTx":{
 		  "label":"Lire les transactions de minage (uniquement pour les personnes faisant du solo-minage)"
-		}
+		},
+		  "customNode":{
+			  "label":"Use custom node"
+		  },
+		  "nodeUrl":{
+			  "label":"Node URL"
+		  }
 	  },
 	  "changePasswordButton":"Changer le mot de passe de mon portefeuille",
 	  "deleteWalletButton":"Supprimer mon portefeuille (copie locale)",

@@ -336,7 +336,13 @@
 		},
 		"readMinerTx":{
 		  "label":"Bányászási tranzakciók beolvasása (csak egyedülálló bányászás esetén)"
-		}
+		},
+		  "customNode":{
+			  "label":"Use custom node"
+		  },
+		  "nodeUrl":{
+			  "label":"Node URL"
+		  }
 	  },
 	  "changePasswordButton":"Jelszómódosítás",
 	  "deleteWalletButton":"Tárca törlése (helyi másolat)",

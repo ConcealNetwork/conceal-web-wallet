@@ -336,7 +336,13 @@
 		},
 		"readMinerTx":{
 		  "label":"Ανάγνωση συναλλαγών miner (Μόνο για όσους κάνουν solo mining)"
-		}
+		},
+		  "customNode":{
+			  "label":"Use custom node"
+		  },
+		  "nodeUrl":{
+			  "label":"Node URL"
+		  }
 	  },
 	  "changePasswordButton":"Άλλαξε τον κωδικό του πορτοφολιού μου",
 	  "deleteWalletButton":"Διέγραψε το πορτοφόλι μου (τοπικό αντίγραφο)",

@@ -342,6 +342,12 @@
         },
         "readMinerTx": {
           "label": "채굴관련 송금 확인 (오직 단독 채굴에 적용됨)"
+        },
+        "customNode":{
+          "label":"Use custom node"
+        },
+        "nodeUrl":{
+          "label":"Node URL"
         }
       },
       "changePasswordButton": "비밀번호 변경",

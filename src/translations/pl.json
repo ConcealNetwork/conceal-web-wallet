@@ -335,7 +335,13 @@
 		},
 		"readMinerTx":{
 		  "label":"Czytaj transakcje dla górników (tylko w przypadku wydobycia solo)"
-		}
+		},
+        "customNode":{
+          "label":"Use custom node"
+        },
+        "nodeUrl":{
+          "label":"Node URL"
+        }
 	  },
     "changePasswordButton":"Zmień moje hasło do portfela",
 	  "deleteWalletButton":"Usuń mój portfel (kopia lokalna)",

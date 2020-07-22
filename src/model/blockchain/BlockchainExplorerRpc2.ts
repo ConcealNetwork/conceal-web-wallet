@@ -35,6 +35,13 @@ export class WalletWatchdog {
 
     initWorker() {
         let self = this;
+        if (this.wallet.options.customNode) {
+            config.nodeUrl = this.wallet.options.nodeUrl;
+        } else {
+            let randNodeInt:number = Math.floor(Math.random() * Math.floor(config.nodeList.length));
+            config.nodeUrl = config.nodeList[randNodeInt];
+        }
+
         this.workerProcessing = new Worker('./workers/TransferProcessingEntrypoint.js');
         this.workerProcessing.onmessage = function (data: MessageEvent) {
             let message: string | any = data.data;
@@ -153,14 +160,14 @@ export class WalletWatchdog {
 
     checkTransactionsInterval() {
 
-        //somehow we're repeating and regressing back to re-process Tx's 
+        //somehow we're repeating and regressing back to re-process Tx's
         //loadHistory getting into a stack overflow ?
-        //need to work out timinings and ensure process does not reload when it's already running... 
+        //need to work out timinings and ensure process does not reload when it's already running...
 
         if (this.workerProcessingWorking || !this.workerProcessingReady) {
             return;
         }
-        
+
         //we destroy the worker in charge of decoding the transactions every 250 transactions to ensure the memory is not corrupted
         //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
         if (this.workerCountProcessed >= 100) {
@@ -202,7 +209,7 @@ export class WalletWatchdog {
                 self.checkTransactionsInterval();
             }, this.wallet.options.readSpeed);
         }
-        
+
     }
 
 
@@ -211,7 +218,7 @@ export class WalletWatchdog {
 
     loadHistory() {
         if (this.stopped) return;
-        
+
         if (this.lastBlockLoading === -1) this.lastBlockLoading = this.wallet.lastHeight;
         let self = this;
         //don't reload until it's finished processing the last batch of transactions
@@ -276,9 +283,9 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
 
     // testnet : boolean = true;
     randInt = Math.floor(Math.random() * Math.floor(config.apiUrl.length));
-    randNodeInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
     serverAddress = config.apiUrl[this.randInt];
-    nodeAddress = config.nodeList[this.randNodeInt];
+
+    nodeAddress = config.nodeUrl;
 
     heightCache = 0;
     heightLastTimeRetrieve = 0;
@@ -327,8 +334,8 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
             } else {
                 tempHeight = self.heightCache;
             }
-            
-            let blockHeights: number[] = [];        
+
+            let blockHeights: number[] = [];
             for (let i = startBlock; i <= tempHeight; i++) {
                 blockHeights.push(i);
             }
@@ -357,8 +364,8 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                     console.log(e);
                 }
                 reject(error);
-            });    
-        
+            });
+
         });
     }
 
@@ -387,7 +394,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                     }
                 }).then(detailTx => {
                     let response = detailTx.transactions;
-                    if (response !== null) {                       
+                    if (response !== null) {
                         resolve(response);
                     }
                 }).catch(error => {
@@ -398,9 +405,9 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                         console.log(e);
                     }
                     reject(error);
-                });    
+                });
             });
-        });    
+        });
     }
 
     existingOuts: any[] = [];
@@ -449,7 +456,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                         //if (typeof tx.global_index_start !== 'undefined')
                         //    globalIndex += tx.global_index_start;
                         let globalIndex = tx.outputs[output_idx_in_tx].globalIndex;
-                       
+
                         let newOut = {
                             public_key: tx.outputs[output_idx_in_tx].output.target.data.key,
                             global_index: globalIndex,

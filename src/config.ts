@@ -11,6 +11,7 @@ global.config = {
         "http://178.63.69.60:32348/",
         "http://node.karbo.space:32348/"
     ],
+	nodeUrl: "",
 	mainnetExplorerUrl: "http://explorer.karbowanec.com/",
 	mainnetExplorerUrlHash: "http://explorer.karbowanec.com/?hash={ID}#blockchain_transaction",
 	mainnetExplorerUrlBlock: "http://explorer.karbowanec.com/?hash={ID}#blockchain_block",

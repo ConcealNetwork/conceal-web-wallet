@@ -338,6 +338,12 @@
         },
         "readMinerTx": {
           "label": "Leer transacciones mineras (solo para minería en solitario)"
+        },
+        "customNode":{
+          "label":"Use custom node"
+        },
+        "nodeUrl":{
+          "label":"Node URL"
         }
       },
       "changePasswordButton": "Cambiar mi contraseña de billetera",

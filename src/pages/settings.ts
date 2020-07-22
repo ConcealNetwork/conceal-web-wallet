@@ -34,6 +34,9 @@ class SendView extends DestructableView{
 	@VueVar(10) readSpeed !: number;
 	@VueVar(false) checkMinerTx !: boolean;
 
+	@VueVar(false) customNode !: boolean;
+	@VueVar('http://node.karbo.io:32348/') nodeUrl !: string;
+
 	@VueVar(0) creationHeight !: number;
 	@VueVar(0) scanHeight !: number;
 
@@ -48,6 +51,9 @@ class SendView extends DestructableView{
 		let self = this;
 		this.readSpeed = wallet.options.readSpeed;
 		this.checkMinerTx = wallet.options.checkMinerTx;
+
+		this.customNode = wallet.options.customNode;
+		this.nodeUrl = wallet.options.nodeUrl;
 
 		this.creationHeight = wallet.creationHeight;
 		this.scanHeight = wallet.lastHeight;
@@ -95,6 +101,8 @@ class SendView extends DestructableView{
 
 	@VueWatched()	readSpeedWatch(){this.updateWalletOptions();}
 	@VueWatched()	checkMinerTxWatch(){this.updateWalletOptions();}
+	@VueWatched()	customNodeWatch(){this.updateWalletOptions();}
+
 	@VueWatched()	creationHeightWatch(){
 		if(this.creationHeight < 0)this.creationHeight = 0;
 		if(this.creationHeight > this.maxHeight && this.maxHeight !== -1)this.creationHeight = this.maxHeight;
@@ -108,6 +116,8 @@ class SendView extends DestructableView{
 		let options = wallet.options;
 		options.readSpeed = this.readSpeed;
 		options.checkMinerTx = this.checkMinerTx;
+		options.customNode = this.customNode;
+		options.nodeUrl = this.nodeUrl;
 		wallet.options = options;
 		walletWatchdog.signalWalletUpdate();
 	}
