@@ -39,7 +39,7 @@ export class WalletWatchdog {
         this.workerProcessing.onmessage = function (data: MessageEvent) {
             let message: string | any = data.data;
             //console.log("InitWorker message: ");
-			//console.log(message);
+            //console.log(message);
             if (message === 'ready') {
                 self.signalWalletUpdate();
             } else if (message === 'readyWallet') {
@@ -247,7 +247,7 @@ export class WalletWatchdog {
                             self.lastBlockLoading = lastTx.blockIndex + 1;
                         }
                     }
-					self.processTransactions(transactions);
+                    self.processTransactions(transactions);
 
                     setTimeout(function () {
                         self.loadHistory();
@@ -276,7 +276,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
 
     // testnet : boolean = true;
     randInt = Math.floor(Math.random() * Math.floor(config.apiUrl.length));
-	randNodeInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
+    randNodeInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
     serverAddress = config.apiUrl[this.randInt];
     nodeAddress = config.nodeList[this.randNodeInt];
 
@@ -290,7 +290,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
         this.heightLastTimeRetrieve = Date.now();
         return new Promise<number>(function (resolve, reject) {
             $.ajax({
-				url: self.nodeAddress + 'getheight',
+                url: self.nodeAddress + 'getheight',
                 method: 'POST',
                 data: JSON.stringify({
                 })
@@ -318,47 +318,47 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
     getTransactionsForBlocks(start_block: number): Promise<RawDaemonTransaction[]> {
         let self = this;
         let transactions: RawDaemonTransaction[] = [];
-		let startBlock = Number(start_block);
+        let startBlock = Number(start_block);
         return new Promise<RawDaemonTransaction[]>(function (resolve, reject) {
-			let tempHeight;
+            let tempHeight;
             let operator = 10;
             if (self.heightCache - startBlock > operator) {
                 tempHeight = startBlock + operator;
             } else {
                 tempHeight = self.heightCache;
             }
-			
-			let blockHeights: number[] = [];		
-			for (let i = startBlock; i <= tempHeight; i++) {
-				blockHeights.push(i);
-			}
+            
+            let blockHeights: number[] = [];        
+            for (let i = startBlock; i <= tempHeight; i++) {
+                blockHeights.push(i);
+            }
 
-			self.postData(self.nodeAddress + 'json_rpc', {
-				"jsonrpc": "2.0",
-				"id": 0,
-				"method": "getblocksbyheights",
-				"params": {
-					"blockHeights": blockHeights
-				}
-			}).then(data => {
-				for (let i = 0; i < data.result.blocks.length; i++) {
-					let finalTxs: any[] = data.result.blocks[i].transactions;
-					for (let j = 0; j < finalTxs.length; j++) {
-						let finalTx = finalTxs[j];
-						transactions.push(finalTx);
-					}
-				}
-				resolve(transactions);
-			}).catch(error => {
-				console.log('REJECT');
-				try {
-					console.log(JSON.parse(error.responseText));
-				} catch (e) {
-					console.log(e);
-				}
-				reject(error);
-			});	
-		
+            self.postData(self.nodeAddress + 'json_rpc', {
+                "jsonrpc": "2.0",
+                "id": 0,
+                "method": "getblocksbyheights",
+                "params": {
+                    "blockHeights": blockHeights
+                }
+            }).then(data => {
+                for (let i = 0; i < data.result.blocks.length; i++) {
+                    let finalTxs: any[] = data.result.blocks[i].transactions;
+                    for (let j = 0; j < finalTxs.length; j++) {
+                        let finalTx = finalTxs[j];
+                        transactions.push(finalTx);
+                    }
+                }
+                resolve(transactions);
+            }).catch(error => {
+                console.log('REJECT');
+                try {
+                    console.log(JSON.parse(error.responseText));
+                } catch (e) {
+                    console.log(e);
+                }
+                reject(error);
+            });    
+        
         });
     }
 
@@ -378,29 +378,29 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                     txHashes.push(rawTxs[iTx].hash);
                 }
 
-				self.postData(self.nodeAddress + 'json_rpc', {
-					"jsonrpc": "2.0",
-					"id": 0,
-					"method": "gettransactionsbyhashes",
-					"params": {
-						"transactionHashes": txHashes
-					}
-				}).then(detailTx => {
+                self.postData(self.nodeAddress + 'json_rpc', {
+                    "jsonrpc": "2.0",
+                    "id": 0,
+                    "method": "gettransactionsbyhashes",
+                    "params": {
+                        "transactionHashes": txHashes
+                    }
+                }).then(detailTx => {
                     let response = detailTx.transactions;
                     if (response !== null) {                       
                         resolve(response);
                     }
                 }).catch(error => {
-					console.log('REJECT');
-				    try {
+                    console.log('REJECT');
+                    try {
                         console.log(JSON.parse(error.responseText));
                     } catch (e) {
                         console.log(e);
                     }
                     reject(error);
-                });	
-			});
-		});	
+                });    
+            });
+        });    
     }
 
     existingOuts: any[] = [];
@@ -448,7 +448,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                         //let globalIndex = output_idx_in_tx;
                         //if (typeof tx.global_index_start !== 'undefined')
                         //    globalIndex += tx.global_index_start;
-						let globalIndex = tx.outputs[output_idx_in_tx].globalIndex;
+                        let globalIndex = tx.outputs[output_idx_in_tx].globalIndex;
                        
                         let newOut = {
                             public_key: tx.outputs[output_idx_in_tx].output.target.data.key,
@@ -507,7 +507,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
             });
         });
     }
-	
+
     async postData(url: string, data: any) {
         const response = await fetch(url, {
             method: 'POST',
