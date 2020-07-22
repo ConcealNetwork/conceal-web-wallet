@@ -51,8 +51,11 @@
 						<label>{{ $t("settingsPage.settingsBlock.customNode.label") }}</label>
 					</div>
 					<div class="field">
-						<label>{{ $t("settingsPage.walletSettings.nodeUrl.label") }}</label>
+						<label>{{ $t("settingsPage.settingsBlock.nodeUrl.label") }}</label>
 						<input type="url" placeholder="http://node.karbo.io:32348/" v-model="nodeUrl" />
+					</div>
+					<div class="actions tc">
+						<button @click="updateConnectionSettings()" class="btn" >{{ $t("settingsPage.walletSettings.updateButton") }}</button>
 					</div>
 				</div>
 			</div>

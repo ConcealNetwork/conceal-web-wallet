@@ -74,6 +74,14 @@ export class WalletWatchdog {
     signalWalletUpdate() {
         let self = this;
         this.lastBlockLoading = -1;//reset scanning
+
+        if (this.wallet.options.customNode) {
+            config.nodeUrl = this.wallet.options.nodeUrl;
+        } else {
+            let randNodeInt:number = Math.floor(Math.random() * Math.floor(config.nodeList.length));
+            config.nodeUrl = config.nodeList[randNodeInt];
+        }
+
         this.workerProcessing.postMessage({
             type: 'initWallet',
             wallet:this.wallet.exportToRaw()
@@ -285,8 +293,6 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
     randInt = Math.floor(Math.random() * Math.floor(config.apiUrl.length));
     serverAddress = config.apiUrl[this.randInt];
 
-    nodeAddress = config.nodeUrl;
-
     heightCache = 0;
     heightLastTimeRetrieve = 0;
     getHeight(): Promise<number> {
@@ -297,7 +303,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
         this.heightLastTimeRetrieve = Date.now();
         return new Promise<number>(function (resolve, reject) {
             $.ajax({
-                url: self.nodeAddress + 'getheight',
+                url: config.nodeUrl + 'getheight',
                 method: 'POST',
                 data: JSON.stringify({
                 })
@@ -340,7 +346,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                 blockHeights.push(i);
             }
 
-            self.postData(self.nodeAddress + 'json_rpc', {
+            self.postData(config.nodeUrl + 'json_rpc', {
                 "jsonrpc": "2.0",
                 "id": 0,
                 "method": "getblocksbyheights",
@@ -372,7 +378,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
     getTransactionPool(): Promise<RawDaemonTransaction[]> {
         let self = this;
         return new Promise<RawDaemonTransaction[]>(function (resolve, reject) {
-            self.postData(self.nodeAddress + 'json_rpc', {
+            self.postData(config.nodeUrl + 'json_rpc', {
                 'jsonrpc': '2.0',
                 'id': 0,
                 'method': 'gettransactionspool',
@@ -385,7 +391,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                     txHashes.push(rawTxs[iTx].hash);
                 }
 
-                self.postData(self.nodeAddress + 'json_rpc', {
+                self.postData(config.nodeUrl + 'json_rpc', {
                     "jsonrpc": "2.0",
                     "id": 0,
                     "method": "gettransactionsbyhashes",
@@ -486,7 +492,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
     sendRawTx(rawTx: string) {
         let self = this;
         return new Promise(function (resolve, reject) {
-            self.postData(self.nodeAddress + 'sendrawtransaction', {
+            self.postData(config.nodeUrl + 'sendrawtransaction', {
                 tx_as_hex: rawTx,
                 do_not_relay: false
             }).then(transactions => {

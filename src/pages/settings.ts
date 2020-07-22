@@ -128,7 +128,13 @@ class SendView extends DestructableView{
 		walletWatchdog.signalWalletUpdate();
 	}
 
-
+	updateConnectionSettings(){
+		let options = wallet.options;
+		options.customNode = this.customNode;
+		options.nodeUrl = this.nodeUrl;
+		wallet.options = options;
+		walletWatchdog.signalWalletUpdate();
+	}
 }
 
 
