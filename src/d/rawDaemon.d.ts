@@ -38,7 +38,7 @@ type RawDaemonTransaction = {
     inputs: Inputs[],
     fee : number,
     unlockTime: number,
-    global_index_start?: number,
+    //global_index_start?: number,
     blockIndex?: number,
     timestamp?: number
     hash?: string,

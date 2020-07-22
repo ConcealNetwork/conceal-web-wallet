@@ -321,7 +321,7 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
 		let startBlock = Number(start_block);
         return new Promise<RawDaemonTransaction[]>(function (resolve, reject) {
 			let tempHeight;
-            let operator = 100;
+            let operator = 10;
             if (self.heightCache - startBlock > operator) {
                 tempHeight = startBlock + operator;
             } else {
@@ -342,24 +342,13 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
 				}
 			}).then(data => {
 				for (let i = 0; i < data.result.blocks.length; i++) {
-					let outCount: any;
 					let finalTxs: any[] = data.result.blocks[i].transactions;
 					for (let j = 0; j < finalTxs.length; j++) {
 						let finalTx = finalTxs[j];
 						
 						delete finalTx.signatures;
-						delete finalTx.unlockTime;
 						delete finalTx.signatureSize;
-						delete finalTx.ts;
 						
-						finalTx.global_index_start = outCount;
-						finalTx.ts = finalTx.timestamp;
-						finalTx.height = finalTx.blockIndex;
-						finalTx.hash = finalTx.hash;
-				
-						let vOutCount = finalTx.outputs.length;
-						outCount += vOutCount;
-
 						transactions.push(finalTx);
 					}
 				}
