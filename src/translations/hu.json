@@ -1,6 +1,6 @@
 {
   "website":{
-	"title":"Hivatalos Karbo webtárca",
+	"title":"Karbo tárca",
 	"description":"A Karbo hivatalos online tárcája - névtelen, biztonságos és teljes mértékben böngészőből kezelt az optimális biztonság érdekében"
   },
   "messages": {
@@ -63,7 +63,7 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Biztonságos Karbo tárca",
+	  "mainTitle": "Üdvözöljük a Karbo tárca",
 	  "tagLine": "A Karbo használatának legegyszerűbb módja - bárhol és bármikor",
 	  "actions": {
 		"loadWallet": "Tárca betöltése",

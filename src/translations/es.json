@@ -1,6 +1,6 @@
 {
   "website": {
-    "title": "Karbo Billetera oficial",
+    "title": "Karbo Billetera",
     "description": "Billetera oficial en línea para la moneda de Karbo: anónima, segura y totalmente manejada en su navegador para una seguridad óptima"
   },
   "messages": {
@@ -65,7 +65,7 @@
       "github": "GitHub"
     },
     "homepage": {
-      "mainTitle": "Karbo Cartera",
+      "mainTitle": "Bienvenido a Karbo Cartera",
       "tagLine": "La forma más sencilla de usar Karbo - en cualquier lugar y en cualquier momento",
       "actions": {
         "loadWallet": "Cargar mi cartera",

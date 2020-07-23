@@ -488,7 +488,7 @@ body.transparent #copyright{
 	}
 }
 .indexTab .mainBlock{
-	min-height:90vh;
+	min-height:100vh;
 	position: relative;
 	text-align: center;
 	background-image: -webkit-linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/balancing.jpg);
@@ -496,7 +496,7 @@ body.transparent #copyright{
 	background-image: linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/balancing.jpg);
 	background-position: center center;
 	background-size: cover;
-	margin-bottom:160px;
+	margin-bottom:0px;
 }
 body.native .indexTab .mainBlock {
 	height: 100vh;
@@ -522,7 +522,7 @@ body.native .indexTab .mainBlock {
 	color:white;
 	padding: 0 20px;
 	margin-bottom: 0;
-	font-size: 50px;
+	font-size: 40px;
 }
 
 .indexTab .mainBlock h2{

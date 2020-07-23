@@ -1,6 +1,6 @@
 {
   "website": {
-    "title": "卡博币钱包 - 简单，无缝，安全。",
+    "title": "卡博币钱包",
     "description": "卡博币币的官方在线钱包 - 完全在浏览器端处理，兼顾最优化的安全性。"
   },
   "messages": {
@@ -63,7 +63,7 @@
       "github": "GitHub"
     },
     "homepage": {
-      "mainTitle": "卡博币钱包",
+      "mainTitle": "欢迎使用卡博币钱包",
       "tagLine": "使用卡博币最简单的方法 无论何时、何地、何种设备。",
       "actions": {
         "loadWallet": "加载我的钱包",

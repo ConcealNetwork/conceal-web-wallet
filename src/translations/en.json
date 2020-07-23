@@ -1,6 +1,6 @@
 {
   "website":{
-	"title":"Client-side Karbo Web Wallet",
+	"title":"Karbo Wallet",
 	"description":"Official online wallet for Karbo currency - fully handled in your browser for optimal security"
   },
   "messages": {
@@ -63,7 +63,7 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Secure Karbo Wallet",
+	  "mainTitle": "Welcome to Karbo Wallet",
 	  "tagLine": "The simplest way to use Karbo – anywhere and any time",
 	  "actions": {
 		"loadWallet": "Load my wallet",

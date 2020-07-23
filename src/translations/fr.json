@@ -1,6 +1,6 @@
 {
   "website":{
-	"title":"Portefeuille officiel en ligne pour Karbo ",
+	"title":"Portefeuille pour Karbo",
 	"description":"Portefeuille en ligne officiel pour la monnaie Karbo, anonyme, sécurisé et entièrement géré dans votre navigateur for une sécurité optimale"
   },
   "messages": {
@@ -63,7 +63,7 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Portefeuille sécurisé pour Karbo",
+	  "mainTitle": "Bienvenue dans Portefeuille pour Karbo",
 	  "tagLine": "Le moyen le plus simple d'utiliser Karbo, n'importe où, n'importe quand",
 	  "actions": {
 		"loadWallet": "Charger mon portefeuille",

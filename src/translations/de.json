@@ -1,6 +1,6 @@
 {
   "website":{
-	"title":"Offizielle Karbo Web Wallet",
+	"title":"Karbo Geldbörse",
 	"description":"Offizielle Online Wallet für Karbo Kryptowährung, anonym, sicher und für optimale Sicherheit vollständig in deinem Browser verwaltet"
   },
   "messages": {
@@ -63,7 +63,7 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Gesicherte Karbo Wallet",
+	  "mainTitle": "Willkommen bei Karbo Wallet",
 	  "tagLine": "Der einfachste Weg Karbo jederzeit und überall zu nutzen",
 	  "actions": {
 		"loadWallet": "Lade meine Wallet",
