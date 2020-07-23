@@ -342,8 +342,9 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
             }
 
             let blockHeights: number[] = [];
-            for (let i = startBlock; i <= tempHeight; i++) {
-                blockHeights.push(i);
+            let c = tempHeight - startBlock + 1, th = tempHeight;
+            while ( c-- ) {
+                blockHeights[c] = th--
             }
 
             self.postData(config.nodeUrl + 'json_rpc', {
