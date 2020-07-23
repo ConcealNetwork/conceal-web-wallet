@@ -511,13 +511,23 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
     resolveOpenAlias(domain: string): Promise<{ address: string, name: string | null }> {
         let self = this;
         return new Promise(function (resolve, reject) {
-            $.ajax({
-                url: self.serverAddress + 'openAlias.php?domain=' + domain,
-                method: 'GET',
-            }).done(function (response: any) {
-                resolve(response);
-            }).fail(function (data: any) {
-                reject(data);
+            self.postData(config.nodeUrl + 'json_rpc', {
+                "jsonrpc": "2.0",
+                "id": 0,
+                "method": "resolveopenalias",
+                "params": {
+                    "url": domain
+                }
+            }).then(data => {
+                resolve(data.result);
+            }).catch(error => {
+                console.log('REJECT');
+                try {
+                    console.log(JSON.parse(error.responseText));
+                } catch (e) {
+                    console.log(e);
+                }
+                reject(error);
             });
         });
     }
