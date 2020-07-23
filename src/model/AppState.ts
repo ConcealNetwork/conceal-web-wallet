@@ -35,7 +35,7 @@ export class WalletWorker{
 		let self = this;
 		wallet.addObserver(Observable.EVENT_MODIFIED, function(){
 			if(self.intervalSave === 0)
-				self.intervalSave = setTimeout(function(){
+				self.intervalSave = <any>setTimeout(function(){
 					self.save();
 					self.intervalSave = 0;
 				}, 1000);

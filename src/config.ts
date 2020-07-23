@@ -1,4 +1,6 @@
+export {};
 let global : any = typeof window !== 'undefined' ? window : self;
+let timeout: number;
 global.config = {
 	apiUrl: [
         "https://wallet.karbo.org/api/"

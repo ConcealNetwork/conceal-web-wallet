@@ -39,7 +39,7 @@ class NetworkView extends DestructableView{
 		super(container);
 
 		let self = this;
-		this.intervalRefreshStat = setInterval(function(){
+		this.intervalRefreshStat = <any>setInterval(function(){
 			self.refreshStats();
 		}, 30*1000);
 		this.refreshStats();

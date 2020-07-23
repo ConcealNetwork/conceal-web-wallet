@@ -373,7 +373,7 @@ class SendView extends DestructableView {
 			if (this.timeoutResolveAlias !== 0)
 				clearTimeout(this.timeoutResolveAlias);
 
-			this.timeoutResolveAlias = setTimeout(function () {
+			this.timeoutResolveAlias = <any>setTimeout(function () {
 				blockchainExplorer.resolveOpenAlias(self.destinationAddressUser).then(function (data: { address: string, name: string | null }) {
 					try {
 						// cnUtil.decode_address(data.address);

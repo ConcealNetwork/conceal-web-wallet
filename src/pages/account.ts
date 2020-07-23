@@ -39,7 +39,7 @@ class AccountView extends DestructableView{
 		super(container);
 		let self = this;
 		AppState.enableLeftMenu();
-		this.intervalRefresh = setInterval(function(){
+		this.intervalRefresh = <any>setInterval(function(){
 			self.refresh();
 		}, 1*1000);
 		this.refresh();

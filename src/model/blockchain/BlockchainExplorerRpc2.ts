@@ -87,7 +87,7 @@ export class WalletWatchdog {
             wallet:this.wallet.exportToRaw()
         });
         clearInterval(this.intervalTransactionsProcess);
-        this.intervalTransactionsProcess = setInterval(function () {
+        this.intervalTransactionsProcess = <any>setInterval(function () {
             self.checkTransactionsInterval();
         }, this.wallet.options.readSpeed);
     }
@@ -96,7 +96,7 @@ export class WalletWatchdog {
     initMempool() {
         let self = this;
         if (this.intervalMempool === 0) {
-            this.intervalMempool = setInterval(function () {
+            this.intervalMempool = <any>setInterval(function () {
                 self.checkMempool();
             }, 30 * 1000);
         }
@@ -213,7 +213,7 @@ export class WalletWatchdog {
         this.transactionsToProcess.push.apply(this.transactionsToProcess, transactionsToAdd);
         if (this.intervalTransactionsProcess === 0) {
             let self = this;
-            this.intervalTransactionsProcess = setInterval(function () {
+            this.intervalTransactionsProcess = <any>setInterval(function () {
                 self.checkTransactionsInterval();
             }, this.wallet.options.readSpeed);
         }
