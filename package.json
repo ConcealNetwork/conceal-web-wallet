@@ -4,7 +4,7 @@
   "description": "Fully client side web wallet for Karbo",
   "main": "index.js",
   "dependencies": {
-    "typescript": "^2.9.2",
+    "typescript": "^3.9.0",
     "workbox-build": "^3.3.0"
   },
   "devDependencies": {},

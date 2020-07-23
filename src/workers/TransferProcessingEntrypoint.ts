@@ -17,10 +17,10 @@ importScripts('../lib/sha3.js');
 try {
 	importScripts('../lib/cn_utils_native.js');
 	(<any>self).Module_native['onRuntimeInitialized'] = function () {
-		require(['./TransferProcessing.js'], function (App) {});
+		requirejs(['./TransferProcessing.js'], function (App) {});
 	};
 }catch(e){
 	setTimeout(function(){//wait 5s due to crypto //TODO find a better fix
-		require(['./TransferProcessing.js'], function (App) {});
+		requirejs(['./TransferProcessing.js'], function (App) {});
 	}, 5*1000);
 }

@@ -104,7 +104,7 @@ export class Router {
 		if (jsContentPath !== null) {
 			this.unloadRequirejs(jsContentPath);
 			this.unloadRequirejs(jsContentPath.replace(this.routerBaseJsRelativity, ''));
-			require([jsContentPath], function (App) {
+			requirejs([jsContentPath], function (App) {
 				$('#page').show();
 				$('#pageLoading').hide();
 			}, function (err) {
