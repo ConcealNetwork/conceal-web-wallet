@@ -1,6 +1,6 @@
 {
   "website":{
-	"title":"کیف پول تحت وب رسمی کربو",
+	"title":"کیف پول کربو",
 	"description":"کیف پول کربو کاملا ایمن و سمت کاربر میباشد و تمامی کربو های شما بر روی دستگاهتان نگهداری میشود"
   },
   "messages": {
@@ -62,7 +62,7 @@
       "github": "گیت هاب"
     },
     "homepage": {
-      "mainTitle": "کیف پول تحت وب کربو",
+      "mainTitle": "به کیف پول کاربو خوش آمدید",
       "tagLine": "آسان ترین راه برای استفاده از کربو",
       "actions": {
         "loadWallet": "بارگیری کیف پول",
@@ -324,6 +324,12 @@
         },
         "readMinerTx": {
           "label": "تراکنش های ماینینگ فقط بصورت تکی"
+        },
+        "customNode":{
+          "label":"Use custom node"
+        },
+        "nodeUrl":{
+          "label":"Node URL"
         }
       },
       "changePasswordButton": "تغییر رمز عبور کیف پول",

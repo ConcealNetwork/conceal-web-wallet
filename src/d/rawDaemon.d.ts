@@ -32,17 +32,28 @@ type Extra = {
     raw: string
 }
 
+type Signatures = {
+    first: number,
+    second: string
+}
+
 type RawDaemonTransaction = {
     extra: Extra,
     outputs: Outputs[],
     inputs: Inputs[],
-    fee : number,
+    fee: number,
+    size: number,
+    mixin: number,
+    version: number,
+    totalInputsAmount: number,
+    totalOutputsAmount: number,
     unlockTime: number,
-    global_index_start?: number,
-    height?: number,
+    blockIndex?: number,
     timestamp?: number
     hash?: string,
-    paymentId: string
+    paymentId: string,
+	signatures: Signatures,
+	signaturesSize: number
 };
 
 type RawDaemonBlock = any;

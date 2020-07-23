@@ -1,6 +1,6 @@
 {
   "name": "karbowebwallet",
-  "version": "1.0.15",
+  "version": "1.0.17",
   "description": "Fully client side web wallet for Karbo",
   "main": "index.js",
   "dependencies": {

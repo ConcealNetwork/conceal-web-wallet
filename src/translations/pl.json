@@ -1,6 +1,6 @@
 {
   "website":{
-	"title":"Oficjalny portfel internetowy Karbowańca",
+	"title":"Portfel Karbowańca",
 	"description":"Oficjalny portfel online dla waluty Karbowaniec - anonimowy, zabezpieczony i w pełni obsługiwany w przeglądarce w celu zapewnienia optymalnego bezpieczeństwa"
   },
   "messages": {
@@ -62,7 +62,7 @@
 	  "github": "GitHub"
 	},
 	 "homepage": {
-	    "mainTitle": "Bezpieczny portfel Karbowańca",
+	    "mainTitle": "Witamy w portfelu Karbowańca",
 	    "tagLine": "Najprostrzy sposób na używanie Karbowańca - wszędzie o każdej porze",
 	    "actions": {
 	    "loadWallet": "Otwórz mój portfel",
@@ -194,7 +194,8 @@
     "title":"Statystki Sieci",
     "subtitle":"Informacja o sieci Karbowańca",
     "statsBlock":{
-      "hashrate":"Prędkość sieci",
+      "connectNode": "Podłączony do",
+	  "hashrate":"Prędkość sieci",
       "height":"Wysokośc bloku",
       "difficulty":"Trudność wydobycia",
       "lastTimeBlock":"Ostatni znaleziony blok",
@@ -334,7 +335,13 @@
 		},
 		"readMinerTx":{
 		  "label":"Czytaj transakcje dla górników (tylko w przypadku wydobycia solo)"
-		}
+		},
+        "customNode":{
+          "label":"Use custom node"
+        },
+        "nodeUrl":{
+          "label":"Node URL"
+        }
 	  },
     "changePasswordButton":"Zmień moje hasło do portfela",
 	  "deleteWalletButton":"Usuń mój portfel (kopia lokalna)",

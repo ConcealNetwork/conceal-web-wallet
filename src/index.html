@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Karbo Web Wallet</title>
-	<meta property="og:title" content="Karbo Web Wallet" />
+	<title>Karbo Wallet</title>
+	<meta property="og:title" content="Karbo Wallet" />
 	<meta property="twitter:title" content="" />
 
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, user-scalable=no">
 
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://wallet.karbo.org 'unsafe-eval' ; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+	<meta http-equiv="Content-Security-Policy" content="default-src *  data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic'; script-src * data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src * data: blob: 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src * data: blob: ; style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline';">
 
 	<meta name="referrer" content="none">
 	<meta name="msapplication-tap-highlight" content="no">
@@ -76,7 +76,7 @@
 <div id="page" ></div>
 
 <div id="copyright" v-cloak="">
-	<div>© 2018 www.karbo.org</div>
+	<div>© 2018-2020 www.karbo.org</div>
 	<div class="links" >
 		<select v-model="language" class="hideOnNative">
 			<option value="en">English</option>
@@ -99,7 +99,7 @@
 		<a href="#!support" >{{ $t("bottom.support") }}</a>
 		<a class="hideOnNative" href="#!donate" >{{ $t("bottom.donate") }}</a>
 		<a class="hideOnNative" href="#!network" >{{ $t("bottom.network") }}</a>
-		<a class="hideOnNative" href="https://pool.karbowanec.com" target="_blank" >{{ $t("bottom.miningPool") }}</a>
+		<!--a class="hideOnNative" href="https://pool.karbowanec.com" target="_blank" >{{ $t("bottom.miningPool") }}</a-->
 		<a class="hideOnNative" href="https://github.com/Karbovanets/karbo-webwallet-js" target="_blank">{{ $t("bottom.github") }}</a>
 	</div>
 	<div class="cb" ></div>

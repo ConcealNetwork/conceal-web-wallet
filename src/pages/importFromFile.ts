@@ -67,7 +67,9 @@ class ImportView extends DestructableView{
 				let fileReader = new FileReader();
 				fileReader.onload = function () {
 					try {
-						self.rawFile = JSON.parse(fileReader.result);
+						if (typeof fileReader.result === "string") {
+							self.rawFile = JSON.parse(fileReader.result);
+						}
 						self.invalidRawFile = false;
 					}catch (e) {
 						self.invalidRawFile = true;

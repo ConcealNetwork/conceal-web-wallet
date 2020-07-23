@@ -1,6 +1,6 @@
 {
   "website":{
-	"title":"Επίσημο πορτοφόλι ιστού Karbo",
+	"title":"Επίσημο πορτοφόλι ιστού Κάρμπο",
 	"description":"Επίσημο online πορτοφόλι για το νόμισμα Karbo - ανώνυμο, ασφαλές, και πλήρως διαχειριζόμενο από τον φυλλομετρητή σας για μέγιστη ασφάλεια"
   },
   "messages": {
@@ -63,7 +63,7 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Ασφαλισμένο Πορτοφόλι Karbo",
+	  "mainTitle": "Καλώς ορίσατε στο Πορτοφόλι Κάρμπο",
 	  "tagLine": "Ο απλούστερος τρόπος χρήσης του Karbo - οπουδήποτε, οποτεδήποτε",
 	  "actions": {
 		"loadWallet": "Φόρτωσε το πορτοφόλι μου",
@@ -336,7 +336,13 @@
 		},
 		"readMinerTx":{
 		  "label":"Ανάγνωση συναλλαγών miner (Μόνο για όσους κάνουν solo mining)"
-		}
+		},
+		  "customNode":{
+			  "label":"Use custom node"
+		  },
+		  "nodeUrl":{
+			  "label":"Node URL"
+		  }
 	  },
 	  "changePasswordButton":"Άλλαξε τον κωδικό του πορτοφολιού μου",
 	  "deleteWalletButton":"Διέγραψε το πορτοφόλι μου (τοπικό αντίγραφο)",

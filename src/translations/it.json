@@ -1,6 +1,6 @@
 {
   "website":{
-	"title":"Portafoglio online ufficiale per Karbo",
+	"title":"Portafoglio per Karbo",
 	"description":"Portafoglio online ufficiale per Karbo currency - anonimo, sicuro e completamente gestito nel tuo browser per una sicurezza ottimale"
   },
   "messages": {
@@ -62,7 +62,7 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Portafoglio sicuro per Karbo",
+	  "mainTitle": "Benvenuto in Portafoglio per Karbo",
 	  "tagLine": "Il modo più semplice per usare Karbo - ovunque e in qualsiasi momento",
 	  "actions": {
 		"loadWallet": "Carica il mio portafoglio",
@@ -335,7 +335,13 @@
 		},
 		"readMinerTx":{
 		  "label":"Leggi transazioni del miner(solo mining)"
-		}
+		},
+		  "customNode":{
+			  "label":"Use custom node"
+		  },
+		  "nodeUrl":{
+			  "label":"Node URL"
+		  }
 	  },
 	  "changePasswordButton":"Cambia la password del mio portafoglio",
 	  "deleteWalletButton":"Elimina il mio portafoglio (copia locale)",

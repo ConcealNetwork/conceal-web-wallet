@@ -35,9 +35,17 @@ export class WalletWatchdog {
 
     initWorker() {
         let self = this;
+        if (this.wallet.options.customNode) {
+            config.nodeUrl = this.wallet.options.nodeUrl;
+        } else {
+            let randNodeInt:number = Math.floor(Math.random() * Math.floor(config.nodeList.length));
+            config.nodeUrl = config.nodeList[randNodeInt];
+        }
+
         this.workerProcessing = new Worker('./workers/TransferProcessingEntrypoint.js');
         this.workerProcessing.onmessage = function (data: MessageEvent) {
             let message: string | any = data.data;
+            //console.log("InitWorker message: ");
             //console.log(message);
             if (message === 'ready') {
                 self.signalWalletUpdate();
@@ -52,7 +60,7 @@ export class WalletWatchdog {
                         self.signalWalletUpdate();
                     }
                     if (self.workerCurrentProcessing.length > 0) {
-                        let transactionHeight = self.workerCurrentProcessing[self.workerCurrentProcessing.length - 1].height;
+                        let transactionHeight = self.workerCurrentProcessing[self.workerCurrentProcessing.length - 1].blockIndex;
                         if (typeof transactionHeight !== 'undefined')
                             self.wallet.lastHeight = transactionHeight;
                     }
@@ -66,6 +74,14 @@ export class WalletWatchdog {
     signalWalletUpdate() {
         let self = this;
         this.lastBlockLoading = -1;//reset scanning
+
+        if (this.wallet.options.customNode) {
+            config.nodeUrl = this.wallet.options.nodeUrl;
+        } else {
+            let randNodeInt:number = Math.floor(Math.random() * Math.floor(config.nodeList.length));
+            config.nodeUrl = config.nodeList[randNodeInt];
+        }
+
         this.workerProcessing.postMessage({
             type: 'initWallet',
             wallet:this.wallet.exportToRaw()
@@ -134,7 +150,7 @@ export class WalletWatchdog {
 
     checkTransactions(rawTransactions: RawDaemonTransaction[]) {
         for (let rawTransaction of rawTransactions) {
-            let height = rawTransaction.height;
+            let height = rawTransaction.blockIndex;
             if (typeof height !== 'undefined') {
                 let transaction = TransactionsExplorer.parse(rawTransaction, this.wallet);
                 if (transaction !== null) {
@@ -152,17 +168,17 @@ export class WalletWatchdog {
 
     checkTransactionsInterval() {
 
-        //somehow we're repeating and regressing back to re-process Tx's 
+        //somehow we're repeating and regressing back to re-process Tx's
         //loadHistory getting into a stack overflow ?
-        //need to work out timinings and ensure process does not reload when it's already running... 
+        //need to work out timinings and ensure process does not reload when it's already running...
 
         if (this.workerProcessingWorking || !this.workerProcessingReady) {
             return;
         }
-        
+
         //we destroy the worker in charge of decoding the transactions every 250 transactions to ensure the memory is not corrupted
         //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
-        if (this.workerCountProcessed >= 250) {
+        if (this.workerCountProcessed >= 100) {
             //console.log('Recreate worker..');
             this.terminateWorker();
             this.initWorker();
@@ -188,8 +204,8 @@ export class WalletWatchdog {
         let transactionsToAdd = [];
 
         for (let tr of transactions) {
-            if (typeof tr.height !== 'undefined')
-                if (tr.height > this.wallet.lastHeight) {
+            if (typeof tr.blockIndex !== 'undefined')
+                if (tr.blockIndex > this.wallet.lastHeight) {
                     transactionsToAdd.push(tr);
                 }
         }
@@ -201,7 +217,7 @@ export class WalletWatchdog {
                 self.checkTransactionsInterval();
             }, this.wallet.options.readSpeed);
         }
-        
+
     }
 
 
@@ -210,7 +226,7 @@ export class WalletWatchdog {
 
     loadHistory() {
         if (this.stopped) return;
-        
+
         if (this.lastBlockLoading === -1) this.lastBlockLoading = this.wallet.lastHeight;
         let self = this;
         //don't reload until it's finished processing the last batch of transactions
@@ -234,7 +250,7 @@ export class WalletWatchdog {
             if (height > self.lastMaximumHeight) self.lastMaximumHeight = height;
 
             if (self.lastBlockLoading !== height) {
-                let previousStartBlock = self.lastBlockLoading;
+                let previousStartBlock = Number(self.lastBlockLoading);
                 let startBlock = Math.floor(self.lastBlockLoading / 100) * 100;
                 //console.log('=>',self.lastBlockLoading, endBlock, height, startBlock, self.lastBlockLoading);
                 //console.log('load block from ' + startBlock);
@@ -242,12 +258,12 @@ export class WalletWatchdog {
                     //to ensure no pile explosion
                     if (transactions.length > 0) {
                         let lastTx = transactions[transactions.length - 1];
-                        if (typeof lastTx.height !== 'undefined') {
-                            self.lastBlockLoading = lastTx.height + 1;
+                        if (typeof lastTx.blockIndex !== 'undefined') {
+                            self.lastBlockLoading = lastTx.blockIndex + 1;
                         }
                     }
-
                     self.processTransactions(transactions);
+
                     setTimeout(function () {
                         self.loadHistory();
                     }, 1);
@@ -274,7 +290,8 @@ export class WalletWatchdog {
 export class BlockchainExplorerRpc2 implements BlockchainExplorer {
 
     // testnet : boolean = true;
-    serverAddress = config.apiUrl;
+    randInt = Math.floor(Math.random() * Math.floor(config.apiUrl.length));
+    serverAddress = config.apiUrl[this.randInt];
 
     heightCache = 0;
     heightLastTimeRetrieve = 0;
@@ -286,24 +303,18 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
         this.heightLastTimeRetrieve = Date.now();
         return new Promise<number>(function (resolve, reject) {
             $.ajax({
-                url: self.serverAddress + 'getheight.php',
+                url: config.nodeUrl + 'getheight',
                 method: 'POST',
                 data: JSON.stringify({
                 })
             }).done(function (raw: any) {
-                // self.heightCache = raw.height;
-                // resolve(raw.height);
-                self.heightCache = parseInt(raw);
+                self.heightCache = parseInt(raw.height);
                 resolve(self.heightCache);
             }).fail(function (data: any) {
                 reject(data);
             });
         });
     }
-
-    // getDaemonUrl(){
-    // 	return this.testnet ? 'http://localhost:48081/' : 'http://localhost:38081/';
-    // }
 
     scannedHeight: number = 0;
 
@@ -317,47 +328,94 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
         return watchdog;
     }
 
-    getTransactionsForBlocks(startBlock: number): Promise<RawDaemonTransaction[]> {
+    getTransactionsForBlocks(start_block: number): Promise<RawDaemonTransaction[]> {
         let self = this;
+        let transactions: RawDaemonTransaction[] = [];
+        let startBlock = Number(start_block);
         return new Promise<RawDaemonTransaction[]>(function (resolve, reject) {
-            $.ajax({
-                url: self.serverAddress + 'blockchain.php?height=' + startBlock,
-                method: 'GET',
-                data: JSON.stringify({
-                })
-            }).done(function (transactions: any) {
+            let tempHeight;
+            let operator = 10;
+            if (self.heightCache - startBlock > operator) {
+                tempHeight = startBlock + operator;
+            } else {
+                tempHeight = self.heightCache;
+            }
+
+            let blockHeights: number[] = [];
+            let c = tempHeight - startBlock + 1, th = tempHeight;
+            while ( c-- ) {
+                blockHeights[c] = th--
+            }
+
+            self.postData(config.nodeUrl + 'json_rpc', {
+                "jsonrpc": "2.0",
+                "id": 0,
+                "method": "getblocksbyheights",
+                "params": {
+                    "blockHeights": blockHeights
+                }
+            }).then(data => {
+                for (let i = 0; i < data.result.blocks.length; i++) {
+                    let finalTxs: any[] = data.result.blocks[i].transactions;
+                    for (let j = 0; j < finalTxs.length; j++) {
+                        let finalTx = finalTxs[j];
+                        transactions.push(finalTx);
+                    }
+                }
                 resolve(transactions);
-            }).fail(function (data: any) {
-                reject(data);
+            }).catch(error => {
+                console.log('REJECT');
+                try {
+                    console.log(JSON.parse(error.responseText));
+                } catch (e) {
+                    console.log(e);
+                }
+                reject(error);
             });
+
         });
     }
 
     getTransactionPool(): Promise<RawDaemonTransaction[]> {
         let self = this;
         return new Promise<RawDaemonTransaction[]>(function (resolve, reject) {
-            $.ajax({
-                url: self.serverAddress + 'getTransactionPool.php',
-                method: 'GET',
-            }).done(function (transactions: any) {
-                if (transactions !== null) {
-                    //console.log("tx pool:");
-                    //console.log(transactions);
-                    resolve(transactions);
+            self.postData(config.nodeUrl + 'json_rpc', {
+                'jsonrpc': '2.0',
+                'id': 0,
+                'method': 'gettransactionspool',
+                'params': ''
+            }).then(data => {
+                let rawTxs = data.result.transactions;
+                let txHashes: any[] = [];
+
+                for (let iTx = 0; iTx < rawTxs.length; iTx++) {
+                    txHashes.push(rawTxs[iTx].hash);
                 }
-            }).fail(function (data: any) {
-                //console.log('REJECT');
-                try {
-                    //console.log(JSON.parse(data.responseText));
-                } catch (e) {
-                    //console.log(e);
-                }
-                reject(data);
+
+                self.postData(config.nodeUrl + 'json_rpc', {
+                    "jsonrpc": "2.0",
+                    "id": 0,
+                    "method": "gettransactionsbyhashes",
+                    "params": {
+                        "transactionHashes": txHashes
+                    }
+                }).then(detailTx => {
+                    let response = detailTx.transactions;
+                    if (response !== null) {
+                        resolve(response);
+                    }
+                }).catch(error => {
+                    console.log('REJECT');
+                    try {
+                        console.log(JSON.parse(error.responseText));
+                    } catch (e) {
+                        console.log(e);
+                    }
+                    reject(error);
+                });
             });
         });
     }
-
-    nonRandomBlockConsumed = false;
 
     existingOuts: any[] = [];
     getRandomOuts(nbOutsNeeded: number, initialCall = true): Promise<any[]> {
@@ -394,8 +452,8 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                     let tx = txs[iOut];
 
                     if (
-                        (typeof tx.height !== 'undefined' && randomBlocksIndexesToGet.indexOf(tx.height) === -1) ||
-                        typeof tx.height === 'undefined'
+                        (typeof tx.blockIndex !== 'undefined' && randomBlocksIndexesToGet.indexOf(tx.blockIndex) === -1) ||
+                        typeof tx.blockIndex === 'undefined'
                     ) {
                         continue;
                     }
@@ -404,15 +462,15 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
                         //let globalIndex = output_idx_in_tx;
                         //if (typeof tx.global_index_start !== 'undefined')
                         //    globalIndex += tx.global_index_start;
-						let globalIndex = tx.outputs[output_idx_in_tx].globalIndex;
-                       
+                        let globalIndex = tx.outputs[output_idx_in_tx].globalIndex;
+
                         let newOut = {
                             public_key: tx.outputs[output_idx_in_tx].output.target.data.key,
                             global_index: globalIndex,
                             // global_index: count,
                         };
-                        if (typeof txCandidates[tx.height] === 'undefined') txCandidates[tx.height] = [];
-                        txCandidates[tx.height].push(newOut);
+                        if (typeof txCandidates[tx.blockIndex] === 'undefined') txCandidates[tx.blockIndex] = [];
+                        txCandidates[tx.blockIndex].push(newOut);
                     }
                 }
 
@@ -435,20 +493,17 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
     sendRawTx(rawTx: string) {
         let self = this;
         return new Promise(function (resolve, reject) {
-            $.ajax({
-                url: self.serverAddress + 'sendrawtransaction.php',
-                method: 'POST',
-                data: JSON.stringify({
-                    tx_as_hex: rawTx,
-                    do_not_relay: false
-                })
-            }).done(function (transactions: any) {
+            self.postData(config.nodeUrl + 'sendrawtransaction', {
+                tx_as_hex: rawTx,
+                do_not_relay: false
+            }).then(transactions => {
                 if (transactions.status && transactions.status == 'OK') {
                     resolve(transactions);
-                } else
+                } else {
                     reject(transactions);
-            }).fail(function (data: any) {
-                reject(data);
+                }
+            }).catch(error => {
+                reject(error);
             });
         });
     }
@@ -456,15 +511,35 @@ export class BlockchainExplorerRpc2 implements BlockchainExplorer {
     resolveOpenAlias(domain: string): Promise<{ address: string, name: string | null }> {
         let self = this;
         return new Promise(function (resolve, reject) {
-            $.ajax({
-                url: self.serverAddress + 'openAlias.php?domain=' + domain,
-                method: 'GET',
-            }).done(function (response: any) {
-                resolve(response);
-            }).fail(function (data: any) {
-                reject(data);
+            self.postData(config.nodeUrl + 'json_rpc', {
+                "jsonrpc": "2.0",
+                "id": 0,
+                "method": "resolveopenalias",
+                "params": {
+                    "url": domain
+                }
+            }).then(data => {
+                resolve(data.result);
+            }).catch(error => {
+                console.log('REJECT');
+                try {
+                    console.log(JSON.parse(error.responseText));
+                } catch (e) {
+                    console.log(e);
+                }
+                reject(error);
             });
         });
+    }
+
+    async postData(url: string, data: any) {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+
+        return response.json();
     }
 
 }

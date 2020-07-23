@@ -1,6 +1,6 @@
 {
   "website":{
-	"title":"Hivatalos Karbo webtárca",
+	"title":"Karbo tárca",
 	"description":"A Karbo hivatalos online tárcája - névtelen, biztonságos és teljes mértékben böngészőből kezelt az optimális biztonság érdekében"
   },
   "messages": {
@@ -63,7 +63,7 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Biztonságos Karbo tárca",
+	  "mainTitle": "Üdvözöljük a Karbo tárca",
 	  "tagLine": "A Karbo használatának legegyszerűbb módja - bárhol és bármikor",
 	  "actions": {
 		"loadWallet": "Tárca betöltése",
@@ -336,7 +336,13 @@
 		},
 		"readMinerTx":{
 		  "label":"Bányászási tranzakciók beolvasása (csak egyedülálló bányászás esetén)"
-		}
+		},
+		  "customNode":{
+			  "label":"Use custom node"
+		  },
+		  "nodeUrl":{
+			  "label":"Node URL"
+		  }
 	  },
 	  "changePasswordButton":"Jelszómódosítás",
 	  "deleteWalletButton":"Tárca törlése (helyi másolat)",

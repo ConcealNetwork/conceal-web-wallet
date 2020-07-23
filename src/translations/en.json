@@ -1,6 +1,6 @@
 {
   "website":{
-	"title":"Client-side Karbo Web Wallet",
+	"title":"Karbo Wallet",
 	"description":"Official online wallet for Karbo currency - fully handled in your browser for optimal security"
   },
   "messages": {
@@ -63,7 +63,7 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Secure Karbo Wallet",
+	  "mainTitle": "Welcome to Karbo Wallet",
 	  "tagLine": "The simplest way to use Karbo – anywhere and any time",
 	  "actions": {
 		"loadWallet": "Load my wallet",
@@ -195,6 +195,7 @@
 	  "title":"Network stats",
 	  "subtitle":"Insights on the Karbo network",
 	  "statsBlock":{
+		"connectNode": "Connected to node",
 		"hashrate":"Network hashrate",
 		"height":"Blockchain height",
 		"difficulty":"Network difficulty",
@@ -336,6 +337,12 @@
 		},
 		"readMinerTx":{
 		  "label":"Read miner transactions (only for solo mining)"
+		},
+		"customNode":{
+		  "label":"Use custom node"
+		},
+	    "nodeUrl":{
+		  "label":"Node URL"
 		}
 	  },
 	  "changePasswordButton":"Change my wallet password",

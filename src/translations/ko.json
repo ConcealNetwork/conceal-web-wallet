@@ -1,6 +1,6 @@
 {
   "website": {
-    "title": "카르보 지갑 - 간단하고 안전합니다.",
+    "title": "카르보 지갑",
     "description": "카르보 통화를위한 공식 온라인 지갑 - 최적의 보안을 위해 브라우저에서 완벽하게 처리됩니다. 본인만 사용하는 기기에서 접속해 주세요."
   },
   "messages": {
@@ -63,7 +63,7 @@
       "github": "Github"
     },
     "homepage": {
-      "mainTitle": "카르보 코인 웹지갑",
+      "mainTitle": "카르보 에 오신 것을 환영합니다",
       "tagLine": "카르보 코인을 사용하기 가장 간단한 방법 어디서든. 언제든. 모든 장치에서.",
       "actions": {
         "loadWallet": "지갑 불러오기",
@@ -342,6 +342,12 @@
         },
         "readMinerTx": {
           "label": "채굴관련 송금 확인 (오직 단독 채굴에 적용됨)"
+        },
+        "customNode":{
+          "label":"Use custom node"
+        },
+        "nodeUrl":{
+          "label":"Node URL"
         }
       },
       "changePasswordButton": "비밀번호 변경",
