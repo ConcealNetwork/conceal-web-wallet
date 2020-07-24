@@ -54,7 +54,7 @@ class NetworkView extends DestructableView{
 		let self = this;
 		let randInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
 		$.ajax({
-			url:config.nodeList[randInt]+'json_rpc',
+			url:config.nodeUrl+'json_rpc',
 			method: 'POST',
 			data: JSON.stringify(
 				{
@@ -66,11 +66,11 @@ class NetworkView extends DestructableView{
 			)
 		}).done(function(data : any){
 			self.networkDifficulty = data['result']['block_header'].difficulty;
-			self.networkHashrate = data['result']['block_header'].difficulty/config.avgBlockTime/1000000;
+			self.networkHashrate = parseFloat((data['result']['block_header'].difficulty/config.avgBlockTime/1000000).toFixed(2));
 			self.blockchainHeight = data['result']['block_header'].height;
 			self.lastReward = data['result']['block_header'].reward/Math.pow(10, config.coinUnitPlaces);
 			self.lastBlockFound = parseInt(data['result']['block_header'].timestamp);
-			self.connectedNode = config.nodeList[randInt];
+			self.connectedNode = config.nodeUrl;
 		});
 	}
 

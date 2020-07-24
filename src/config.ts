@@ -6,7 +6,7 @@ global.config = {
     ],
     nodeList: [
         "http://node.karbo.org:32348/",
-        "free.rublin.org:32348/",
+        "http://free.rublin.org:32348/",
         "http://108.61.198.115:32348/",
         "http://45.32.232.11:32348/",
         "http://178.63.69.60:32348/",
@@ -22,7 +22,7 @@ global.config = {
 	testnet: false,
     coinUnitPlaces: 12,
     coinDisplayUnitPlaces: 2,
-	txMinConfirms: 10,         
+	txMinConfirms: 10,
 	txCoinbaseMinConfirms: 10,
 	addressPrefix: 111,
 	integratedAddressPrefix: 112,
@@ -45,3 +45,5 @@ global.config = {
 	avgBlockTime: 240,
 	maxBlockNumber: 500000000,
 };
+let randInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
+config.nodeUrl = config.nodeList[randInt];
