@@ -75,8 +75,8 @@ export class TransactionsExplorer {
 			let amount = out.output.amount;
 			let output_idx_in_tx = iOut;
 
-			let generated_tx_pubkey = cnUtil.derive_public_key(derivation,output_idx_in_tx,wallet.keys.pub.spend);//5.5ms
-			//let generated_tx_pubkey = CnUtilNative.derive_public_key(derivation,output_idx_in_tx,wallet.keys.pub.spend);//5.5ms
+			//let generated_tx_pubkey = cnUtil.derive_public_key(derivation,output_idx_in_tx,wallet.keys.pub.spend);//5.5ms
+			let generated_tx_pubkey = CnUtilNative.derive_public_key(derivation,output_idx_in_tx,wallet.keys.pub.spend);//5.5ms
 
 			// check if generated public key matches the current output's key
 			let mine_output = (txout_k.key == generated_tx_pubkey);
@@ -221,9 +221,9 @@ export class TransactionsExplorer {
 			}
 
 			for (let out of tr.outs) {
-				
+
 				//console.log("out.globalIndex: " + out.globalIndex);
-				
+
 				unspentOuts.push({
 					keyImage: out.keyImage,
 					amount: out.amount,
@@ -434,7 +434,7 @@ export class TransactionsExplorer {
 				else if (usingOuts_amount.compare(totalAmount) > 0) {
 					let changeAmount = usingOuts_amount.subtract(totalAmount);
 					//add entire change for rct
-					//console.log("1) Sending change of " + cnUtil.formatMoneySymbol(changeAmount) 
+					//console.log("1) Sending change of " + cnUtil.formatMoneySymbol(changeAmount)
 					//	+ " to " /*+ AccountService.getAddress()*/);
 					dsts.push({
 						address: wallet.getPublicAddress(),
