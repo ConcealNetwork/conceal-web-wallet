@@ -5,12 +5,7 @@ global.config = {
         "https://wallet.karbo.org/api/"
     ],
     nodeList: [
-        "http://node.karbo.org:32348/",
-        "http://free.rublin.org:32348/",
-        "http://108.61.198.115:32348/",
-        "http://45.32.232.11:32348/",
-        "http://178.63.69.60:32348/",
-        "http://node.karbo.space:32348/"
+        "https://karbo.club/services/node_web/"
     ],
 	nodeUrl: "",
 	mainnetExplorerUrl: "http://explorer.karbowanec.com/",
