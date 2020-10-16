@@ -1,7 +1,7 @@
 {
   "name": "karbowebwallet",
-  "version": "1.0.2",
-  "description": "Fully client side web wallet for Karbo",
+  "version": "1.1.0",
+  "description": "Fully client-side web-wallet for Karbo",
   "main": "index.js",
   "dependencies": {
     "typescript": "^3.9.0",
@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git+https://github.com/Karbovanets/karbo-webwallet-js.git"
   },
-  "author": "Gnock,Aiwe,Alex",
+  "author": "Gnock,Aiwe,Alex,ExploShot",
   "license": "BSD-3",
   "bugs": {
     "url": "https://github.com/Karbovanets/Karbo-webwallet-js/issues"
