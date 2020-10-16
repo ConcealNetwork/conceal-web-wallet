@@ -14,18 +14,20 @@
  */
 
 import {DestructableView} from "../lib/numbersLab/DestructableView";
-import {VueVar} from "../lib/numbersLab/VueAnnotate";
-import {TransactionsExplorer} from "../model/TransactionsExplorer";
-import {WalletRepository} from "../model/WalletRepository";
-import {BlockchainExplorerRpc2} from "../model/blockchain/BlockchainExplorerRpc2";
-import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
+import {VueVar, VueRequireFilter} from "../lib/numbersLab/VueAnnotate";
 import {Constants} from "../model/Constants";
 import {Wallet} from "../model/Wallet";
 import {AppState} from "../model/AppState";
+import {BlockchainExplorer, NetworkInfo} from "../model/blockchain/BlockchainExplorer";
+import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
+import {VueFilterHashrate} from "../filters/Filters";
 
 AppState.enableLeftMenu();
+let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
 
-class NetworkView extends DestructableView{
+@VueRequireFilter('hashrate', VueFilterHashrate)
+
+class NetworkView extends DestructableView {
 	@VueVar(0) networkHashrate !: number;
 	@VueVar(0) blockchainHeight !: number;
 	@VueVar(0) networkDifficulty !: number;
@@ -35,13 +37,13 @@ class NetworkView extends DestructableView{
 
 	private intervalRefreshStat = 0;
 
-	constructor(container : string){
+	constructor(container: string) {
 		super(container);
 
 		let self = this;
-		this.intervalRefreshStat = <any>setInterval(function(){
+		this.intervalRefreshStat = <any>setInterval(function () {
 			self.refreshStats();
-		}, 30*1000);
+		}, 30 * 1000);
 		this.refreshStats();
 	}
 
@@ -51,29 +53,16 @@ class NetworkView extends DestructableView{
 	}
 
 	refreshStats() {
-		let self = this;
-		let randInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
-		$.ajax({
-			url:config.nodeUrl+'json_rpc',
-			method: 'POST',
-			data: JSON.stringify(
-				{
-					"jsonrpc": "2.0",
-					"id": 0,
-					"method": "getlastblockheader",
-					"params": {}
-				}
-			)
-		}).done(function(data : any){
-			self.networkDifficulty = data['result']['block_header'].difficulty;
-			self.networkHashrate = parseFloat((data['result']['block_header'].difficulty/config.avgBlockTime/1000000).toFixed(2));
-			self.blockchainHeight = data['result']['block_header'].height;
-			self.lastReward = data['result']['block_header'].reward/Math.pow(10, config.coinUnitPlaces);
-			self.lastBlockFound = parseInt(data['result']['block_header'].timestamp);
-			self.connectedNode = config.nodeUrl;
+		blockchainExplorer.getNetworkInfo().then((info: NetworkInfo) => {
+			//console.log(info);
+			this.connectedNode = info.node;
+			this.networkDifficulty = info.difficulty;
+			this.networkHashrate = info.difficulty / config.avgBlockTime;
+			this.blockchainHeight = info.height;
+			this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
+			this.lastBlockFound = info.timestamp;
 		});
 	}
-
 }
 
 new NetworkView('#app');

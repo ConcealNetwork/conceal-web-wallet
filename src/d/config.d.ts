@@ -28,6 +28,7 @@ declare var config : {
 	txChargeAddress: string,
 	idleTimeout: number,
 	idleWarningDuration: number,
+	syncBlockCount: number,
 	maxBlockNumber: number,
 	avgBlockTime: number,
 };

@@ -14,28 +14,27 @@
  */
 
 import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
-import {BlockchainExplorerRpc2, WalletWatchdog} from "./blockchain/BlockchainExplorerRpc2";
 import {Wallet} from "./Wallet";
 import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
 import {Observable} from "../lib/numbersLab/Observable";
 import {WalletRepository} from "./WalletRepository";
-import {BlockchainExplorer} from "./blockchain/BlockchainExplorer";
-import {Constants} from "./Constants";
+import {BlockchainExplorer, RawDaemon_Transaction} from "./blockchain/BlockchainExplorer";
 import {TransactionsExplorer} from "./TransactionsExplorer";
+import {WalletWatchdog} from "./WalletWatchdog";
 
-export class WalletWorker{
-	wallet : Wallet;
-	password : string;
+export class WalletWorker {
+	wallet: Wallet;
+	password: string;
 
 	intervalSave = 0;
 
-	constructor(wallet: Wallet, password:string) {
+	constructor(wallet: Wallet, password: string) {
 		this.wallet = wallet;
 		this.password = password;
 		let self = this;
-		wallet.addObserver(Observable.EVENT_MODIFIED, function(){
-			if(self.intervalSave === 0)
-				self.intervalSave = <any>setTimeout(function(){
+		wallet.addObserver(Observable.EVENT_MODIFIED, function () {
+			if (self.intervalSave === 0)
+				self.intervalSave = setTimeout(function () {
 					self.save();
 					self.intervalSave = 0;
 				}, 1000);
@@ -44,65 +43,68 @@ export class WalletWorker{
 		this.save();
 	}
 
-	save(){
+	save() {
 		WalletRepository.save(this.wallet, this.password);
 	}
 }
 
-export class AppState{
+export class AppState {
 
-	static openWallet(wallet : Wallet, password:string){
+	static openWallet(wallet: Wallet, password: string) {
 		let walletWorker = new WalletWorker(wallet, password);
 
-		DependencyInjectorInstance().register(Wallet.name,wallet);
+		DependencyInjectorInstance().register(Wallet.name, wallet);
 		let watchdog = BlockchainExplorerProvider.getInstance().watchdog(wallet);
-		DependencyInjectorInstance().register(WalletWatchdog.name,watchdog);
-		DependencyInjectorInstance().register(WalletWorker.name,walletWorker);
+		DependencyInjectorInstance().register(WalletWatchdog.name, watchdog);
+		DependencyInjectorInstance().register(WalletWorker.name, walletWorker);
 
 		$('body').addClass('connected');
-		if(wallet.isViewOnly())
+		if (wallet.isViewOnly())
 			$('body').addClass('viewOnlyWallet');
 	}
 
-	static disconnect(){
-		let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name,'default', false);
-		let walletWorker : WalletWorker = DependencyInjectorInstance().getInstance(WalletWorker.name,'default', false);
-		let walletWatchdog : WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name,'default', false);
-		if(walletWatchdog !== null)
+	static disconnect() {
+		let wallet: Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
+		let walletWorker: WalletWorker = DependencyInjectorInstance().getInstance(WalletWorker.name, 'default', false);
+		let walletWatchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name, 'default', false);
+		if (walletWatchdog !== null)
 			walletWatchdog.stop();
 
-		DependencyInjectorInstance().register(Wallet.name,undefined,'default');
-		DependencyInjectorInstance().register(WalletWorker.name,undefined,'default');
-		DependencyInjectorInstance().register(WalletWatchdog.name,undefined,'default');
+		DependencyInjectorInstance().register(Wallet.name, undefined, 'default');
+		DependencyInjectorInstance().register(WalletWorker.name, undefined, 'default');
+		DependencyInjectorInstance().register(WalletWatchdog.name, undefined, 'default');
 		$('body').removeClass('connected');
 		$('body').removeClass('viewOnlyWallet');
 	}
 
 	private static leftMenuEnabled = false;
-	static enableLeftMenu(){
-		if(!this.leftMenuEnabled) {
+
+	static enableLeftMenu() {
+		if (!this.leftMenuEnabled) {
 			this.leftMenuEnabled = true;
 			$('body').removeClass('menuDisabled');
 		}
 	}
-	static disableLeftMenu(){
-		if(this.leftMenuEnabled) {
+
+	static disableLeftMenu() {
+		if (this.leftMenuEnabled) {
 			this.leftMenuEnabled = false;
 			$('body').addClass('menuDisabled');
 		}
 	}
 
-	static askUserOpenWallet(redirectToHome:boolean=true){
+	static askUserOpenWallet(redirectToHome: boolean = true) {
 		let self = this;
 		return new Promise<void>(function (resolve, reject) {
+
 			swal({
 				title: i18n.t('global.openWalletModal.title'),
 				input: 'password',
 				showCancelButton: true,
 				confirmButtonText: i18n.t('global.openWalletModal.confirmText'),
 				cancelButtonText: i18n.t('global.openWalletModal.cancelText'),
-			}).then((result:any) => {
-				setTimeout(function(){//for async
+			}).then((result: any) => {
+				setTimeout(function () { //for async
 					if (result.value) {
 						swal({
 							type: 'info',
@@ -115,8 +117,8 @@ export class AppState{
 						let savePassword = result.value;
 						// let password = prompt();
 						let memoryWallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
-						if(memoryWallet === null){
-							WalletRepository.getLocalWalletWithPassword(savePassword).then((wallet : Wallet|null) => {
+						if (memoryWallet === null) {
+							WalletRepository.getLocalWalletWithPassword(savePassword).then((wallet: Wallet | null) => {
 								//console.log(wallet);
 								if (wallet !== null) {
 									wallet.recalculateIfNotViewOnly();
@@ -130,19 +132,23 @@ export class AppState{
 									}
 									let blockchainHeightToRescan = Object.keys(blockchainHeightToRescanObj);
 									if (blockchainHeightToRescan.length > 0) {
-										let blockchainExplorer: BlockchainExplorerRpc2 = BlockchainExplorerProvider.getInstance();
+										let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
 
 										let promisesBlocks = [];
 										for (let height of blockchainHeightToRescan) {
-											promisesBlocks.push(blockchainExplorer.getTransactionsForBlocks(parseInt(height)));
+											promisesBlocks.push(blockchainExplorer.getTransactionsForBlocks(parseInt(height), parseInt(height), wallet.options.checkMinerTx));
+											//console.log(`promisesBlocks.length: ${promisesBlocks.length}`);
 										}
-										Promise.all(promisesBlocks).then(function (arrayOfTxs: Array<RawDaemonTransaction[]>) {
+
+										Promise.all(promisesBlocks).then(function (arrayOfTxs: Array<RawDaemon_Transaction[]>) {
 											for (let txs of arrayOfTxs) {
 												for (let rawTx of txs) {
 													if (wallet !== null) {
 														let tx = TransactionsExplorer.parse(rawTx, wallet);
-														if (tx !== null)
+														if (tx !== null) {
+															console.log(`Added new Tx ${tx.hash} to wallet`);
 															wallet.addNew(tx);
+														}
 													}
 												}
 											}
@@ -167,16 +173,14 @@ export class AppState{
 									reject();
 								}
 							});
-						}else {
+						} else {
 							swal.close();
 							window.location.href = '#account';
 						}
-					}else
+					} else
 						reject();
-				},1);
+				}, 1);
 			});
 		});
 	}
-
-
 }

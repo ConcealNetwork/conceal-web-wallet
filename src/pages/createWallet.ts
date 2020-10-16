@@ -17,15 +17,16 @@ import {DestructableView} from "../lib/numbersLab/DestructableView";
 import {KeysRepository} from "../model/KeysRepository";
 import {Wallet} from "../model/Wallet";
 import {Password} from "../model/Password";
-import {BlockchainExplorerRpc2} from "../model/blockchain/BlockchainExplorerRpc2";
 import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
 import {Mnemonic} from "../model/Mnemonic";
 import {AppState} from "../model/AppState";
 import {WalletRepository} from "../model/WalletRepository";
 import {Translations} from "../model/Translations";
 import {MnemonicLang} from "../model/MnemonicLang";
+import {BlockchainExplorer} from "../model/blockchain/BlockchainExplorer";
+import {Cn, CnNativeBride, CnRandom} from "../model/Cn";
 
-let blockchainExplorer : BlockchainExplorerRpc2 = BlockchainExplorerProvider.getInstance();
+let blockchainExplorer : BlockchainExplorer = BlockchainExplorerProvider.getInstance();
 
 class CreateViewWallet extends DestructableView{
 	@VueVar(0) step !: number;
@@ -54,8 +55,8 @@ class CreateViewWallet extends DestructableView{
 		let self = this;
 		setTimeout(function(){
 			blockchainExplorer.getHeight().then(function(currentHeight){
-				let seed = cnUtil.sc_reduce32(cnUtil.rand_32());
-				let keys = cnUtil.create_address(seed);
+				let seed = CnNativeBride.sc_reduce32(CnRandom.rand_32());
+				let keys = Cn.create_address(seed);
 
 				let newWallet = new Wallet();
 				newWallet.keys = KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
@@ -111,8 +112,8 @@ class CreateViewWallet extends DestructableView{
 			confirmButtonText: 'Yes'
 		}).then((result:{value:boolean}) => {
 			if (result.value) {*/
-				self.forceInsecurePassword = true;
-			// }
+		self.forceInsecurePassword = true;
+		// }
 		// });
 	}
 

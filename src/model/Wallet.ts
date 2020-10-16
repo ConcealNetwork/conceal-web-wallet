@@ -16,7 +16,7 @@
 import {Transaction, TransactionIn, TransactionOut} from "./Transaction";
 import {KeysRepository, UserKeys} from "./KeysRepository";
 import {Observable} from "../lib/numbersLab/Observable";
-import {CryptoUtils} from "./CryptoUtils";
+import {Cn, CnNativeBride, CnTransactions} from "./Cn";
 
 export type RawWalletOptions = {
 	checkMinerTx?:boolean,
@@ -318,7 +318,7 @@ export class Wallet extends Observable{
 	}
 
 	getPublicAddress(){
-		return cnUtil.pubkeys_to_string(this.keys.pub.spend,this.keys.pub.view);
+		return Cn.pubkeys_to_string(this.keys.pub.spend, this.keys.pub.view);
 	}
 
 	recalculateIfNotViewOnly(){
@@ -335,13 +335,13 @@ export class Wallet extends Observable{
 				if(needDerivation) {
 					let derivation = '';
 					try {
-						derivation = cnUtil.generate_key_derivation(tx.txPubKey, this.keys.priv.view);//9.7ms
+						derivation = CnNativeBride.generate_key_derivation(tx.txPubKey, this.keys.priv.view);
 					} catch (e) {
 						continue;
 					}
 					for (let out of tx.outs) {
 						if (out.keyImage === '') {
-							let m_key_image = CryptoUtils.generate_key_image_helper({
+							let m_key_image = CnTransactions.generate_key_image_helper({
 								view_secret_key: this.keys.priv.view,
 								spend_secret_key: this.keys.priv.spend,
 								public_spend_key: this.keys.pub.spend,
