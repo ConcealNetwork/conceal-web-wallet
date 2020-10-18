@@ -370,7 +370,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
 
     getNetworkInfo(): Promise<NetworkInfo> {
         return this.makeRpcRequest('getlastblockheader').then((raw: any) => {
-            console.log(raw);
+            //console.log(raw);
             return {
                 'node': config.nodeUrl.split(':')[1].replace(/[-[\]\/{}()*+?\\^$|#\s]/g, ''),
                 'major_version': raw.block_header['major_version'],
