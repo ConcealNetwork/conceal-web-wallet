@@ -38,7 +38,7 @@
 
 					<div class="field" >
 						<label>{{ $t("sendPage.sendBlock.amount.label") }}</label>
-						<input class="amountInput" type="text" v-model="amountToSend" placeholder="10.5 MSR" :readonly="lockedForm"/>
+						<input class="amountInput" type="text" v-model="amountToSend" placeholder="10.5 KRB" :readonly="lockedForm"/>
 						<div v-if="!amountToSendValid && amountToSend != ''" class="message error">
 							{{ $t("sendPage.sendBlock.amount.invalid") }}
 						</div>
