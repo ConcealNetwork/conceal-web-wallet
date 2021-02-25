@@ -129,7 +129,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
 
         this.lastTimeRetrieveInfo = Date.now();
         return this.makeRequest('GET', 'getheight').then((data: any) => {
-            let height = parseInt(data.height) - 1;
+            let height = parseInt(data.height);
             this.cacheHeight = height;
             return height;
         })
