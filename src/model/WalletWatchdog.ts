@@ -174,24 +174,6 @@ export class WalletWatchdog {
     workerCurrentProcessing: RawDaemon_Transaction[] = [];
     workerCountProcessed = 0;
 
-    checkTransactions(rawTransactions: RawDaemon_Transaction[]) {
-        for (let rawTransaction of rawTransactions) {
-            let height = rawTransaction.height;
-            if (typeof height !== 'undefined') {
-                let transaction = TransactionsExplorer.parse(rawTransaction, this.wallet);
-                if (transaction !== null) {
-                    this.wallet.addNew(transaction);
-                }
-                if (height - this.wallet.lastHeight >= 2) {
-                    this.wallet.lastHeight = height - 1;
-                }
-            }
-        }
-        if (this.transactionsToProcess.length == 0) {
-            this.wallet.lastHeight = this.lastBlockLoading;
-        }
-    }
-
     checkTransactionsInterval() {
 
         //somehow we're repeating and regressing back to re-process Tx's
