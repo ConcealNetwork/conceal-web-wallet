@@ -194,13 +194,24 @@ export class Wallet extends Observable{
 	addNew(transaction : Transaction, replace = true){
 		let exist = this.findWithTxPubKey(transaction.txPubKey);
 		if(!exist || replace) {
-			if(!exist)
+			if(!exist) {
 				this.transactions.push(transaction);
-			else
-				for(let tr = 0; tr < this.transactions.length; ++tr)
-					if(this.transactions[tr].txPubKey === transaction.txPubKey){
+			} else {
+				for(let tr = 0; tr < this.transactions.length; ++tr) {
+					if(this.transactions[tr].txPubKey === transaction.txPubKey) {
 						this.transactions[tr] = transaction;
 					}
+				}
+			}
+
+			// remove from unconfirmed
+			let existMem = this.findMemWithTxPubKey(transaction.txPubKey);
+			if(existMem) {
+				let trIndex = this.txsMem.indexOf(existMem);
+				if(trIndex != -1) {
+					this.txsMem.splice(trIndex, 1);
+				}
+			}
 
 			// this.saveAll();
 			this.recalculateKeyImages();
@@ -211,6 +222,13 @@ export class Wallet extends Observable{
 
 	findWithTxPubKey(pubKey : string) : Transaction|null{
 		for(let tr of this.transactions)
+			if(tr.txPubKey === pubKey)
+				return tr;
+		return null;
+	}
+
+	findMemWithTxPubKey(pubKey : string) : Transaction|null{
+		for(let tr of this.txsMem)
 			if(tr.txPubKey === pubKey)
 				return tr;
 		return null;
