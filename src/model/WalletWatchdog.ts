@@ -178,7 +178,7 @@ export class WalletWatchdog {
 
         //somehow we're repeating and regressing back to re-process Tx's
         //loadHistory getting into a stack overflow ?
-        //need to work out timinings and ensure process does not reload when it's already running...
+        //need to work out timings and ensure process does not reload when it's already running...
 
         if (this.workerProcessingWorking || !this.workerProcessingReady) {
             return;
@@ -258,6 +258,8 @@ export class WalletWatchdog {
         this.explorer.getHeight().then(function (height) {
             if (height > self.lastMaximumHeight) self.lastMaximumHeight = height;
 
+            if (self.lastBlockLoading === -1) self.lastBlockLoading = self.wallet.lastHeight;
+
             if (self.lastBlockLoading !== height) {
                 let previousStartBlock = Number(self.lastBlockLoading);
                 let endBlock = previousStartBlock + config.syncBlockCount;
@@ -270,6 +272,7 @@ export class WalletWatchdog {
                     if (transactions === 'OK') {
                         self.lastBlockLoading = endBlock;
                         self.wallet.lastHeight = endBlock;
+
                         setTimeout(function () {
                             self.loadHistory();
                         }, 1);

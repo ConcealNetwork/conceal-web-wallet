@@ -178,7 +178,7 @@ export class Wallet extends Observable{
 		this.modified = true;
 	}
 
-	getAll(forceReload=false) : Transaction[]{
+	getAll(forceReload = false) : Transaction[]{
 		return this.transactions.slice();
 	}
 
@@ -191,7 +191,7 @@ export class Wallet extends Observable{
 		return outs;
 	}
 
-	addNew(transaction : Transaction, replace=true){
+	addNew(transaction : Transaction, replace = true){
 		let exist = this.findWithTxPubKey(transaction.txPubKey);
 		if(!exist || replace) {
 			if(!exist)
