@@ -78,7 +78,7 @@
 		},
 		"fast": {
 		  "title": "无障碍",
-		  "description": "随时随地使用！"
+		  "description": "基于浏览器！"
 		},
 		"technology": {
 		  "title": "客户端",
@@ -86,7 +86,7 @@
 		},
 		"openSource": {
 		  "title": "开源",
-		  "description": "在Github上验证！"
+		  "description": "托管在 Github 上！"
 		}
 	  }
     },

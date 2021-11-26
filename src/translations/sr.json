@@ -78,7 +78,7 @@
 		},
 		"fast": {
 		  "title": "Приступачан",
-		  "description": "Шаљите било где, било када!"
+		  "description": "Заснован на претраживачу!"
 		},
 		"technology": {
 		  "title": "На страни клијента",
@@ -86,7 +86,7 @@
 		},
 		"openSource": {
 		  "title": "Open-source",
-		  "description": "Провери на ГитХаб"
+		  "description": "Хостовано на Гитхуб-у!"
 		}
 	  }
 	},

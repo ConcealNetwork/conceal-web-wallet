@@ -565,11 +565,11 @@ body.native .indexTab .mainBlock > .actions{
 .indexTab .notesBlock{
 	position: absolute;
 	bottom:0;
-	-webkit-transform: translateY(90px);
-	-moz-transform: translateY(90px);
-	-ms-transform: translateY(90px);
-	-o-transform: translateY(90px);
-	transform: translateY(90px);
+	-webkit-transform: translateY(-50px);
+	-moz-transform: translateY(-50px);
+	-ms-transform: translateY(-50px);
+	-o-transform: translateY(-50px);
+	transform: translateY(-50px);
 	left:0;right:0;
 }
 @media screen and (max-width: 940px) {
@@ -601,20 +601,17 @@ body.native .indexTab .mainBlock > .actions{
 }
 .indexTab .notes .block{
 	height: 180px;
-	background: white;
+	background: transparent;
 	text-align: center;
 	padding-top: 36px;
 	padding-bottom: 31px;
-	border-radius: 20px;
-	-webkit-box-shadow: 0 10px 25px 0 rgba(88, 102, 128, 0.1);
-	box-shadow: 0 10px 25px 0 rgba(88, 102, 128, 0.1);
 }
 .indexTab .block i{
 	font-size: 40px;
 	color:#00A0E3;
 }
 .indexTab .block h3{
-	color:#30466C;
+	color:white;
 	font-size: 20px;
 	margin: 0;
 	margin-bottom:5px;margin-top:8px;
@@ -624,12 +621,17 @@ body.native .indexTab .mainBlock > .actions{
 	text-decoration: none;
 }
 .indexTab .block h4{
-	color:#30466C;
+	color:white;
 	font-size: 12px;
 	margin: 0;
 	font-weight: normal;
 }
-
+@media screen and (max-width: 940px) {
+	.indexTab .block h3,
+	.indexTab .block h4{
+		color:#2D5587;
+	}
+}
 
 .indexTab .walletImportSelector{
 	z-index: 90;

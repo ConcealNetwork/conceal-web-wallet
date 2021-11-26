@@ -78,7 +78,7 @@
 		},
 		"fast": {
 		  "title": "Hozzáférhető",
-		  "description": "Küldj bárhonnan, bármikor!"
+		  "description": "Böngésző alapú!"
 		},
 		"technology": {
 		  "title": "Ügyfél oldal",
@@ -86,7 +86,7 @@
 		},
 		"openSource": {
 		  "title": "Nyílt forráskód",
-		  "description": "Ellenőrizze a Githubon!"
+		  "description": "Házigazda a Githubon!"
 		}
 	  }
 	},

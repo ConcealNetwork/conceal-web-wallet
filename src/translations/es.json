@@ -76,11 +76,11 @@
 	  "notes": {
 		"secure": {
 		  "title": "Seguro",
-		  "description": "Totalmente encriptados!"
+		  "description": "¡Totalmente encriptados!"
 		},
 		"fast": {
 		  "title": "Accesible",
-		  "description": "Enviar a todas partes, en cualquier momento!"
+		  "description": "¡Basado en navegador!"
 		},
 		"technology": {
 		  "title": "Lado del cliente",
@@ -88,7 +88,7 @@
 		},
 		"openSource": {
 		  "title": "Fuente abierta",
-		  "description": "Verificar en Github!"
+		  "description": "¡Alojado en Github!"
 		}
 	  }
     },

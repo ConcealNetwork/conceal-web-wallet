@@ -78,7 +78,7 @@
 		},
 		"fast": {
 		  "title": "얻기 쉬운",
-		  "description": "언제 어디서나 보내기!"
+		  "description": "브라우저 기반!"
 		},
 		"technology": {
 		  "title": "고객 입장에서",
@@ -86,7 +86,7 @@
 		},
 		"openSource": {
 		  "title": "오픈 소스",
-		  "description": "Github에서 확인하십시오!"
+		  "description": "Github에서 호스팅!"
 		}
 	  }
     },

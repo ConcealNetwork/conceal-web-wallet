@@ -77,7 +77,7 @@
 		},
 		"fast": {
 		  "title": "Accessibile",
-		  "description": "Invia ovunque e in qualsiasi momento!"
+		  "description": "Basato su browser!"
 		},
 		"technology": {
 		  "title": "Lato client",
@@ -85,7 +85,7 @@
 		},
 		"openSource": {
 		  "title": "Open-source",
-		  "description": "Verifica su Github!"
+		  "description": "Ospitato su Github!"
 		}
 	  }
 	},

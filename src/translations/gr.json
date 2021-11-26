@@ -78,7 +78,7 @@
 		},
 		"fast": {
 		  "title": "Προσιτός",
-		  "description": "Χρήση παντού, Οποτεδήποτε!"
+		  "description": "Βασισμένο σε πρόγραμμα περιήγησης!"
 		},
 		"technology": {
 		  "title": "Υπολογιστή-πελάτη",
@@ -86,7 +86,7 @@
 		},
 		"openSource": {
 		  "title": "Ανοιχτή πηγή",
-		  "description": "Επαληθεύστε στο Github!"
+		  "description": "Φιλοξενείται στο Github!"
 		}
 	  }
 	},

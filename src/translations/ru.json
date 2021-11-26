@@ -78,7 +78,7 @@
 		},
 		"fast": {
 		  "title": "Доступный",
-		  "description": "Когда надо и где угодно!"
+		  "description": "Работает прямо в браузере!"
 		},
 		"technology": {
 		  "title": "Локальный",
@@ -86,7 +86,7 @@
 		},
 		"openSource": {
 		  "title": "Open-source",
-		  "description": "Не доверяй - проверяй!"
+		  "description": "Хостинг на Github!"
 		}
 	  }
 	},

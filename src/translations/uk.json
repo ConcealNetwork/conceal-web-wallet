@@ -78,15 +78,15 @@
 		},
 		"fast": {
 		  "title": "Доступний",
-		  "description": "Де завгодно й коли треба!"
+		  "description": "Працює в браузері!"
 		},
 		"technology": {
 		  "title": "Локальний",
-		  "description": "Ключі в браузері"
+		  "description": "Ключі на вашому пристрої!"
 		},
 		"openSource": {
 		  "title": "Open-source",
-		  "description": "Не довіряй - перевіряй!"
+		  "description": "Хостинг на Github!"
 		}
 	  }
 	},
