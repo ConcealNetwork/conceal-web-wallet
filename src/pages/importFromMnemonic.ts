@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2018, Gnock
  * Copyright (c) 2018, The Masari Project
+ * Copyright (c) 2022, The Karbo Developers
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -57,6 +58,7 @@ class ImportView extends DestructableView {
 		this.languages.push({key: 'portuguese', name: 'Portuguese'});
 		this.languages.push({key: 'russian', name: 'Russian'});
 		this.languages.push({key: 'spanish', name: 'Spanish'});
+		this.languages.push({key: 'ukrainian', name: 'Ukrainian'});
 		this.language = 'auto';
 	}
 
