@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Portfel Karbowańca",
-	"description":"Oficjalny portfel online dla waluty Karbowaniec - anonimowy, zabezpieczony i w pełni obsługiwany w przeglądarce w celu zapewnienia optymalnego bezpieczeństwa"
+	"title":"Portfel Conceal Networkwańca",
+	"description":"Oficjalny portfel online dla waluty Conceal Networkwaniec - anonimowy, zabezpieczony i w pełni obsługiwany w przeglądarce w celu zapewnienia optymalnego bezpieczeństwa"
   },
   "messages": {
 	"menu": {
@@ -62,8 +62,8 @@
 	  "github": "GitHub"
 	},
 	 "homepage": {
-	    "mainTitle": "Witamy w portfelu Karbowańca",
-	    "tagLine": "Najprostrzy sposób na używanie Karbowańca - wszędzie o każdej porze",
+	    "mainTitle": "Witamy w portfelu Conceal Networkwańca",
+	    "tagLine": "Najprostrzy sposób na używanie Conceal Networkwańca - wszędzie o każdej porze",
 	    "actions": {
 	    "loadWallet": "Otwórz mój portfel",
 	    "importWallet": "Zaimportuj portfel",
@@ -105,7 +105,7 @@
         "emptyWallet": "Obecnie nie masz środków w tym portfelu.",
         "waitSync": "Poczekaj, aż portfel zostanie zaktualizowany.",
         "beReallyPatient": "Wstępna konfiguracja może zająć trochę czasu...",
-        "getKRBAddress": "Odbierz KRB"
+        "getCCXAddress": "Odbierz CCX"
       },
       "txDetails":{
         "title":"Szczegóły stransakcji",
@@ -142,7 +142,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"To było proste. Twoje konto jest gotowe!",
-		"subtitle":"Bądź gotowy do użycia Karbowańca, jak nigdy dotąd",
+		"subtitle":"Bądź gotowy do użycia Conceal Networkwańca, jak nigdy dotąd",
 		"passwordSelectionBlock":{
 		  "label":"Chroń swój portfel"
 		},
@@ -165,8 +165,8 @@
 		}
   },
     "disclaimerBlock":{
-		"title":"Ryzyko użycia Portfela Karbowańca",
-		"content":"Portfel Karbowańca jest interfejsem internetowym. Pomaga ci używać Karbowaniec bez uruchamiania pełnego węzła. <br/>Zalecamy traktowanie tego portfela tak, jakbyś traktował swój rzeczywisty portfel."
+		"title":"Ryzyko użycia Portfela Conceal Networkwańca",
+		"content":"Portfel Conceal Networkwańca jest interfejsem internetowym. Pomaga ci używać Conceal Networkwaniec bez uruchamiania pełnego węzła. <br/>Zalecamy traktowanie tego portfela tak, jakbyś traktował swój rzeczywisty portfel."
 	  }
   },
   "donatePage":{
@@ -176,9 +176,9 @@
     "title":"Portfel Web",
     "content":"Jeśli chcesz pomóc w rozwoju, np. pomóc zapłacić za serwery czy podoba ci się ta aplikacja, rozważ darowiznę: <br/><br/>"
   },
-    "KarboFundBlock":{
-      "title":"Fundusz rozwoju Karbowańca",
-      "content":"Aby wspomóc Karbowaniec, możesz przekazać darowiznę na te adresy"
+    "Conceal NetworkFundBlock":{
+      "title":"Fundusz rozwoju Conceal Networkwańca",
+      "content":"Aby wspomóc Conceal Networkwaniec, możesz przekazać darowiznę na te adresy"
   }
   },
   "supportPage":{
@@ -187,12 +187,12 @@
     "getInTouchBlock":{
       "title":"Bądźmy w kontakcie!",
       "content":"Czy masz pomysły lub opinie, które mogą pomóc nam ulepszyć portfel? Skontaktuj się z nami!",
-      "discord":"Karbo Discord"
+      "discord":"Conceal Network Discord"
     }
   },
   "networkPage":{
     "title":"Statystki Sieci",
-    "subtitle":"Informacja o sieci Karbowańca",
+    "subtitle":"Informacja o sieci Conceal Networkwańca",
     "statsBlock":{
       "connectNode": "Podłączony do",
 	  "hashrate":"Prędkość sieci",
@@ -203,7 +203,7 @@
     }
   },
   "sendPage":{
-    "title":"Wyślij KRB",
+    "title":"Wyślij CCX",
     "sendBlock":{
       "address":{
         "label":"Adres dotacji",
@@ -233,7 +233,7 @@
     },
     "thankYouDonationModal":{
       "title":"Dziękuję za darowiznę!",
-      "content":"Twoja pomoc jest doceniana. <br/>Ta darowizna pomoże ulepszyć Karbo",
+      "content":"Twoja pomoc jest doceniana. <br/>Ta darowizna pomoże ulepszyć Conceal Network",
       "confirmText":"OK"
     },
     "transferSentModal":{
@@ -270,7 +270,7 @@
 	  }
 	},
   "receivePage":{
-	  "title":"Odbierz KRB",
+	  "title":"Odbierz CCX",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Twój adres, aby otrzymać fundusze:",
@@ -298,7 +298,7 @@
 	},
   "miningPage":{
   	  "title":"Kop bezpośrednio w przeglądarce",
-  	  "subtitle":"Wspieraj sieć przez wydobycie i zostań nagrodzony w KRB",
+  	  "subtitle":"Wspieraj sieć przez wydobycie i zostań nagrodzony w CCX",
   	  "parameterBlock":{
   		"title":"Parametry",
   		"labelDestinationAddress":"Portfel do kopania",
@@ -312,7 +312,7 @@
   		"hashrate":"Prędkość",
   		"maxHashrate":"Maksymalna prędkość",
   		"dedicatedHardware":"Dzięki dedykowanemu oprogramowaniu i sprzętowi górniczemu możesz zarabiać więcej i pomagać w decentralizacji sieci.",
-      "miningHandledBy":"To wydobycie jest obsługiwane przez kopalnie get.Karbocoin.com"
+      "miningHandledBy":"To wydobycie jest obsługiwane przez kopalnie get.Conceal Networkcoin.com"
 	  }
 	},
 	"settingsPage":{

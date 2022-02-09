@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Karbo Geldbörse",
-	"description":"Offizielle Online Wallet für Karbo Kryptowährung, anonym, sicher und für optimale Sicherheit vollständig in deinem Browser verwaltet"
+	"title":"Conceal Network Geldbörse",
+	"description":"Offizielle Online Wallet für Conceal Network Kryptowährung, anonym, sicher und für optimale Sicherheit vollständig in deinem Browser verwaltet"
   },
   "messages": {
 	"menu": {
@@ -63,8 +63,8 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Willkommen bei Karbo Wallet",
-	  "tagLine": "Der einfachste Weg Karbo jederzeit und überall zu nutzen",
+	  "mainTitle": "Willkommen bei Conceal Network Wallet",
+	  "tagLine": "Der einfachste Weg Conceal Network jederzeit und überall zu nutzen",
 	  "actions": {
 		"loadWallet": "Lade meine Wallet",
 		"importWallet": "Importiere eine Wallet",
@@ -106,7 +106,7 @@
 		"emptyWallet": "Du hast zur Zeit kein Guthaben auf dieser Wallet",
 		"waitSync": "Warte bis die Wallet upgedated ist",
 		"beReallyPatient": "Die erste Einrichtung kann etwas dauern...",
-		"getCoinAddress": "Hol die deine Adresse um KRB zu empfangen"
+		"getCoinAddress": "Hol die deine Adresse um CCX zu empfangen"
 	  },
 	  "txDetails":{
 		"title":"Transaktionsdetails",
@@ -143,7 +143,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"Das war einfach. Dein Account ist bereit!",
-		"subtitle":"Benutze Karbo wie noch nie zuvor",
+		"subtitle":"Benutze Conceal Network wie noch nie zuvor",
 		"passwordSelectionBlock":{
 		  "label":"Schütze deine Daten mit einem Passwort"
 		},
@@ -161,13 +161,13 @@
 		  "mnemonicPhrase":"Mnemonic phrase",
 		  "separatorManualMethodsSolution":" oder ",
 		  "confirmManuallyWritten":"Ich habe es aufgeschieben",
-		  "warningMessage":"**Auf keinen Fall verlieren!** Sie können nicht wiederhergestellt werden wenn du sie verlierst.<br/>**Nicht weitergeben!** Deine Karbo werden gestohlen werden wenn diese Datei auf einer bösartigen/Phishing Seite benutzt.<br/>**Mache ein Backup!** Sichere es so wie die Millionen Euro, die es eines Tages vielleicht wert sein wird.<br/>",
+		  "warningMessage":"**Auf keinen Fall verlieren!** Sie können nicht wiederhergestellt werden wenn du sie verlierst.<br/>**Nicht weitergeben!** Deine Conceal Network werden gestohlen werden wenn diese Datei auf einer bösartigen/Phishing Seite benutzt.<br/>**Mache ein Backup!** Sichere es so wie die Millionen Euro, die es eines Tages vielleicht wert sein wird.<br/>",
 		  "finishButton":"Ich habe verstanden. Weiter"
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Risiko beim benutzen der KarboWallet",
-		"content":"KarboWallet ist ein web-basierendes Interface. Es hilft beim Nutzen von Karbo ohne einen vollen Node zu betreiben. <br/>Wir empfehlen KarboWallet sicherheitstechnisch wie eine richtige Wallet zu behandeln."
+		"title":"Risiko beim benutzen der Conceal NetworkWallet",
+		"content":"Conceal NetworkWallet ist ein web-basierendes Interface. Es hilft beim Nutzen von Conceal Network ohne einen vollen Node zu betreiben. <br/>Wir empfehlen Conceal NetworkWallet sicherheitstechnisch wie eine richtige Wallet zu behandeln."
 	  }
 	},
 	"donatePage":{
@@ -178,8 +178,8 @@
 		"content":"Diese Webwallet ist von Gnock in seiner Freizeit entwickelt.<br/>Bitte denk über eine Spende nach wenn dir die App gefällt und du bei der Bezahlung der Server und der Enwicklung helfen willst.: <br/><br/>"
 	  },
 	  "devFundBlock":{
-		"title":"Karbo Entwicklerfonds",
-		"content":"Spende an diese Adresse um Karbo zu helfen"
+		"title":"Conceal Network Entwicklerfonds",
+		"content":"Spende an diese Adresse um Conceal Network zu helfen"
 	  }
 	},
 	"supportPage":{
@@ -188,7 +188,7 @@
 	  "getInTouchBlock":{
 		"title":"Nehmen wir Kontakt auf!",
 		"content":"Wenn du Ideen oder Feedback hast um die Wallet zu verbessern, kontaktiere uns!",
-		"discord":"Karbo Discord Channel"
+		"discord":"Conceal Network Discord Channel"
 	  }
 	},
 	"networkPage":{
@@ -203,7 +203,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"Schicke KRB",
+	  "title":"Schicke CCX",
 	  "sendBlock":{
 		"address":{
 		  "label":"Zieladresse",
@@ -234,7 +234,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Danke für deine Spende!",
-		"content":"Deine Hilfe wird sehr geschätzt. <br/>Diese Spende wird helfen Karbo noch beser zu machen",
+		"content":"Deine Hilfe wird sehr geschätzt. <br/>Diese Spende wird helfen Conceal Network noch beser zu machen",
 		"confirmText":"Schließen"
 	  },
 	  "transferSentModal":{
@@ -271,7 +271,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"Empfange KRB",
+	  "title":"Empfange CCX",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Deine Adresse um Guthaben zu empfangen",
@@ -299,7 +299,7 @@
 	},
 	"miningPage":{
 	  "title":"Mine direkt in deinem Browser",
-	  "subtitle":"Unterstütze das Netzwerk für mehr Stabilität und werde mit KRB belohnt",
+	  "subtitle":"Unterstütze das Netzwerk für mehr Stabilität und werde mit CCX belohnt",
 	  "parameterBlock":{
 		"title":"Parameter",
 		"labelDestinationAddress":"Wallet für die gemined werden soll",

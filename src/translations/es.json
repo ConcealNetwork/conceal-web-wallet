@@ -1,7 +1,7 @@
 {
   "website": {
-    "title": "Karbo Billetera",
-    "description": "Billetera oficial en línea para la moneda de Karbo: anónima, segura y totalmente manejada en su navegador para una seguridad óptima"
+    "title": "Conceal Network Billetera",
+    "description": "Billetera oficial en línea para la moneda de Conceal Network: anónima, segura y totalmente manejada en su navegador para una seguridad óptima"
   },
   "messages": {
     "menu": {
@@ -65,8 +65,8 @@
       "github": "GitHub"
     },
     "homepage": {
-      "mainTitle": "Bienvenido a Karbo Cartera",
-      "tagLine": "La forma más sencilla de usar Karbo - en cualquier lugar y en cualquier momento",
+      "mainTitle": "Bienvenido a Conceal Network Cartera",
+      "tagLine": "La forma más sencilla de usar Conceal Network - en cualquier lugar y en cualquier momento",
       "actions": {
         "loadWallet": "Cargar mi cartera",
         "importWallet": "Importar una cartera",
@@ -108,7 +108,7 @@
         "emptyWallet": "Actualmente no tiene fondos en esta billetera.",
         "waitSync": "Por favor, espere hasta que la billetera se actualice",
         "beReallyPatient": "La configuración inicial puede tomar algún tiempo...",
-        "getCoinAddress": "Recibir KRB"
+        "getCoinAddress": "Recibir CCX"
       },
       "txDetails": {
         "title": "Detalles de la transacción",
@@ -145,7 +145,7 @@
       },
       "finalizationStep": {
         "title": "Eso fue simple. ¡Tu cuenta está lista!",
-        "subtitle": "Prepárese para usar Karbo como nunca lo ha hecho",
+        "subtitle": "Prepárese para usar Conceal Network como nunca lo ha hecho",
         "passwordSelectionBlock": {
           "label": "Proteja su billetera"
         },
@@ -168,8 +168,8 @@
         }
       },
       "disclaimerBlock": {
-        "title": "Riesgo de usar la Billetera Karbo",
-        "content": "La Billetera Karbo es una interfaz basado en web. Le ayuda a usar Karbo sin ejecutar un nodo Karbo completo.<br/>Le recomendamos que trate la Billetera Karbo como tratará su billetera real."
+        "title": "Riesgo de usar la Billetera Conceal Network",
+        "content": "La Billetera Conceal Network es una interfaz basado en web. Le ayuda a usar Conceal Network sin ejecutar un nodo Conceal Network completo.<br/>Le recomendamos que trate la Billetera Conceal Network como tratará su billetera real."
       }
     },
     "donatePage": {
@@ -180,8 +180,8 @@
         "content": "Si desea ayudar a pagar por los servidores, a apoyar el desarrollo de nuevas funciones, y como a esta aplicación, considera hacer una donación: <br/><br/>"
       },
       "devFundBlock": {
-        "title": "Fondo de desarrollo Karbo",
-        "content": "Para ayudar a Karbo, puede donar a estas direcciones"
+        "title": "Fondo de desarrollo Conceal Network",
+        "content": "Para ayudar a Conceal Network, puede donar a estas direcciones"
       }
     },
     "supportPage": {
@@ -190,12 +190,12 @@
       "getInTouchBlock": {
         "title": "¡Pongámonos en Contacto!",
         "content": "¿Tiene ideas o comentarios que podrían ayudarnos a mejorar la billetera? ¡Contáctenos!",
-        "discord": "Canal de Karbo en Discord"
+        "discord": "Canal de Conceal Network en Discord"
       }
     },
     "networkPage": {
       "title": "Estado de red",
-      "subtitle": "Perspectivas sobre la red Karbo",
+      "subtitle": "Perspectivas sobre la red Conceal Network",
       "statsBlock": {
         "hashrate": "Tasa de Hachís en red",
         "height": "Altura de blockchain",
@@ -205,7 +205,7 @@
       }
     },
     "sendPage": {
-      "title": "Enviar KRB",
+      "title": "Enviar CCX",
       "sendBlock": {
         "address": {
           "label": "Dirección de destino",
@@ -236,7 +236,7 @@
       },
       "thankYouDonationModal": {
         "title": "¡Gracias por su donación!",
-        "content": "Su ayuda es apreciada. Esta donación ayudará a mejorar Karbo",
+        "content": "Su ayuda es apreciada. Esta donación ayudará a mejorar Conceal Network",
         "confirmText": "OK"
       },
       "transferSentModal": {
@@ -273,7 +273,7 @@
       }
     },
     "receivePage": {
-      "title": "Recibir KRB",
+      "title": "Recibir CCX",
       "receiveBlock": {
         "address": {
           "title": "Su dirección para recibir fondos.:",
@@ -301,7 +301,7 @@
     },
     "miningPage": {
       "title": "Minar directamente en tu navegador",
-      "subtitle": "Apoye la red minando y sea recompensado con KRB",
+      "subtitle": "Apoye la red minando y sea recompensado con CCX",
       "parameterBlock": {
         "title": "Parámetros",
         "labelDestinationAddress": "Billetera a minar",
@@ -315,7 +315,7 @@
         "hashrate": "Tasa de Hachís",
         "maxHashrate": "Tasa de Hachís Maxima",
         "dedicatedHardware": "Al dedicar software y hardware de minería, podría ganar más y ayudar a descentralizar la red.",
-        "miningHandledBy": "Esta minería es manejada por la mineria junta pool.karbowanec.com"
+        "miningHandledBy": "Esta minería es manejada por la mineria junta pool.conceal.network"
       }
     },
     "settingsPage": {

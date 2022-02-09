@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2018, Gnock
  * Copyright (c) 2018, The Masari Project
+ * Copyright (c) 2022, The Karbo Developers
+ * Copyright (c) 2022, Conceal Devs
+ * Copyright (c) 2022, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -302,9 +305,9 @@ class SendView extends DestructableView {
 
 						let promise = Promise.resolve();
 						if (
-							destinationAddress === 'Kdev1L9V5ow3cdKNqDpLcFFxZCqu5W2GE9xMKewsB2pUXWxcXvJaUWHcSrHuZw91eYfQFzRtGfTemReSSMN4kE445i6Etb3' ||
-							destinationAddress === 'KarBo7DQFVyCpMcb1Zk8nLR1xjPdAmo9jJ27mwX7pbgD7nHrra5uRgJdwGmUyinzb5cYrumqLW7Av539Jm46tXHYQfrYyW2' ||
-							destinationAddress === 'KdevxwLgUts7BVfWKFWrFWXLjfX6xf2HcbPP7jTirKhj1SWudNYFeKiHuLGRK4USLiBnaKPbNf7oj6iDNLgnn4Z45LhwtBi'
+							destinationAddress === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj' ||
+							destinationAddress === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj' ||
+							destinationAddress === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj'
 						) {
 							promise = swal({
 								type: 'success',

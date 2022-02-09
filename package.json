@@ -1,7 +1,7 @@
 {
-  "name": "karbowebwallet",
+  "name": "ConcealWallet",
   "version": "1.1.0",
-  "description": "Fully client-side web-wallet for Karbo",
+  "description": "Fully client-side web-wallet for Conceal Network",
   "main": "index.js",
   "dependencies": {
     "typescript": "^3.9.0",
@@ -10,12 +10,12 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Karbovanets/karbo-webwallet-js.git"
+    "url": "git+https://github.com/ConcealNetwork/conceal-web-wallet.git"
   },
   "author": "Gnock,Aiwe,Alex,ExploShot",
   "license": "BSD-3",
   "bugs": {
-    "url": "https://github.com/Karbovanets/Karbo-webwallet-js/issues"
+    "url": "https://github.com/ConcealNetwork/conceal-web-wallet/issues"
   },
-  "homepage": "https://github.com/Karbovanets/Karbo-webwallet-js#readme"
+  "homepage": "https://github.com/ConcealNetwork/conceal-web-wallet#readme"
 }

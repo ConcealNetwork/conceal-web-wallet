@@ -1,7 +1,7 @@
-{
+﻿{
   "website":{
 	"title":"Επίσημο πορτοφόλι ιστού Κάρμπο",
-	"description":"Επίσημο online πορτοφόλι για το νόμισμα Karbo - ανώνυμο, ασφαλές, και πλήρως διαχειριζόμενο από τον φυλλομετρητή σας για μέγιστη ασφάλεια"
+	"description":"Επίσημο online πορτοφόλι για το νόμισμα Conceal Network - ανώνυμο, ασφαλές, και πλήρως διαχειριζόμενο από τον φυλλομετρητή σας για μέγιστη ασφάλεια"
   },
   "messages": {
 	"menu": {
@@ -64,7 +64,7 @@
 	},
 	"homepage": {
 	  "mainTitle": "Καλώς ορίσατε στο Πορτοφόλι Κάρμπο",
-	  "tagLine": "Ο απλούστερος τρόπος χρήσης του Karbo - οπουδήποτε, οποτεδήποτε",
+	  "tagLine": "Ο απλούστερος τρόπος χρήσης του Conceal Network - οπουδήποτε, οποτεδήποτε",
 	  "actions": {
 		"loadWallet": "Φόρτωσε το πορτοφόλι μου",
 		"importWallet": "Εισαγωγή πορτοφολιού",
@@ -106,7 +106,7 @@
 		"emptyWallet": "Αυτή τη στιγμή δεν έχετε χρήματα σε αυτό το πορτοφόλι.",
 		"waitSync": "Παρακαλώ περιμένετε μέχρι να ανανεωθεί το πορτοφόλι",
 		"beReallyPatient": "Η αρχική ρύθμιση μπορεί να διαρκέσει λίγη ώρα...",
-		"getCoinAddress": "Λήψη KRB"
+		"getCoinAddress": "Λήψη CCX"
 	  },
 	  "txDetails":{
 		"title":"Λεπτομέρειες συναλλαγής",
@@ -143,7 +143,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"Αυτό ήταν απλό. Ο λογαριασμός σας είναι έτοιμος!",
-		"subtitle":"Ετοιμαστείτε να χρησιμοποιήσετε το Karbo όπως δεν το έχετε ξανακάνει",
+		"subtitle":"Ετοιμαστείτε να χρησιμοποιήσετε το Conceal Network όπως δεν το έχετε ξανακάνει",
 		"passwordSelectionBlock":{
 		  "label":"Προστατέψτε το πορτοφόλι σας με έναν κωδικό"
 		},
@@ -166,8 +166,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Κίνδυνος χρήσης του KarboWallet",
-		"content":"Το KarboWallet είναι ένα πορτοφόλι βασισμένο στον ιστό. Σας επιτρέπει να χρησιμοποιήσετε το Karbo χωρίς να χρειάζετε να λειτουργείτε έναν δικό σας κόμβο Karbo. <br/> Σας συνιστούμε να θεωρείτε το KarboWallet ως ένα κανονικό πορτοφόλι"
+		"title":"Κίνδυνος χρήσης του Conceal NetworkWallet",
+		"content":"Το Conceal NetworkWallet είναι ένα πορτοφόλι βασισμένο στον ιστό. Σας επιτρέπει να χρησιμοποιήσετε το Conceal Network χωρίς να χρειάζετε να λειτουργείτε έναν δικό σας κόμβο Conceal Network. <br/> Σας συνιστούμε να θεωρείτε το Conceal NetworkWallet ως ένα κανονικό πορτοφόλι"
 	  }
 	},
 	"donatePage":{
@@ -177,9 +177,9 @@
 		"title":"Webwallet",
 		"content":"Αυτό το πορτοφόλι ιστού αναπτύχθηκε από τον Gnock στον ελεύθερό του χρόνο.<br/> Εαν θέλετε να βοηθήσετε στην ανάπτυξη, να συνεισφέρετε στα έξοδα των διακομιστών και σας αρέσει αυτή η εφαρμογή, παρακαλώ σκεφτείτε να κάνετε μια δωρεά: <br/><br/>"
 	  },
-	  "KarboFundBlock":{
-		"title":"Karbo Dev fund",
-		"content":"Για να βοηθήσετε το Karbo, μπορείτε να κάνετε δωρεά στις παρακάτω διευθύνσεις"
+	  "Conceal NetworkFundBlock":{
+		"title":"Conceal Network Dev fund",
+		"content":"Για να βοηθήσετε το Conceal Network, μπορείτε να κάνετε δωρεά στις παρακάτω διευθύνσεις"
 	  }
 	},
 	"supportPage":{
@@ -188,12 +188,12 @@
 	  "getInTouchBlock":{
 		"title":"Ας έρθουμε σε επικοινωνία!",
 		"content":"'Εχετε ιδέες που θα μπορούσαν να μας βοηθήσουν να βελτιώσουμε το πορτοφόλι; Επικοινωνήστε μαζί μας!",
-		"discord":"Karbo Discord Channel"
+		"discord":"Conceal Network Discord Channel"
 	  }
 	},
 	"networkPage":{
 	  "title":"Στατιστικά Δικτύου΄",
-	  "subtitle":"Επισκόπηση τπυ δικτύου Karbo",
+	  "subtitle":"Επισκόπηση τπυ δικτύου Conceal Network",
 	  "statsBlock":{
 		"hashrate":"Network hashrate",
 		"height":"Blockchain height",
@@ -203,7 +203,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"Στείλτε KRB",
+	  "title":"Στείλτε CCX",
 	  "sendBlock":{
 		"address":{
 		  "label":"Διεύθυνση παραλήπτη",
@@ -234,7 +234,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Ευχαριστούμε για τη δωρεά σας!",
-		"content":"Εκτιμούμε τη βοήθειά σας. <br/>Αυτή η δωρεά θα βοηθήσει στο να κάνουμε το Karbo καλύτερο",
+		"content":"Εκτιμούμε τη βοήθειά σας. <br/>Αυτή η δωρεά θα βοηθήσει στο να κάνουμε το Conceal Network καλύτερο",
 		"confirmText":"OK"
 	  },
 	  "transferSentModal":{
@@ -271,7 +271,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"Λήψη KRB",
+	  "title":"Λήψη CCX",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Η διεύθυνσή σας για λήψη χρημάτων:",
@@ -299,7 +299,7 @@
 	},
 	"miningPage":{
 	  "title":"Κάντε mining μέσω του φυλλομετρητή σας",
-	  "subtitle":"Υποστηρίξτε το δίκτυο και αμοιφθείτε με KRB",
+	  "subtitle":"Υποστηρίξτε το δίκτυο και αμοιφθείτε με CCX",
 	  "parameterBlock":{
 		"title":"Παράμετροι",
 		"labelDestinationAddress":"Πορτοφόλι για κατάθεση αμοιβών από mining",
@@ -313,7 +313,7 @@
 		"hashrate":"Hashrate",
 		"maxHashrate":"Μέγιστο Hashrate",
 		"dedicatedHardware":"Με εξειδικευμένο λογισμικό και υλισμοκό για mining μπορείτε να αμοιφθείτε περισσότερα και να βοηθήσει στην αποκέντρωση του δικτύου.",
-		"miningHandledBy":"Το mining σε αυτή τη σελίδα διαχειρίζεται από το pool get.Karbocoin.com"
+		"miningHandledBy":"Το mining σε αυτή τη σελίδα διαχειρίζεται από το pool get.Conceal Networkcoin.com"
 	  }
 	},
 	"settingsPage":{

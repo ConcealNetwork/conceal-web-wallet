@@ -45,10 +45,9 @@ Developers:
 - Ukrainian: [Aiwe](https://github.com/aivve)
 
 # Contributing
-- You can help Karbo by translation the wallet in your native language, it's really easy!  
+- You can help Conceal Network by translation the wallet in your native language, it's really easy!  
 Read [the translations guide](TRANSLATIONS.md) to get instructions on how to do that
 - Report bugs & ideas to help us improve the web wallet by opening an issue 
-- [Make a donation to Karbo](https://wallet.karbo.org/#!donate)
 
 # Forks / Other Coins
 We have been receiving multiple coin developers help to fork it. As the time required to develop this project is heavy, please consider giving a mention to this project if you fork it.
