@@ -566,9 +566,9 @@ export class TransactionsExplorer {
 
 			console.log("Selected outs:", usingOuts);
 
-			if (neededFee < 10000000) {
-				neededFee = 10000000;
-			}
+			//if (neededFee < 10000000) {
+			//	neededFee = 10000000;
+			//}
 
 			console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)) + ' QWC');
 			confirmCallback(totalAmountWithoutFee, neededFee).then(function () {
