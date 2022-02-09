@@ -2,18 +2,18 @@
 let global : any = typeof window !== 'undefined' ? window : self;
 global.config = {
 	apiUrl: [
-        "http://wallet.conceal.network/api/"
+        "http://walletapi.conceal.network/"
     ],
     nodeList: [
-        "https://explorer.conceal.network/daemon/"
+        "https://explorer.conceal.network/index.html#nodes"
     ],
 	nodeUrl: "",
 	mainnetExplorerUrl: "https://explorer.conceal.network/",
 	mainnetExplorerUrlHash: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_transaction",
 	mainnetExplorerUrlBlock: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_block",
-	testnetExplorerUrl: "http://testnet.conceal.network/",
-	mainnetExplorerUrlHash: "https://testnet.conceal.network/index.html?hash={ID}#blockchain_transaction",
-	mainnetExplorerUrlBlock: "https://testnet.conceal.network/index.html?hash={ID}#blockchain_block",
+	testnetExplorerUrl: "http://explorer.testnet.conceal.network/",
+	mainnetExplorerUrlHash: "https://explorer.testnet.conceal.network/index.html?hash={ID}#blockchain_transaction",
+	mainnetExplorerUrlBlock: "https://explorer.testnet.conceal.network/index.html?hash={ID}#blockchain_block",
 	testnet: false,
     coinUnitPlaces: 6,
     coinDisplayUnitPlaces: 6,
