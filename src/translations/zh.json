@@ -1,4 +1,4 @@
-{
+﻿{
   "website": {
     "title": "卡博币钱包",
     "description": "卡博币币的官方在线钱包 - 完全在浏览器端处理，兼顾最优化的安全性。"
@@ -316,7 +316,7 @@
         "hashrate": "算力",
         "maxHashrate": "最大算力",
         "dedicatedHardware": "使用算力贡献的挖矿硬件和挖矿软件，你可以获得更多奖励，帮助去中心化的网络。",
-        "miningHandledBy": "本次挖矿由矿池pool.karbowanec.com处理"
+        "miningHandledBy": "本次挖矿由矿池pool.conceal.network处理"
       }
     },
     "settingsPage": {
