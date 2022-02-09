@@ -1,4 +1,4 @@
-# Karbo Web Wallet - Fully client-side
+# Conceal Web Wallet - Fully client-side
 This web wallet is doing everything client-side to give the best privacy to users.
 The server is currently only used to optimize the communication with the daemon and compress the blockchain.  
 
