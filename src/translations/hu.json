@@ -106,7 +106,7 @@
 		"emptyWallet": "Jelenleg nincsen egyenleged ebben a tárcában.",
 		"waitSync": "Kérlek, várj, míg a tárca naprakész lesz",
 		"beReallyPatient": "A kezdeti beállítás némi időbe telhet...",
-		"getCoinAddress": "KRB fogadása"
+		"getCoinAddress": "CCX fogadása"
 	  },
 	  "txDetails":{
 		"title":"Tranzakciórészletek",
@@ -203,7 +203,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"KRB küldése",
+	  "title":"CCX küldése",
 	  "sendBlock":{
 		"address":{
 		  "label":"Kedvezményezett címe",
@@ -271,7 +271,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"KRB fogadása",
+	  "title":"CCX fogadása",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Pénz fogadására szolgáló cím:",

@@ -105,7 +105,7 @@
         "emptyWallet": "Obecnie nie masz środków w tym portfelu.",
         "waitSync": "Poczekaj, aż portfel zostanie zaktualizowany.",
         "beReallyPatient": "Wstępna konfiguracja może zająć trochę czasu...",
-        "getKRBAddress": "Odbierz KRB"
+        "getCCXAddress": "Odbierz CCX"
       },
       "txDetails":{
         "title":"Szczegóły stransakcji",
@@ -203,7 +203,7 @@
     }
   },
   "sendPage":{
-    "title":"Wyślij KRB",
+    "title":"Wyślij CCX",
     "sendBlock":{
       "address":{
         "label":"Adres dotacji",
@@ -270,7 +270,7 @@
 	  }
 	},
   "receivePage":{
-	  "title":"Odbierz KRB",
+	  "title":"Odbierz CCX",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Twój adres, aby otrzymać fundusze:",
@@ -298,7 +298,7 @@
 	},
   "miningPage":{
   	  "title":"Kop bezpośrednio w przeglądarce",
-  	  "subtitle":"Wspieraj sieć przez wydobycie i zostań nagrodzony w KRB",
+  	  "subtitle":"Wspieraj sieć przez wydobycie i zostań nagrodzony w CCX",
   	  "parameterBlock":{
   		"title":"Parametry",
   		"labelDestinationAddress":"Portfel do kopania",

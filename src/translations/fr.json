@@ -106,7 +106,7 @@
 		"emptyWallet": "Vous n'avez aucun fond sur ce portefeuille",
 		"waitSync": "Veuillez attendre la fin de la synchronisation",
 		"beReallyPatient": "La première synchronisation peut prendre quelques minutes...",
-		"getCoinAddress": "Obtenir mon adresse pour recevoir des KRB"
+		"getCoinAddress": "Obtenir mon adresse pour recevoir des CCX"
 	  },
 	  "txDetails":{
 		"title":"Détails de la transaction",
@@ -203,7 +203,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"Envoyer des KRB",
+	  "title":"Envoyer des CCX",
 	  "sendBlock":{
 		"address":{
 		  "label":"Adresse de destination",
@@ -271,7 +271,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"Recevoir des KRB",
+	  "title":"Recevoir des CCX",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Votre adresse pour recevoir des fonds",
@@ -299,7 +299,7 @@
 	},
 	"miningPage":{
 	  "title":"Miner directement depuis votre navigateur",
-	  "subtitle":"Supportez lé réseau en minant et en améliorant la stabilité du réseau tout en étant réponsé en KRB",
+	  "subtitle":"Supportez lé réseau en minant et en améliorant la stabilité du réseau tout en étant réponsé en CCX",
 	  "parameterBlock":{
 		"title":"Paramètres",
 		"labelDestinationAddress":"Portefeuille de destination",

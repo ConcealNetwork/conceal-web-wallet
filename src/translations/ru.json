@@ -106,7 +106,7 @@
 		"emptyWallet": "В этом кошельке пока нет средств.",
 		"waitSync": "Пожалуйста подождите пока кошелек обновляется",
 		"beReallyPatient": "Начальная установка может занять некоторое время...",
-		"getCoinAddress": "Получить KRB"
+		"getCoinAddress": "Получить CCX"
 	  },
 	  "txDetails":{
 		"title":"Детали транзакции",
@@ -204,7 +204,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"Отправить KRB",
+	  "title":"Отправить CCX",
 	  "sendBlock":{
 		"address":{
 		  "label":"Адрес получателя",
@@ -272,7 +272,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"Получить KRB",
+	  "title":"Получить CCX",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Ваш адрес для получения:",
@@ -300,7 +300,7 @@
 	},
 	"miningPage":{
 	  "title":"Информация о майнинге",
-	  "subtitle":"Поддержите сеть майнингом и получите в награду KRB",
+	  "subtitle":"Поддержите сеть майнингом и получите в награду CCX",
 	  "parameterBlock":{
 		"title":"Параметры",
 		"labelDestinationAddress":"Кошелек на который майнить",

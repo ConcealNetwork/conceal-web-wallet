@@ -106,7 +106,7 @@
 		"emptyWallet": "You currently have no funds in this wallet.",
 		"waitSync": "Please wait until the wallet is updated",
 		"beReallyPatient": "The initial setup can take some time...",
-		"getCoinAddress": "Receive KRB"
+		"getCoinAddress": "Receive CCX"
 	  },
 	  "txDetails":{
 		"title":"Transaction details",
@@ -204,7 +204,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"Send KRB",
+	  "title":"Send CCX",
 	  "sendBlock":{
 		"address":{
 		  "label":"Destination address",
@@ -272,7 +272,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"Receive KRB",
+	  "title":"Receive CCX",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Your address to receive funds:",
@@ -300,7 +300,7 @@
 	},
 	"miningPage":{
 	  "title":"Mine directly in your browser",
-	  "subtitle":"Support the network by mining and be rewarded with KRB",
+	  "subtitle":"Support the network by mining and be rewarded with CCX",
 	  "parameterBlock":{
 		"title":"Parameters",
 		"labelDestinationAddress":"Wallet to mine",

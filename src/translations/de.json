@@ -106,7 +106,7 @@
 		"emptyWallet": "Du hast zur Zeit kein Guthaben auf dieser Wallet",
 		"waitSync": "Warte bis die Wallet upgedated ist",
 		"beReallyPatient": "Die erste Einrichtung kann etwas dauern...",
-		"getCoinAddress": "Hol die deine Adresse um KRB zu empfangen"
+		"getCoinAddress": "Hol die deine Adresse um CCX zu empfangen"
 	  },
 	  "txDetails":{
 		"title":"Transaktionsdetails",
@@ -203,7 +203,7 @@
 	  }
 	},
 	"sendPage":{
-	  "title":"Schicke KRB",
+	  "title":"Schicke CCX",
 	  "sendBlock":{
 		"address":{
 		  "label":"Zieladresse",
@@ -271,7 +271,7 @@
 	  }
 	},
 	"receivePage":{
-	  "title":"Empfange KRB",
+	  "title":"Empfange CCX",
 	  "receiveBlock":{
 		"address":{
 		  "title":"Deine Adresse um Guthaben zu empfangen",
@@ -299,7 +299,7 @@
 	},
 	"miningPage":{
 	  "title":"Mine direkt in deinem Browser",
-	  "subtitle":"Unterstütze das Netzwerk für mehr Stabilität und werde mit KRB belohnt",
+	  "subtitle":"Unterstütze das Netzwerk für mehr Stabilität und werde mit CCX belohnt",
 	  "parameterBlock":{
 		"title":"Parameter",
 		"labelDestinationAddress":"Wallet für die gemined werden soll",

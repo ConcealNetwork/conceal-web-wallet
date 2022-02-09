@@ -106,7 +106,7 @@
         "emptyWallet": "您的钱包目前没有资金。",
         "waitSync": "请等待钱包更新完毕",
         "beReallyPatient": "初始化设置可能比较耗时......",
-        "getCoinAddress": "收到KRB"
+        "getCoinAddress": "收到CCX"
       },
       "txDetails": {
         "title": "交易明细",
@@ -206,7 +206,7 @@
       }
     },
     "sendPage": {
-      "title": "发送KRB",
+      "title": "发送CCX",
       "sendBlock": {
         "address": {
           "label": "目标地址",
@@ -274,7 +274,7 @@
       }
     },
     "receivePage": {
-      "title": "收到KRB",
+      "title": "收到CCX",
       "receiveBlock": {
         "address": {
           "title": "您收到资金的地址：",
@@ -302,7 +302,7 @@
     },
     "miningPage": {
       "title": "直接在浏览器中挖矿",
-      "subtitle": "通过挖矿为网络做贡献，并得到KRB奖励",
+      "subtitle": "通过挖矿为网络做贡献，并得到CCX奖励",
       "parameterBlock": {
         "title": "参数",
         "labelDestinationAddress": "挖矿的钱包",
