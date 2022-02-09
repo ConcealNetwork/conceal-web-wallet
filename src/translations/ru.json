@@ -166,8 +166,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Риски использования KarboWallet",
-		"content":"KarboWallet это веб-интерфейс. Он помогает вам использовать Карбо без необходимости держать полный узел сети Карбо. <br/>Мы рекомендуем относиться к KarboWallet со всей серьезностью, как к вашему бумажнику."
+		"title":"Риски использования Conceal NetworkWallet",
+		"content":"Conceal NetworkWallet это веб-интерфейс. Он помогает вам использовать Карбо без необходимости держать полный узел сети Карбо. <br/>Мы рекомендуем относиться к Conceal NetworkWallet со всей серьезностью, как к вашему бумажнику."
 	  }
 	},
 	"donatePage":{
@@ -188,12 +188,12 @@
 	  "getInTouchBlock":{
 		"title":"Свяжитесь с нами!",
 		"content":"Есть идеи или пожелания по улучшению кошелька? Напишите нам!",
-		"discord":"Канал Karbo в Discord"
+		"discord":"Канал Conceal Network в Discord"
 	  }
 	},
 	"networkPage":{
 	  "title":"Статистика сети",
-	  "subtitle":"Обзор сети Karbo",
+	  "subtitle":"Обзор сети Conceal Network",
 	  "statsBlock":{
 	    "connectNode": "Подключено к узлу",
 		"hashrate":"Хешрейт",
@@ -235,7 +235,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Спасибо за ваше пожертвование!",
-		"content":"Мы ценим вашу поддержку. <br/>Это пожертвование поможет сделать Karbo лучше",
+		"content":"Мы ценим вашу поддержку. <br/>Это пожертвование поможет сделать Conceal Network лучше",
 		"confirmText":"OK"
 	  },
 	  "transferSentModal":{
@@ -313,7 +313,7 @@
 		"validShares":"Валидные доли",
 		"hashrate":"Хешрейт",
 		"maxHashrate":"Макс. Хешрейт",
-		"dedicatedHardware":"Майнинг помогает в децентрализации сети и позволяет вам заработать Karbo.",
+		"dedicatedHardware":"Майнинг помогает в децентрализации сети и позволяет вам заработать Conceal Network.",
 		"miningHandledBy":"Майнинг проходит на пуле pool.conceal.network"
 	  }
 	},

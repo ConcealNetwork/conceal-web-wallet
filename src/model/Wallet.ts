@@ -29,7 +29,7 @@ export class WalletOptions{
 	checkMinerTx:boolean = false;
 	readSpeed:number = 10;
 	customNode:boolean = false;
-	nodeUrl:string = 'http://node.karbo.io:32348/';
+	nodeUrl:string = 'http://node.conceal.network:32348/';
 
 	static fromRaw(raw : RawWalletOptions){
 		let options = new WalletOptions();

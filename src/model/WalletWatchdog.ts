@@ -1,7 +1,7 @@
 /**
  *     Copyright (c) 2018-2020, ExploShot
  *     Copyright (c) 2018-2020, The Qwertycoin Project
- *     Copyright (c) 2018-2020, The Karbo
+ *     Copyright (c) 2018-2020, The Conceal Network
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,

@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Karbo tárca",
-	"description":"A Karbo hivatalos online tárcája - névtelen, biztonságos és teljes mértékben böngészőből kezelt az optimális biztonság érdekében"
+	"title":"Conceal Network tárca",
+	"description":"A Conceal Network hivatalos online tárcája - névtelen, biztonságos és teljes mértékben böngészőből kezelt az optimális biztonság érdekében"
   },
   "messages": {
 	"menu": {
@@ -63,8 +63,8 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Üdvözöljük a Karbo tárca",
-	  "tagLine": "A Karbo használatának legegyszerűbb módja - bárhol és bármikor",
+	  "mainTitle": "Üdvözöljük a Conceal Network tárca",
+	  "tagLine": "A Conceal Network használatának legegyszerűbb módja - bárhol és bármikor",
 	  "actions": {
 		"loadWallet": "Tárca betöltése",
 		"importWallet": "Tárcaimportálás",
@@ -143,7 +143,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"Ez egyszerű volt. A számlád rendelkezésre áll!",
-		"subtitle":"Állj készen a Karbo használatára",
+		"subtitle":"Állj készen a Conceal Network használatára",
 		"passwordSelectionBlock":{
 		  "label":"Védd a tárcád"
 		},
@@ -167,7 +167,7 @@
 	  },
 	  "disclaimerBlock":{
 		"title":"A MasariWallet használatának kockázatai",
-		"content":"A KarboWallet egy webes felület, mely lehetővé teszi a Karbo használatát teljes csomópont futtatása nélkül.<br/>Kezeld úgy a KarboWalletet, mintha az a valódi pénztárcád lenne."
+		"content":"A Conceal NetworkWallet egy webes felület, mely lehetővé teszi a Conceal Network használatát teljes csomópont futtatása nélkül.<br/>Kezeld úgy a Conceal NetworkWalletet, mintha az a valódi pénztárcád lenne."
 	  }
 	},
 	"donatePage":{
@@ -178,8 +178,8 @@
 		"content":"A webtárcát Gnock fejleszti szabadidejében.<br/>Ha szeretnéd segíteni a fejlesztést, a szerverek fizetését és tetszik az applikáció, úgy vedd fontolóra az adományozást:<br/><br/>"
 	  },
 	  "devFundBlock":{
-		"title":"Karbo fejlesztési alap",
-		"content":"Ha szeretnél segíteni a Karbonak, az alábbi címekre adományozhatsz"
+		"title":"Conceal Network fejlesztési alap",
+		"content":"Ha szeretnél segíteni a Conceal Networknak, az alábbi címekre adományozhatsz"
 	  }
 	},
 	"supportPage":{
@@ -188,12 +188,12 @@
 	  "getInTouchBlock":{
 		"title":"Lépjünk kapcsolatba!",
 		"content":"Visszajelzésed vagy ötleted van a tárcával kapcsolatban? Keress fel bennünket!",
-		"discord":"Karbo Discord-csatorna"
+		"discord":"Conceal Network Discord-csatorna"
 	  }
 	},
 	"networkPage":{
 	  "title":"Hálózati statisztika",
-	  "subtitle":"Betekintés a Karbo hálózatába",
+	  "subtitle":"Betekintés a Conceal Network hálózatába",
 	  "statsBlock":{
 		"hashrate":"Hálózati hashrate",
 		"height":"Blokklánc hossza",
@@ -234,7 +234,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Köszönjük az adományt!",
-		"content":"Értékeljük a segítséged.<br/>Ez az adomány is segít jobbá tenni a Karbot.",
+		"content":"Értékeljük a segítséged.<br/>Ez az adomány is segít jobbá tenni a Conceal Networkt.",
 		"confirmText":"OK"
 	  },
 	  "transferSentModal":{
@@ -299,7 +299,7 @@
 	},
 	"miningPage":{
 	  "title":"Bányássz közvetlenül böngészőből",
-	  "subtitle":"Támogasd a hálózatot a bányászással és szerezz érte jutalmat Karboban",
+	  "subtitle":"Támogasd a hálózatot a bányászással és szerezz érte jutalmat Conceal Networkban",
 	  "parameterBlock":{
 		"title":"Paraméterek",
 		"labelDestinationAddress":"Céltárca",

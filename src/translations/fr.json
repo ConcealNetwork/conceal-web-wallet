@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Portefeuille pour Karbo",
-	"description":"Portefeuille en ligne officiel pour la monnaie Karbo, anonyme, sécurisé et entièrement géré dans votre navigateur for une sécurité optimale"
+	"title":"Portefeuille pour Conceal Network",
+	"description":"Portefeuille en ligne officiel pour la monnaie Conceal Network, anonyme, sécurisé et entièrement géré dans votre navigateur for une sécurité optimale"
   },
   "messages": {
 	"menu": {
@@ -63,8 +63,8 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Bienvenue dans Portefeuille pour Karbo",
-	  "tagLine": "Le moyen le plus simple d'utiliser Karbo, n'importe où, n'importe quand",
+	  "mainTitle": "Bienvenue dans Portefeuille pour Conceal Network",
+	  "tagLine": "Le moyen le plus simple d'utiliser Conceal Network, n'importe où, n'importe quand",
 	  "actions": {
 		"loadWallet": "Charger mon portefeuille",
 		"importWallet": "Importer un portefeuille",
@@ -143,7 +143,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"C'était simple. Votre portefeuille est prêt !",
-		"subtitle":"Soyer près à utiliser Karbo le plus simplement possible",
+		"subtitle":"Soyer près à utiliser Conceal Network le plus simplement possible",
 		"passwordSelectionBlock":{
 		  "label":"Sécuriser mon portefeuille"
 		},
@@ -166,8 +166,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Risques liés à l'utilisation de KarboWallet",
-		"content":"KarboWallet est un service web. Il vous aide à utiliser Karbo facilement sans avoir un installer des logiciels. <br/>Nous vous conseillons de traiter ce site comme vous traiteriez votre portefeuille."
+		"title":"Risques liés à l'utilisation de Conceal NetworkWallet",
+		"content":"Conceal NetworkWallet est un service web. Il vous aide à utiliser Conceal Network facilement sans avoir un installer des logiciels. <br/>Nous vous conseillons de traiter ce site comme vous traiteriez votre portefeuille."
 	  }
 	},
 	"donatePage":{
@@ -178,8 +178,8 @@
 		"content":"Ce portefeuille est développé par Gnock sur son temps libre.<br/>Si vous voulez aider au développement, payer les serveur et que vous aimez ce service, considérez une petite donation: <br/><br/>"
 	  },
 	  "devFundBlock":{
-		"title":"Fond de développement de Karbo",
-		"content":"Pour aidez Karbo globalement, vous pouvez donner à cette adresse"
+		"title":"Fond de développement de Conceal Network",
+		"content":"Pour aidez Conceal Network globalement, vous pouvez donner à cette adresse"
 	  }
 	},
 	"supportPage":{
@@ -188,12 +188,12 @@
 	  "getInTouchBlock":{
 		"title":"Reston en contact !",
 		"content":"Vous avez des idées, des retours pour aider à améliorer le service ? Contactez nous !",
-		"discord":"Discord Officiel de Karbo"
+		"discord":"Discord Officiel de Conceal Network"
 	  }
 	},
 	"networkPage":{
 	  "title":"Statistiques du réseau",
-	  "subtitle":"Détails sur le réseaux Karbo",
+	  "subtitle":"Détails sur le réseaux Conceal Network",
 	  "statsBlock":{
 		"hashrate":"Hashrate du réseau",
 		"height":"Hauteur de la Blockchain",
@@ -234,7 +234,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Merci pour votre donation !",
-		"content":"Votre aide est apprécié. <br/>Cette donation contribuera à améliorer Karbo",
+		"content":"Votre aide est apprécié. <br/>Cette donation contribuera à améliorer Conceal Network",
 		"confirmText":"Fermer"
 	  },
 	  "transferSentModal":{

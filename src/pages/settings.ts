@@ -36,7 +36,7 @@ class SendView extends DestructableView{
 	@VueVar(false) checkMinerTx !: boolean;
 
 	@VueVar(false) customNode !: boolean;
-	@VueVar('http://node.karbo.io:32348/') nodeUrl !: string;
+	@VueVar('http://node.conceal.network:32348/') nodeUrl !: string;
 
 	@VueVar(0) creationHeight !: number;
 	@VueVar(0) scanHeight !: number;

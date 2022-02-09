@@ -90,7 +90,7 @@ var MasariApi = new function(){
 		if(typeof options.description !== 'undefined')url += 'txDesc='+options.description+'&';
 		if(typeof options.destName !== 'undefined')url += 'destName='+options.destName+'&';
 
-		window.open(url,"Karbo",this.popupParameters);
+		window.open(url,"Conceal Network",this.popupParameters);
 
 		return Promise.resolve();
 	};
