@@ -1,0 +1,486 @@
+{
+  "website":{
+	"title":"کیف پول کربو",
+	"description":"کیف پول کربو کاملا ایمن و سمت کاربر میباشد و تمامی کربو های شما بر روی دستگاهتان نگهداری میشود"
+  },
+  "messages": {
+    "menu": {
+      "home": "خانه",
+      "account": "حساب",
+      "send": "ارسال",
+      "receive": "دریافت",
+      "export": "پشتیبان گیری",
+      "donate": "ارسال کادو",
+      "settings": "تنظیمات",
+      "disconnect": "خروج",
+      "network": "شبکه",
+      "mining": "استخراج"
+    },
+    "global": {
+      "loading": "در حال بارگیری",
+      "disableSecurity": "متوجه شدم",
+      "passwordInvalidRequirements": "یک رمز عبور قوی باید حداقل شامل هشت حرف با حروف بزرگ ، کوچک و سمبل باشد",
+      "passwordConfirmationNotMatching": "رمز عبور شما مطابقت ندارد",
+      "download": "دریافت",
+      "newVersionModal": {
+        "title": "نسخه ی جدیدی موجود است",
+        "content": "آیا مایل به بارگذاری مجدد صفحه و دریافت بروز رسانی میباشید ؟",
+        "confirmText": "بله",
+        "cancelText": "خیر"
+      },
+      "openWalletModal": {
+        "title": "'رمز عبور کیف پول'",
+        "confirmText": "تایید",
+        "cancelText": "لغو"
+      },
+      "invalidPasswordModal": {
+        "title": "متاسفیم",
+        "content": "رمز عبور اشتباه است",
+        "confirmText": "تایید"
+      },
+      "invalidMnemonicModal": {
+        "title": "متاسفیم",
+        "content": "کد سید پشتیبان شما اشتباه است",
+        "confirmText": "تایید"
+      },
+      "passwordNotComplexEnoughModal": {
+        "title": "رمز عبور شما به میزان کافی قوی نیست",
+        "confirmText": "تایید"
+      },
+      "permissionRequiredForCameraModal": {
+        "title": "توجه",
+        "content": "برای دسترسی به دوربین شما نیاز به مجوز میباشد",
+        "confirmText": "تایید"
+      }
+    },
+    "bottom": {
+      "termsOfUse": "شرایط استفاده",
+      "support": "پشتیبانی",
+      "donate": "ارسال کادو",
+      "network": "شبکه",
+      "miningPool": "استخر استخراج",
+      "github": "گیت هاب"
+    },
+    "homepage": {
+      "mainTitle": "به کیف پول کاربو خوش آمدید",
+      "tagLine": "آسان ترین راه برای استفاده از کربو",
+      "actions": {
+        "loadWallet": "بارگیری کیف پول",
+        "importWallet": "درون ریزی کیف پول",
+        "create": "انجام بده",
+        "createWallet": "ایجاد کیف پول"
+      },
+      "notes": {
+        "secure": {
+          "title": "امنیت بالا",
+          "description": "بدون سرور برای نگهداری کیف پول ها و کاملا رمزگذاری شده"
+        },
+        "fast": {
+          "title": "سرعت بالا",
+          "description": "سریع شروع به کار کنید ، تنها به یک مرورگر اینترنت نیاز دارید"
+        },
+        "technology": {
+          "title": "تکنولوژی بروز",
+          "description": "اتصال مستقیم به زنجیره بلوکی کربو"
+        },
+        "openSource": {
+          "title": "کد منبع باز",
+          "description": "کد منبع داخل گیت هاب موجود است"
+        }
+      }
+    },
+    "accountPage": {
+      "title": "حساب کاربری",
+      "subtitle": "صفحه ی اصلی کیف پول کربو",
+      "synchronizingBlock": {
+        "text": "در حال همگام سازی با شبکه"
+      },
+      "balanceBlock": {
+        "title": "کل حساب",
+        "unlocked": "در دسترس"
+      },
+      "historyBlock": {
+        "title": "تاریخچه تراکنش ها",
+        "pendingTxStatus": "تایید نشده",
+        "emptyWallet": "کیف پول شما در حال حاضر خالی میباشد",
+        "waitSync": "لطفا برای بارگذاری مجدد کیف پول صبر کنید",
+        "beReallyPatient": "این پروسه ممکن است مقداری به طول بیانجامد",
+        "getCoinAddress": "آدرس کیف پول شما"
+      },
+      "txDetails": {
+        "title": "جزییات تراکنش ها",
+        "txHash": "هش تراکنش",
+        "feesOnTx": "کارمزد تراکنش",
+        "blockHeight": "شماره بلوک",
+        "paymentId": "شناسه پرداخت"
+      }
+    },
+    "changeWalletPasswordPage": {
+      "title": "تغییر رمز عبور",
+      "oldPassword": {
+        "label": "رمز عبور قدیم",
+        "invalid": "رمز عبور اشتباه است"
+      },
+      "newPassword": {
+        "label": "یک رمز عبور جدید انتخاب کنید",
+        "invalid": " یک رمز عبور قوی باید حداقل شامل هشت کاراکتر باشد ، بهمراه حروف بزرگ و کوچک و سمبل ها"
+      },
+      "newPasswordConfirm": {
+        "label": "رمز عبور جدید خود را تایید کنید"
+      },
+      "confirm": "تایید",
+      "modalSuccess": {
+        "title": "رمز عبور شما تغییر یافت",
+        "confirmText": "تایید"
+      }
+    },
+    "createWalletPage": {
+      "generatingStep": {
+        "title": "در حال ایجاد کیف پول",
+        "subtitle": "پروسه در حال اتمام است",
+        "waitingMessage": "در حال ایجاد"
+      },
+      "finalizationStep": {
+        "title": "تبریک کیف پول شما آماده است",
+        "subtitle": "برای استفاده از کربو آماده شوید",
+        "passwordSelectionBlock": {
+          "label": "از کیف پول خود محافظت کنید"
+        },
+        "passwordConfirmBlock": {
+          "label": "تایید رمز عبور"
+        },
+        "validPassword": "از این رمز عبور استفاده کن",
+        "backupBlock": {
+          "title": "یک کپی از اطلاعات رمزگذاری شده خود برای استفاده در آینده تهیه کنید ",
+          "option1": "گزینه اول ",
+          "option2": "گزینه دوم ",
+          "titlePdf": "دریافت فایل پی دی اف",
+          "titleManualWrite": "تهیه رو نوشت از کلید ها",
+          "privateKeys": "کلید شخصی",
+          "mnemonicPhrase": "کد سید",
+          "separatorManualMethodsSolution": " و یا ",
+          "confirmManuallyWritten": "رونوشت را تهیه کردم",
+          "warningMessage": "از این اطلاعات به خوبی نگهداری و محافظت کنید<br/>در صورت از دست دادن آن ها نمیتوانید کیف پول خود را بازگردانی کنید و یا امکان دارد کوین های شما به سرقت روند<br/>طوری از آن ها نگهداری کنید که انگار میلیون ها دلار ارزش دارند<br/>",
+          "finishButton": "متوجه شدم ادامه بده"
+        }
+      },
+      "disclaimerBlock": {
+        "title": "ریسک استفاده از کیف پول کربو",
+        "content": "کیف پول آنلاین کربو برای استفاده آسان تر از کیف پول کربو طراحی شده و برای استفاده از آن نیازه به نگهداری از فایل های زنجیره بلوکی نمیباشد <br/>به شما توصیه میکنیم از کیف پول خود به خوبی محافظت کنید"
+      }
+    },
+    "donatePage": {
+      "title": "ارسال کادو",
+      "subtitle": "با ارسال کادو به توسعه کربو کمک کنید",
+      "webwalletBlock": {
+        "title": "ولت آنلاین",
+        "content": "ولت آنلاین توسط برنامه نویسان کربو توسعه داده میشود<br/>اگر به تداوم پروژه اهمیت میدهید لطفا مقداری کربو به عنوان کادو برای ما بفرستید<br/><br/>"
+      },
+      "masariFundBlock": {
+        "title": "کیف پول جهت ارسال کادو",
+        "content": "اگر مایل به ارسال کادو هستید آن را به آدرس کیف پول زیر ارسال نمایید"
+      }
+    },
+    "supportPage": {
+      "title": "پشتیبانی",
+      "subtitle": "اگر به کمک نیاز دارید ما میتوانیم به شما کمک کنیم",
+      "getInTouchBlock": {
+        "title": "با ما در تماس باشید",
+        "content": "اگر ایده یا پیشنهادی دارید که به ارتقای این کیف پول کمک میکنید با ما در تماس باشید",
+        "discord": "سرور دیسکورد کربو"
+      }
+    },
+    "networkPage": {
+      "title": "وضعیت شبکه",
+      "subtitle": "داخل شبکه ی کربو",
+      "statsBlock": {
+        "hashrate": "هش ریت شبکه",
+        "height": "ارتفاع زنجیره بلوکی",
+        "difficulty": "سختی شبکه",
+        "lastTimeBlock": "آخرین بلاک پیدا شده",
+        "lastReward": "آخرین پاداش بلاک"
+      }
+    },
+    "sendPage": {
+      "title": "ارسال کربو",
+      "sendBlock": {
+        "address": {
+          "label": "ارسال به آدرس",
+          "invalid": "آدرس اشتباه است",
+          "fundsTo": "کربو ها به این آدرس ارسال میشوند",
+          "receiver": "دریافت کننده",
+          "description": "توضیحات"
+        },
+        "amount": {
+          "label": "مقدار جهت ارسال",
+          "invalid": "مقدار اشتباه"
+        },
+        "paymentId": {
+          "label": "شناسه واریز",
+          "invalid": "شناسه ی واریز اشتباه است مقداری را بین شانزده تا شصت و چهار کاراکتر وارد نمایید"
+        },
+        "sendButton": "ارسال",
+        "cancelButton": "لغو"
+      },
+      "qrCodeScanning": {
+        "explication": "اسکن کیو آر کد"
+      },
+      "notEnoughMoneyModal": {
+        "title": "متاسفیم",
+        "content": "شما به میزان کافی کربو برای ارسال ندارید",
+        "confirmText": "تایید"
+      },
+      "thankYouDonationModal": {
+        "title": "برای ارسال کادو از شما متشکریم",
+        "content": "کمک شما بسیار تاثیرگذار است<br/>کمک شما برای ادامه به کار پروژه کربو بسیار ضروری است",
+        "confirmText": "بستن"
+      },
+      "transferSentModal": {
+        "title": "ارسال با موفقیت انجام شد",
+        "confirmText": "بستن"
+      },
+      "transferExceptionModal": {
+        "title": "متاسفیم",
+        "content": "خطایی رخ داده است لطفا آن را گزارش دهید {details}",
+        "confirmText": "بستن"
+      },
+      "invalidAmountModal": {
+        "title": "متاسفیم",
+        "content": "مقدار اشتباه است",
+        "confirmText": "بستن"
+      },
+      "creatingTransferModal": {
+        "title": "در حال آماده سازی تراکنش",
+        "content": "لطفا اندکی صبر کنید"
+      },
+      "finalizingTransferModal": {
+        "title": "تراکنش در حال انجام است",
+        "content": "لطفا اندکی صبر کنید"
+      },
+      "confirmTransactionModal": {
+        "title": "آیا تراکنش را تایید میکنید",
+        "content": "'مقدار : {amount}<br/>کارمزد : {fees}<br/>مقدار کل : {total}",
+        "confirmText": "تایید",
+        "cancelText": "لغو"
+      },
+      "waitingNfcModal": {
+        "title": "در انتظار ان اف سی",
+        "content": "لطفا به دستگاه دیگر نزدیک شوید"
+      }
+    },
+    "receivePage": {
+      "title": "دریافت کربو",
+      "receiveBlock": {
+        "address": {
+          "title": "آدرس جهت دریافت کوین ها",
+          "label": "این آدرس را اضافه کنید اگر میخواهید کوین ها را دریافت کنید"
+        },
+        "qrCode": {
+          "title": "یا از کیو آر کد استفاده کنید",
+          "labelAmount": "مقدار",
+          "labelRecipient": "نام دریافت کننده دلبخواه است",
+          "labelDescription": "توضیحات تراکنش دلبخواه است",
+          "updateButton": "به روز رسانی"
+        }
+      },
+      "qrBlock": {
+        "title": "کد کیو آر شما"
+      },
+      "waitingNfcToWriteModal": {
+        "title": "در انتظار ان اف سی",
+        "titleSuccess": "تگ ان اف سی در حال نوشتن",
+        "content": "لطفا به تگ ان اف سی دستگاه خود را نزدیک کنید"
+      },
+      "nfcErrorModal": {
+        "titleInsufficientCapacity": "مقدار تگ نامناسب"
+      }
+    },
+    "miningPage": {
+      "title": "اطلاعات استخراج",
+      "subtitle": "با استخراج شبکه کربو را بهبود بخشیده و به عنوان جایزه کربو دریافت کنید",
+      "contentBlock": {
+        "title": "چگونه شروع به استخراج کنید",
+        "intro": "استخراج به شبکه کربو بسیار کمک میکند و برای شما به عنوان جایزه کربو ارسال میشود ، شما به تجهیزات خاصی جهت استخراج نیاز ندارید",
+        "linkText": "برای خواندن راهنما اینجا کلیک کنید"
+      }
+    },
+    "settingsPage": {
+      "title": "تنظیمات",
+      "subtitle": "تنظیمات را از اینجا تغییر دهید",
+      "versionBlock": {
+        "versionNumber": "شماره نسخه : ",
+        "versionCode": "کد نسخه : "
+      },
+      "settingsBlock": {
+        "speed": {
+          "label": "به روز رسانی سرعت کیف پول که باعث استفاده منابع بیشتری میشود",
+          "fastest": "سریعترین",
+          "fast": "سریع",
+          "medium": "متوسط",
+          "slow": "آرام"
+        },
+        "language": {
+          "label": "Language"
+        },
+        "readMinerTx": {
+          "label": "تراکنش های ماینینگ فقط بصورت تکی"
+        },
+        "customNode":{
+          "label":"Use custom node"
+        },
+        "nodeUrl":{
+          "label":"Node URL"
+        }
+      },
+      "changePasswordButton": "تغییر رمز عبور کیف پول",
+      "deleteWalletButton": "حذف کیف پول از روی سیستم شما",
+      "walletSettings": {
+        "creationHeight": {
+          "label": "ارتفاع زنجیره بلاکی هنگام ساخت کیف پول"
+        },
+        "currentScanningHeight": {
+          "label": "ارتفاع کنونی جهت اسکن"
+        },
+        "updateButton": "به روز رسانی"
+      },
+      "deleteWalletModal": {
+        "title": "حذف کیف پول نسخه محلی",
+        "content": "آیا مطمین هستید که میخواهید کیف پول خود را حذف نمایید؟",
+        "confirmText": "بله مطمینم",
+        "cancelButtonText": "لغو"
+      }
+    },
+    "importBasePage": {
+      "parametersBlock": {
+        "title": "پارامترها",
+        "password": {
+          "label": "رمز عبور جهت محافظت از کیف پول شما"
+        },
+        "passwordConfirm": {
+          "label": "تایید رمز عبور",
+          "invalid": "رمزعبور با رمز عبور وارد شده مطابقت ندارد"
+        },
+        "importHeight": {
+          "label": "ارتفاع زنجیره بلوکی برای شروع"
+        }
+      }
+    },
+    "importFromQrPage": {
+      "title": "کیف پول خود را به وسیله کد کیو آر درون ریزی کنید",
+      "subtitle": "کیف پول خود را به وسیله فایل درون ریزی کنید",
+      "qrCodeBlock": {
+        "title": "کد کیو آر",
+        "startScanButton": "شروع اسکن",
+        "importButton": "درون ریزی"
+      },
+      "qrScanningBlock": {
+        "title": "متصل کردن کد کیو آر"
+      }
+    },
+    "exportPage": {
+      "title": "اطلاعات خود را ذخیر کنید",
+      "publicAddressBlock": {
+        "title": "آدرس کیف پول شما"
+      },
+      "pdfBlock": {
+        "title": "فایل پی دی اف",
+        "downloadButton": "دریافت"
+      },
+      "warningBlock": {
+        "title": "اخطار",
+        "content": "لطفا اگر اطلاعات کیف پول خود را ذخیره کردید آن ها را با دیگران به اشتراک نگذارید<br/>این تمام اطلاعاتی است که برای درون ریزی کیف پول خود در آینده نیاز دارید"
+      },
+      "exportBlock": {
+        "title": "Извези СИРОВЕ податке",
+        "privateKeysButton": "Моји приватни кључеви",
+        "mnemonicKeysButton": "Моја мнемоничка фраза",
+        "fileButton": "Сачувај као фајл"
+      },
+      "walletKeysModal": {
+        "title": "کلید های شخصی",
+        "confirmText": "تایید",
+        "content": "لطفا این اطلاعات را در یک مکان ایمن نگهداری کنید<b>در دست داشتن این اطلاعات به معنی داشتن حق کیف پول شماست و با داشتن این اطلاعات دیگران میتوانند به کیف پول شما دسترسی پیدا کنند</b> !<br/>کلید شخصی ارسال : {privSpendKey}<br/>کلید شخصی مشاهده : {privViewKey}"
+      },
+      "mnemonicKeyModal": {
+        "title": "کلید های شخصی",
+        "confirmText": "تایید",
+        "content": "لطفا در مورد کد سید احتیاط کنید و آن را ایمن نگه دارید<b>داشتن این کلید ها به شما اجازه دسترسی به این کیف پول در آینده را میدهد</b> کد شما :<br/>{mnemonic}"
+      },
+      "mnemonicLangSelectionModal": {
+        "title": "زبان مورد نظر برای کد سید خود را انتخاب کنید",
+        "confirmText": "تایید خروجی"
+      }
+    },
+    "importPage": {
+      "title": "درون ریزی کیف پول",
+      "subtitle": "از کلیدهای قبلی",
+      "chooseMethod": "یک متد انتخاب کنید",
+      "fromKeys": "با استفاده از کلید ها",
+      "fromFile": "با استفاده از فایل ",
+      "fromMnemonic": "با استفاده از کد سید",
+      "fromQr": "با استفاده از کد تصویری کیو آر"
+    },
+    "termsOfUsePage": {
+      "title": "شرایط استفاده",
+      "subtitle": "لطفا با دقت مطالعه نمایید"
+    },
+    "importFromFilePage": {
+      "title": "دزون ریزی کیف پول با استفاده از فایل",
+      "subtitle": "از فایل دانلود شده قبل در همین کیف پول استفاده کنید",
+      "walletBlock": {
+        "title": "فایل کیف پول",
+        "label": "انتخاب کنید",
+        "importButton": "درون ریزی"
+      }
+    },
+    "importFromMnemonicPage": {
+      "title": "درون ریزی با استفاده از کد سید",
+      "subtitle": "استفاده از کد سید برای درون ریزی کیف پول",
+      "mnemonicBlock": {
+        "title": "کد سید",
+        "mnemonic": {
+          "label": "کد سید باید بیست و پنج کلمه باشد",
+          "invalid": "کد سید اشتباه است",
+          "language": "زبان"
+        },
+        "importButton": "درون ریزی"
+      }
+    },
+    "importFromKeysPage": {
+      "title": "درون ریزی کیف پول با کلید ها",
+      "subtitle": "از کلید های شخصی برای درون ریزی کیف پول خود استفاده کنید",
+      "parametersBLock": {
+        "viewOnlyWallet": {
+          "label": "آیا تنها یک کیف پول صرفا قابل مشاهده میخواهید ؟",
+          "info": "لطفا توجه کنید که کیف پول های صرفا برای مشاهده تنها موجودی کیف پول شما را نشان میدهند و نمیتوانید کوین ارسال کنید"
+        }
+      },
+      "keysBlock": {
+        "titleNotViewOnly": "کلید های کیف پول",
+        "titleViewOnly": "کیف پول صرفا قابل مشاهده",
+        "privateSpend": {
+          "label": "کلید شخصی شما"
+        },
+        "privateView": {
+          "label": "کلید شخصی برای مشاهده",
+          "optional": "دلبخواه"
+        },
+        "publicKey": {
+          "label": "کلید عمومی"
+        },
+        "importButton": "درون ریزی"
+      }
+    }
+  },
+  "number":{
+  },
+  "date":{
+	"short": {
+	  "year": "numeric", "month": "short", "day": "numeric"
+	},
+	"long": {
+	  "year": "numeric", "month": "short", "day": "numeric",
+	  "weekday": "short", "hour": "numeric", "minute": "numeric", "hour12": false
+	}
+  }
+}

@@ -1,0 +1,513 @@
+﻿{
+  "website": {
+    "title": "카르보 지갑",
+    "description": "카르보 통화를위한 공식 온라인 지갑 - 최적의 보안을 위해 브라우저에서 완벽하게 처리됩니다. 본인만 사용하는 기기에서 접속해 주세요."
+  },
+  "messages": {
+    "menu": {
+      "home": "홈",
+      "account": "계정",
+      "send": "보내기",
+      "receive": "받기",
+      "export": "내보내기",
+      "donate": "기부",
+      "settings": "설정",
+      "disconnect": "연결 끊기",
+      "network": "네트워크 통계",
+      "mining": "채굴"
+    },
+    "global": {
+      "loading": "로드중",
+      "disableSecurity": "보안을 해제하며, 사용자는 그에 따른 위험을 인지합니다.",
+      "passwordInvalidRequirements": "비밀번호는 최소 8자리 이상이여야 하며, 1개 이상의 대문자, 소문자, 숫자 및 특수 문자로 구성해 주세요.",
+      "passwordConfirmationNotMatching": "비밀번호가 일치하지 않습니다",
+      "download": "다운로드",
+      "newVersionModal": {
+        "title": "새 버전이 나왔습니다.",
+        "content": "새 버전으로 다시 로딩 하시겠습니까?",
+        "confirmText": "예",
+        "cancelText": "취소"
+      },
+      "openWalletModal": {
+        "title": "비밀번호",
+        "confirmText": "열기",
+        "cancelText": "취소"
+      },
+      "invalidPasswordModal": {
+        "title": "비밀번호",
+        "content": "입력하신 비밀번호가 정확하지 않습니다.",
+        "confirmText": "확인"
+      },
+      "invalidMnemonicModal": {
+        "title": "연상단어",
+        "content": "연상단어(Mneumonic Seed)의 입력이 잘못되었습니다.",
+        "confirmText": "확인"
+      },
+      "passwordNotComplexEnoughModal": {
+        "title": "비밀번호의 구성이 보안요구사항을 준수하지 못합니다.",
+        "confirmText": "확인"
+      },
+      "permissionRequiredForCameraModal": {
+        "title": "카메라",
+        "content": "QR code 스캔을 위한 카메라의 접근 권한이 필요합니다.",
+        "confirmText": "확인"
+      }
+    },
+    "bottom": {
+      "termsOfUse": "이용약관",
+      "privacyPolicy": "개인정보정책",
+      "support": "도움받기",
+      "donate": "기부",
+      "network": "네트워크 통계",
+      "miningPool": "채굴",
+      "github": "Github"
+    },
+    "homepage": {
+      "mainTitle": "카르보 에 오신 것을 환영합니다",
+      "tagLine": "카르보 코인을 사용하기 가장 간단한 방법 어디서든. 언제든. 모든 장치에서.",
+      "actions": {
+        "loadWallet": "지갑 불러오기",
+        "importWallet": "지갑 가져오기",
+        "create": "지갑 만들기",
+        "createWallet": "지갑 만들기"
+      },
+	  "notes": {
+		"secure": {
+		  "title": "안전한",
+		  "description": "완전 암호화!"
+		},
+		"fast": {
+		  "title": "얻기 쉬운",
+		  "description": "브라우저 기반!"
+		},
+		"technology": {
+		  "title": "고객 입장에서",
+		  "description": "기기에 키가 있습니다"
+		},
+		"openSource": {
+		  "title": "오픈 소스",
+		  "description": "Github에서 호스팅!"
+		}
+	  }
+    },
+    "accountPage": {
+      "title": "계정",
+      "subtitle": "계정 정보 및 트랜젝션 기록",
+      "synchronizingBlock": {
+        "text": "동기화중..."
+      },
+      "balanceBlock": {
+        "title": "잔액",
+        "unlocked": "해제완료"
+      },
+      "historyBlock": {
+        "title": "트랜젝션 기록",
+        "pendingTxStatus": "처리중",
+        "emptyWallet": "현재 지갑에 잔액이 없습니다",
+        "waitSync": "지갑이 업데이트되고 있습니다. 잠시만 기다려주세요.",
+        "beReallyPatient": "초기 셋업중입니다. 잠시만 기다려주세요.",
+        "getCoinAddress": "카르보 코인 받기"
+      },
+      "txDetails": {
+        "title": "트랜젝션 세부내용",
+        "txHash": "트랜젝션 해시",
+        "feesOnTx": "트랜젝션 비용",
+        "blockHeight": "블록넘버",
+        "paymentId": "페이먼트 ID",
+        "unlockStatus": "현황",
+        "unlockConfirm": "확인",
+        "txPrivKey": "트랜젝션 비공개 키"
+      }
+    },
+    "changeWalletPasswordPage": {
+      "title": "비밀번호 변경",
+      "oldPassword": {
+        "label": "현재 비밀번호",
+        "invalid": "비밀번호가 일치하지 않습니다."
+      },
+      "newPassword": {
+        "label": "새로운 비밀번호를 입력하세요."
+      },
+      "newPasswordConfirm": {
+        "label": "새 비밀번호로 변경합니다."
+      },
+      "confirm": "변경완료",
+      "modalSuccess": {
+        "title": "비밀번호가 변경되었습니다.",
+        "confirmText": "확인"
+      }
+    },
+    "createWalletPage": {
+      "generatingStep": {
+        "title": "지갑이 생성되고 있습니다",
+        "subtitle": "거의 완료되었습니다",
+        "waitingMessage": "잠시만 기다려주세요"
+      },
+      "finalizationStep": {
+        "title": "지갑 생성이 완료되었습니다",
+        "subtitle": "이전 방식과는 다르게 카르보 코인을 사용해보세요",
+        "passwordSelectionBlock": {
+          "label": "비밀번호 설정"
+        },
+        "passwordConfirmBlock": {
+          "label": "비밀번호 확인"
+        },
+        "validPassword": "이 비밀번호를 사용합니다.",
+        "backupBlock": {
+          "title": "비공개 키와 연상단어를 저장하여, 지갑을 복구할 수 있습니다.",
+          "option1": "옵션 1: ",
+          "option2": "옵션 2: ",
+          "titlePdf": "PDF로 다운받아 저장하기",
+          "titleManualWrite": "비공개 키 ",
+          "privateKeys": "비공개 키",
+          "mnemonicPhrase": "연상단어",
+          "separatorManualMethodsSolution": " 또는 ",
+          "confirmManuallyWritten": "연상단어를 적어두었습니다.",
+          "warningMessage": "**절대로 잃어버리면 안됩니다!** 잃어버릴 경우 찾을 수 없습니다.<br/>**타인에게 공유하면 안됩니다!** 타인이 해당 정보를 이용하여 카르보 코인을 빼갈 수 있습니다. 비슷한 주소의 피싱 사이트를 조심하셔야 합니다.<br/>**백업을 만드세요!** 언젠가는 큰 금액이 될지도 모르니까요.<br/>",
+          "finishButton": "위 내용을 이해하며, 타인이 사용이 가능한 컴퓨터에서 접속할 경우, 해킹의 위험에 노출되며, 그에 따른 위험을 감수합니다."
+        }
+      },
+      "disclaimerBlock": {
+        "title": "카르보 코인 웹지갑 서비스 사용 공지",
+        "content": "카르보 코인 웹지갑 서비스는 카르보 코인 노드없이도 사용할 수 있는 지갑입니다. <br/>웹지갑과 관련되어 제공되는 정보(비밀번호, 비공개 키, 연상단어) 및 환경(컴퓨터 및 모바일 기기의 보안)을 일반 지갑에서와 같이 안전하게 보관하시길 권장합니다"
+      }
+    },
+    "donatePage": {
+      "title": "기부",
+      "subtitle": "기부를 통해 카르보 코인 개발 및 운영유지에 도움을 주세요.",
+      "webwalletBlock": {
+        "title": "웹지갑",
+        "content": "기부해 주신 쿼티코인은 서버운영 및 유지, 새로운 기능 추가를 위한 개발에 쓰입니다. 다음 주소로 기부해 주세요: <br/><br/>"
+      },
+      "devFundBlock": {
+        "title": "카르보 코인 개발자 모금",
+        "content": "다음 주소에도 기부하실 수 있습니다."
+      }
+    },
+    "supportPage": {
+      "title": "도움받기",
+      "subtitle": "어떻게 도와드릴까요?",
+      "getInTouchBlock": {
+        "title": "코어팀에게 연락하고 싶습니다.",
+        "content": "웹지갑 서비스의 개선에 관련된 새로운 아이디어나 피드백이 있으신가요? 그렇다면 연락주세요!",
+        "discord": "카르보 코인 디스코드 채널"
+      }
+    },
+    "networkPage": {
+      "title": "네트워크 통계",
+      "subtitle": "카르보 코인 네트워크 정보",
+      "statsBlock": {
+        "connectNode": "연결된 마스터 노드",
+        "hashrate": "네트워크 해시레이트",
+        "height": "블록 높이",
+        "difficulty": "네트워크 난이도",
+        "lastTimeBlock": "블록 발견 시간",
+        "lastReward": "블록 보상"
+      }
+    },
+    "sendPage": {
+      "title": "카르보 코인 보내기",
+      "sendBlock": {
+        "address": {
+          "label": "주소",
+          "placeholder": "위 주소로 송금이 됩니다.",
+          "invalid": "입력해 주신 주소가 올바르지 않습니다.",
+          "fundsTo": "적어주신 주소로 쿼티코인이 전송됩니다.",
+          "receiver": "받는 이",
+          "description": "설명"
+        },
+        "amount": {
+          "label": "보내는 금액",
+          "invalid": "입력하신 금액이 올바르지 않습니다."
+        },
+        "paymentId": {
+          "label": "페이먼트 ID (옵션)",
+          "invalid": "페이먼트 ID가 올바르지 않습니다. 올바른 ID의 문자길이는 16 또는 64 문자입니다."
+        },
+        "sendButton": "보내기",
+        "cancelButton": "취소"
+      },
+      "qrCodeScanning": {
+        "explication": "QR코드를 보여주세요."
+      },
+      "notEnoughMoneyModal": {
+        "title": "잔액부족",
+        "content": "지갑에 잔액이 부족합니다.",
+        "confirmText": "확인"
+      },
+      "thankYouDonationModal": {
+        "title": "기부해 주셔서 감사합니다!",
+        "content": "당신의 도움에 깊이 감사드립니다. 당신의 기부가 카르보 코인을 발전시킵니다.",
+        "confirmText": "확인"
+      },
+      "transferSentModal": {
+        "title": "송금이 성공적으로 완료되었습니다!",
+        "confirmText": "확인"
+      },
+      "transferExceptionModal": {
+        "title": "에러",
+        "content": "에러가 났습니다. 해당 에러를 보고해주세요: {details}",
+        "confirmText": "확인"
+      },
+      "invalidAmountModal": {
+        "title": "입력금액",
+        "content": "입력금액 오류",
+        "confirmText": "확인"
+      },
+      "creatingTransferModal": {
+        "title": "송금중",
+        "content": "잠시만 기다려주세요..."
+      },
+      "finalizingTransferModal": {
+        "title": "송금 완료중",
+        "content": "잠시만 기다려주세요..."
+      },
+      "confirmTransactionModal": {
+        "title": "다음과 같이 송금 하시겠습니까?",
+        "content": "금액: {amount}<br/>비용: {fees}<br/>총액: {total}",
+        "confirmText": "확인",
+        "cancelText": "취소"
+      },
+      "waitingNfcModal": {
+        "title": "NFC 통신 대기중",
+        "content": "기기에 더 가까이 가야합니다."
+      }
+    },
+    "receivePage": {
+      "title": "카르보 코인 받기",
+      "receiveBlock": {
+        "address": {
+          "title": "주소:",
+          "label": "이 주소로 송금을 받습니다."
+        },
+        "qrCode": {
+          "title": "QR코드 만들기:",
+          "labelAmount": "금액 (옵션)",
+          "labelRecipient": "받는사람 이름 (옵션)",
+          "labelDescription": "이체 관련 정보 (옵션)",
+          "updateButton": "업데이트"
+        }
+      },
+      "qrBlock": {
+        "title": "생선된 QR코드"
+      },
+      "waitingNfcToWriteModal": {
+        "title": "NFC 통신 대기중",
+        "titleSuccess": "NFC 태그 작성",
+        "content": "NFC 태그에 더 가까이 가야합니다."
+      },
+      "nfcErrorModal": {
+        "titleInsufficientCapacity": "태그의 용량이 충분하지 않습니다."
+      }
+    },
+    "miningPage": {
+      "title": "브라우져에서 채굴하기",
+      "subtitle": "채굴을 통해 카르보 코인 네트워크에 도움을 주는 댓가로 카르보 코인을 받을 수 있습니다.",
+      "parameterBlock": {
+        "title": "기본정보",
+        "labelDestinationAddress": "코인을 받을 지갑주소",
+        "labelThreads": "CPU 쓰레드 갯수 (높을수록 채굴이 더 됩니다.)",
+        "start": "시작",
+        "stop": "멈춤"
+      },
+      "statisticsBlocks": {
+        "title": "통계",
+        "validShares": "유효한 쉐어",
+        "hashrate": "해시레이트",
+        "maxHashrate": "최고 해시레이트",
+        "dedicatedHardware": "채굴용 소프트웨어와 하드웨어를 사용하면, 더 많은 코인을 받을 수 있으며, 네트워크의 탈중앙화에 도움이 됩니다.",
+        "miningHandledBy": "이 채굴 작업은 pool.conceal.network에서 처리됩니다."
+      }
+    },
+    "settingsPage": {
+      "title": "설정",
+      "subtitle": "여기서  바꿀 수 있습니다.",
+      "versionBlock": {
+        "versionNumber": "버전 넘버: ",
+        "versionCode": "버전 코드: "
+      },
+      "settingsBlock": {
+        "speed": {
+          "label": "지갑 업데이트 속도 (속도가 빠를수록 컴퓨팅 자원이 더 소모됩니다.)",
+          "fastest": "가장 빠르게",
+          "fast": "빠르게",
+          "medium": "보통",
+          "slow": "천천히"
+        },
+        "language": {
+          "label": "언어"
+        },
+        "currency": {
+          "label": "국가 통화"
+        },
+        "readMinerTx": {
+          "label": "채굴관련 송금 확인 (오직 단독 채굴에 적용됨)"
+        },
+        "customNode":{
+          "label":"Use custom node"
+        },
+        "nodeUrl":{
+          "label":"Node URL"
+        }
+      },
+      "changePasswordButton": "비밀번호 변경",
+      "deleteWalletButton": "웹지갑 지우기 (지금 사용하는 기기의 브라우저에 한정)",
+      "walletSettings": {
+        "creationHeight": {
+          "label": "지갑이 생성된 블록높이"
+        },
+        "currentScanningHeight": {
+          "label": "현재 스캐닝 중인 블록높이"
+        },
+        "updateButton": "업데이트"
+      },
+      "deleteWalletModal": {
+        "title": "웹지갑 지우기 (지금 사용하는 기기의 브라우저에 한정)",
+        "content": "정말로 웹지갑을 지금 사용하는 기기에서 삭제합니까? 같은 웹지갑을 다른 웹브라우져에서 사용하고 삭제하지 않은 경우, 다른 웹브라우져에서는 사용이 가능합니다.",
+        "confirmText": "네, 삭제합니다.",
+        "cancelText": "취소합니다."
+      }
+    },
+    "importBasePage": {
+      "parametersBlock": {
+        "title": "설정 값",
+        "password": {
+          "label": "비밀번호 설정"
+        },
+        "passwordConfirm": {
+          "label": "비밀번호 확인",
+          "invalid": "패스워드가 일치하지 않습니다."
+        },
+        "importHeight": {
+          "label": "불러들일 블록 높이(지갑 생성 블록 높이):"
+        }
+      }
+    },
+    "importFromQrPage": {
+      "title": "QR 코드 사용하여 지갑 불러오기",
+      "subtitle": "오프라인 백업을 사용하여 지갑 불러오기",
+      "qrCodeBlock": {
+        "title": "QR 코드",
+        "startScanButton": "스캔시작",
+        "importButton": "불러오기"
+      },
+      "qrScanningBlock": {
+        "title": "QR 코드를 보여주세요."
+      }
+    },
+    "exportPage": {
+      "title": "지갑 정보를 백업해 두세요.",
+      "publicAddressBlock": {
+        "title": "지갑주소"
+      },
+      "pdfBlock": {
+        "title": "PDF 백업",
+        "downloadButton": "다운로드"
+      },
+      "warningBlock": {
+        "title": "경고",
+        "content": "비공개 키 또는 연상단어를 기록 및 저장할 경우, 보안을 위해 기기내에 글자 형식 파일로 보관하지 마세요.<br/>이 파일은 지갑의 모든 키가 암호화되어 있으며 모든 트랜잭션의 백업을 포함하므로 다시 동기화 할 필요가 없습니다."
+      },
+      "exportBlock": {
+        "title": "지갑 정보 내보내기",
+        "privateKeysButton": "비공개 키 보기",
+        "mnemonicKeysButton": "연상단어 보기",
+        "fileButton": "파일로 내보내기"
+      },
+      "walletKeysModal": {
+        "title": "비공개 키",
+        "confirmText": "확인",
+        "content": "비공캐 키를 잘 보관하세요. <b>비공개 키로 지갑에 접근할 수 있습니다.</b> !<br/>스펜드 키: {privSpendKey}<br/>비공개 뷰 키: {privViewKey}"
+      },
+      "mnemonicKeyModal": {
+        "title": "연상단어",
+        "confirmText": "확인",
+        "content": "연상단어를 잘 보관하세요. <b>연상단어로 지갑에 접근할 수 있습니다.</b> ! 연상단어:<br/>{mnemonic}"
+      },
+      "mnemonicLangSelectionModal": {
+        "title": "연상단어의 언어를 선택해 주세요.",
+        "confirmText": "내보내기"
+      }
+    },
+    "importPage": {
+      "title": "지갑 만들기",
+      "subtitle": "키, 파일 또는 연상단어를 사용하여 가져오기",
+      "chooseMethod": "지갑을 가져올 방법을 선택해 주세요:",
+      "fromKeys": "키를 사용하여 가져오기",
+      "fromFile": "파일을 사용하여 가져오기",
+      "fromMnemonic": "연상단어 사용하여 가져오기",
+      "fromQr": "QR 코드 사용하여 가져오기"
+    },
+    "termsOfUsePage": {
+      "title": "이용약관",
+      "subtitle": "자세히 읽어주세요."
+    },
+    "privacyPolicyPage": {
+      "title": "개인 정보 정책",
+      "subtitle": "자세히 읽어주세요."
+    },
+    "importFromFilePage": {
+      "title": "백업 파일을 사용하여 지갑 가져오기",
+      "subtitle": "백업 파일을 사용하여 지갑을 가져오세요.",
+      "walletBlock": {
+        "title": "지갑 파일",
+        "label": "파일 선택하기",
+        "importButton": "가져오기"
+      }
+    },
+    "importFromMnemonicPage": {
+      "title": "연상단어를 사용하여 지갑 가져오기",
+      "subtitle": "연상단어를 사용하여 지갑을 가져오세요.",
+      "mnemonicBlock": {
+        "title": "연상단어",
+        "mnemonic": {
+          "label": "연상단어: 25개의 단어",
+          "invalid": "연상단어가 일치하지 않습니다.",
+          "language": "언어"
+        },
+        "importButton": "불러오기"
+      }
+    },
+    "importFromKeysPage": {
+      "title": "키를 사용하여 지갑 가져오기",
+      "subtitle": "키를 사용하여 지갑을 가져오세요.",
+      "parametersBlock": {
+        "viewOnlyWallet": {
+          "label": "보기 기능만 가능한 지갑을 만들고 싶으신가요?"
+        }
+      },
+      "keysBlock": {
+        "titleNotViewOnly": "지갑 키",
+        "titleViewOnly": "보기용 지갑",
+        "privateSpend": {
+          "label": "비공개 스펜드 키"
+        },
+        "privateView": {
+          "label": "비공개 뷰 키",
+          "optional": "(옵션)"
+        },
+        "publicKey": {
+          "label": "공개 키"
+        },
+        "importButton": "불러오기"
+      }
+    }
+  },
+  "number": {},
+  "date": {
+    "short": {
+      "year": "numeric",
+      "month": "short",
+      "day": "numeric"
+    },
+    "long": {
+      "year": "numeric",
+      "month": "short",
+      "day": "numeric",
+      "weekday": "short",
+      "hour": "numeric",
+      "minute": "numeric",
+      "hour12": true
+    }
+  }
+}

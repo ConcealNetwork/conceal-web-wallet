@@ -1,0 +1,55 @@
+<img src="./assets/img/logo_vertical.png" id="verticalLogo" style="display: none;"/>
+<canvas id="canvasExport" style="display: none;"></canvas>
+
+<div id="app" class="body-root receiveTab" v-cloak="">
+	<div class="body-header" >
+		<div class="header-title">
+			<i class="fa fa-download" aria-hidden="true"></i> {{ $t("exportPage.title") }}
+		</div>
+	</div>
+	<div class="body-content" >
+		<div class="panel">
+			<div class="body" >
+				<div class="header-title" >{{ $t("exportPage.publicAddressBlock.title") }}</div>
+				<div class="content" >
+					<span style="word-wrap: break-word;" >{{publicAddress}}</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel" v-if="!nativePlatform">
+			<div class="body" >
+				<div class="header-title" >{{ $t("exportPage.pdfBlock.title") }}</div>
+				<div class="content tc" >
+					<button @click="exportEncryptedPdf()" class="btn primary">{{ $t("exportPage.pdfBlock.downloadButton") }}</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel inline">
+			<div class="body" >
+				<div class="header-title" >{{ $t("exportPage.warningBlock.title") }}</div>
+				<div class="content" v-html="$t('exportPage.warningBlock.content')"></div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="header-title" >{{ $t("exportPage.exportBlock.title") }}</div>
+				<div class="content tc" >
+					<div class="tab" >
+						<button class="btn" @click="getPrivateKeys()" >{{ $t("exportPage.exportBlock.privateKeysButton") }}</button>
+					</div>
+					<div class="tab" >
+						<button class="btn" @click="getMnemonicPhrase()" >{{ $t("exportPage.exportBlock.mnemonicKeysButton") }}</button>
+					</div>
+					<div class="tab" v-if="!nativePlatform" >
+						<button class="btn" @click="fileExport()" >{{ $t("exportPage.exportBlock.fileButton") }}</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+</div>

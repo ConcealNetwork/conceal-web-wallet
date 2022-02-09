@@ -1,0 +1,23 @@
+<div id="app" class="body-root" v-cloak="">
+	<div class="body-header" >
+		<div class="header-title">
+			{{ $t("importPage.title") }}
+		</div>
+		<div class="header-subtitle" >
+			{{ $t("importPage.subtitle") }}
+		</div>
+	</div>
+	<div class="body-content" >
+		<div class="panel">
+			<div class="body" >
+				<div class="header-title" >{{ $t("importPage.chooseMethod") }}</div>
+				<div class="content tc" >
+					<a href="#!importFromKeys" class="btn" >{{ $t("importPage.fromKeys") }}</a>
+					<a href="#!importFromFile" class="btn" >{{ $t("importPage.fromFile") }}</a>
+					<a href="#!importFromMnemonic" class="btn" >{{ $t("importPage.fromMnemonic") }}</a>
+					<a href="#!importFromQr" class="btn" >{{ $t("importPage.fromQr") }}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,118 @@
+<div id="app" class="body-root" v-cloak="">
+	<div class="body-header" >
+		<div class="header-title">
+			<i class="fa fa-cog" aria-hidden="true"></i> {{ $t("settingsPage.title") }}
+		</div>
+		<div class="header-subtitle" >
+			{{ $t("settingsPage.subtitle") }}
+		</div>
+	</div>
+	<div class="body-content" >
+		<div class="panel inline" v-if="nativeVersionCode !== 0">
+			<div class="body" >
+				<div class="content" >
+					<div>{{ $t("settingsPage.versionBlock.versionNumber") }}{{nativeVersionNumber}}</div>
+					<div>{{ $t("settingsPage.versionBlock.versionCode") }}{{nativeVersionCode}}</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="content" >
+					<div class="field">
+						<label>{{ $t("settingsPage.settingsBlock.language.label") }}</label>
+						<select v-model="language">
+							<option value="en">English</option>
+							<option value="zh">Chinese (中文)</option>
+							<option value="fr">French (Français)</option>
+							<option value="de">German (Deutsch)</option>
+							<option value="gr">Greek (ελληνικά)</option>
+							<option value="hu">Hungarian (Magyar)</option>
+							<option value="it">Italian (Italiano)</option>
+							<option value="ko">Korean (한국어)</option>
+							<option value="fa">Persian (فارسی )</option>
+							<option value="pl">Polish (Polski)</option>
+							<option value="ru">Russian (Русский)</option>
+							<option value="sr">Serbian (Српски)</option>
+							<option value="es">Spanish (Español)</option>
+							<option value="uk">Ukrainian (Українська)</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="content" >
+					<div class="field checkbox toggle">
+						<input type="checkbox" name="customNode" v-model="customNode">
+						<label>{{ $t("settingsPage.settingsBlock.customNode.label") }}</label>
+					</div>
+					<div class="field">
+						<label>{{ $t("settingsPage.settingsBlock.nodeUrl.label") }}</label>
+						<input type="url" placeholder="http://node.conceal.network:32348/" v-model="nodeUrl" />
+					</div>
+					<div class="actions tc">
+						<button @click="updateConnectionSettings()" class="btn" >{{ $t("settingsPage.walletSettings.updateButton") }}</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="content" >
+					<div class="field">
+						<label>{{ $t("settingsPage.settingsBlock.speed.label") }}</label>
+						<select v-model="readSpeed" >
+							<option value="2" >{{ $t("settingsPage.settingsBlock.speed.fastest") }}</option>
+							<option value="10" >{{ $t("settingsPage.settingsBlock.speed.fast") }}</option>
+							<option value="50" >{{ $t("settingsPage.settingsBlock.speed.medium") }}</option>
+							<option value="100" >{{ $t("settingsPage.settingsBlock.speed.slow") }}</option>
+						</select>
+					</div>
+					<div class="field checkbox toggle">
+						<input type="checkbox" name="public" v-model="checkMinerTx">
+						<label>{{ $t("settingsPage.settingsBlock.readMinerTx.label") }}</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="content" >
+					<div class="field">
+						<label>{{ $t("settingsPage.walletSettings.creationHeight.label") }}</label>
+						<input type="number" v-model="creationHeight" />
+					</div>
+					<div class="field">
+						<label>{{ $t("settingsPage.walletSettings.currentScanningHeight.label") }}</label>
+						<input type="number" v-model="scanHeight" />
+					</div>
+					<div class="actions tc">
+						<button @click="updateWalletSettings()" class="btn" >{{ $t("settingsPage.walletSettings.updateButton") }}</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="content tc" >
+					<a href="#!changeWalletPassword" class="btn" >{{ $t("settingsPage.changePasswordButton") }}</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="content tc" >
+					<button class="btn" @click="deleteWallet()" >{{ $t("settingsPage.deleteWalletButton") }}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,499 @@
+﻿{
+  "website":{
+	"title":"Кошелек Карбо",
+	"description":"Официальный онлайн кошелек криптовалюты Карбованец - анонимный, надежный, работающий полностью в вашем браузере для наилучшей безопасности"
+  },
+  "messages": {
+	"menu": {
+	  "home": "Обзор",
+	  "account": "Аккаунт",
+	  "send": "Отправить",
+	  "receive": "Получить",
+	  "export": "Экспорт",
+	  "donate": "Пожертвовать",
+	  "settings": "Настройки",
+	  "disconnect": "Отключиться",
+	  "network": "Статистика сети",
+	  "mining": "Майнинг"
+	},
+	"global": {
+	  "loading": "Загрузка",
+	  "disableSecurity":"Отключить эту предосторожность, я понимаю риск",
+	  "passwordInvalidRequirements":"Пароль должен состоять по крайней мере из 8 символов - 1 большой буквы, 1 маленькой, одного числа, одного спецсимвола",
+	  "passwordConfirmationNotMatching":"Подтверждение пароля не совпадает с первым",
+	  "download":"Скачать",
+	  "newVersionModal":{
+		"title":"Есть новая версия",
+		"content":"Хотите перезагрузить чтобы обновить версию?",
+		"confirmText":"Да",
+		"cancelText":"Назад"
+	  },
+	  "openWalletModal":{
+		"title":"Пароль кошелька",
+		"confirmText":"Открыть",
+		"cancelText":"Отмена"
+	  },
+	  "invalidPasswordModal":{
+		"title":"Ой...",
+		"content":"Кажется пароль неверный",
+		"confirmText":"OK"
+	  },
+	  "invalidMnemonicModal":{
+		"title":"Ой...",
+		"content":"Фраза для восстановления неверная",
+		"confirmText":"OK"
+	  },
+	  "passwordNotComplexEnoughModal":{
+		"title":"Пароль недостаточно сложный",
+		"confirmText":"OK"
+	  },
+	  "permissionRequiredForCameraModal":{
+		"title":"Ой...",
+		"content":"Требуется разрешение на доступ к камере для сканирования QR кода",
+		"confirmText":"OK"
+	  }
+	},
+	"bottom": {
+	  "termsOfUse": "Условия использования",
+	  "privacyPolicy": "Политика конфиденциальности",
+	  "support": "Поддержка",
+	  "donate": "Пожертвовать",
+	  "network": "Статистика сети",
+	  "miningPool": "Майнинг",
+	  "github": "GitHub"
+	},
+	"homepage": {
+	  "mainTitle": "Добро пожаловать в кошелек Карбованца",
+	  "tagLine": "Самый простой способ использования карбованцев – в любое время, в любом месте",
+	  "actions": {
+		"loadWallet": "Загрузить мой кошелек",
+		"importWallet": "Импортировать кошелек",
+		"create": "Создать",
+		"createWallet": "Создать кошелек"
+	  },
+	  "notes": {
+		"secure": {
+		  "title": "Безопасный",
+		  "description": "Без серверов, полностью зашифрован!"
+		},
+		"fast": {
+		  "title": "Доступный",
+		  "description": "Работает прямо в браузере!"
+		},
+		"technology": {
+		  "title": "Локальный",
+		  "description": "Ключи на вашем устройстве!"
+		},
+		"openSource": {
+		  "title": "Open-source",
+		  "description": "Хостинг на Github!"
+		}
+	  }
+	},
+	"accountPage": {
+	  "title": "Аккаунт",
+	  "subtitle": "Обзор вашей учетной записи и истории транзакций",
+	  "synchronizingBlock": {
+		"text": "Синхронизация..."
+	  },
+	  "balanceBlock": {
+		"title": "Ваш баланс",
+		"unlocked": "Доступно"
+	  },
+	  "historyBlock": {
+		"title": "История транзакций",
+		"pendingTxStatus": "Ожидается",
+		"emptyWallet": "В этом кошельке пока нет средств.",
+		"waitSync": "Пожалуйста подождите пока кошелек обновляется",
+		"beReallyPatient": "Начальная установка может занять некоторое время...",
+		"getCoinAddress": "Получить CCX"
+	  },
+	  "txDetails":{
+		"title":"Детали транзакции",
+		"txHash":"Хеш",
+		"feesOnTx":"Комиссия",
+		"blockHeight":"Высота блока",
+		"paymentId":"Идентификатор платежа",
+        "txPrivKey":"Секретный ключ транзакции"
+	  }
+	},
+	"changeWalletPasswordPage":{
+	  "title":"Изменить ваш пароль",
+	  "oldPassword":{
+		"label":"Старый пароль",
+		"invalid":"Пароль недействительный"
+	  },
+	  "newPassword":{
+		"label":"Выберите новый пароль для зашиты вашего кошелька"
+	  },
+	  "newPasswordConfirm":{
+		"label":"Подтвердите новый пароль"
+	  },
+	  "confirm":"Изменить пароль",
+	  "modalSuccess":{
+		"title":"Пароль изменен!",
+		"confirmText":"OK"
+	  }
+	},
+	"createWalletPage":{
+	  "generatingStep":{
+		"title":"Создается кошелек...",
+		"subtitle":"Почти готово",
+		"waitingMessage":"Генерируется кошелек..."
+	  },
+	  "finalizationStep":{
+		"title":"Все. Ваш кошелек готов!",
+		"subtitle":"Приготовьтесь использовать Карбо как никогда до этого",
+		"passwordSelectionBlock":{
+		  "label":"Защитите ваш кошелек"
+		},
+		"passwordConfirmBlock":{
+		  "label":"Подтвердите пароль"
+		},
+		"validPassword":"Использовать этот пароль",
+		"backupBlock":{
+		  "title":"Сохраните ваши приватные данные чтобы иметь возможность восстановления.",
+		  "option1":"Опция 1: ",
+		  "option2":"Опция 2: ",
+		  "titlePdf":"Скачать PDF",
+		  "titleManualWrite":"Записать ключи",
+		  "privateKeys":"Приватный ключ",
+		  "mnemonicPhrase":"Мнемоническая фраза",
+		  "separatorManualMethodsSolution":" или ",
+		  "confirmManuallyWritten":"Я записал себе мнемоническую фразу",
+		  "warningMessage":"**Не потеряйте!** Она не может быть восстановлена если вы ее потеряете.<br/>**Никому не передавайте!** Ваши средства могут быть украдены если воспользуетесь этим файлом или фразой на вредоносном/фишинговом сайте.<br/>**Сделайте резервную копию!** Берегите как миллион долларов, которого оно может одного прекрасного дня стоить.<br/>",
+		  "finishButton":"Я понял. Продолжить."
+		}
+	  },
+	  "disclaimerBlock":{
+		"title":"Риски использования Conceal NetworkWallet",
+		"content":"Conceal NetworkWallet это веб-интерфейс. Он помогает вам использовать Карбо без необходимости держать полный узел сети Карбо. <br/>Мы рекомендуем относиться к Conceal NetworkWallet со всей серьезностью, как к вашему бумажнику."
+	  }
+	},
+	"donatePage":{
+	  "title":"Пожертвовать",
+	  "subtitle":"Помогите профинансировать разработку и оплату счетов",
+	  "webwalletBlock":{
+		"title":"Помошь Веб-кошельку",
+		"content":"Если вы хотите поддержать разработку, помочь с оплатой хостинга, если вам нравится аппликация, пожалуйста сделайте пожертвование: <br/><br/>"
+	  },
+	  "devFundBlock":{
+		"title":"Официальный фонд Карбо",
+		"content":"Чтобы поддержать Карбованец, вы можете сделать пожертвование на эти адреса"
+	  }
+	},
+	"supportPage":{
+	  "title":"Поддержка",
+	  "subtitle":"Мы тут чтобы помочь!",
+	  "getInTouchBlock":{
+		"title":"Свяжитесь с нами!",
+		"content":"Есть идеи или пожелания по улучшению кошелька? Напишите нам!",
+		"discord":"Канал Conceal Network в Discord"
+	  }
+	},
+	"networkPage":{
+	  "title":"Статистика сети",
+	  "subtitle":"Обзор сети Conceal Network",
+	  "statsBlock":{
+	    "connectNode": "Подключено к узлу",
+		"hashrate":"Хешрейт",
+		"height":"Высота блокчейна",
+		"difficulty":"Сложность",
+		"lastTimeBlock":"Время последнего блока",
+		"lastReward":"Награда за последний блок"
+	  }
+	},
+	"sendPage":{
+	  "title":"Отправить CCX",
+	  "sendBlock":{
+		"address":{
+		  "label":"Адрес получателя",
+		  "placeholder":"Укажите адрес, на который хотите отправить средства",
+		  "invalid":"Адрес получателя неверный",
+		  "fundsTo":"Средства будут отправлены на",
+		  "receiver":"Получатель",
+		  "description":"Описание"
+		},
+		"amount":{
+		  "label":"Сумма",
+		  "invalid":"Сумма неверная"
+		},
+		"paymentId":{
+		  "label":"Payment ID (необязательно)",
+		  "invalid":"Идентификатор платежа неверный. Длина должна быть 16 или 64 символа"
+		},
+		"sendButton":"Отправить",
+		"cancelButton":"Отменить"
+	  },
+	  "qrCodeScanning":{
+		"explication":"Показать QR код"
+	  },
+	  "notEnoughMoneyModal":{
+		"title":"Ой...",
+		"content":"В кошельке недостаточно средств для совершения этого перевода",
+		"confirmText":"OK"
+	  },
+	  "thankYouDonationModal":{
+		"title":"Спасибо за ваше пожертвование!",
+		"content":"Мы ценим вашу поддержку. <br/>Это пожертвование поможет сделать Conceal Network лучше",
+		"confirmText":"OK"
+	  },
+	  "transferSentModal":{
+		"title":"Перевод успешно отправлен!",
+		"confirmText":"OK"
+	  },
+	  "transferExceptionModal":{
+		"title":"Ой...",
+		"content":"Случилась ошибка. Пожалуйста сообщите о ней: {details}",
+		"confirmText":"OK"
+	  },
+	  "invalidAmountModal":{
+		"title":"Ой...",
+		"content":"Неверная сумма",
+		"confirmText":"OK"
+	  },
+	  "creatingTransferModal":{
+		"title":"Создается перевод...",
+		"content":"Пожалуйста подождите..."
+	  },
+	  "finalizingTransferModal":{
+		"title":"Завершается перевод...",
+		"content":"Пожалуйста подождите..."
+	  },
+	  "confirmTransactionModal":{
+		"title":"Подтвердить перевод?",
+		"content":"Сумма: {amount}<br/>Комиссии: {fees}<br/>Всего: {total}",
+		"confirmText":"Подтвердить",
+		"cancelText":"Отменить"
+	  },
+	  "waitingNfcModal":{
+		"title":"Ожидание Nfc",
+		"content":"Поднесите ближе к другому устройству"
+	  }
+	},
+	"receivePage":{
+	  "title":"Получить CCX",
+	  "receiveBlock":{
+		"address":{
+		  "title":"Ваш адрес для получения:",
+		  "label":"Дайте этот адрес чтобы получить средства"
+		},
+		"qrCode":{
+		  "title":"Или персонализируйте QR код:",
+		  "labelAmount":"Сумма (необязательно)",
+		  "labelRecipient":"Название получателя (необязательно)",
+		  "labelDescription":"Описание транзакции (необязательно)",
+		  "updateButton":"Обновить"
+		}
+	  },
+	  "qrBlock":{
+		"title":"Ваш персональный QR код"
+	  },
+	  "waitingNfcToWriteModal":{
+		"title":"Ожидание Nfc",
+		"titleSuccess":"Nfc тег записан",
+		"content":"Поднесите NFC тег ближе для записи"
+	  },
+	  "nfcErrorModal":{
+		"titleInsufficientCapacity":"Вместимость тега недостаточная"
+	  }
+	},
+	"miningPage":{
+	  "title":"Информация о майнинге",
+	  "subtitle":"Поддержите сеть майнингом и получите в награду CCX",
+	  "parameterBlock":{
+		"title":"Параметры",
+		"labelDestinationAddress":"Кошелек на который майнить",
+		"labelThreads":"Число потоков (больше = выше скорость)",
+		"start":"Старт",
+		"stop":"Стоп"
+	  },
+	  "statisticsBlocks":{
+		"title":"Статистика",
+		"validShares":"Валидные доли",
+		"hashrate":"Хешрейт",
+		"maxHashrate":"Макс. Хешрейт",
+		"dedicatedHardware":"Майнинг помогает в децентрализации сети и позволяет вам заработать Conceal Network.",
+		"miningHandledBy":"Майнинг проходит на пуле pool.conceal.network"
+	  }
+	},
+	"settingsPage":{
+	  "title":"Настройки",
+	  "subtitle":"Тут вы можете изменить параметры",
+	  "versionBlock":{
+		"versionNumber":"Номер версии: ",
+		"versionCode":"Код версии: "
+	  },
+	  "settingsBlock":{
+		"speed":{
+		  "label":"Скорость обновления кошелька (будет потреблять больше ресурсов)",
+		  "fastest":"Скорая",
+		  "fast":"Быстрая",
+		  "medium":"Средняя",
+		  "slow":"Медленная"
+		},
+		"language":{
+		  "label":"Язык"
+		},
+		"readMinerTx":{
+		  "label":"Считывать транзакции майнинга (только для соло майнинга)"
+		},
+		  "customNode":{
+			  "label":"Use custom node"
+		  },
+		  "nodeUrl":{
+			  "label":"Node URL"
+		  }
+	  },
+	  "changePasswordButton":"Изменть пароль моего кошелька",
+	  "deleteWalletButton":"Удалить мой кошелек (локальную копию)",
+	  "walletSettings":{
+		"creationHeight":{
+		  "label":"Высота создания кошелька"
+		},
+		"currentScanningHeight": {
+		  "label": "Текущая высота сканирования"
+		},
+		"updateButton":"Обновить"
+	  },
+	  "deleteWalletModal":{
+		"title":"Удалить мой кошелек (локальную копию)",
+		"content":"Вы ДЕЙСТВИТЕЛЬНО уверены что хотите удалить свой кошелек?",
+		"confirmText":"Да, я знаю что делаю",
+		"cancelText":"Отменить"
+	  }
+	},
+	"importBasePage":{
+	  "parametersBlock":{
+		"title":"Параметры",
+		"password":{
+		  "label":"Пароль для защиты вашего кошелька"
+		},
+		"passwordConfirm":{
+		  "label":"Подтвердите пароль",
+		  "invalid":"Пароль не совпадает с первым введенным паролем"
+		},
+		"importHeight":{
+		  "label":"С какой высоты начать импорт:"
+		}
+	  }
+	},
+	"importFromQrPage":{
+	  "title":"Импортировать кошелек из QR кода",
+	  "subtitle":"Импортировать кошелек из оффлайновой резервной копии",
+	  "qrCodeBlock":{
+		"title":"QR код",
+		"startScanButton":"Начать сканирование",
+		"importButton":"Импортировать"
+	  },
+	  "qrScanningBlock":{
+		"title":"Покажите QR код"
+	  }
+	},
+	"exportPage":{
+	  "title":"Сделать резервную копию ваших данных",
+	  "publicAddressBlock":{
+		"title":"Ваш публичный адрес"
+	  },
+	  "pdfBlock":{
+		"title":"Резервная копия PDF",
+		"downloadButton":"Скачать"
+	  },
+	  "warningBlock":{
+		"title":"Внимание",
+		"content":"Если вы решите сохранить приватные ключи или мнемоническую фразу, кошелек НЕ СОХРАНИТ их в текстовом виде для вашей безопасности.<br/>Файл является альтернативным решением где ваши ключи зашифрованы и содержит резервную копию всех ваших транзакций для ускорения синхронизации при восстановлении."
+	  },
+	  "exportBlock":{
+		"title":"Экспортировать сырые данные",
+		"privateKeysButton":"Получить мои приватные ключи",
+		"mnemonicKeysButton":"Получить мою мнемоническую фразу",
+		"fileButton":"Экспортировать в файл"
+	  },
+	  "walletKeysModal":{
+		"title":"Приватные ключи",
+		"confirmText":"OK",
+		"content":"Пожалуйста отнеситесь серьезно к сохранению этих ключей. <b>Тот кто их имеет, владеет средствами на кошельке</b>!<br/>Ключ расходования: {privSpendKey}<br/>Ключ слежения: {privViewKey}"
+	  },
+	  "mnemonicKeyModal":{
+		"title":"Мнемоническая фраза",
+		"confirmText":"OK",
+		"content":"Пожалуйста отнеситесь серьезно к сохранению этой мнемонической фразы. <b>Тот кто ее имеет, владеет средствами на кошельке</b> ! Фраза:<br/>{mnemonic}"
+	  },
+	  "mnemonicLangSelectionModal":{
+		"title":"Выберите язык мнемонической фразы",
+		"confirmText":"Экспортировать"
+	  }
+	},
+	"importPage":{
+	  "title":"Создать кошелек",
+	  "subtitle":"Из ранее созданных ключей, файла или мнемонической фразы",
+	  "chooseMethod":"Выберите метод импорта:",
+	  "fromKeys":"Из ключей",
+	  "fromFile":"Из файла",
+	  "fromMnemonic":"Из мнемонической фразы",
+	  "fromQr":"Из QR кода"
+	},
+	"termsOfUsePage":{
+	  "title":"Условия использования",
+	  "subtitle":"Внимательно их прочитайте."
+	},
+	"importFromFilePage":{
+	  "title":"Импорт кошелька из резервного фала",
+	  "subtitle":"Использовать резервный файл для создания кошелька",
+	  "walletBlock":{
+		"title":"Файл кошелька",
+		"label":"Выберите файл",
+		"importButton":"Импортировать"
+	  }
+	},
+	"importFromMnemonicPage":{
+	  "title":"Импорт кошелька из мнемонической фразы",
+	  "subtitle":"Использовать мнемоническую фразу для создания кошелька",
+	  "mnemonicBlock":{
+		"title":"Мнемоническая фраза",
+		"mnemonic":{
+		  "label":"Мнемоническая фраза: 25 слов",
+		  "invalid":"Мнемоническая фраза недействительная",
+		  "language":"Язык"
+		},
+		"importButton":"Импортировать"
+	  }
+	},
+	"importFromKeysPage":{
+	  "title":"Импорт кошелька из ключей",
+	  "subtitle":"Использовать приватные ключи для создания кошелька",
+	  "parametersBlock":{
+      "viewOnlyWallet": {
+        "label": "Хотите создать кошелек слежения?",
+        "info": "Обратите внимание, кошелек слежения предназначен только для просмотра входящих платежей, так что баланс может отображаться неправильно!"
+      }
+	  },
+	  "keysBlock":{
+		"titleNotViewOnly":"Ключи кошелька",
+		"titleViewOnly":"Кошелек просмотра",
+		"privateSpend":{
+		  "label":"Приватный ключ расходования"
+		},
+		"privateView":{
+		  "label":"Приватный ключ слежения",
+		  "optional":"(необязательно)"
+		},
+		"publicKey":{
+		  "label":"Публичный ключ"
+		},
+		"importButton":"Импортировать"
+	  }
+	}
+  },
+  "number":{
+  },
+  "date":{
+	"short": {
+	  "year": "numeric", "month": "short", "day": "numeric"
+	},
+	"long": {
+	  "year": "numeric", "month": "short", "day": "numeric",
+	  "weekday": "short", "hour": "numeric", "minute": "numeric", "hour12": true
+	}
+  }
+}
