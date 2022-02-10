@@ -14,6 +14,11 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+@font-face {
+	font-family: "Poppins";
+	src: url("../fonts/Poppins-Light.ttf");
+}
+
 body,html{margin:0;padding:0;min-height:100%;overflow-x:hidden}
 div,p,input,label{box-sizing: border-box;}
 
@@ -24,10 +29,32 @@ div,p,input,label{box-sizing: border-box;}
 	transition: all 0.2s ease-out;
 }
 
+/* unvisited link */
+a:link {
+  color: orange;
+}
+
+/* visited link */
+a:visited {
+  color: orange;
+}
+
+/* mouse over link */
+a:hover {
+  color: rgb(218, 141, 0);
+}
+
+/* selected link */
+a:active {
+  color: orange;
+}
+
 body{
 	overflow-y: hidden;
 	font-weight: normal;
-	background: #f7f7f7;
+	background-image: url(../img/landing/bg-dark.webp);
+	background-position: center center;
+	background-size: cover;
 }
 body.menuHidden{
 	overflow-y: auto;
@@ -214,8 +241,11 @@ body.menuHidden #page,body.menuDisabled #page{
 }
 
 #copyright{
-	padding:30px 0;
-	color: #474E5D;
+	position: absolute;
+  bottom: 0;
+	padding:15px 0;
+	background: #212121;
+	color: #ffffffb3;
 	font-size: 14px;
 	padding-left:280px;
 	text-align: center;
@@ -237,7 +267,7 @@ body.transparent #copyright{
 }
 
 
-#copyright a{color: #474E5D;text-decoration: none;}
+#copyright a{color: #ccc;text-decoration: none;}
 #copyright .links a, #copyright .links select{
 	display:inline-block;
 	margin-right: 10px;
@@ -492,11 +522,6 @@ body.transparent #copyright{
 	min-height:100vh;
 	position: relative;
 	text-align: center;
-	background-image: -webkit-linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/balancing.jpg);
-	background-image: -o-linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/balancing.jpg);
-	background-image: linear-gradient(rgba(62, 75, 92, 0.70), rgba(62, 75, 92, 0.70)), url(../img/landing/balancing.jpg);
-	background-position: center center;
-	background-size: cover;
 	margin-bottom:0px;
 }
 body.native .indexTab .mainBlock {
@@ -510,31 +535,38 @@ body.native .indexTab .mainBlock {
 }
 .indexTab .mainBlock .step:first-child{
 }
+
 .indexTab .mainBlock .headline{
-	margin-top: 30vh;
+	position: absolute;
+	top: 45%;
+	left: 50%;
+	margin-right: -50%;
+	transform: translate(-50%, -50%);
 }
-@media screen and (max-width: 940px) {
-	.indexTab .mainBlock .headline{
-		margin-top: 15vh;
-	}
-}
+
 .indexTab .mainBlock h1{
 	display: inline-block;
 	color:white;
-	padding: 0 20px;
-	margin-bottom: 0;
-	font-size: 40px;
+	font-size: 3.6rem;
 }
 
 .indexTab .mainBlock h2{
-	color:white;
-	font-size:18px;
+	padding: 1rem 0;
+	text-transform: uppercase;
+	letter-spacing: .1em;
+	text-shadow: -0.2em 0 0.4em #000, 0.2em 0 0.4em #000;
+	color: #999;
+	-webkit-margin-before: 0em;
+	margin-block-start: 0em;
+	font-size: 1.3rem;
 }
 .indexTab .mainBlock > .actions{
 	text-align: left;
-	color:white;
-	padding:20px;
-	vertical-align: middle;
+	background: #212121;
+	color: #ffffffb3;
+	padding: 1.5rem 1.5rem;
+	height: 80px;
+	overflow: hidden;
 }
 body.native .indexTab .mainBlock > .actions{
 	text-align: center;
@@ -544,9 +576,12 @@ body.native .indexTab .mainBlock > .actions{
 }
 .indexTab .mainBlock > .actions .btn{
 	/*padding:3px;*/
-	background: white;
+	background: #faa933;
+	color: #000000b3;
+	font-weight: 600;
 	margin-top: 0;
 	margin-right: 20px;
+	margin-top: -2px;
 }
 .indexTab .mainBlock > .actions .btn.basic{
 	background: none;
@@ -609,7 +644,7 @@ body.native .indexTab .mainBlock > .actions{
 }
 .indexTab .block i{
 	font-size: 40px;
-	color:#00A0E3;
+	color:#faa933;
 }
 .indexTab .block h3{
 	color:white;
@@ -712,7 +747,7 @@ body.native .indexTab .mainBlock > .actions{
 
 /*=====================================*/
 body{
-	font-family: "Roboto-Regular", sans-serif;
+	font-family: "Poppins";
 	font-weight: normal;
 	font-size: 14px;
 	line-height: 1;
@@ -734,7 +769,7 @@ body{
 }
 .body-header .header-title {
 	font-size: 26px;
-	color: #474E5D;
+	color: #fff;
 	line-height: 1;
 	margin-bottom: 15px;
 }
@@ -743,13 +778,13 @@ body{
 	margin-right: 3px;
 }
 .body-header .header-subtitle {
-	font-size: 14px;
-	color: #474E5D;
+	font-size: 18px;
+	color: orange;
 	line-height: 26px;
 }
 .body-header .header-subtitle a {
 	font-size: 14px;
-	color: #474E5D;
+	color: #ccc;
 	line-height: 1;
 }
 
@@ -758,38 +793,36 @@ body{
 }
 
 .panel{
-	background: #FFF;
+	background: #424242ea;
 	border-radius: 5px;
 	padding: 32px 40px 32px 40px;
 	margin-bottom: 30px;
-	-webkit-box-shadow: 0 10px 25px 0 #DFE3EC;
-	box-shadow: 0 10px 25px 0 #DFE3EC;
+	box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
 	position: relative;
 }
 .panel.nopadding{
 	padding:0;
 }
-.panel a{
+.panel a {
 	text-decoration: none;
-	color:#474E5D;
 }
 .panel.inline {
-	background: transparent;
+	background: #424242ea;
 	padding: 40px 40px 32px 40px;
-	border: 1px solid #D6DDED;
+	border: 1px solid orange;
 	box-shadow: none;-webkit-box-shadow: none;
 }
 .panel .body{}
 .panel .header-title{
 	font-size: 20px;
-	color: #474E5D;
+	color: #fff;
 	margin-bottom: 22px;
 }
 .panel.nopadding .header-title{
 	padding: 32px 40px 0 40px;
 }
 .panel .body > .content{
-	color:#7c818c;
+	color:#ccc;
 	line-height: 26px;
 	word-wrap: break-word;
 }
@@ -824,8 +857,8 @@ body{
 }
 .message > .title{font-weight: 700;padding-bottom:8px;}
 .message > .content{font-size:1em;}
-.message.error{background-color: #fff6f6;color: #9f3a38;}
-.message.warning{background-color: #fffaf3;color: #573a08;}
+.message.error{background-color: #e57373;color: #fff;}
+.message.warning{background-color: #e57373;color: #ccc;}
 
 
 /*=================BUTTONS====================*/
@@ -860,10 +893,10 @@ body{
 .btn.basic:hover{background:none !important;color:#e0e1e2;border:2px solid #e0e1e2;}
 .btn:hover{background-color: #cacbcd;color: rgba(0,0,0,.8);}
 
-.btn.primary{color: #fff;background-color: #2185d0;}
-.btn.primary.basic{color: #2185d0;border-color: #2185d0;}
-.btn.primary:hover {background-color: #1678c2;}
-.btn.primary.basic:hover{color: #1678c2;border-color: #1678c2;}
+.btn.primary{color: #000000b3;background-color: #faa933; font-weight: 600;}
+.btn.primary.basic{color: #000000b3;border-color: #faa933;}
+.btn.primary:hover {background-color: #f79b11;}
+.btn.primary.basic:hover{color: #000000b3;border-color: #f79b11;}
 
 .btn.teal{background-color: #00b5ad;color: #fff;}
 .btn.teal:hover{background-color: #009c95;color: #fff;}
@@ -980,7 +1013,7 @@ body{
 	border-radius: 500rem;
 }
 .field.checkbox input:checked~label:before{
-	background-color: #2185d0;
+	background-color: #faa933;
 }
 .field.checkbox label:after{
 	background: #fff -webkit-gradient(linear,left top,left bottom,from(transparent),to(rgba(0,0,0,.05)));

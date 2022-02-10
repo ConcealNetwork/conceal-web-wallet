@@ -63,7 +63,7 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Welcome to Conceal Network Wallet",
+	  "mainTitle": "Conceal Network Wallet",
 	  "tagLine": "The simplest way to use Conceal Network – anywhere and any time",
 	  "actions": {
 		"loadWallet": "Load my wallet",
