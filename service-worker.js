@@ -437,7 +437,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/privacyPolicy.html",
-    "revision": "0bdfeea940590b665b5764b4167c4de2"
+    "revision": "ad01264dd8c9c46a9289b3e1d21d9a22"
   },
   {
     "url": "pages/privacyPolicy.js",
@@ -469,7 +469,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/support.html",
-    "revision": "2b1792ba4adf2bc99c52ebca9a3b194b"
+    "revision": "176f4e685f5634390560f31aed1a4311"
   },
   {
     "url": "pages/support.js",
@@ -477,7 +477,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/termsOfUse.html",
-    "revision": "0cf457fdc391b18b0495dfea1a0b4f24"
+    "revision": "d245c225ede186bbb931f7da7c0bc1fa"
   },
   {
     "url": "pages/termsOfUse.js",
