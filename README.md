@@ -1,31 +1,30 @@
-# Conceal Web Wallet
-This web wallet is doing everything client-side to give the best privacy to users.
-The server is currently only used to optimize the communication with the daemon and compress the blockchain.  
-
-Note: This requirement may be removed in the future once daemons evolve and return enough data.  
+# Conceal Web Wallet (Serverless)
+This web wallet is doing everything on client-side to give the best privacy to its users.
 
 # Security
-**No keys, seeds, or sensitive data is sent to the server**  
-If you find a potential security issue, please contact me so we/I can patch it as soon as possible.  
-Encryption is done with a certified library, [Tweetnacl.Js.](https://github.com/dchest/tweetnacl-js)
+No keys, seeds, or sensitive data is sent to the server (truly serverless and client).
 
-# Features (non-exhaustive)
-- Complete wallet sync without server side processing for security
-- Receive/send history
-- Mempool support to check incoming transfers
-- Send coins - including QR code scanning and subaddress support
-- Receive page to generate a custom QR code
-- Import from private keys, mnemonic seed, or json file (exported by the wallet)
-- Export private keys, mnemonic phrase, or json file (which include all the history)
-- View only wallet
-- Basic network stats
+Encryption is done with a certified library, [Tweetnacl.Js.](https://github.com/dchest/tweetnacl-js).
 
-# Contributors and thanks
+If you find a potential security issue, please contact us via [Discord] (https://discord.conceal.network) so we can patch it as soon as possible.
+
+# Features
+- Serverless: Complete wallet sync without server side processing for security
+- Funds Transactions (Send/Receive $CCX)
+- Transactions History
+- Mempool Support (checking incoming transfers in realtime)
+- Custom QR codes
+- Import/Export from private keys, mnemonic seed, or json file (exported by the wallet)
+- View-Only Mode
+- Network Stats
+
+# Contributors
 Developers:
 - [gnock](https://github.com/gnock) (main)
 - [cryptochangements](https://github.com/cryptochangements34)
 - [DaveLong](https://github.com/DaveLong) (initial adaptation of PHP Api for Bytecoin based coins)
 - [Aiwe](https://github.com/aivve) (adapted for Bytecoin/CryptoNote from Monero codebase)
+- [Krypt0x] (https://github.com/krypt0x) (fixes, enhancements and forking to CN-CCX)
 
 # Translations:
 - Chinese: [mainframer](https://github.com/mainframer), [Alex Nnian](https://github.com/nnian)
@@ -45,13 +44,6 @@ Developers:
 - Ukrainian: [Aiwe](https://github.com/aivve)
 
 # Contributing
-- You can help Conceal Network by translation the wallet in your native language, it's really easy!  
+- You can contribute by translation the wallet in your native language, it's really easy!  
 Read [the translations guide](TRANSLATIONS.md) to get instructions on how to do that
 - Report bugs & ideas to help us improve the web wallet by opening an issue 
-
-# Forks / Other Coins
-We have been receiving multiple coin developers help to fork it. As the time required to develop this project is heavy, please consider giving a mention to this project if you fork it.
-
-The code is readable, it should be enough for you to use it.
-
-
