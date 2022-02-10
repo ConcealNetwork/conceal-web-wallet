@@ -85,11 +85,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/img/logoQrCode.jpg",
-    "revision": "0d56d4f6972bd21dedfe0ce10f24a661"
+    "revision": "9ab90027c5a4cdc7b4549034caf96682"
   },
   {
     "url": "assets/img/logoQrCode.png",
-    "revision": "682c122db179cee3cd4e167551f3d4f6"
+    "revision": "6cc6dd0ae778e4517e2b58499c747cd3"
   },
   {
     "url": "config.js",
@@ -105,7 +105,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "index.html",
-    "revision": "2cf7910d2cf6d362e627ba4d3da50f0e"
+    "revision": "1bf8c6c412b0399ef5510edaeec8efb0"
   },
   {
     "url": "index.js",
