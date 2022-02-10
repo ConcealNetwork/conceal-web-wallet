@@ -365,7 +365,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/donate.html",
-    "revision": "e37fb0145c5005963239f63edd0039e9"
+    "revision": "dbfa50c567e6b47ad5c463cbafe3a5ae"
   },
   {
     "url": "pages/donate.js",
