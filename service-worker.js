@@ -493,11 +493,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/de.json",
-    "revision": "06b21c6a3e4c228529f40c9fe25aa4c3"
+    "revision": "977bc0673124175eb3416839949960bc"
   },
   {
     "url": "translations/en.json",
-    "revision": "17f8248dab388b3e265994f1aefe1d25"
+    "revision": "245012582da59046d2a7f755609b954d"
   },
   {
     "url": "translations/es.json",
@@ -509,19 +509,19 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/fr.json",
-    "revision": "6313924ffbf05d4108660838c58377a0"
+    "revision": "540aa9d82c99aaf00482b3b845f37366"
   },
   {
     "url": "translations/gr.json",
-    "revision": "8f12809a8617f453ea4cdc790bc0d4e1"
+    "revision": "a273f8ffb81a7ff6c181cec7642c7ca8"
   },
   {
     "url": "translations/hu.json",
-    "revision": "34ab84a418e33c8fd958a139a623e0fe"
+    "revision": "ad5be31d2bd5ac913f2acc16653ffa7c"
   },
   {
     "url": "translations/it.json",
-    "revision": "56daf5bbe8d502f9d87861af55281e32"
+    "revision": "ade147949edba636f160d41871192561"
   },
   {
     "url": "translations/ko.json",
@@ -533,7 +533,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/ru.json",
-    "revision": "683f8a51eb9eddd805eb083521afcbd4"
+    "revision": "7d2da5801606fa7cfdcd4474345a7180"
   },
   {
     "url": "translations/sr.json",
@@ -541,7 +541,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/uk.json",
-    "revision": "b693e8b62c7cd804dcf08e7a134ca349"
+    "revision": "7db64342a7f47ec236dcc672695945db"
   },
   {
     "url": "translations/zh.json",

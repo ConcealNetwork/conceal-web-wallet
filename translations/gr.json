@@ -166,8 +166,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Κίνδυνος χρήσης του Conceal NetworkWallet",
-		"content":"Το Conceal NetworkWallet είναι ένα πορτοφόλι βασισμένο στον ιστό. Σας επιτρέπει να χρησιμοποιήσετε το Conceal Network χωρίς να χρειάζετε να λειτουργείτε έναν δικό σας κόμβο Conceal Network. <br/> Σας συνιστούμε να θεωρείτε το Conceal NetworkWallet ως ένα κανονικό πορτοφόλι"
+		"title":"Κίνδυνος χρήσης του Conceal Network Wallet",
+		"content":"Το Conceal Network Wallet είναι ένα πορτοφόλι βασισμένο στον ιστό. Σας επιτρέπει να χρησιμοποιήσετε το Conceal Network χωρίς να χρειάζετε να λειτουργείτε έναν δικό σας κόμβο Conceal Network. <br/> Σας συνιστούμε να θεωρείτε το Conceal Network Wallet ως ένα κανονικό πορτοφόλι"
 	  }
 	},
 	"donatePage":{

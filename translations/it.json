@@ -165,8 +165,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Rischi nell'usare Conceal NetworkWallet",
-		"content":"Conceal NetworkWallet è una interfaccia web-based. Ti aiuta ad usare Conceal Network senza eseguire un full node. <br/>Vi consigliamo di trattare MaraiWallet come trattereste il vostro portafoglio attuale."
+		"title":"Rischi nell'usare Conceal Network Wallet",
+		"content":"Conceal Network Wallet è una interfaccia web-based. Ti aiuta ad usare Conceal Network senza eseguire un full node. <br/>Vi consigliamo di trattare MaraiWallet come trattereste il vostro portafoglio attuale."
 	  }
 	},
 	"donatePage":{
