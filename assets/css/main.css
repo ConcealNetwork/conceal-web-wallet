@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2018, Gnock
  * Copyright (c) 2018, The Masari Project
+ * Copyright (c) 2022, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -78,7 +79,7 @@ body.native .hideOnNonNative{
 	height:34px;line-height:34px;
 	position: fixed;
 	top:0;
-	background: #30466C;
+	background: #363636;
 	color:white;
 	font-size:16px;
 	font-weight: bold;
@@ -136,7 +137,7 @@ body.menuHidden #menu {
 }
 
 #menu{
-	background: #30466C;
+	background: #363636;
 	color: white;
 	padding:10px 15px;
 }
