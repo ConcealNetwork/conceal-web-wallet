@@ -8,7 +8,7 @@ global.config = {
     nodeList: [
         "https://ccxapi.conceal.network/daemon/"
     ],
-    nodeUrl: "https://ccxapi.conceal.network/daemon/",
+    nodeUrl: "",
     mainnetExplorerUrl: "https://explorer.conceal.network/",
     mainnetExplorerUrlHash: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_transaction",
     mainnetExplorerUrlBlock: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_block",
@@ -29,7 +29,7 @@ global.config = {
     coinFee: new JSBigInt('1000'),
     feePerKB: new JSBigInt('1000'),
     dustThreshold: new JSBigInt('10'),
-    defaultMixin: 0,
+    defaultMixin: 5,
     idleTimeout: 30,
     idleWarningDuration: 20,
     syncBlockCount: 50,

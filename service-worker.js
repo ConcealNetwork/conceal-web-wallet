@@ -85,7 +85,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "config.js",
-    "revision": "a69044bc2f3919393cb4d89c962112f7"
+    "revision": "beb5825333a3382c13fb95f320179187"
   },
   {
     "url": "d/vue-i118n.js",
@@ -449,7 +449,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/send.js",
-    "revision": "16f8d07763c6d0a41c54c01f05cec7a8"
+    "revision": "dbf3240bc1c5369f6b548eb9c5c4358e"
   },
   {
     "url": "pages/settings.html",
