@@ -53,7 +53,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/img/icons/icon-152x152.png",
-    "revision": "8149f105d54982000fdfaba02a922221"
+    "revision": "9ca297b44a222e10ddddbfb27c316bad"
   },
   {
     "url": "assets/img/icons/icon-192x192.png",
