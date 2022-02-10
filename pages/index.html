@@ -28,10 +28,10 @@
 			<div class="headline">
 				<h1>{{ $t("homepage.mainTitle") }}</h1>
 				<h2>{{ $t("homepage.tagLine") }}</h2>
-			</div>
-			<div class="callToAction tc">
-				<a href="#" @click="loadWallet()" v-if="hasLocalWallet" class="btn basic">{{ $t("homepage.actions.loadWallet") }}</a>
-				<a href="#!createWallet" class="btn primary">{{ $t("homepage.actions.createWallet") }}</a>
+				<div class="callToAction tc">
+					<a href="#" @click="loadWallet()" v-if="hasLocalWallet" class="btn basic">{{ $t("homepage.actions.loadWallet") }}</a>
+					<a href="#!createWallet" class="btn primary">{{ $t("homepage.actions.createWallet") }}</a>
+				</div>
 			</div>
 		</div>
 

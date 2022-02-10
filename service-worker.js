@@ -33,7 +33,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/css/main.css",
-    "revision": "db66b88481f7c72c771029cc77c6b700"
+    "revision": "83f53eaf2b59b937d5592556a2b9e9c1"
   },
   {
     "url": "assets/img/coin_white.png",
@@ -66,14 +66,6 @@ workbox.precaching.precacheAndRoute([
   {
     "url": "assets/img/icons/icon-402x402.png",
     "revision": "ecb719039eb6fbb9608de68f632dab18"
-  },
-  {
-    "url": "assets/img/landing/75-usersthink-stock-image.jpg",
-    "revision": "7a00bbf57aacc5303e846055b6dae1cb"
-  },
-  {
-    "url": "assets/img/landing/balancing.jpg",
-    "revision": "d460c7427f9adc5ba695d633e1d0aadc"
   },
   {
     "url": "assets/img/logo_vertical.png",
@@ -421,7 +413,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/index.html",
-    "revision": "dc7577e4ee48ffb66a5279805ac39ecf"
+    "revision": "8c83dd9791120235e634ef9c7c2b9a6a"
   },
   {
     "url": "pages/index.js",
@@ -497,7 +489,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/en.json",
-    "revision": "245012582da59046d2a7f755609b954d"
+    "revision": "c79847e76d0c77d7fd820ea9b85967c2"
   },
   {
     "url": "translations/es.json",
