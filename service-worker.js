@@ -245,7 +245,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "manifest.json",
-    "revision": "cba2c9ff62894f8542c8ae599db128b8"
+    "revision": "5d91e91213013f75e5e3c2d4a5918ac7"
   },
   {
     "url": "model/AppState.js",
