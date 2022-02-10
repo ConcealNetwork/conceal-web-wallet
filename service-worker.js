@@ -45,27 +45,27 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/img/icons/icon-128x128.png",
-    "revision": "3fad3322911d1b0d6290461dfc1c8e25"
+    "revision": "0b53abe284523b3920da9b5edb9d874f"
   },
   {
     "url": "assets/img/icons/icon-144x144.png",
-    "revision": "6bf40237cdd6bb8ebac8acc7100421a6"
+    "revision": "d525d04fcfd108a387444f091ef1aa18"
   },
   {
     "url": "assets/img/icons/icon-152x152.png",
-    "revision": "8e224473fb46737bce5cab9776efbedd"
+    "revision": "8149f105d54982000fdfaba02a922221"
   },
   {
     "url": "assets/img/icons/icon-192x192.png",
-    "revision": "f8fc712e5e0ff2c899b63b15e50652a8"
+    "revision": "42a900c73e0ca15228efbafb7df92b69"
   },
   {
     "url": "assets/img/icons/icon-256x256.png",
-    "revision": "e16b9eab1132efcac3e60e120d507f7f"
+    "revision": "82cea28b358e6e4a6d974b7792e020ae"
   },
   {
     "url": "assets/img/icons/icon-402x402.png",
-    "revision": "94eb376ad133b4bf229bee96fe81ff15"
+    "revision": "ecb719039eb6fbb9608de68f632dab18"
   },
   {
     "url": "assets/img/landing/75-usersthink-stock-image.jpg",
