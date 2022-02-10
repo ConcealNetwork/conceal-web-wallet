@@ -7,7 +7,7 @@ global.config = {
     nodeList: [
         "https://ccxapi.conceal.network/daemon/"
     ],
-	nodeUrl: "https://ccxapi.conceal.network/daemon/",
+	nodeUrl: "",
 	mainnetExplorerUrl: "https://explorer.conceal.network/",
 	mainnetExplorerUrlHash: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_transaction",
 	mainnetExplorerUrlBlock: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_block",
@@ -28,7 +28,7 @@ global.config = {
 	coinFee: new JSBigInt('1000'),
 	feePerKB: new JSBigInt('1000'), //for testnet its not used, as fee is dynamic.
 	dustThreshold: new JSBigInt('10'),//used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
-	defaultMixin: 0, // default value mixin
+	defaultMixin: 5, // default value mixin
 
 	idleTimeout: 30,
 	idleWarningDuration: 20,

@@ -1,6 +1,6 @@
 {
-  "name": "ConcealWallet",
-  "version": "1.1.0",
+  "name": "ConcealWebWallet",
+  "version": "1.1.1",
   "description": "Fully client-side web-wallet for Conceal Network",
   "main": "index.js",
   "dependencies": {
