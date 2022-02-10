@@ -2,12 +2,12 @@
 let global : any = typeof window !== 'undefined' ? window : self;
 global.config = {
 	apiUrl: [
-        "https://walletapi.conceal.network/"
+        "https://ccxapi.conceal.network/api"
     ],
     nodeList: [
-        "https://explorer.conceal.network/index.html#nodes"
+        "https://ccxapi.conceal.network/nodes"
     ],
-	nodeUrl: "",
+	nodeUrl: "https://ccxapi.conceal.network/daemon",
 	mainnetExplorerUrl: "https://explorer.conceal.network/",
 	mainnetExplorerUrlHash: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_transaction",
 	mainnetExplorerUrlBlock: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_block",
