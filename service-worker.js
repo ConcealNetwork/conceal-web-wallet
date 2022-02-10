@@ -37,11 +37,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/img/coin_white.png",
-    "revision": "c392292dd4fa339a13a254d154f29a5c"
+    "revision": "93c52631254cd9ca88557a97392a932f"
   },
   {
     "url": "assets/img/favicon.ico",
-    "revision": "eea7c4035a78dfc8c182cf88734eb2e5"
+    "revision": "8eaba0b398c7a3ea468c98af1e89540b"
   },
   {
     "url": "assets/img/icons/icon-128x128.png",
@@ -77,11 +77,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/img/logo_vertical.png",
-    "revision": "39c108ce84cd099e9964f2b1e5c206ec"
+    "revision": "93c52631254cd9ca88557a97392a932f"
   },
   {
     "url": "assets/img/logo.png",
-    "revision": "f20c663fdbe7ac21246e84606f6c1fdd"
+    "revision": "93c52631254cd9ca88557a97392a932f"
   },
   {
     "url": "assets/img/logoQrCode.jpg",
@@ -105,7 +105,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "index.html",
-    "revision": "8fe1eab7d667cf3a270b738edf84c882"
+    "revision": "ae81bb05bea71dc7c0b262a9e425a481"
   },
   {
     "url": "index.js",
