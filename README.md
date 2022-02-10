@@ -20,11 +20,11 @@ If you find a potential security issue, please contact us via [Discord] (https:/
 
 # Contributors
 Developers:
-- [gnock](https://github.com/gnock) (main)
-- [cryptochangements](https://github.com/cryptochangements34)
+- [Gnock](https://github.com/gnock) (main)
+- [Cryptochangements](https://github.com/cryptochangements34)
 - [DaveLong](https://github.com/DaveLong) (initial adaptation of PHP Api for Bytecoin based coins)
 - [Aiwe](https://github.com/aivve) (adapted for Bytecoin/CryptoNote from Monero codebase)
-- [Krypt0x] (https://github.com/krypt0x) (fixes, enhancements and forking to CN-CCX)
+- [Krypt0x](https://github.com/krypt0x) (fixes, enhancements and forking to CN-CCX)
 
 # Translations:
 - Chinese: [mainframer](https://github.com/mainframer), [Alex Nnian](https://github.com/nnian)
@@ -46,4 +46,4 @@ Developers:
 # Contributing
 - You can contribute by translation the wallet in your native language, it's really easy!  
 Read [the translations guide](TRANSLATIONS.md) to get instructions on how to do that
-- Report bugs & ideas to help us improve the web wallet by opening an issue 
+- Report bugs & ideas to help us improve the web wallet by opening an [issue](https://github.com/ConcealNetwork/conceal-web-wallet/issues/new)
