@@ -166,8 +166,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Risiko beim benutzen der Conceal NetworkWallet",
-		"content":"Conceal NetworkWallet ist ein web-basierendes Interface. Es hilft beim Nutzen von Conceal Network ohne einen vollen Node zu betreiben. <br/>Wir empfehlen Conceal NetworkWallet sicherheitstechnisch wie eine richtige Wallet zu behandeln."
+		"title":"Risiko beim benutzen der Conceal Network Wallet",
+		"content":"Conceal Network Wallet ist ein web-basierendes Interface. Es hilft beim Nutzen von Conceal Network ohne einen vollen Node zu betreiben. <br/>Wir empfehlen Conceal Network Wallet sicherheitstechnisch wie eine richtige Wallet zu behandeln."
 	  }
 	},
 	"donatePage":{
