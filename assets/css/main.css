@@ -239,10 +239,18 @@ body.menuHidden #page,body.menuDisabled #page{
 		margin-left: 0;
 	}
 }
+/* xSMall & Small */
+@media only screen and (max-width: 960px) {
+	#copyright {
+		height: 100px !important;
+	}
+}
+
 
 #copyright{
-	position: absolute;
-  bottom: 0;
+	height: 75px;
+	position: fixed;
+	bottom:0%;
 	padding:15px 0;
 	background: #212121;
 	color: #ffffffb3;
@@ -273,7 +281,16 @@ body.transparent #copyright{
 	margin-right: 10px;
 }
 #copyright .links{
-	padding-top:10px;
+	padding-top: 10px;
+	line-height: 1.8;
+}
+
+#copyright .links a {
+	color: orange;
+}
+
+#copyright .links a:hover {
+	color: rgb(219, 143, 0);
 }
 
 .walletAmount {
@@ -528,11 +545,6 @@ body.native .indexTab .mainBlock {
 	height: 100vh;
 	margin-bottom: 0;
 }
-@media screen and (max-width: 940px) {
-	.indexTab .mainBlock{
-		margin-bottom:40px;
-	}
-}
 .indexTab .mainBlock .step:first-child{
 }
 
@@ -542,6 +554,18 @@ body.native .indexTab .mainBlock {
 	left: 50%;
 	margin-right: -50%;
 	transform: translate(-50%, -50%);
+}
+
+/* xSMall & Small */
+@media only screen and (max-width: 960px) {
+	.indexTab .mainBlock h1 {
+		font-size: 2.6rem !important;
+		line-height: 1.3;
+	}
+	.indexTab .mainBlock h2 {
+		font-size: 1.1rem !important;
+		line-height: 1.3;
+	 }
 }
 
 .indexTab .mainBlock h1{
@@ -560,14 +584,23 @@ body.native .indexTab .mainBlock {
 	margin-block-start: 0em;
 	font-size: 1.3rem;
 }
+
+/* xSMall & Small */
+@media only screen and (max-width: 960px) {
+	.indexTab .mainBlock > .actions{
+		height: 125px !important;
+	}
+}
+
 .indexTab .mainBlock > .actions{
 	text-align: left;
 	background: #212121;
 	color: #ffffffb3;
 	padding: 1.5rem 1.5rem;
-	height: 80px;
+	height: 75px;
 	overflow: hidden;
 }
+
 body.native .indexTab .mainBlock > .actions{
 	text-align: center;
 }
@@ -576,12 +609,12 @@ body.native .indexTab .mainBlock > .actions{
 }
 .indexTab .mainBlock > .actions .btn{
 	/*padding:3px;*/
-	background: #faa933;
+	background: rgb(184, 184, 184);
 	color: #000000b3;
 	font-weight: 600;
 	margin-top: 0;
 	margin-right: 20px;
-	margin-top: -2px;
+	margin-top: -5px;
 }
 .indexTab .mainBlock > .actions .btn.basic{
 	background: none;
@@ -610,13 +643,7 @@ body.native .indexTab .mainBlock > .actions{
 }
 @media screen and (max-width: 940px) {
 	.indexTab .notesBlock{
-		position: relative;
-		-webkit-transform: translateY(0px);
-		-moz-transform: translateY(0px);
-		-ms-transform: translateY(0px);
-		-o-transform: translateY(0px);
-		transform: translateY(0px);
-		padding:30px 0;
+		display:none;
 	}
 }
 .indexTab .notes{
@@ -758,7 +785,8 @@ body{
 
 .body-root{
 	padding:0 30px;
-	min-height: 80vh;
+	height: 100%;
+	margin-bottom: 115px;
 }
 .body-header {
 	display: table;
@@ -770,7 +798,7 @@ body{
 .body-header .header-title {
 	font-size: 26px;
 	color: #fff;
-	line-height: 1;
+	line-height: 1.3;
 	margin-bottom: 15px;
 }
 .body-header .header-title-icon {
@@ -780,7 +808,7 @@ body{
 .body-header .header-subtitle {
 	font-size: 18px;
 	color: orange;
-	line-height: 26px;
+	line-height: 1.3;
 }
 .body-header .header-subtitle a {
 	font-size: 14px;
@@ -815,6 +843,7 @@ body{
 .panel .body{}
 .panel .header-title{
 	font-size: 20px;
+	line-height: 1.4;
 	color: #fff;
 	margin-bottom: 22px;
 }
@@ -864,9 +893,8 @@ body{
 /*=================BUTTONS====================*/
 .btn{
 	text-decoration: none;
-	background:#e0e1e2 none;
+	background-color: #fff;
 	cursor: pointer;
-	color: rgba(0,0,0,.6);
 	border: none;
 	display: inline-block;
 	font-weight: 400;
@@ -940,11 +968,11 @@ body{
 	padding: 17px 16px 15px;
 	width: 100%;
 	color: rgba(71, 78, 93, 0.7);
-	background: #FFFFFF;
+	background: #eeeeee;
 }
 
 .field input:read-only, .field input.readonly, .field .subfield.readonly{
-	background:#f8f8f9;
+	background:#ccc;
 }
 
 .field input[type=checkbox],
@@ -1005,7 +1033,7 @@ body{
 	transform: none;
 	border: none;
 	top: 0;
-	background: rgba(0,0,0,.05);
+	background: rgba(0,0,0,0.5);
 	-webkit-box-shadow: none;
 	box-shadow: none;
 	width: 3.5rem;
