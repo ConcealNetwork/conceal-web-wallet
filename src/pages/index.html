@@ -20,7 +20,7 @@
 			<div class="actions">
 				<span id="main_logo"><img src="./assets/img/coin_white.png" alt="&#1180;"/> Conceal Network</span>
 				<div class="right">
-					<a href="#" @click="loadWallet()" v-if="hasLocalWallet" class="btn mini basic">{{ $t("homepage.actions.loadWallet") }}</a>
+					<a href="#" @click="loadWallet()" v-if="hasLocalWallet" class="btn mini">{{ $t("homepage.actions.loadWallet") }}</a>
 					<a href="#!import" class="btn mini">{{ $t("homepage.actions.importWallet") }}</a>
 					<a href="#!createWallet" class="btn mini">{{ $t("homepage.actions.create") }}</a>
 				</div>
@@ -28,9 +28,10 @@
 			<div class="headline">
 				<h1>{{ $t("homepage.mainTitle") }}</h1>
 				<h2>{{ $t("homepage.tagLine") }}</h2>
-				<div class="callToAction tc">
+				<div class="home callToAction tc">
 					<a href="#" @click="loadWallet()" v-if="hasLocalWallet" class="btn basic">{{ $t("homepage.actions.loadWallet") }}</a>
 					<a href="#!createWallet" class="btn primary">{{ $t("homepage.actions.createWallet") }}</a>
+					<a href="#!import" class="btn primary">{{ $t("homepage.actions.importWallet") }}</a>
 				</div>
 			</div>
 		</div>
