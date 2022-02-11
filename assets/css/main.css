@@ -248,6 +248,7 @@ body.menuHidden #page,body.menuDisabled #page{
 
 
 #copyright{
+
 	height: 75px;
 	position: fixed;
 	bottom:0%;
@@ -359,6 +360,8 @@ body.transparent #copyright{
 	image-rendering: pixelated;
 	display: inline-block !important;
 	max-width: 300px;
+	border-radius: 15px;
+	border: solid #fff 5px;
 }
 
 .receiveTab .address{
@@ -586,11 +589,11 @@ body.native .indexTab .mainBlock {
 }
 
 /* xSMall & Small */
-@media only screen and (max-width: 960px) {
+/* @media only screen and (max-width: 960px) {
 	.indexTab .mainBlock > .actions{
 		height: 125px !important;
 	}
-}
+} */
 
 .indexTab .mainBlock > .actions{
 	text-align: left;
@@ -599,6 +602,10 @@ body.native .indexTab .mainBlock {
 	padding: 1.5rem 1.5rem;
 	height: 75px;
 	overflow: hidden;
+}
+
+.home .btn {
+	margin-right: 15px;
 }
 
 body.native .indexTab .mainBlock > .actions{
@@ -613,7 +620,7 @@ body.native .indexTab .mainBlock > .actions{
 	color: #000000b3;
 	font-weight: 600;
 	margin-top: 0;
-	margin-right: 20px;
+	margin-right: 5px;
 	margin-top: -5px;
 }
 .indexTab .mainBlock > .actions .btn.basic{
@@ -627,8 +634,7 @@ body.native .indexTab .mainBlock > .actions{
 }
 @media screen and (max-width: 940px) {
 	.indexTab .mainBlock > .actions .right{
-		float:none;
-		margin-top:15px;
+		display: none;
 	}
 }
 .indexTab .notesBlock{
@@ -1000,6 +1006,10 @@ body{
 	height: 100%;
 }
 
+.field label {
+	color: #fff;
+}
+
 .field.checkbox input{
 	position: absolute;
 	opacity: 0;
@@ -1129,6 +1139,7 @@ body{
 	background: rgba(0,0,0,.1);
 	margin-bottom:1.5rem;
 	text-align: center;
+	color: #ccc;
 }
 .progress .bar{
 	display: block;
@@ -1144,4 +1155,12 @@ body{
 }
 .progress .label{
 	display: block;
+}
+
+.swal2-popup {
+	background: #fff !important;
+}
+
+.swal2-popup .swal2-styled.swal2-confirm {
+	background-color: orange !important;
 }
