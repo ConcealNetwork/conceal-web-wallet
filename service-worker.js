@@ -89,7 +89,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "config.js",
-    "revision": "a7ea6d66d5f1ae534588b50fce418b69"
+    "revision": "801242c5537da373b910bf2b552f3731"
   },
   {
     "url": "d/vue-i118n.js",
@@ -309,7 +309,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/TransactionsExplorer.js",
-    "revision": "00e3d02550f09aa6fedf9e24eeed283e"
+    "revision": "49bfb5957ba42e8d08d35e4d75585420"
   },
   {
     "url": "model/Translations.js",

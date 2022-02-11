@@ -468,13 +468,13 @@ define(["require", "exports", "./Transaction", "./MathUtil", "./Cn"], function (
                 //if (neededFee < 10000000) {
                 //	neededFee = 10000000;
                 //}
-                console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)) + ' QWC');
+                console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)) + ' CCX');
                 confirmCallback(totalAmountWithoutFee, neededFee).then(function () {
                     if (usingOuts_amount.compare(totalAmount) < 0) {
                         console.log("Not enough spendable outputs / balance too low (have "
                             + Cn_1.Cn.formatMoneyFull(usingOuts_amount) + " but need "
                             + Cn_1.Cn.formatMoneyFull(totalAmount)
-                            + " (estimated fee " + Cn_1.Cn.formatMoneyFull(neededFee) + " QWC included)");
+                            + " (estimated fee " + Cn_1.Cn.formatMoneyFull(neededFee) + " CCX included)");
                         // return;
                         reject({ error: 'balance_too_low' });
                         return;
@@ -492,7 +492,7 @@ define(["require", "exports", "./Transaction", "./MathUtil", "./Cn"], function (
                     else if (usingOuts_amount.compare(totalAmount) === 0) {
                         //create random destination to keep 2 outputs always in case of 0 change
                         var fakeAddress = Cn_1.Cn.create_address(Cn_1.CnRandom.random_scalar()).public_addr;
-                        console.log("Sending 0 QWC to a fake address to keep tx uniform (no change exists): " + fakeAddress);
+                        console.log("Sending 0 CCX to a fake address to keep tx uniform (no change exists): " + fakeAddress);
                         dsts.push({
                             address: fakeAddress,
                             amount: 0
