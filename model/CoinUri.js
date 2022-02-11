@@ -167,7 +167,7 @@ define(["require", "exports"], function (require, exports) {
         };
         CoinUri.coinTxPrefix = 'conceal:';
         CoinUri.coinWalletPrefix = 'conceal:';
-        CoinUri.coinAddressLength = 95;
+        CoinUri.coinAddressLength = 98;
         return CoinUri;
     }());
     exports.CoinUri = CoinUri;

@@ -257,7 +257,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/CoinUri.js",
-    "revision": "5e82a3c7540bffbb56bef21ef84dd91c"
+    "revision": "81ba037d5d8678f5628947e361db4ee3"
   },
   {
     "url": "model/Constants.js",
