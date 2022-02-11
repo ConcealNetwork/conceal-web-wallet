@@ -89,7 +89,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "config.js",
-    "revision": "a60585ab219a9fbaf059f9ae6bd5ec68"
+    "revision": "a7ea6d66d5f1ae534588b50fce418b69"
   },
   {
     "url": "d/vue-i118n.js",
