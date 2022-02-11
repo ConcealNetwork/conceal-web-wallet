@@ -103,7 +103,8 @@ class AccountView extends DestructableView{
 			image:document.getElementById('qrCodeLogo'),
 			size:300,
 			mode:'image',
-			mSize: 10,
+			ecLevel:'H',
+			mSize: 30,
 			mPosX: 50,
 			mPosY: 50,
 		});
