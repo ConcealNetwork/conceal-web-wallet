@@ -20,11 +20,11 @@ global.config = {
 	txMinConfirms: 10,
 	txCoinbaseMinConfirms: 10,
 	addressPrefix: 31444,
-	integratedAddressPrefix: 31444,
+	integratedAddressPrefix: 31445,
 	addressPrefixTestnet: 31444,
-	integratedAddressPrefixTestnet: 31444,
-	subAddressPrefix: 31444,
-	subAddressPrefixTestnet: 31444,
+	integratedAddressPrefixTestnet: 31445,
+	subAddressPrefix: 31446,
+	subAddressPrefixTestnet: 31447,
 	coinFee: new JSBigInt('1000'),
 	feePerKB: new JSBigInt('1000'), //for testnet its not used, as fee is dynamic.
 	dustThreshold: new JSBigInt('10'),//used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
