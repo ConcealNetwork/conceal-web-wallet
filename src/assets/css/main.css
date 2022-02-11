@@ -774,7 +774,7 @@ body.native .indexTab .mainBlock > .actions{
 
 /*=====================================*/
 body{
-	font-family: "Poppins";
+	font-family: "Poppins", Tahoma, Verdana, sans-serif;
 	font-weight: normal;
 	font-size: 14px;
 	line-height: 1;
