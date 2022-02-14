@@ -619,7 +619,6 @@ body.native .indexTab .mainBlock > .actions{
 	background: rgb(184, 184, 184);
 	color: #000000b3;
 	font-weight: 600;
-	margin-top: 0;
 	margin-right: 5px;
 	margin-top: -5px;
 }
@@ -1035,7 +1034,7 @@ body{
 	transition: border .1s ease,opacity .1s ease,transform .1s ease,box-shadow .1s ease,-webkit-transform .1s ease,-webkit-box-shadow .1s ease;
 	border: 1px solid #d4d4d5;
 
-	display: block;
+	/* display: block;
 	position: absolute;
 	content: '';
 	z-index: 1;
@@ -1048,7 +1047,7 @@ body{
 	box-shadow: none;
 	width: 3.5rem;
 	height: 1.5rem;
-	border-radius: 500rem;
+	border-radius: 500rem; */
 }
 .field.checkbox input:checked~label:before{
 	background-color: #faa933;
@@ -1116,7 +1115,6 @@ body{
 	-webkit-animation-iteration-count: infinite;
 	animation-iteration-count: infinite;
 	border-radius: 500rem;
-	border-color: #767676 transparent transparent;
 	border-style: solid;
 	border-width: .2em;
 	-webkit-box-shadow: 0 0 0 1px transparent;
