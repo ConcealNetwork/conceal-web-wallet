@@ -58,9 +58,10 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 //console.log(info);
                 _this.connectedNode = info.node;
                 _this.networkDifficulty = info.difficulty;
-                _this.networkHashrate = info.difficulty / config.avgBlockTime;
+                _this.networkHashrate = Filters_1.VueFilterHashrate(info.difficulty / config.avgBlockTime);
                 _this.blockchainHeight = info.height;
                 _this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
+                _this.ticker = config.coinSymbol;
                 _this.lastBlockFound = info.timestamp;
             });
         };
@@ -82,6 +83,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         __decorate([
             VueAnnotate_1.VueVar(0)
         ], NetworkView.prototype, "connectedNode", void 0);
+        __decorate([
+            VueAnnotate_1.VueVar(0)
+        ], NetworkView.prototype, "ticker", void 0);
         NetworkView = __decorate([
             VueAnnotate_1.VueRequireFilter('hashrate', Filters_1.VueFilterHashrate)
         ], NetworkView);

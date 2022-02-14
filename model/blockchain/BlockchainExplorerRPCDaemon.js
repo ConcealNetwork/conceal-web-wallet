@@ -297,7 +297,7 @@ define(["require", "exports", "../MathUtil", "../Cn", "../WalletWatchdog"], func
             return this.makeRpcRequest('getlastblockheader').then(function (raw) {
                 //console.log(raw);
                 return {
-                    'node': config.nodeUrl.split(':')[1].replace(/[-[\]\/{}()*+?\\^$|#\s]/g, ''),
+                    'node': config.nodeUrl,
                     'major_version': raw.block_header['major_version'],
                     'hash': raw.block_header['hash'],
                     'reward': raw.block_header['reward'],

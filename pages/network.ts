@@ -28,12 +28,13 @@ let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInsta
 @VueRequireFilter('hashrate', VueFilterHashrate)
 
 class NetworkView extends DestructableView {
-	@VueVar(0) networkHashrate !: number;
+	@VueVar(0) networkHashrate !: string;
 	@VueVar(0) blockchainHeight !: number;
 	@VueVar(0) networkDifficulty !: number;
 	@VueVar(0) lastReward !: number;
 	@VueVar(0) lastBlockFound !: number;
 	@VueVar(0) connectedNode !: string;
+	@VueVar(0) ticker !: string;
 
 	private intervalRefreshStat = 0;
 
@@ -57,9 +58,10 @@ class NetworkView extends DestructableView {
 			//console.log(info);
 			this.connectedNode = info.node;
 			this.networkDifficulty = info.difficulty;
-			this.networkHashrate = info.difficulty / config.avgBlockTime;
+			this.networkHashrate = VueFilterHashrate(info.difficulty / config.avgBlockTime);
 			this.blockchainHeight = info.height;
 			this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
+			this.ticker = config.coinSymbol;
 			this.lastBlockFound = info.timestamp;
 		});
 	}

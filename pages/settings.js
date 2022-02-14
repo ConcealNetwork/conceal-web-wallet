@@ -37,9 +37,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
     var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
     var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
     var walletWatchdog = DependencyInjector_1.DependencyInjectorInstance().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
-    var SendView = /** @class */ (function (_super) {
-        __extends(SendView, _super);
-        function SendView(container) {
+    var SettingsView = /** @class */ (function (_super) {
+        __extends(SettingsView, _super);
+        function SettingsView(container) {
             var _this = _super.call(this, container) || this;
             var self = _this;
             _this.readSpeed = wallet.options.readSpeed;
@@ -64,11 +64,11 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             }
             return _this;
         }
-        SendView.prototype.languageWatch = function () {
+        SettingsView.prototype.languageWatch = function () {
             Translations_1.Translations.setBrowserLang(this.language);
             Translations_1.Translations.loadLangTranslation(this.language);
         };
-        SendView.prototype.deleteWallet = function () {
+        SettingsView.prototype.deleteWallet = function () {
             swal({
                 title: i18n.t('settingsPage.deleteWalletModal.title'),
                 html: i18n.t('settingsPage.deleteWalletModal.content'),
@@ -84,22 +84,22 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 }
             });
         };
-        SendView.prototype.readSpeedWatch = function () { this.updateWalletOptions(); };
-        SendView.prototype.checkMinerTxWatch = function () { this.updateWalletOptions(); };
-        SendView.prototype.customNodeWatch = function () { this.updateWalletOptions(); };
-        SendView.prototype.creationHeightWatch = function () {
+        SettingsView.prototype.readSpeedWatch = function () { this.updateWalletOptions(); };
+        SettingsView.prototype.checkMinerTxWatch = function () { this.updateWalletOptions(); };
+        SettingsView.prototype.customNodeWatch = function () { this.updateWalletOptions(); };
+        SettingsView.prototype.creationHeightWatch = function () {
             if (this.creationHeight < 0)
                 this.creationHeight = 0;
             if (this.creationHeight > this.maxHeight && this.maxHeight !== -1)
                 this.creationHeight = this.maxHeight;
         };
-        SendView.prototype.scanHeightWatch = function () {
+        SettingsView.prototype.scanHeightWatch = function () {
             if (this.scanHeight < 0)
                 this.scanHeight = 0;
             if (this.scanHeight > this.maxHeight && this.maxHeight !== -1)
                 this.scanHeight = this.maxHeight;
         };
-        SendView.prototype.updateWalletOptions = function () {
+        SettingsView.prototype.updateWalletOptions = function () {
             var options = wallet.options;
             options.readSpeed = this.readSpeed;
             options.checkMinerTx = this.checkMinerTx;
@@ -108,12 +108,12 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             wallet.options = options;
             walletWatchdog.signalWalletUpdate();
         };
-        SendView.prototype.updateWalletSettings = function () {
+        SettingsView.prototype.updateWalletSettings = function () {
             wallet.creationHeight = this.creationHeight;
             wallet.lastHeight = this.scanHeight;
             walletWatchdog.signalWalletUpdate();
         };
-        SendView.prototype.updateConnectionSettings = function () {
+        SettingsView.prototype.updateConnectionSettings = function () {
             var options = wallet.options;
             options.customNode = this.customNode;
             options.nodeUrl = this.nodeUrl;
@@ -123,56 +123,56 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         __decorate([
             VueAnnotate_1.VueVar(10)
-        ], SendView.prototype, "readSpeed", void 0);
+        ], SettingsView.prototype, "readSpeed", void 0);
         __decorate([
             VueAnnotate_1.VueVar(false)
-        ], SendView.prototype, "checkMinerTx", void 0);
+        ], SettingsView.prototype, "checkMinerTx", void 0);
         __decorate([
             VueAnnotate_1.VueVar(false)
-        ], SendView.prototype, "customNode", void 0);
+        ], SettingsView.prototype, "customNode", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('http://node.conceal.network:32348/')
-        ], SendView.prototype, "nodeUrl", void 0);
-        __decorate([
-            VueAnnotate_1.VueVar(0)
-        ], SendView.prototype, "creationHeight", void 0);
+            VueAnnotate_1.VueVar('https://node.conceal.network:16000/')
+        ], SettingsView.prototype, "nodeUrl", void 0);
         __decorate([
             VueAnnotate_1.VueVar(0)
-        ], SendView.prototype, "scanHeight", void 0);
+        ], SettingsView.prototype, "creationHeight", void 0);
+        __decorate([
+            VueAnnotate_1.VueVar(0)
+        ], SettingsView.prototype, "scanHeight", void 0);
         __decorate([
             VueAnnotate_1.VueVar(-1)
-        ], SendView.prototype, "maxHeight", void 0);
+        ], SettingsView.prototype, "maxHeight", void 0);
         __decorate([
             VueAnnotate_1.VueVar('en')
-        ], SendView.prototype, "language", void 0);
+        ], SettingsView.prototype, "language", void 0);
         __decorate([
             VueAnnotate_1.VueVar(0)
-        ], SendView.prototype, "nativeVersionCode", void 0);
+        ], SettingsView.prototype, "nativeVersionCode", void 0);
         __decorate([
             VueAnnotate_1.VueVar('')
-        ], SendView.prototype, "nativeVersionNumber", void 0);
+        ], SettingsView.prototype, "nativeVersionNumber", void 0);
         __decorate([
             VueAnnotate_1.VueWatched()
-        ], SendView.prototype, "languageWatch", null);
+        ], SettingsView.prototype, "languageWatch", null);
         __decorate([
             VueAnnotate_1.VueWatched()
-        ], SendView.prototype, "readSpeedWatch", null);
+        ], SettingsView.prototype, "readSpeedWatch", null);
         __decorate([
             VueAnnotate_1.VueWatched()
-        ], SendView.prototype, "checkMinerTxWatch", null);
+        ], SettingsView.prototype, "checkMinerTxWatch", null);
         __decorate([
             VueAnnotate_1.VueWatched()
-        ], SendView.prototype, "customNodeWatch", null);
+        ], SettingsView.prototype, "customNodeWatch", null);
         __decorate([
             VueAnnotate_1.VueWatched()
-        ], SendView.prototype, "creationHeightWatch", null);
+        ], SettingsView.prototype, "creationHeightWatch", null);
         __decorate([
             VueAnnotate_1.VueWatched()
-        ], SendView.prototype, "scanHeightWatch", null);
-        return SendView;
+        ], SettingsView.prototype, "scanHeightWatch", null);
+        return SettingsView;
     }(DestructableView_1.DestructableView));
     if (wallet !== null && blockchainExplorer !== null)
-        new SendView('#app');
+        new SettingsView('#app');
     else
         window.location.href = '#index';
 });

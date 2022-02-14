@@ -31,6 +31,10 @@ define(["require", "exports", "./Wallet", "./CoinUri", "./Storage"], function (r
                 password = ('00000000000000000000000000000000' + password).slice(-32);
             }
             var privKey = new TextEncoder("utf8").encode(password);
+            // fix cyrillic (non-latin) passwords
+            if (privKey.length > 32) {
+                privKey = privKey.slice(-32);
+            }
             //console.log('open wallet with nonce', rawWallet.nonce);
             var nonce = new TextEncoder("utf8").encode(rawWallet.nonce);
             var decodedRawWallet = null;
@@ -89,6 +93,10 @@ define(["require", "exports", "./Wallet", "./CoinUri", "./Storage"], function (r
                 password = ('00000000000000000000000000000000' + password).slice(-32);
             }
             var privKey = new TextEncoder("utf8").encode(password);
+            // Fix cyrillic (non-latin) passwords
+            if (privKey.length > 32) {
+                privKey = privKey.slice(-32);
+            }
             var rawNonce = nacl.util.encodeBase64(nacl.randomBytes(16));
             var nonce = new TextEncoder("utf8").encode(rawNonce);
             var rawWallet = wallet.exportToRaw();
