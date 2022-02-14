@@ -33,7 +33,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/css/main.css",
-    "revision": "9ebc7df1decf7aa026fb6c982d7094dc"
+    "revision": "a1378db5d564dfa841509d575d822022"
   },
   {
     "url": "assets/img/coin_white.png",
