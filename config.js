@@ -29,7 +29,7 @@ global.config = {
     coinFee: new JSBigInt('1000'),
     feePerKB: new JSBigInt('1000'),
     dustThreshold: new JSBigInt('10'),
-    defaultMixin: 5,
+    defaultMixin: 0,
     idleTimeout: 30,
     idleWarningDuration: 20,
     syncBlockCount: 50,
