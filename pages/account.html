@@ -22,9 +22,9 @@
 			<div class="body" >
 				<div class="header-title" >{{ $t("accountPage.balanceBlock.title") }}</div>
 				<div class="content" >
-					<span class="walletAmount" >{{ $n(walletAmount / currencyDivider) }}</span> CCX
+					<span class="walletAmount" >{{ $n(walletAmount / currencyDivider) }} {{ticker}}</span>
 					<tempate class="amount unlocked" v-if="unlockedWalletAmount !== walletAmount" >
-						<br/>{{ $t("accountPage.balanceBlock.unlocked") }}: <span class="walletAmount" >{{ $n(unlockedWalletAmount / currencyDivider) }}</span> CCX
+						<br/>{{ $t("accountPage.balanceBlock.unlocked") }}: <span class="walletAmount" >{{ $n(unlockedWalletAmount / currencyDivider) }} {{ticker}}</span>
 					</tempate>
 				</div>
 			</div>

@@ -105,7 +105,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "index.js",
-    "revision": "d7f18b8b9f48aa6b24ec424eb13d9430"
+    "revision": "4c082e5eaa1ff7f84f09ae2611eb749a"
   },
   {
     "url": "lib/base58.js",
@@ -253,7 +253,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/blockchain/BlockchainExplorerRPCDaemon.js",
-    "revision": "f3e9c0d34d375eadf5494bba25346ac5"
+    "revision": "62933ce2bee9a9ac93149604657af78a"
   },
   {
     "url": "model/Cn.js",
@@ -309,7 +309,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/TransactionsExplorer.js",
-    "revision": "49bfb5957ba42e8d08d35e4d75585420"
+    "revision": "ac31a612143e1548b443cb705946deec"
   },
   {
     "url": "model/Translations.js",
@@ -321,7 +321,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/WalletRepository.js",
-    "revision": "7168a7e3794934efe3bd510c02187704"
+    "revision": "11536d9f1da86f3b1d331028c1aa913d"
   },
   {
     "url": "model/WalletWatchdog.js",
@@ -329,7 +329,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/account.html",
-    "revision": "7acea2bcf6eddb28bd33a979f97676d1"
+    "revision": "5e97aee3cbcc11f3fe3dd1bf3e4ff995"
   },
   {
     "url": "pages/account.js",
@@ -429,7 +429,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/network.js",
-    "revision": "732cbb58c6a0261110fd25d44840f8ab"
+    "revision": "703713ced9451466845441a7c07d5eb1"
   },
   {
     "url": "pages/privacyPolicy.html",
@@ -461,7 +461,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/settings.js",
-    "revision": "fb7f1ece34a347b5b0f069c5061b9f8f"
+    "revision": "78e30d5ec6ef5ca794641b4306c8315f"
   },
   {
     "url": "pages/support.html",
