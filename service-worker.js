@@ -333,7 +333,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/account.js",
-    "revision": "43f1014e86cbe0cf0f6cdbb83fd17484"
+    "revision": "730ade6c20a78d22ddef13d8f527a0a3"
   },
   {
     "url": "pages/changeWalletPassword.html",
@@ -457,7 +457,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/settings.html",
-    "revision": "8d2635b4eb7524a9a03ce3b9e5919954"
+    "revision": "e00921c9b681b01d8b35b108ff23e4e7"
   },
   {
     "url": "pages/settings.js",

@@ -84,6 +84,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             this.currentScanBlock = wallet.lastHeight;
             this.walletAmount = wallet.amount;
             this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
+            this.ticker = config.coinSymbol;
             if (wallet.getAll().length + wallet.txsMem.length !== this.transactions.length) {
                 this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
             }
@@ -97,6 +98,9 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         __decorate([
             VueAnnotate_1.VueVar(0)
         ], AccountView.prototype, "unlockedWalletAmount", void 0);
+        __decorate([
+            VueAnnotate_1.VueVar(0)
+        ], AccountView.prototype, "ticker", void 0);
         __decorate([
             VueAnnotate_1.VueVar(0)
         ], AccountView.prototype, "currentScanBlock", void 0);
