@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2018, Gnock
  * Copyright (c) 2018, The Masari Project
+ * Copyright (c) 2022, The Karbo Developers
+ * Copyright (c) 2022, Conceal Devs
+ * Copyright (c) 2022, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *

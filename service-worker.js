@@ -245,7 +245,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/AppState.js",
-    "revision": "9e834f89e7006e2250f1b2c853419adb"
+    "revision": "bfc1167588b193e3043e5d68f55fbcc7"
   },
   {
     "url": "model/blockchain/BlockchainExplorer.js",
@@ -317,7 +317,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/Wallet.js",
-    "revision": "307f9b9134f37192e044b644f33ede90"
+    "revision": "713f38ed086d832c8161391d5b4747bd"
   },
   {
     "url": "model/WalletRepository.js",

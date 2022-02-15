@@ -1,6 +1,10 @@
 /*
  * Copyright (c) 2018, Gnock
  * Copyright (c) 2018, The Masari Project
+ * Copyright (c) 2022, The Karbo Developers
+ * Copyright (c) 2022, Conceal Devs
+ * Copyright (c) 2022, Conceal Network
+ *
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -29,7 +33,7 @@ export class WalletOptions{
 	checkMinerTx:boolean = false;
 	readSpeed:number = 10;
 	customNode:boolean = false;
-	nodeUrl:string = 'http://node.conceal.network:32348/';
+	nodeUrl:string = 'https://node.conceal.network:16000/';
 
 	static fromRaw(raw : RawWalletOptions){
 		let options = new WalletOptions();
