@@ -4,6 +4,9 @@
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
  *     Copyright (c) 2014-2018, MyMonero.com
+ *     Copyright (c) 2022, The Karbo Developers
+ *     Copyright (c) 2022, Conceal Devs
+ *     Copyright (c) 2022, Conceal Network
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
