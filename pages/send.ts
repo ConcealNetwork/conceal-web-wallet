@@ -81,7 +81,7 @@ class SendView extends DestructableView {
 		this.lockedForm = false;
 		this.destinationAddressUser = '';
 		this.destinationAddress = '';
-		this.amountToSend = '10.5';
+		this.amountToSend = '0';
 		this.destinationAddressValid = false;
 		this.openAliasValid = false;
 		this.qrScanning = false;
