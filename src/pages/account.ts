@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2018, Gnock
  * Copyright (c) 2018, The Masari Project
+ * Copyright (c) 2022, The Karbo Developers
+ * Copyright (c) 2022, Conceal Devs
+ * Copyright (c) 2022, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -39,6 +42,7 @@ class AccountView extends DestructableView{
 	constructor(container : string){
 		super(container);
 		let self = this;
+	    this.ticker = config.coinSymbol;
 		AppState.enableLeftMenu();
 		this.intervalRefresh = <any>setInterval(function(){
 			self.refresh();
@@ -94,7 +98,6 @@ class AccountView extends DestructableView{
 		this.currentScanBlock = wallet.lastHeight;
 		this.walletAmount = wallet.amount;
 		this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
-		this.ticker = config.coinSymbol;
 		if(wallet.getAll().length+wallet.txsMem.length !== this.transactions.length) {
 			this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
 		}
