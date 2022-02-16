@@ -143,7 +143,8 @@ class SettingsView extends DestructableView{
 }
 
 
-if(wallet !== null && blockchainExplorer !== null)
+if(wallet !== null && blockchainExplorer !== null) {
 	return new SettingsView('#app');
+    }
 else
 	window.location.href = '#index';
