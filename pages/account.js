@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2018, Gnock
  * Copyright (c) 2018, The Masari Project
+ * Copyright (c) 2022, The Karbo Developers
+ * Copyright (c) 2022, Conceal Devs
+ * Copyright (c) 2022, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -42,6 +45,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             var _this = _super.call(this, container) || this;
             _this.intervalRefresh = 0;
             var self = _this;
+            _this.ticker = config.coinSymbol;
             AppState_1.AppState.enableLeftMenu();
             _this.intervalRefresh = setInterval(function () {
                 self.refresh();
@@ -84,7 +88,6 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             this.currentScanBlock = wallet.lastHeight;
             this.walletAmount = wallet.amount;
             this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
-            this.ticker = config.coinSymbol;
             if (wallet.getAll().length + wallet.txsMem.length !== this.transactions.length) {
                 this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
             }

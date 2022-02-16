@@ -12,7 +12,7 @@ global.config = {
 	mainnetExplorerUrlHash: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_transaction",
 	mainnetExplorerUrlBlock: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_block",
 	
-	testnetExplorerUrl: "http://explorer.testnet.conceal.network/",
+	testnetExplorerUrl: "https://explorer.testnet.conceal.network/",
 	testnetExplorerUrlHash: "https://explorer.testnet.conceal.network/index.html?hash={ID}#blockchain_transaction",
 	testnetExplorerUrlBlock: "https://explorer.testnet.conceal.network/index.html?hash={ID}#blockchain_block",
 	testnet: false,

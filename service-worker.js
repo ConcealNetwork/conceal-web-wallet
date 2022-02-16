@@ -89,7 +89,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "config.js",
-    "revision": "e32dbe1ea68933ae46109a898ace0ce9"
+    "revision": "f45d7c3e789425b1151d03b2cdf5e317"
   },
   {
     "url": "d/vue-i118n.js",
@@ -333,7 +333,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/account.js",
-    "revision": "730ade6c20a78d22ddef13d8f527a0a3"
+    "revision": "c3ec4acc4fda2fe10df78d695332ac30"
   },
   {
     "url": "pages/changeWalletPassword.html",
@@ -449,11 +449,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/send.html",
-    "revision": "c6d2866f5ca70815a64aaa47c30645cc"
+    "revision": "1a2eb0872202b31364db814752fa6c3e"
   },
   {
     "url": "pages/send.js",
-    "revision": "39af45fc1ad750f22d945dd79a81f8ae"
+    "revision": "9b955a8c2ecf51ecf77a2c7fd40dc431"
   },
   {
     "url": "pages/settings.html",
