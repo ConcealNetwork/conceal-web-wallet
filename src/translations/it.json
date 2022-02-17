@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Portafoglio per Conceal Network",
-	"description":"Portafoglio online ufficiale per Conceal Network currency - anonimo, sicuro e completamente gestito nel tuo browser per una sicurezza ottimale"
+	"title":"Portafoglio per Conceal",
+	"description":"Portafoglio online ufficiale per Conceal currency - anonimo, sicuro e completamente gestito nel tuo browser per una sicurezza ottimale"
   },
   "messages": {
 	"menu": {
@@ -30,7 +30,8 @@
 	  "openWalletModal":{
 		"title":"Password portafoglio",
 		"confirmText":"Apri",
-		"cancelText":"Annulla"
+		"cancelText":"Annulla",
+		"forgotPassword": "Ha dimenticato la password?"
 	  },
 	  "invalidPasswordModal":{
 		"title":"Oops...",
@@ -62,8 +63,8 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Benvenuto in Portafoglio per Conceal Network",
-	  "tagLine": "Il modo più semplice per usare Conceal Network - ovunque e in qualsiasi momento",
+	  "mainTitle": "Benvenuto in Portafoglio per Conceal",
+	  "tagLine": "Il modo più semplice per usare Conceal - ovunque e in qualsiasi momento",
 	  "actions": {
 		"loadWallet": "Carica il mio portafoglio",
 		"importWallet": "Importa un portafoglio",
@@ -142,7 +143,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"È stato semplice. Il tuo portafoglio è pronto!",
-		"subtitle":"Tenetevi pronti a usare Conceal Network come mai prima d'ora",
+		"subtitle":"Tenetevi pronti a usare Conceal come mai prima d'ora",
 		"passwordSelectionBlock":{
 		  "label":"Proteggi il tuo portafoglio"
 		},
@@ -165,8 +166,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Rischi nell'usare Conceal Network Wallet",
-		"content":"Conceal Network Wallet è una interfaccia web-based. Ti aiuta ad usare Conceal Network senza eseguire un full node. <br/>Vi consigliamo di trattare MaraiWallet come trattereste il vostro portafoglio attuale."
+		"title":"Rischi nell'usare ConcealWallet",
+		"content":"ConcealWallet è una interfaccia web-based. Ti aiuta ad usare Conceal senza eseguire un full node. <br/>Vi consigliamo di trattare MaraiWallet come trattereste il vostro portafoglio attuale."
 	  }
 	},
 	"donatePage":{
@@ -176,9 +177,9 @@
 		"title":"Webwallet",
 		"content":"Questo webwallet è sviluppato da Gnock nel suo tempo libero.<br/> Se vuoi aiutare lo sviluppo, aiutare a pagare server e ti piace questa applicazione, prendi in considerazione la possibilità di effettuare una piccola donazione.: <br/><br/>"
 	  },
-	  "Conceal NetworkFundBlock":{
-		"title":"Fondo per lo sviluppo di Conceal Network",
-		"content":"Per aiutare Conceal Network puoi donare a questo indirizzo "
+	  "ConcealFundBlock":{
+		"title":"Fondo per lo sviluppo di Conceal",
+		"content":"Per aiutare Conceal puoi donare a questo indirizzo "
 	  }
 	},
 	"supportPage":{
@@ -186,13 +187,20 @@
 	  "subtitle":"Bisogno di aiuto? siamo qui per aiutarti!",
 	  "getInTouchBlock":{
 		"title":"Mettiamoci in contatto!",
-		"content":"Se hai idee o feedback per migliorare il portafoglio, contattaci!",
-		"discord":"Conceal Network Discord Channel"
+		"content":"Se hai problemi con il tuo portafoglio, contattaci!",
+		"discord":"Conceal Discord Channel"
+	  }
+	},
+	"forgotPasswordPage":{
+	  "subtitle":"Come ripristinare l'accesso al tuo portafoglio",
+	  "forgotPasswordBlock":{
+		"title":"Se hai dimenticato la password, è impossibile reimpostarla!",
+		"content":"L'unico modo per ripristinare l'accesso al tuo portafoglio è richiamare la tua password o eliminare i dati del portafoglio dalla memoria del browser e ripristinare il portafoglio dal backup (ad es. frase mnemonica di ripristino).<br /> Se disponi delle chiavi del portafoglio o di una frase di ripristino. , di seguito puoi eliminare il tuo portafoglio. Quindi sarai in grado di ripristinarlo e sincronizzarlo da zero.<br/> <strong>Per favore, assicurati di avere una frase di ripristino prima di procedere!!!</strong>"
 	  }
 	},
 	"networkPage":{
 	  "title":"Statistiche del network",
-	  "subtitle":"Dettagli sul network Conceal Network",
+	  "subtitle":"Dettagli sul network Conceal",
 	  "statsBlock":{
 		"hashrate":"Network Hashrate",
 		"height":"Altezza blockchain",
@@ -220,6 +228,10 @@
 		  "label":"Payment ID (opzionale)",
 		  "invalid":"Il Payment ID è invalido. La lunghezza deve essere di 16 o 64 caratteri"
 		},
+		"mixin":{
+		  "label":"Riservatezza",
+		  "invalid":"Il mixin non è valido, dovrebbe essere compreso tra 3 e 10 o zero"
+		},
 		"sendButton":"Invia",
 		"cancelButton":"Annulla"
 	  },
@@ -233,7 +245,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Grazie per la tua donazione!",
-		"content":"Il tuo aiuto è molto apprezzato. <br/>Questa donazione contribuirà a rendere Conceal Network ancora migliore",
+		"content":"Il tuo aiuto è molto apprezzato. <br/>Questa donazione contribuirà a rendere Conceal ancora migliore",
 		"confirmText":"Ok"
 	  },
 	  "transferSentModal":{
@@ -312,7 +324,7 @@
 		"hashrate":"Hashrate",
 		"maxHashrate":"Max Hashrate",
 		"dedicatedHardware":"Con software e hardware dedicato al mining potresti raggiungere un hashrate da due a tre volte più elevato.",
-		"miningHandledBy":"Questo mining è gestito dalla pool get.Conceal Networkcoin.com"
+		"miningHandledBy":"Questo mining è gestito dalla pool get.Concealcoin.com"
 	  }
 	},
 	"settingsPage":{

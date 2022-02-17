@@ -27,7 +27,7 @@ import {QRReader} from "../model/QRReader";
 import {AppState} from "../model/AppState";
 import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
 import {NdefMessage, Nfc} from "../model/Nfc";
-import {BlockchainExplorer} from "../model/blockchain/BlockchainExplorer";
+import {BlockchainExplorer, RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {Cn} from "../model/Cn";
 import {WalletWatchdog} from "../model/WalletWatchdog";
 
@@ -45,7 +45,9 @@ class SendView extends DestructableView {
 	@VueVar(true) amountToSendValid !: boolean;
 	@VueVar('') paymentId !: string;
 	@VueVar(true) paymentIdValid !: boolean;
-
+	@VueVar('3') mixIn !: string;
+	@VueVar(true) mixinIsValid !: boolean;
+	
 	@VueVar(null) domainAliasAddress !: string | null;
 	@VueVar(null) txDestinationName !: string | null;
 	@VueVar(null) txDescription !: string | null;
@@ -89,7 +91,8 @@ class SendView extends DestructableView {
 		this.domainAliasAddress = null;
 		this.txDestinationName = null;
 		this.txDescription = null;
-
+		this.mixIn = config.defaultMixin.toString();
+		
 		this.stopScan();
 	}
 
@@ -247,9 +250,12 @@ class SendView extends DestructableView {
 						swal.showLoading();
 					}
 				});
+				
+				let mixinToSendWith: number = parseInt(self.mixIn);
+				
 				TransactionsExplorer.createTx([{address: destinationAddress, amount: amountToSend}], self.paymentId, wallet, blockchainHeight,
-					function (numberOuts: number): Promise<any[]> {
-						return blockchainExplorer.getRandomOuts(numberOuts);
+					function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+						return blockchainExplorer.getRandomOuts(amounts, numberOuts);
 					}
 					, function (amount: number, feesAmount: number): Promise<void> {
 						if (amount + feesAmount > wallet.unlockedAmount(blockchainHeight)) {
@@ -293,7 +299,8 @@ class SendView extends DestructableView {
 								}).catch(reject);
 							}, 1);
 						});
-					}).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+					},
+					mixinToSendWith).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
 					blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
 						//save the tx private key
 						wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
@@ -427,6 +434,19 @@ class SendView extends DestructableView {
 		}
 	}
 
+	@VueWatched()
+	mixinWatch() {
+		try {
+			this.mixinIsValid = !isNaN(parseFloat(this.mixIn));
+
+			let mixin: number =  parseFloat(this.mixIn);
+			if (mixin > 10 || (mixin < 3 && mixin !== 0))
+			    this.mixinIsValid = false;
+
+		} catch (e) {
+			this.mixinIsValid = false;
+		}
+	}
 }
 
 

@@ -1,9 +1,12 @@
 /**
+ *     Copyright (c) 2014-2018, MyMonero.com
  *	   Copyright (c) 2018, Gnock
  *     Copyright (c) 2018-2020, ExploShot
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
- *     Copyright (c) 2014-2018, MyMonero.com
+ *     Copyright (c) 2022, The Karbo Developers
+ *     Copyright (c) 2022, Conceal Devs
+ *     Copyright (c) 2022, Conceal Network
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -2161,7 +2164,7 @@ export namespace CnTransactions{
 										   tx_pub_key:string,
 									   }[],
 									   mix_outs:{
-										   outputs:{
+										   outs:{
 											   public_key:string,
 											   global_index:number
 										   }[],
@@ -2183,7 +2186,7 @@ export namespace CnTransactions{
 			throw 'Wrong number of mix outs provided (' + outputs.length + ' outputs, ' + mix_outs.length + ' mix outs)';
 		}
 		for (i = 0; i < mix_outs.length; i++) {
-			if ((mix_outs[i].outputs || []).length < fake_outputs_count) {
+			if ((mix_outs[i].outs || []).length < fake_outputs_count) {
 				throw 'Not enough outputs to mix with';
 			}
 		}
@@ -2230,19 +2233,21 @@ export namespace CnTransactions{
 				}
 			};
 			src.amount = new JSBigInt(outputs[i].amount).toString();
-			if (mix_outs.length !== 0) {
+			if (mix_outs.length !== 0) { //if mixin
 				// Sort fake outputs by global index
-				console.log('mix outs before sort',mix_outs[i].outputs);
-				mix_outs[i].outputs.sort(function(a, b) {
+				console.log('mix outs before sort',mix_outs[i].outs);
+				mix_outs[i].outs.sort(function(a, b) {
 					return new JSBigInt(a.global_index).compare(b.global_index);
 				});
 				j = 0;
 
-				console.log('mix outs sorted',mix_outs[i].outputs);
+				console.log('mix outs sorted',mix_outs[i].outs);
 
-				while ((src.outputs.length < fake_outputs_count) && (j < mix_outs[i].outputs.length)) {
-					let out = mix_outs[i].outputs[j];
-					console.log('chekcing mixin',out, outputs[i]);
+				while ((src.outputs.length < fake_outputs_count) && (j < mix_outs[i].outs.length)) {
+					let out = mix_outs[i].outs[j];
+					console.log('chekcing mixin');
+					console.log("out: ", out);
+					console.log("output ", i, ": ", outputs[i]);
 					if (out.global_index === outputs[i].global_index) {
 						console.log('got mixin the same as output, skipping');
 						j++;
@@ -2267,7 +2272,7 @@ export namespace CnTransactions{
 					src.outputs.push(oe);
 					j++;
 				}
-			}
+			} // end of mixin
 			let real_oe = {
 				index:new JSBigInt(outputs[i].global_index || 0).toString(),
 				key:outputs[i].public_key,

@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Portefeuille pour Conceal Network",
-	"description":"Portefeuille en ligne officiel pour la monnaie Conceal Network, anonyme, sécurisé et entièrement géré dans votre navigateur for une sécurité optimale"
+	"title":"Portefeuille pour Conceal",
+	"description":"Portefeuille en ligne officiel pour la monnaie Conceal, anonyme, sécurisé et entièrement géré dans votre navigateur for une sécurité optimale"
   },
   "messages": {
 	"menu": {
@@ -31,7 +31,8 @@
 	  "openWalletModal":{
 		"title":"Mot de passe",
 		"confirmText":"Ouvrir",
-		"cancelText":"Annuler"
+		"cancelText":"Annuler",
+		"forgotPassword": "Mot de passe oublié?"
 	  },
 	  "invalidPasswordModal":{
 		"title":"Oups...",
@@ -63,8 +64,8 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Bienvenue dans Portefeuille pour Conceal Network",
-	  "tagLine": "Le moyen le plus simple d'utiliser Conceal Network, n'importe où, n'importe quand",
+	  "mainTitle": "Bienvenue dans Portefeuille pour Conceal",
+	  "tagLine": "Le moyen le plus simple d'utiliser Conceal, n'importe où, n'importe quand",
 	  "actions": {
 		"loadWallet": "Charger mon portefeuille",
 		"importWallet": "Importer un portefeuille",
@@ -143,7 +144,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"C'était simple. Votre portefeuille est prêt !",
-		"subtitle":"Soyer près à utiliser Conceal Network le plus simplement possible",
+		"subtitle":"Soyer près à utiliser Conceal le plus simplement possible",
 		"passwordSelectionBlock":{
 		  "label":"Sécuriser mon portefeuille"
 		},
@@ -166,8 +167,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Risques liés à l'utilisation de Conceal Network Wallet",
-		"content":"Conceal Network Wallet est un service web. Il vous aide à utiliser Conceal Network facilement sans avoir un installer des logiciels. <br/>Nous vous conseillons de traiter ce site comme vous traiteriez votre portefeuille."
+		"title":"Risques liés à l'utilisation de ConcealWallet",
+		"content":"ConcealWallet est un service web. Il vous aide à utiliser Conceal facilement sans avoir un installer des logiciels. <br/>Nous vous conseillons de traiter ce site comme vous traiteriez votre portefeuille."
 	  }
 	},
 	"donatePage":{
@@ -178,8 +179,8 @@
 		"content":"Ce portefeuille est développé par Gnock sur son temps libre.<br/>Si vous voulez aider au développement, payer les serveur et que vous aimez ce service, considérez une petite donation: <br/><br/>"
 	  },
 	  "devFundBlock":{
-		"title":"Fond de développement de Conceal Network",
-		"content":"Pour aidez Conceal Network globalement, vous pouvez donner à cette adresse"
+		"title":"Fond de développement de Conceal",
+		"content":"Pour aidez Conceal globalement, vous pouvez donner à cette adresse"
 	  }
 	},
 	"supportPage":{
@@ -187,13 +188,20 @@
 	  "subtitle":"Vous avez besoins d'aide, nous somme la pour aider !",
 	  "getInTouchBlock":{
 		"title":"Reston en contact !",
-		"content":"Vous avez des idées, des retours pour aider à améliorer le service ? Contactez nous !",
-		"discord":"Discord Officiel de Conceal Network"
+		"content":"Si vous rencontrez des problèmes avec votre portefeuille, contactez-nous !",
+		"discord":"Discord Officiel de Conceal"
+	  }
+	},
+	"forgotPasswordPage":{
+	  "subtitle":"Comment restaurer l'accès à votre portefeuille",
+	  "forgotPasswordBlock":{
+		"title":"Si vous avez oublié le mot de passe, il est impossible de le réinitialiser !",
+		"content":"La seule façon de restaurer l'accès à votre portefeuille est de rappeler votre mot de passe ou de supprimer les données du portefeuille de la mémoire de votre navigateur et de restaurer le portefeuille à partir de la sauvegarde (par exemple, une phrase de récupération mnémonique).<br /> Si vous avez des clés de portefeuille ou une phrase de récupération , ci-dessous vous pouvez supprimer votre portefeuille. Ensuite, vous pourrez le restaurer et le synchroniser à partir de zéro.<br/> <strong>Veuillez vous assurer d'avoir une phrase de récupération avant de continuer !!!</strong>"
 	  }
 	},
 	"networkPage":{
 	  "title":"Statistiques du réseau",
-	  "subtitle":"Détails sur le réseaux Conceal Network",
+	  "subtitle":"Détails sur le réseaux Conceal",
 	  "statsBlock":{
 		"hashrate":"Hashrate du réseau",
 		"height":"Hauteur de la Blockchain",
@@ -221,6 +229,10 @@
 		  "label":"Identifiant du payment (optionnel)",
 		  "invalid":"L'identifiant du paiement est invalid. La longeur doit être de 16 ou 64 caractères"
 		},
+		"mixin":{
+		  "label":"Confidentialité",
+		  "invalid":"Le mixin est invalide, doit être compris entre 3 et 10 ou zéro"
+		},
 		"sendButton":"Envoyer",
 		"cancelButton":"Annuler"
 	  },
@@ -234,7 +246,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Merci pour votre donation !",
-		"content":"Votre aide est apprécié. <br/>Cette donation contribuera à améliorer Conceal Network",
+		"content":"Votre aide est apprécié. <br/>Cette donation contribuera à améliorer Conceal",
 		"confirmText":"Fermer"
 	  },
 	  "transferSentModal":{
@@ -313,7 +325,7 @@
 		"hashrate":"HashRate",
 		"maxHashrate":"HashRate max",
 		"dedicatedHardware":"Avec un logiciel spécifique pour le minage, vous pourriez obtenir entre 2 et 3 fois plus de hashrate.<br/>Cela vous permettrait également de miner avec votre carte graphique (si vous en avez une).",
-		"miningHandledBy":"Le minage est géré par la pool get.masaricoin.com"
+		"miningHandledBy":"Le minage est géré par la pool Conceal.Network"
 	  }
 	},
 	"settingsPage":{
