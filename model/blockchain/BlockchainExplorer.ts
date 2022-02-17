@@ -1,6 +1,9 @@
 /*
  * Copyright (c) 2018, Gnock
  * Copyright (c) 2018, The Masari Project
+ *     Copyright (c) 2022, The Karbo Developers
+ *     Copyright (c) 2022, Conceal Devs
+ *     Copyright (c) 2022, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -51,6 +54,11 @@ export type RemoteNodeInformation = {
     status: string
 };
 
+export type RawDaemon_Out = {
+    global_index: number, 
+    public_key: string
+}
+
 export interface BlockchainExplorer {
     resolveOpenAlias(str: string): Promise<{ address: string, name: string | null }>;
 
@@ -66,7 +74,7 @@ export interface BlockchainExplorer {
 
     sendRawTx(rawTx: string): Promise<any>;
 
-    getRandomOuts(numberOuts: number): Promise<any[]>;
+    getRandomOuts(amounts: number[], nbOutsNeeded: number): Promise<RawDaemon_Out[]>;
 
     getNetworkInfo(): Promise<NetworkInfo>;
 

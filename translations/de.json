@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Conceal Network Geldbörse",
-	"description":"Offizielle Online Wallet für Conceal Network Kryptowährung, anonym, sicher und für optimale Sicherheit vollständig in deinem Browser verwaltet"
+	"title":"Conceal Geldbörse",
+	"description":"Offizielle Online Wallet für Conceal Kryptowährung, anonym, sicher und für optimale Sicherheit vollständig in deinem Browser verwaltet"
   },
   "messages": {
 	"menu": {
@@ -31,7 +31,8 @@
 	  "openWalletModal":{
 		"title":"Wallet Passwort",
 		"confirmText":"Öffnen",
-		"cancelText":"Abbrechen"
+		"cancelText":"Abbrechen",
+		"forgotPassword": "Passwort vergessen?"
 	  },
 	  "invalidPasswordModal":{
 		"title":"Uups...",
@@ -63,8 +64,8 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Willkommen bei Conceal Network Wallet",
-	  "tagLine": "Der einfachste Weg Conceal Network jederzeit und überall zu nutzen",
+	  "mainTitle": "Willkommen bei Conceal Wallet",
+	  "tagLine": "Der einfachste Weg Conceal jederzeit und überall zu nutzen",
 	  "actions": {
 		"loadWallet": "Lade meine Wallet",
 		"importWallet": "Importiere eine Wallet",
@@ -143,7 +144,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"Das war einfach. Dein Account ist bereit!",
-		"subtitle":"Benutze Conceal Network wie noch nie zuvor",
+		"subtitle":"Benutze Conceal wie noch nie zuvor",
 		"passwordSelectionBlock":{
 		  "label":"Schütze deine Daten mit einem Passwort"
 		},
@@ -161,13 +162,13 @@
 		  "mnemonicPhrase":"Mnemonic phrase",
 		  "separatorManualMethodsSolution":" oder ",
 		  "confirmManuallyWritten":"Ich habe es aufgeschieben",
-		  "warningMessage":"**Auf keinen Fall verlieren!** Sie können nicht wiederhergestellt werden wenn du sie verlierst.<br/>**Nicht weitergeben!** Deine Conceal Network werden gestohlen werden wenn diese Datei auf einer bösartigen/Phishing Seite benutzt.<br/>**Mache ein Backup!** Sichere es so wie die Millionen Euro, die es eines Tages vielleicht wert sein wird.<br/>",
+		  "warningMessage":"**Auf keinen Fall verlieren!** Sie können nicht wiederhergestellt werden wenn du sie verlierst.<br/>**Nicht weitergeben!** Deine Conceal werden gestohlen werden wenn diese Datei auf einer bösartigen/Phishing Seite benutzt.<br/>**Mache ein Backup!** Sichere es so wie die Millionen Euro, die es eines Tages vielleicht wert sein wird.<br/>",
 		  "finishButton":"Ich habe verstanden. Weiter"
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"Risiko beim benutzen der Conceal Network Wallet",
-		"content":"Conceal Network Wallet ist ein web-basierendes Interface. Es hilft beim Nutzen von Conceal Network ohne einen vollen Node zu betreiben. <br/>Wir empfehlen Conceal Network Wallet sicherheitstechnisch wie eine richtige Wallet zu behandeln."
+		"title":"Risiko beim benutzen der ConcealWallet",
+		"content":"ConcealWallet ist ein web-basierendes Interface. Es hilft beim Nutzen von Conceal ohne einen vollen Node zu betreiben. <br/>Wir empfehlen ConcealWallet sicherheitstechnisch wie eine richtige Wallet zu behandeln."
 	  }
 	},
 	"donatePage":{
@@ -178,8 +179,8 @@
 		"content":"Diese Webwallet ist von Gnock in seiner Freizeit entwickelt.<br/>Bitte denk über eine Spende nach wenn dir die App gefällt und du bei der Bezahlung der Server und der Enwicklung helfen willst.: <br/><br/>"
 	  },
 	  "devFundBlock":{
-		"title":"Conceal Network Entwicklerfonds",
-		"content":"Spende an diese Adresse um Conceal Network zu helfen"
+		"title":"Conceal Entwicklerfonds",
+		"content":"Spende an diese Adresse um Conceal zu helfen"
 	  }
 	},
 	"supportPage":{
@@ -187,8 +188,15 @@
 	  "subtitle":"Du brauchst Hilfe, wir sind hier um zu helfen!",
 	  "getInTouchBlock":{
 		"title":"Nehmen wir Kontakt auf!",
-		"content":"Wenn du Ideen oder Feedback hast um die Wallet zu verbessern, kontaktiere uns!",
-		"discord":"Conceal Network Discord Channel"
+		"content":"Wenn Sie Probleme mit Ihrer Brieftasche haben, schreiben Sie uns!",
+		"discord":"Conceal Discord Channel"
+	  }
+	},
+	"forgotPasswordPage":{
+	  "subtitle":"So stellen Sie den Zugriff auf Ihre Brieftasche wieder her",
+	  "forgotPasswordBlock":{
+		"title":"Wenn Sie das Passwort vergessen haben, können Sie es nicht zurücksetzen!",
+		"content":"Die einzige Möglichkeit, den Zugriff auf Ihre Brieftasche wiederherzustellen, besteht darin, Ihr Passwort abzurufen oder Brieftaschendaten aus dem Speicher Ihres Browsers zu löschen und die Brieftasche aus dem Backup wiederherzustellen (z. B. mnemonische Wiederherstellungsphrase).<br /> Wenn Sie Brieftaschenschlüssel oder eine Wiederherstellungsphrase haben , unten können Sie Ihre Brieftasche löschen. Dann können Sie es wiederherstellen und von Grund auf neu synchronisieren.<br/> <strong>Bitte stellen Sie sicher, dass Sie einen Wiederherstellungssatz haben, bevor Sie fortfahren!!!</strong>"
 	  }
 	},
 	"networkPage":{
@@ -221,6 +229,10 @@
 		  "label":"Payment ID (optional)",
 		  "invalid":"Die payment ID ist ungültig. Sie muss aus 16 oder 64 Zeichen bestehen"
 		},
+		"mixin":{
+		  "label":"Geheimhaltung",
+		  "invalid":"Das Mixin ist ungültig, sollte zwischen 3 und 10 oder null liegen"
+		},
 		"sendButton":"Senden",
 		"cancelButton":"Abbrechen"
 	  },
@@ -234,7 +246,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Danke für deine Spende!",
-		"content":"Deine Hilfe wird sehr geschätzt. <br/>Diese Spende wird helfen Conceal Network noch beser zu machen",
+		"content":"Deine Hilfe wird sehr geschätzt. <br/>Diese Spende wird helfen Conceal noch beser zu machen",
 		"confirmText":"Schließen"
 	  },
 	  "transferSentModal":{
@@ -313,7 +325,7 @@
 		"hashrate":"Hashrate",
 		"maxHashrate":"Max Hashrate",
 		"dedicatedHardware":"Mit spezieller Software könnetest du zwei- bis dreimal höhere Hashraten erreichen.<br/>Spezielle Software würde auch mithilfe einer Grafikkarte minen(wenn du einge Gaming GPU hast).",
-		"miningHandledBy":"Minen erfolgt über den Mining Pool get.masaricoin.com"
+		"miningHandledBy":"Minen erfolgt über den Mining Pool Conceal.Network"
 	  }
 	},
 	"settingsPage":{

@@ -15,7 +15,7 @@
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-define(["require", "exports", "../MathUtil", "../Cn", "../WalletWatchdog"], function (require, exports, MathUtil_1, Cn_1, WalletWatchdog_1) {
+define(["require", "exports", "../WalletWatchdog"], function (require, exports, WalletWatchdog_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.BlockchainExplorerRpcDaemon = void 0;
@@ -29,7 +29,6 @@ define(["require", "exports", "../MathUtil", "../Cn", "../WalletWatchdog"], func
             this.cacheHeight = 0;
             this.lastTimeRetrieveInfo = 0;
             this.scannedHeight = 0;
-            this.existingOuts = [];
             if (daemonAddress !== null && daemonAddress.trim() !== '') {
                 this.daemonAddress = daemonAddress;
             }
@@ -197,87 +196,18 @@ define(["require", "exports", "../MathUtil", "../Cn", "../WalletWatchdog"], func
                 return formatted;
             });
         };
-        BlockchainExplorerRpcDaemon.prototype.getRandomOuts = function (nbOutsNeeded, initialCall) {
-            if (initialCall === void 0) { initialCall = true; }
-            var self = this;
-            if (initialCall) {
-                self.existingOuts = [];
-            }
-            return this.getHeight().then(function (height) {
-                var txs = [];
-                var promiseGetCompressedBlocks = Promise.resolve();
-                var randomBlocksIndexesToGet = [];
-                var numOuts = height;
-                var compressedBlocksToGet = {};
-                console.log('Requires ' + nbOutsNeeded + ' outs');
-                //select blocks for the final mixin. selection is made with a triangular selection
-                for (var i = 0; i < nbOutsNeeded; ++i) {
-                    var selectedIndex = -1;
-                    do {
-                        selectedIndex = MathUtil_1.MathUtil.randomTriangularSimplified(numOuts);
-                        if (selectedIndex >= height - config.txCoinbaseMinConfirms)
-                            selectedIndex = -1;
-                    } while (selectedIndex === -1 || randomBlocksIndexesToGet.indexOf(selectedIndex) !== -1);
-                    randomBlocksIndexesToGet.push(selectedIndex);
-                    compressedBlocksToGet[Math.floor(selectedIndex / 100) * 100] = true;
+        BlockchainExplorerRpcDaemon.prototype.getRandomOuts = function (amounts, nbOutsNeeded) {
+            return this.makeRequest('POST', 'getrandom_outs', {
+                amounts: amounts,
+                outs_count: nbOutsNeeded
+            }).then(function (response) {
+                if (response.status !== 'OK')
+                    throw 'invalid_getrandom_outs_answer';
+                if (response.outs.length > 0) {
+                    console.log("Got random outs: ");
+                    console.log(response.outs);
                 }
-                console.log('Random blocks required: ', randomBlocksIndexesToGet);
-                console.log('Blocks to get for outputs selections:', compressedBlocksToGet);
-                var _loop_1 = function (compressedBlock) {
-                    promiseGetCompressedBlocks = promiseGetCompressedBlocks.then(function () {
-                        return self.getTransactionsForBlocks(parseInt(compressedBlock), Math.min(parseInt(compressedBlock) + 99, height - config.txCoinbaseMinConfirms), false).then(function (rawTransactions) {
-                            txs.push.apply(txs, rawTransactions);
-                        });
-                    });
-                };
-                //load compressed blocks (100 blocks) containing the blocks referred by their index
-                for (var compressedBlock in compressedBlocksToGet) {
-                    _loop_1(compressedBlock);
-                }
-                return promiseGetCompressedBlocks.then(function () {
-                    console.log('txs selected for outputs: ', txs);
-                    var txCandidates = {};
-                    for (var iOut = 0; iOut < txs.length; ++iOut) {
-                        var tx = txs[iOut];
-                        if ((typeof tx.height !== 'undefined' && randomBlocksIndexesToGet.indexOf(tx.height) === -1) ||
-                            typeof tx.height === 'undefined') {
-                            continue;
-                        }
-                        for (var output_idx_in_tx = 0; output_idx_in_tx < tx.vout.length; ++output_idx_in_tx) {
-                            var rct = null;
-                            var globalIndex = output_idx_in_tx;
-                            if (typeof tx.global_index_start !== 'undefined' && typeof tx.output_indexes !== 'undefined') {
-                                globalIndex = tx.output_indexes[output_idx_in_tx];
-                            }
-                            if (tx.vout[output_idx_in_tx].amount !== 0) { //check if miner tx
-                                rct = Cn_1.CnTransactions.zeroCommit(Cn_1.CnUtils.d2s(tx.vout[output_idx_in_tx].amount));
-                            }
-                            else {
-                                var rtcOutPk = tx.rct_signatures.outPk[output_idx_in_tx];
-                                var rtcMask = tx.rct_signatures.ecdhInfo[output_idx_in_tx].mask;
-                                var rtcAmount = tx.rct_signatures.ecdhInfo[output_idx_in_tx].amount;
-                                rct = rtcOutPk + rtcMask + rtcAmount;
-                            }
-                            var newOut = {
-                                rct: rct,
-                                public_key: tx.vout[output_idx_in_tx].target.data.key,
-                                global_index: globalIndex,
-                            };
-                            if (typeof txCandidates[tx.height] === 'undefined')
-                                txCandidates[tx.height] = [];
-                            txCandidates[tx.height].push(newOut);
-                        }
-                    }
-                    console.log(txCandidates);
-                    var selectedOuts = [];
-                    for (var txsOutsHeight in txCandidates) {
-                        var outIndexSelect = MathUtil_1.MathUtil.getRandomInt(0, txCandidates[txsOutsHeight].length - 1);
-                        console.log('select ' + outIndexSelect + ' for ' + txsOutsHeight + ' with length of ' + txCandidates[txsOutsHeight].length);
-                        selectedOuts.push(txCandidates[txsOutsHeight][outIndexSelect]);
-                    }
-                    console.log(selectedOuts);
-                    return selectedOuts;
-                });
+                return response.outs;
             });
         };
         BlockchainExplorerRpcDaemon.prototype.sendRawTx = function (rawTx) {
