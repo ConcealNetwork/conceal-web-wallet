@@ -231,8 +231,8 @@
 		  "invalid":"The payment ID is invalid. The length must be 16 or 64 characters"
 		},
 		"mixin":{
-		  "label":"Privacy",
-		  "invalid":"The mixin is invalid, should be from 3 to 10 or zero"
+		  "label":"Privacy Level",
+		  "invalid":"The mixin is invalid, should be from 3 to 10 (or 0 = no privacy)"
 		},
 		"sendButton":"Send",
 		"cancelButton":"Cancel"
