@@ -45,7 +45,7 @@ class SendView extends DestructableView {
 	@VueVar(true) amountToSendValid !: boolean;
 	@VueVar('') paymentId !: string;
 	@VueVar(true) paymentIdValid !: boolean;
-	@VueVar('3') mixIn !: string;
+	@VueVar('5') mixIn !: string;
 	@VueVar(true) mixinIsValid !: boolean;
 	
 	@VueVar(null) domainAliasAddress !: string | null;

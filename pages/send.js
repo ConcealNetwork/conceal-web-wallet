@@ -436,7 +436,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             VueAnnotate_1.VueVar(true)
         ], SendView.prototype, "paymentIdValid", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('3')
+            VueAnnotate_1.VueVar('5')
         ], SendView.prototype, "mixIn", void 0);
         __decorate([
             VueAnnotate_1.VueVar(true)
