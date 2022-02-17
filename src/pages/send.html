@@ -51,6 +51,15 @@
 							{{ $t("sendPage.sendBlock.paymentId.invalid") }}
 						</div>
 					</div>
+					
+                    <div class="field" >
+						<label>{{ $t("sendPage.sendBlock.mixin.label") }}</label>
+						<input class="amountInput" type="number" min="0" max="10" v-model="mixIn" placeholder="3"
+						    @change="() => { if(this.mixIn > 10 || this.mixIn < 3 || Number.isNaN(parseInt(this.mixIn))) { this.mixIn = 0 }}" :readonly="lockedForm"/>
+						<div v-if="!mixinIsValid && mixIn != ''" class="message error">
+							{{ $t("sendPage.sendBlock.mixin.invalid") }}
+						</div>
+					</div>
 
 					<div class="actions tc">
 						<button type="button" class="btn primary" @click="send()" :disabled="!destinationAddressValid || !amountToSendValid" >{{ $t("sendPage.sendBlock.sendButton") }}</button>

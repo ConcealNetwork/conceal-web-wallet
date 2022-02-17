@@ -1,9 +1,9 @@
 /**
  *	   Copyright (c) 2018, Gnock
+ *     Copyright (c) 2014-2018, MyMonero.com
  *     Copyright (c) 2018-2020, ExploShot
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
- *     Copyright (c) 2014-2018, MyMonero.com
  *     Copyright (c) 2022, The Karbo Developers
  *     Copyright (c) 2022, Conceal Devs
  *     Copyright (c) 2022, Conceal Network
@@ -38,7 +38,7 @@ import {Transaction, TransactionIn, TransactionOut} from "./Transaction";
 import {Wallet} from "./Wallet";
 import {MathUtil} from "./MathUtil";
 import {Cn, CnNativeBride, CnRandom, CnTransactions, CnUtils} from "./Cn";
-import {RawDaemon_Transaction} from "./blockchain/BlockchainExplorer";
+import {RawDaemon_Transaction, RawDaemon_Out} from "./blockchain/BlockchainExplorer";
 import hextobin = CnUtils.hextobin;
 
 export const TX_EXTRA_PADDING_MAX_COUNT = 255;
@@ -473,7 +473,7 @@ export class TransactionsExplorer {
 		userPaymentId: string = '',
 		wallet: Wallet,
 		blockchainHeight: number,
-		obtainMixOutsCallback: (quantity: number) => Promise<any[]>,
+		obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>,
 		confirmCallback: (amount: number, feesAmount: number) => Promise<void>,
 		mixin: number = config.defaultMixin):
 		Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
@@ -562,18 +562,9 @@ export class TransactionsExplorer {
 				//console.log("Using output: " + out.amount + " - " + JSON.stringify(out));
 			}
 
-			const calculateFeeWithBytes = function (fee_per_kb: number, bytes: number, fee_multiplier: number) {
-				let kB = (bytes + 1023) / 1024;
-				return kB * fee_per_kb * fee_multiplier;
-			};
-
 			console.log("Selected outs:", usingOuts);
-
-			//if (neededFee < 10000000) {
-			//	neededFee = 10000000;
-			//}
-
 			console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)) + ' CCX');
+			
 			confirmCallback(totalAmountWithoutFee, neededFee).then(function () {
 				if (usingOuts_amount.compare(totalAmount) < 0) {
 					console.log("Not enough spendable outputs / balance too low (have "
@@ -587,13 +578,19 @@ export class TransactionsExplorer {
 					let changeAmount = usingOuts_amount.subtract(totalAmount);
 					//add entire change for rct
 					console.log("1) Sending change of " + Cn.formatMoneySymbol(changeAmount)
-						+ " to " /*+ AccountService.getAddress()*/);
+						+ " to " + wallet.getPublicAddress());
 					dsts.push({
 						address: wallet.getPublicAddress(),
 						amount: changeAmount
 					});
-				} else if (usingOuts_amount.compare(totalAmount) === 0) {
+				}
+				
+				/* Not applicable for CCX
+				
+				    else if (usingOuts_amount.compare(totalAmount) === 0) {
+				
 					//create random destination to keep 2 outputs always in case of 0 change
+					
 					let fakeAddress = Cn.create_address(CnRandom.random_scalar()).public_addr;
 					console.log("Sending 0 CCX to a fake address to keep tx uniform (no change exists): " + fakeAddress);
 					dsts.push({
@@ -601,43 +598,28 @@ export class TransactionsExplorer {
 						amount: 0
 					});
 				}
+				*/
+				
 				console.log('destinations', dsts);
 
-				let amounts: string[] = [];
+				let amounts: number[] = [];
 				for (let l = 0; l < usingOuts.length; l++) {
-					amounts.push(usingOuts[l].amount.toString());
+					amounts.push(usingOuts[l].amount);
 				}
+				let nbOutsNeeded: number = mixin + 1;
 
-				obtainMixOutsCallback(amounts.length * (mixin + 1)).then(function (lotsMixOuts: any[]) {
-					console.log('------------------------------mix_outs', lotsMixOuts);
-					console.log('amounts', amounts);
-					console.log('lots_mix_outs', lotsMixOuts);
+                obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts: any[]) {
+						
+				console.log('------------------------------mix_outs');
+				console.log('amounts', amounts);
+				console.log('lots_mix_outs', lotsMixOuts);
 
-					let mix_outs = [];
-					let iMixOutsIndexes = 0;
-					for (let amount of amounts) {
-						let localMixOuts = [];
-						for (let i = 0; i < mixin + 1; ++i) {
-							localMixOuts.push(lotsMixOuts[iMixOutsIndexes]);
-							++iMixOutsIndexes;
-						}
-						localMixOuts.sort().reverse();
-						mix_outs.push({
-							outputs: localMixOuts.slice(),
-							amount: 0
-						});
-					}
-					console.log('mix_outs', mix_outs);
-
-					TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, mix_outs, mixin, neededFee, paymentId).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
-						resolve(data);
-					}).catch(function (e) {
+				    TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+					resolve(data);
+				    }).catch(function (e) {
 						reject(e);
-					});
+					  });
 				});
-
-				//https://github.com/moneroexamples/openmonero/blob/ebf282faa8d385ef3cf97e6561bd1136c01cf210/README.md
-				//https://github.com/moneroexamples/openmonero/blob/95bc207e1dd3881ba0795c02c06493861de8c705/src/YourMoneroRequests.cpp
 			});
 		});
 	}

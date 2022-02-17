@@ -1,4 +1,4 @@
-﻿{
+{
   "website": {
     "title": "卡博币钱包",
     "description": "卡博币币的官方在线钱包 - 完全在浏览器端处理，兼顾最优化的安全性。"
@@ -31,7 +31,8 @@
       "openWalletModal": {
         "title": "钱包密码",
         "confirmText": "打开",
-        "cancelText": "取消"
+        "cancelText": "取消",
+        "forgotPassword": "忘记密码？"
       },
       "invalidPasswordModal": {
         "title": "糟糕！",
@@ -189,8 +190,15 @@
       "subtitle": "我们在这里提供帮助！",
       "getInTouchBlock": {
         "title": "让我们联系吧！",
-        "content": "您若有能帮助我们改善钱包哦的建议或者想法，欢迎联系我们!",
+        "content": "如果您的钱包有任何问题，请联系我们！",
         "discord": "卡博币 Discord频道"
+      }
+    },
+    "forgotPasswordPage":{
+      "subtitle":"如何恢复对钱包的访问",
+      "forgotPasswordBlock":{
+      "title":"如果您忘记了密码，将无法重新设置！",
+      "content":"恢复对钱包的访问的唯一方法是调用您的密码或从浏览器内存中删除钱包数据并从备份中恢复钱包（例如助记词恢复短语）。<br />如果您有钱包密钥或恢复短语 ，下面你可以删除你的钱包。 然后您就可以恢复它并从头开始同步。<br/> <strong>请在继续之前确保您有一个恢复短语！</strong> "
       }
     },
     "networkPage": {
@@ -223,6 +231,10 @@
         "paymentId": {
           "label": "付款ID（可选）",
           "invalid": "非法的付款ID. 长度必须是64位。"
+        },
+        "mixin":{
+          "label":"隐私",
+          "invalid":"mixin 无效，应为 3 到 10 或零"
         },
         "sendButton": "发送",
         "cancelButton": "取消"

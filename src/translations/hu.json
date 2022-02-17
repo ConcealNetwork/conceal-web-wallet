@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Conceal Network tárca",
-	"description":"A Conceal Network hivatalos online tárcája - névtelen, biztonságos és teljes mértékben böngészőből kezelt az optimális biztonság érdekében"
+	"title":"Conceal tárca",
+	"description":"A Conceal hivatalos online tárcája - névtelen, biztonságos és teljes mértékben böngészőből kezelt az optimális biztonság érdekében"
   },
   "messages": {
 	"menu": {
@@ -31,7 +31,8 @@
 	  "openWalletModal":{
 		"title":"Tárca jelszava",
 		"confirmText":"Megnyitás",
-		"cancelText":"Mégsem"
+		"cancelText":"Mégsem",
+		"forgotPassword": "Elfelejtetted a jelszavad?"
 	  },
 	  "invalidPasswordModal":{
 		"title":"Hupsz...",
@@ -63,8 +64,8 @@
 	  "github": "GitHub"
 	},
 	"homepage": {
-	  "mainTitle": "Üdvözöljük a Conceal Network tárca",
-	  "tagLine": "A Conceal Network használatának legegyszerűbb módja - bárhol és bármikor",
+	  "mainTitle": "Üdvözöljük a Conceal tárca",
+	  "tagLine": "A Conceal használatának legegyszerűbb módja - bárhol és bármikor",
 	  "actions": {
 		"loadWallet": "Tárca betöltése",
 		"importWallet": "Tárcaimportálás",
@@ -143,7 +144,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"Ez egyszerű volt. A számlád rendelkezésre áll!",
-		"subtitle":"Állj készen a Conceal Network használatára",
+		"subtitle":"Állj készen a Conceal használatára",
 		"passwordSelectionBlock":{
 		  "label":"Védd a tárcád"
 		},
@@ -166,8 +167,8 @@
 		}
 	  },
 	  "disclaimerBlock":{
-		"title":"A MasariWallet használatának kockázatai",
-		"content":"A Conceal Network Wallet egy webes felület, mely lehetővé teszi a Conceal Network használatát teljes csomópont futtatása nélkül.<br/>Kezeld úgy a Conceal Network Walletet, mintha az a valódi pénztárcád lenne."
+		"title":"A ConcealWallet használatának kockázatai",
+		"content":"A ConcealWallet egy webes felület, mely lehetővé teszi a Conceal használatát teljes csomópont futtatása nélkül.<br/>Kezeld úgy a ConcealWalletet, mintha az a valódi pénztárcád lenne."
 	  }
 	},
 	"donatePage":{
@@ -178,8 +179,8 @@
 		"content":"A webtárcát Gnock fejleszti szabadidejében.<br/>Ha szeretnéd segíteni a fejlesztést, a szerverek fizetését és tetszik az applikáció, úgy vedd fontolóra az adományozást:<br/><br/>"
 	  },
 	  "devFundBlock":{
-		"title":"Conceal Network fejlesztési alap",
-		"content":"Ha szeretnél segíteni a Conceal Networknak, az alábbi címekre adományozhatsz"
+		"title":"Conceal fejlesztési alap",
+		"content":"Ha szeretnél segíteni a Concealnak, az alábbi címekre adományozhatsz"
 	  }
 	},
 	"supportPage":{
@@ -187,13 +188,20 @@
 	  "subtitle":"Itt vagyunk, hogy segítsünk!",
 	  "getInTouchBlock":{
 		"title":"Lépjünk kapcsolatba!",
-		"content":"Visszajelzésed vagy ötleted van a tárcával kapcsolatban? Keress fel bennünket!",
-		"discord":"Conceal Network Discord-csatorna"
+		"content":"Ha bármilyen problémája van a pénztárcájával, forduljon hozzánk!",
+		"discord":"Conceal Discord-csatorna"
+	  }
+	},
+	"forgotPasswordPage":{
+	  "subtitle":"Hogyan lehet visszaállítani a hozzáférést a pénztárcájához",
+	  "forgotPasswordBlock":{
+		"title":"Ha elfelejtette a jelszót, azt lehetetlen visszaállítani!",
+		"content":"A pénztárcájához való hozzáférés visszaállításának egyetlen módja, ha előhívja jelszavát, vagy törli a pénztárca adatait a böngésző memóriájából, és visszaállítja a pénztárcát a biztonsági másolatból (pl. mnemonikus helyreállítási kifejezés).<br /> Ha rendelkezik pénztárcakulcsokkal vagy helyreállítási kifejezéssel. , lent törölheti pénztárcáját. Ezután visszaállíthatja és a semmiből szinkronizálhatja.<br/> <strong>Kérjük, győződjön meg róla, hogy rendelkezik helyreállítási kifejezéssel, mielőtt továbblép!!!</strong>"
 	  }
 	},
 	"networkPage":{
 	  "title":"Hálózati statisztika",
-	  "subtitle":"Betekintés a Conceal Network hálózatába",
+	  "subtitle":"Betekintés a Conceal hálózatába",
 	  "statsBlock":{
 		"hashrate":"Hálózati hashrate",
 		"height":"Blokklánc hossza",
@@ -221,6 +229,10 @@
 		  "label":"Fizetési azonosító (opcionális)",
 		  "invalid":"Érvénytelen fizetési azonosító. Hosszának 16 vagy 64 karakternek kell lennie"
 		},
+		"mixin":{
+		  "label":"Magánélet",
+		  "invalid":"A mixin érvénytelen, 3 és 10 között vagy nulla lehet"
+		},
 		"sendButton":"Küldés",
 		"cancelButton":"Mégsem"
 	  },
@@ -234,7 +246,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Köszönjük az adományt!",
-		"content":"Értékeljük a segítséged.<br/>Ez az adomány is segít jobbá tenni a Conceal Networkt.",
+		"content":"Értékeljük a segítséged.<br/>Ez az adomány is segít jobbá tenni a Concealt.",
 		"confirmText":"OK"
 	  },
 	  "transferSentModal":{
@@ -299,7 +311,7 @@
 	},
 	"miningPage":{
 	  "title":"Bányássz közvetlenül böngészőből",
-	  "subtitle":"Támogasd a hálózatot a bányászással és szerezz érte jutalmat Conceal Networkban",
+	  "subtitle":"Támogasd a hálózatot a bányászással és szerezz érte jutalmat Concealban",
 	  "parameterBlock":{
 		"title":"Paraméterek",
 		"labelDestinationAddress":"Céltárca",
@@ -313,7 +325,7 @@
 		"hashrate":"Hashrate",
 		"maxHashrate":"Maximális hashrate",
 		"dedicatedHardware":"Bányászásra dedikált szoftver és hardver használatával nagyobb bevételre tehetsz szert és segíthetsz a hálózat decentralizálásában.",
-		"miningHandledBy":"Ezt a bányászást a get.masaricoin.com pool kezeli"
+		"miningHandledBy":"Ezt a bányászást a Conceal.Network pool kezeli"
 	  }
 	},
 	"settingsPage":{
