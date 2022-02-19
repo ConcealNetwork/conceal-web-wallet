@@ -91,7 +91,6 @@ class SendView extends DestructableView {
 		this.domainAliasAddress = null;
 		this.txDestinationName = null;
 		this.txDescription = null;
-		this.mixIn = config.defaultMixin.toString();
 		
 		this.stopScan();
 	}
@@ -251,7 +250,7 @@ class SendView extends DestructableView {
 					}
 				});
 				
-				let mixinToSendWith: number = parseInt(self.mixIn);
+				let mixinToSendWith: number = config.defaultMixin;
 				
 				TransactionsExplorer.createTx([{address: destinationAddress, amount: amountToSend}], self.paymentId, wallet, blockchainHeight,
 					function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
