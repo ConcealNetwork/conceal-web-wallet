@@ -1266,7 +1266,7 @@ body {
 }
 
 .field.checkbox label:before {
-	position: absolute;
+	/* position: absolute;
 	top: 0;
 	left: 0;
 	width: 17px;
@@ -1278,9 +1278,9 @@ body {
 	transition: border .1s ease, opacity .1s ease, -webkit-transform .1s ease, -webkit-box-shadow .1s ease;
 	transition: border .1s ease, opacity .1s ease, transform .1s ease, box-shadow .1s ease;
 	transition: border .1s ease, opacity .1s ease, transform .1s ease, box-shadow .1s ease, -webkit-transform .1s ease, -webkit-box-shadow .1s ease;
-	border: 1px solid #d4d4d5;
+	border: 1px solid #d4d4d5; */
 
-	/* display: block;
+	display: block;
 	position: absolute;
 	content: '';
 	z-index: 1;
@@ -1288,12 +1288,17 @@ body {
 	transform: none;
 	border: none;
 	top: 0;
+	left: 0;
 	background: rgba(0,0,0,0.5);
 	-webkit-box-shadow: none;
 	box-shadow: none;
 	width: 3.5rem;
 	height: 1.5rem;
-	border-radius: 500rem; */
+	border-radius: 500rem;
+	-webkit-transition: border .1s ease, opacity .1s ease, -webkit-transform .1s ease, -webkit-box-shadow .1s ease;
+	transition: border .1s ease, opacity .1s ease, -webkit-transform .1s ease, -webkit-box-shadow .1s ease;
+	transition: border .1s ease, opacity .1s ease, transform .1s ease, box-shadow .1s ease;
+	transition: border .1s ease, opacity .1s ease, transform .1s ease, box-shadow .1s ease, -webkit-transform .1s ease, -webkit-box-shadow .1s ease;
 }
 
 .field.checkbox input:checked~label:before {
