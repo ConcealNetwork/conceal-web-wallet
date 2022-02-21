@@ -13,6 +13,17 @@
 			</div>
 		</div>
 		<div class="body-content" >
+				<div class="panel">
+			<div class="body" >
+				<div class="header-title" >{{ $t("accountPage.balanceBlock.title") }}</div>
+				<div class="content" >
+					<span class="walletAmount" >{{ $n(walletAmount / currencyDivider) }}</span> PARS
+					<tempate class="amount unlocked" v-if="unlockedWalletAmount !== walletAmount" >
+						<br/>{{ $t("accountPage.balanceBlock.unlocked") }}: <span class="walletAmount" >{{ $n(unlockedWalletAmount / currencyDivider) }}</span> PARS
+					</tempate>
+				</div>
+			</div>
+		</div>
 			<div class="panel">
 				<div class="body" >
 					<div class="field action" >
