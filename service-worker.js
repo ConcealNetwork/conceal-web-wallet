@@ -449,11 +449,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/send.html",
-    "revision": "118c9c9849ae88670479a3baf45ddd83"
+    "revision": "b293a5c99b55f91376c9a37b7b534573"
   },
   {
     "url": "pages/send.js",
-    "revision": "ac37ee75227645d67430c6c805a5a210"
+    "revision": "6761871c537f570595b0a126fa0ae389"
   },
   {
     "url": "pages/settings.html",

@@ -78,7 +78,6 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             this.domainAliasAddress = null;
             this.txDestinationName = null;
             this.txDescription = null;
-            this.mixIn = config.defaultMixin.toString();
             this.stopScan();
         };
         SendView.prototype.startNfcScan = function () {
@@ -230,7 +229,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             swal.showLoading();
                         }
                     });
-                    var mixinToSendWith = parseInt(self.mixIn);
+                    var mixinToSendWith = config.defaultMixin;
                     TransactionsExplorer_1.TransactionsExplorer.createTx([{ address: destinationAddress_1, amount: amountToSend }], self.paymentId, wallet, blockchainHeight, function (amounts, numberOuts) {
                         return blockchainExplorer.getRandomOuts(amounts, numberOuts);
                     }, function (amount, feesAmount) {
