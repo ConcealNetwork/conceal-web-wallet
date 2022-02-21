@@ -1,7 +1,7 @@
 {
   "website":{
-	"title":"Conceal Wallet",
-	"description":"Official online wallet for Conceal Network - fully handled in your browser for optimal security"
+	"title":"Conceal Web Wallet",
+	"description":"Conceal Network Walleyt - Serverless and fully handled in your browser for optimal security"
   },
   "messages": {
 	"menu": {
@@ -247,7 +247,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Thank you for your donation!",
-		"content":"Your help is appreciated. <br/>This donation will help make Conceal better",
+		"content":"Your help is appreciated. This donation will help make Conceal better",
 		"confirmText":"OK"
 	  },
 	  "transferSentModal":{

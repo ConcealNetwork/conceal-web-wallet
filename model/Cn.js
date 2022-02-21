@@ -1,4 +1,4 @@
-/**
+/*
  *     Copyright (c) 2014-2018, MyMonero.com
  *	   Copyright (c) 2018, Gnock
  *     Copyright (c) 2018-2020, ExploShot

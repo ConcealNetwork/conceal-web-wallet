@@ -249,7 +249,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/blockchain/BlockchainExplorer.js",
-    "revision": "771bdfc5b9ba888d262743be9ab2b15d"
+    "revision": "4c5f54978a36f58b757edcee7966fd9b"
   },
   {
     "url": "model/blockchain/BlockchainExplorerRPCDaemon.js",
@@ -257,7 +257,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/Cn.js",
-    "revision": "5aa01461183768a278e2dcb15864dfef"
+    "revision": "3ffc883be0d7acea4e20f940bf7b6417"
   },
   {
     "url": "model/CoinUri.js",
@@ -281,11 +281,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/Mnemonic.js",
-    "revision": "066e2872e83418cf4109205c35c5185d"
+    "revision": "83a96b38d502c9192477ff0f568f6945"
   },
   {
     "url": "model/MnemonicLang.js",
-    "revision": "1890f0331734c9849be70ac51f17aea9"
+    "revision": "8b6d66c821c1e04f954c99c3757b6075"
   },
   {
     "url": "model/Nfc.js",
@@ -481,7 +481,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "providers/BlockchainExplorerProvider.js",
-    "revision": "9f947d6474de6463752cb8022bfea26d"
+    "revision": "b800b7512d917e96de46385fce3ea571"
   },
   {
     "url": "service-worker-raw.js",
@@ -493,7 +493,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/en.json",
-    "revision": "bda46c3502ffc7c4bc663260acc55775"
+    "revision": "9c9e223e6c56087c7f6f0586a07ef207"
   },
   {
     "url": "translations/es.json",
@@ -545,7 +545,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "utils/Url.js",
-    "revision": "9e38cba47fd1a3b558d77a98ee51dccd"
+    "revision": "49f1aa1b3729b2f5e19d742da52c03e0"
   },
   {
     "url": "workers/TransferProcessing.js",
