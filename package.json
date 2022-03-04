@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "typescript": "^3.9.0",
-    "workbox-build": "^3.3.0"
+    "workbox-build": "^6.5.1"
   },
   "devDependencies": {},
   "repository": {
