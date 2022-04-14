@@ -4,10 +4,11 @@
   "description": "Fully client-side web-wallet for Conceal Network",
   "main": "index.js",
   "dependencies": {
-    "typescript": "^3.9.0",
     "workbox-build": "^3.3.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "typescript": "^4.6.3"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ConcealNetwork/conceal-web-wallet.git"

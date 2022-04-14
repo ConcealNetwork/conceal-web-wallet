@@ -20,12 +20,16 @@
 
 		<div class="panel">
 			<div class="body" >
-				<div class="header-title" >{{ $t("accountPage.balanceBlock.title") }}</div>
-				<div class="content" >
-					<span class="walletAmount" >{{ $n(walletAmount / currencyDivider) }} {{ticker}}</span>
-					<tempate class="amount unlocked" v-if="unlockedWalletAmount !== walletAmount" >
-						<br/>{{ $t("accountPage.balanceBlock.unlocked") }}: <span class="walletAmount" >{{ $n(unlockedWalletAmount / currencyDivider) }} {{ticker}}</span>
-					</tempate>
+				<div class="header-title balance_title" >{{ $t("accountPage.balanceBlock.title") }}</div>
+				<div class="content balance_content" >
+          <div class="wallet_amount">
+		  			<div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.total") }}:</div>
+            <div class="walletAmount amount_cell" >{{ $n(walletAmount / currencyDivider) }} {{ticker}}</div>
+          </div>
+          <div class="wallet_amount amount unlocked" v-if="unlockedWalletAmount !== walletAmount">
+            <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.unlocked") }}:</div>
+            <div class="walletAmount amount_cell">{{ $n(unlockedWalletAmount / currencyDivider) }} {{ticker}}</div>
+          </div>
 				</div>
 			</div>
 		</div>

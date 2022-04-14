@@ -1,4 +1,5 @@
 declare var config : {
+  debug: boolean,
 	apiUrl:string[],
 	nodeList: string[],
 	nodeUrl: string,

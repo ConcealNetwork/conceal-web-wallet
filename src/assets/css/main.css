@@ -1460,3 +1460,27 @@ body {
 .swal2-popup .swal2-styled.swal2-confirm {
 	background-color: orange !important;
 }
+
+.balance_title {
+  font-size: 2em;  
+  font-weight: bold;
+}
+
+.balance_content {
+  display: table
+}
+
+.wallet_amount {
+  display: table-row;
+  color: orange;
+}
+
+.amount_cell {
+  display: table-cell;
+  padding: 0.1em;
+}
+
+.walletAmountLabel {
+  font-size: 1.5em;
+  padding-right: 1em;
+}
