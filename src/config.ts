@@ -1,6 +1,7 @@
 //export {};
 let global : any = typeof window !== 'undefined' ? window : self;
 global.config = {
+  debug: false,  
 	apiUrl: [
         "https://ccxapi.conceal.network/api/"
     ],
@@ -18,7 +19,7 @@ global.config = {
 	testnet: false,
     
 	coinUnitPlaces: 6,
-    coinDisplayUnitPlaces: 6,
+  coinDisplayUnitPlaces: 6,
 	txMinConfirms: 10,
 	txCoinbaseMinConfirms: 10,
 	
@@ -44,7 +45,21 @@ global.config = {
 	coinUriPrefix: 'conceal:',
 	
 	avgBlockTime: 120,
-	maxBlockNumber: 500000000,
+	maxBlockNumber: 500000000,    
 };
 let randInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
 config.nodeUrl = config.nodeList[randInt];
+
+
+function logDebugMsg(...data: any[]) {
+  if (config.debug) {
+    if (data.length > 1) {
+      console.log(data[0], data.slice(1));
+    } else {
+      console.log(data[0]);
+    }
+  }
+}
+
+// log debug messages if debug is set to true
+global.logDebugMsg = logDebugMsg;

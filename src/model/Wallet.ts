@@ -114,7 +114,8 @@ export class Wallet extends Observable{
 	}
 
 	static loadFromRaw(raw : RawWallet) : Wallet{
-		let wallet = new Wallet();
+    logDebugMsg("Wallet.loadFromRaw");
+    let wallet = new Wallet();
 		wallet.transactions = [];
 		for(let rawTransac of raw.transactions){
 			wallet.transactions.push(Transaction.fromRaw(rawTransac));
@@ -288,6 +289,9 @@ export class Wallet extends Observable{
 		for(let transaction of this.transactions){
 			news.push(Transaction.fromRaw(transaction.export()));
 		}
+    news.sort((a,b) =>{
+       return a.timestamp - b.timestamp;
+    })    
 		return news;
 	}
 
