@@ -76,7 +76,7 @@ class NativeStorageWrap implements StorageInterface{
 		return new Promise<any>(function (resolve, reject) {
 			if(window.NativeStorage)
 				window.NativeStorage.getItem(key,function(){
-					resolve();
+					resolve(true);
 				}, function(error : NativeNativeStorageError){
 					if(error.code === 2)
 						resolve(defaultValue);

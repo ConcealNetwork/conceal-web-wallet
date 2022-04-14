@@ -16,10 +16,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -34,8 +36,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../lib/numbersLab/DestructableView", "../model/Constants", "../model/WalletRepository", "../model/Mnemonic"], function (require, exports, VueAnnotate_1, DependencyInjector_1, Wallet_1, DestructableView_1, Constants_1, WalletRepository_1, Mnemonic_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
-    var blockchainExplorer = DependencyInjector_1.DependencyInjectorInstance().getInstance(Constants_1.Constants.BLOCKCHAIN_EXPLORER);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var blockchainExplorer = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Constants_1.Constants.BLOCKCHAIN_EXPLORER);
     var ExportView = /** @class */ (function (_super) {
         __extends(ExportView, _super);
         function ExportView(container) {
@@ -145,10 +147,10 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             });
         };
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], ExportView.prototype, "publicAddress", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], ExportView.prototype, "nativePlatform", void 0);
         return ExportView;
     }(DestructableView_1.DestructableView));

@@ -16,10 +16,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -34,9 +36,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numbersLab/VueAnnotate", "../model/WalletRepository", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../model/AppState", "../model/Password", "../providers/BlockchainExplorerProvider", "../model/WalletWatchdog"], function (require, exports, DestructableView_1, VueAnnotate_1, WalletRepository_1, DependencyInjector_1, Wallet_1, AppState_1, Password_1, BlockchainExplorerProvider_1, WalletWatchdog_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
     var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
-    var walletWatchdog = DependencyInjector_1.DependencyInjectorInstance().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
+    var walletWatchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
     var ChangeWalletPasswordView = /** @class */ (function (_super) {
         __extends(ChangeWalletPasswordView, _super);
         function ChangeWalletPasswordView(container) {
@@ -62,7 +64,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 this.insecurePassword = false;
         };
         ChangeWalletPasswordView.prototype.changePassword = function () {
-            var walletWorker = DependencyInjector_1.DependencyInjectorInstance().getInstance(AppState_1.WalletWorker.name, 'default', false);
+            var walletWorker = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(AppState_1.WalletWorker.name, 'default', false);
             if (walletWorker !== null) {
                 walletWorker.password = this.walletPassword;
                 walletWorker.save();
@@ -80,28 +82,28 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             }
         };
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], ChangeWalletPasswordView.prototype, "oldPassword", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], ChangeWalletPasswordView.prototype, "invalidOldPassword", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], ChangeWalletPasswordView.prototype, "walletPassword", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], ChangeWalletPasswordView.prototype, "walletPassword2", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], ChangeWalletPasswordView.prototype, "insecurePassword", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], ChangeWalletPasswordView.prototype, "forceInsecurePassword", void 0);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], ChangeWalletPasswordView.prototype, "oldPasswordWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], ChangeWalletPasswordView.prototype, "walletPasswordWatch", null);
         return ChangeWalletPasswordView;
     }(DestructableView_1.DestructableView));

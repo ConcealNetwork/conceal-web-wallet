@@ -33,7 +33,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/css/main.css",
-    "revision": "76cf204cb217dd76b489b226fbf0329f"
+    "revision": "b7f55c0a2eb0e0f84faaaca4a8d552fd"
   },
   {
     "url": "assets/img/coin_white.png",
@@ -89,7 +89,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "config.js",
-    "revision": "f6e9d149479c8c9f4468af081feabeee"
+    "revision": "e57633e89efb27596cd14744c04ec4da"
   },
   {
     "url": "d/vue-i118n.js",
@@ -105,7 +105,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "index.js",
-    "revision": "4c082e5eaa1ff7f84f09ae2611eb749a"
+    "revision": "be8581c7570fd5a4bb315abd38576265"
   },
   {
     "url": "lib/base58.js",
@@ -185,7 +185,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "lib/numbersLab/DestructableView.js",
-    "revision": "bf06ac5b16fb1f754c5190c6e4a688a6"
+    "revision": "6afa1f777849c59e67a42f94f0c8464d"
   },
   {
     "url": "lib/numbersLab/Logger.js",
@@ -245,7 +245,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/AppState.js",
-    "revision": "bfc1167588b193e3043e5d68f55fbcc7"
+    "revision": "3fe1415e64b86bd8f4a3e6951fe8981a"
   },
   {
     "url": "model/blockchain/BlockchainExplorer.js",
@@ -297,11 +297,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/QRReader.js",
-    "revision": "d6398ec8645f6f0d1a56a7e83c3ef12e"
+    "revision": "3837640c1cd5257a0a22a577e2b4a93f"
   },
   {
     "url": "model/Storage.js",
-    "revision": "121f097e08b94d86f07c0f990a15f8e7"
+    "revision": "39e0693482284ed1beabf1ac048f7791"
   },
   {
     "url": "model/Transaction.js",
@@ -317,7 +317,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/Wallet.js",
-    "revision": "713f38ed086d832c8161391d5b4747bd"
+    "revision": "5d79ec9ed18239ccb2a8df091795ecd8"
   },
   {
     "url": "model/WalletRepository.js",
@@ -325,15 +325,15 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/WalletWatchdog.js",
-    "revision": "8eab97988ef47cbd6bcfa720dbcf6a1f"
+    "revision": "2c4ebaf3b6c3bfd3199828a4e4c1f412"
   },
   {
     "url": "pages/account.html",
-    "revision": "5e97aee3cbcc11f3fe3dd1bf3e4ff995"
+    "revision": "f133441d7117500a7d26334d105dd96d"
   },
   {
     "url": "pages/account.js",
-    "revision": "c3ec4acc4fda2fe10df78d695332ac30"
+    "revision": "eebdf2d70f6bbc99d10cb5cc1fa009e2"
   },
   {
     "url": "pages/changeWalletPassword.html",
@@ -341,7 +341,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/changeWalletPassword.js",
-    "revision": "209e1aee68c4cb853808ad3ef749655c"
+    "revision": "caccd06a3029d4f3c9afe2880cd2b174"
   },
   {
     "url": "pages/createWallet.html",
@@ -349,7 +349,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/createWallet.js",
-    "revision": "6e676b0cec377d46ec6662a51e338a7b"
+    "revision": "ebf7e171b95d21b85a21fcfe294f76c0"
   },
   {
     "url": "pages/disconnect.html",
@@ -365,7 +365,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/donate.js",
-    "revision": "d65ed68add23b8d8fa95033bdb37467e"
+    "revision": "f3b91d98886b1832f2546d5bbacf078f"
   },
   {
     "url": "pages/export.html",
@@ -373,7 +373,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/export.js",
-    "revision": "c98a20e14d0b544d7ab944f88ae1b84f"
+    "revision": "a795ec5439ede9dcefaf81d930b9a594"
   },
   {
     "url": "pages/import.html",
@@ -381,7 +381,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/import.js",
-    "revision": "27d9140b3940e24c404c3662c80ba651"
+    "revision": "84f02034ef92f0bc0c8be5b9974c350b"
   },
   {
     "url": "pages/importFromFile.html",
@@ -389,7 +389,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromFile.js",
-    "revision": "b24a0750c6b96402dd85efe97452626e"
+    "revision": "d2f16c2eca0b70c39ee9e8a32d496aa7"
   },
   {
     "url": "pages/importFromKeys.html",
@@ -397,7 +397,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromKeys.js",
-    "revision": "c24c27a0e6be26f13f6de05884f0220c"
+    "revision": "0a0d736614fdec95d3eabf79ad1dddce"
   },
   {
     "url": "pages/importFromMnemonic.html",
@@ -405,7 +405,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromMnemonic.js",
-    "revision": "0f3be1232e6b0151c8824ab1e8b1b3c3"
+    "revision": "f6f7e542cbfa34a6d3d046cb80a56a4f"
   },
   {
     "url": "pages/importFromQr.html",
@@ -413,7 +413,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromQr.js",
-    "revision": "705dfbea523bdf751443b54b5cd52ce4"
+    "revision": "a3daa209d210f7c7d1836fb0f157ad7d"
   },
   {
     "url": "pages/index.html",
@@ -421,7 +421,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/index.js",
-    "revision": "de8be9509c880a31f151a32abf395288"
+    "revision": "44fe87058e5c8f0d634571acf76273ad"
   },
   {
     "url": "pages/network.html",
@@ -429,7 +429,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/network.js",
-    "revision": "703713ced9451466845441a7c07d5eb1"
+    "revision": "7084f167b0a163a345bd097c55864fae"
   },
   {
     "url": "pages/privacyPolicy.html",
@@ -437,7 +437,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/privacyPolicy.js",
-    "revision": "cd3c961feb5b983889b21edeaf20afbd"
+    "revision": "d6ceeaeccd8de4ef2001a301b0337715"
   },
   {
     "url": "pages/receive.html",
@@ -445,7 +445,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/receive.js",
-    "revision": "29fc7c0c469ffd9181ad8760c78e0132"
+    "revision": "9f31c337c6f84fef72fd27f1a679d7fc"
   },
   {
     "url": "pages/send.html",
@@ -453,7 +453,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/send.js",
-    "revision": "6761871c537f570595b0a126fa0ae389"
+    "revision": "9703abe9f269a6469a4b2541f9b701cc"
   },
   {
     "url": "pages/settings.html",
@@ -461,7 +461,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/settings.js",
-    "revision": "78e30d5ec6ef5ca794641b4306c8315f"
+    "revision": "169fad1b5f309fb18c1e280263c69d0a"
   },
   {
     "url": "pages/support.html",
@@ -469,7 +469,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/support.js",
-    "revision": "4cb168e6fc83406bfb2a0adaf05259ad"
+    "revision": "7f0c6f3dd035c44a802f7fa464e8931d"
   },
   {
     "url": "pages/termsOfUse.html",
@@ -477,11 +477,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/termsOfUse.js",
-    "revision": "3e3524cae093fb1a0690ab73155cf729"
+    "revision": "45ca19345556e8f2454f167710183aa4"
   },
   {
     "url": "providers/BlockchainExplorerProvider.js",
-    "revision": "b800b7512d917e96de46385fce3ea571"
+    "revision": "588cb87114efa79bd6511bc197dbc49f"
   },
   {
     "url": "service-worker-raw.js",
@@ -493,7 +493,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/en.json",
-    "revision": "9c9e223e6c56087c7f6f0586a07ef207"
+    "revision": "f9f3663d5a6956b5c5eee5c2bb9fbb79"
   },
   {
     "url": "translations/es.json",
@@ -549,7 +549,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "workers/TransferProcessing.js",
-    "revision": "4d25ca3593a2a6bce67f392923e48a4d"
+    "revision": "4616d5601d1bb8767677f17535faf69f"
   },
   {
     "url": "workers/TransferProcessingEntrypoint.js",

@@ -16,10 +16,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -34,7 +36,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../model/WalletRepository", "../lib/numbersLab/DependencyInjector", "../lib/numbersLab/VueAnnotate", "../lib/numbersLab/DestructableView", "../model/Wallet", "../model/AppState"], function (require, exports, WalletRepository_1, DependencyInjector_1, VueAnnotate_1, DestructableView_1, Wallet_1, AppState_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
     if (wallet !== null) {
         window.location.href = '#account';
     }
@@ -42,7 +44,7 @@ define(["require", "exports", "../model/WalletRepository", "../lib/numbersLab/De
         __extends(IndexView, _super);
         function IndexView(container) {
             var _this = _super.call(this, container) || this;
-            _this.isWalletLoaded = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false) !== null;
+            _this.isWalletLoaded = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false) !== null;
             WalletRepository_1.WalletRepository.hasOneStored().then(function (status) {
                 _this.hasLocalWallet = status;
             });
@@ -57,10 +59,10 @@ define(["require", "exports", "../model/WalletRepository", "../lib/numbersLab/De
             AppState_1.AppState.askUserOpenWallet();
         };
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], IndexView.prototype, "hasLocalWallet", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], IndexView.prototype, "isWalletLoaded", void 0);
         return IndexView;
     }(DestructableView_1.DestructableView));

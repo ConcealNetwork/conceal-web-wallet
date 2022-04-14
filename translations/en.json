@@ -99,6 +99,7 @@
 	  },
 	  "balanceBlock": {
 		"title": "Your balance",
+		"total": "Total",
 		"unlocked": "Unlocked"
 	  },
 	  "historyBlock": {

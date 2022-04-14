@@ -154,9 +154,14 @@ define(["require", "exports"], function (require, exports) {
                     }
                 }
                 catch (e) {
+                    var errorName = "";
+                    if (e instanceof Error) {
+                        errorName = e.name;
+                    }
                     // Try-Catch to circumvent Firefox Bug #879717
-                    if (e.name == "NS_ERROR_NOT_AVAILABLE")
+                    if (errorName == "NS_ERROR_NOT_AVAILABLE") {
                         setTimeout(newDecoderFrame, 0);
+                    }
                 }
             }
             this.active = true;

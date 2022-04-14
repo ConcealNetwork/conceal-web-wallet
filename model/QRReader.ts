@@ -174,8 +174,16 @@ class QRReader{
 					self.decoder.postMessage(imgData);
 				}
 			} catch(e) {
+          let errorName = "";
+
+          if (e instanceof Error) {
+            errorName = e.name;
+          }
+      
 				// Try-Catch to circumvent Firefox Bug #879717
-				if (e.name == "NS_ERROR_NOT_AVAILABLE") setTimeout(newDecoderFrame, 0);
+				if (errorName == "NS_ERROR_NOT_AVAILABLE") {
+          setTimeout(newDecoderFrame, 0);
+        }
 			}
 		}
 

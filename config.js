@@ -2,6 +2,7 @@
 //export {};
 var global = typeof window !== 'undefined' ? window : self;
 global.config = {
+    debug: false,
     apiUrl: [
         "https://ccxapi.conceal.network/api/"
     ],
@@ -42,3 +43,19 @@ global.config = {
 };
 var randInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
 config.nodeUrl = config.nodeList[randInt];
+function logDebugMsg() {
+    var data = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        data[_i] = arguments[_i];
+    }
+    if (config.debug) {
+        if (data.length > 1) {
+            console.log(data[0], data.slice(1));
+        }
+        else {
+            console.log(data[0]);
+        }
+    }
+}
+// log debug messages if debug is set to true
+global.logDebugMsg = logDebugMsg;

@@ -16,10 +16,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -34,7 +36,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../lib/numbersLab/DestructableView", "../lib/numbersLab/VueAnnotate", "../model/CoinUri", "../model/Nfc", "../model/Cn"], function (require, exports, DependencyInjector_1, Wallet_1, DestructableView_1, VueAnnotate_1, CoinUri_1, Nfc_1, Cn_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
     function setTextInClipboard(inputId) {
         /*let inputElement : HTMLInputElement = <HTMLInputElement>document.getElementById(inputId);
         let textarea : HTMLInputElement = <HTMLInputElement> document.getElementById('clipboardTextarea');
@@ -182,37 +184,37 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "../model/
             return _super.prototype.destruct.call(this);
         };
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], AccountView.prototype, "rawAddress", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], AccountView.prototype, "address", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], AccountView.prototype, "paymentId", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], AccountView.prototype, "amount", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], AccountView.prototype, "recipientName", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], AccountView.prototype, "txDescription", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], AccountView.prototype, "hasNfc", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], AccountView.prototype, "hasWritableNfc", void 0);
         __decorate([
-            DependencyInjector_1.Autowire(Nfc_1.Nfc.name)
+            (0, DependencyInjector_1.Autowire)(Nfc_1.Nfc.name)
         ], AccountView.prototype, "nfc", void 0);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], AccountView.prototype, "amountWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], AccountView.prototype, "paymentIdWatch", null);
         return AccountView;
     }(DestructableView_1.DestructableView));

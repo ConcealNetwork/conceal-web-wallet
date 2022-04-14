@@ -16,10 +16,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -128,55 +130,55 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             self.forceInsecurePassword = true;
         };
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], ImportView.prototype, "viewOnly", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], ImportView.prototype, "privateSpendKey", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], ImportView.prototype, "validPrivateSpendKey", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], ImportView.prototype, "privateViewKey", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], ImportView.prototype, "validPrivateViewKey", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], ImportView.prototype, "publicAddress", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], ImportView.prototype, "validPublicAddress", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], ImportView.prototype, "password", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], ImportView.prototype, "password2", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], ImportView.prototype, "insecurePassword", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], ImportView.prototype, "forceInsecurePassword", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(0)
+            (0, VueAnnotate_1.VueVar)(0)
         ], ImportView.prototype, "importHeight", void 0);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], ImportView.prototype, "passwordWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], ImportView.prototype, "importHeightWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], ImportView.prototype, "privateSpendKeyWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], ImportView.prototype, "privateViewKeyWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], ImportView.prototype, "publicAddressWatch", null);
         return ImportView;
     }(DestructableView_1.DestructableView));

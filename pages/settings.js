@@ -19,10 +19,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -37,9 +39,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numbersLab/VueAnnotate", "../model/WalletRepository", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../model/AppState", "../model/Translations", "../providers/BlockchainExplorerProvider", "../model/WalletWatchdog"], function (require, exports, DestructableView_1, VueAnnotate_1, WalletRepository_1, DependencyInjector_1, Wallet_1, AppState_1, Translations_1, BlockchainExplorerProvider_1, WalletWatchdog_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
     var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
-    var walletWatchdog = DependencyInjector_1.DependencyInjectorInstance().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
+    var walletWatchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
     var SettingsView = /** @class */ (function (_super) {
         __extends(SettingsView, _super);
         function SettingsView(container) {
@@ -81,7 +83,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             }).then(function (result) {
                 if (result.value) {
                     AppState_1.AppState.disconnect();
-                    DependencyInjector_1.DependencyInjectorInstance().register(Wallet_1.Wallet.name, undefined, 'default');
+                    (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, undefined, 'default');
                     WalletRepository_1.WalletRepository.deleteLocalCopy();
                     window.location.href = '#index';
                 }
@@ -125,52 +127,52 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             walletWatchdog.signalWalletUpdate();
         };
         __decorate([
-            VueAnnotate_1.VueVar(10)
+            (0, VueAnnotate_1.VueVar)(10)
         ], SettingsView.prototype, "readSpeed", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], SettingsView.prototype, "checkMinerTx", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], SettingsView.prototype, "customNode", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('https://node.conceal.network:16000/')
+            (0, VueAnnotate_1.VueVar)('https://node.conceal.network:16000/')
         ], SettingsView.prototype, "nodeUrl", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(0)
+            (0, VueAnnotate_1.VueVar)(0)
         ], SettingsView.prototype, "creationHeight", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(0)
+            (0, VueAnnotate_1.VueVar)(0)
         ], SettingsView.prototype, "scanHeight", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(-1)
+            (0, VueAnnotate_1.VueVar)(-1)
         ], SettingsView.prototype, "maxHeight", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('en')
+            (0, VueAnnotate_1.VueVar)('en')
         ], SettingsView.prototype, "language", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(0)
+            (0, VueAnnotate_1.VueVar)(0)
         ], SettingsView.prototype, "nativeVersionCode", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], SettingsView.prototype, "nativeVersionNumber", void 0);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], SettingsView.prototype, "languageWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], SettingsView.prototype, "readSpeedWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], SettingsView.prototype, "checkMinerTxWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], SettingsView.prototype, "customNodeWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], SettingsView.prototype, "creationHeightWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], SettingsView.prototype, "scanHeightWatch", null);
         return SettingsView;
     }(DestructableView_1.DestructableView));

@@ -14,16 +14,20 @@ define(["require", "exports", "../model/TransactionsExplorer", "../model/Wallet"
             postMessage('readyWallet');
         }
         else if (event.type === 'process') {
+            logDebugMsg("process new transactions...");
             if (typeof event.wallet !== 'undefined') {
                 currentWallet = Wallet_1.Wallet.loadFromRaw(event.wallet);
             }
             if (currentWallet === null) {
+                logDebugMsg("Wallet is missing...");
                 postMessage('missing_wallet');
                 return;
             }
             var readMinersTx = typeof currentWallet.options.checkMinerTx !== 'undefined' && currentWallet.options.checkMinerTx;
             var rawTransactions = event.transactions;
             var transactions = [];
+            // log any raw transactions that need to be processed
+            logDebugMsg("rawTransactions", rawTransactions);
             for (var _i = 0, rawTransactions_1 = rawTransactions; _i < rawTransactions_1.length; _i++) {
                 var rawTransaction = rawTransactions_1[_i];
                 if (!readMinersTx && TransactionsExplorer_1.TransactionsExplorer.isMinerTx(rawTransaction)) {
@@ -31,13 +35,13 @@ define(["require", "exports", "../model/TransactionsExplorer", "../model/Wallet"
                 }
                 var transaction = TransactionsExplorer_1.TransactionsExplorer.parse(rawTransaction, currentWallet);
                 if (transaction !== null) {
-                    //console.log(`parsed tx ${transaction['hash']} from rawTransaction`);
+                    logDebugMsg("parsed tx ".concat(transaction['hash'], " from rawTransaction"));
                 }
                 if (transaction !== null) {
                     currentWallet.addNew(transaction);
-                    //console.log(`Added tx ${transaction.hash} to currentWallet`);
+                    logDebugMsg("Added tx ".concat(transaction.hash, " to currentWallet"));
                     transactions.push(transaction.export());
-                    //console.log(`pushed tx ${transaction.hash} to transactions[]`);
+                    logDebugMsg("pushed tx ".concat(transaction.hash, " to transactions[]"));
                 }
             }
             postMessage({
