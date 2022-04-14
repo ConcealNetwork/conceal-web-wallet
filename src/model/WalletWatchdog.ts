@@ -60,7 +60,6 @@ export class WalletWatchdog {
         this.workerProcessing = new Worker('./workers/TransferProcessingEntrypoint.js');
         this.workerProcessing.onmessage = function (data: MessageEvent) {
             let message: string | any = data.data;
-            logDebugMsg("InitWorker message", message);
             if (message === 'ready') {
                 logDebugMsg('worker ready');
                 self.signalWalletUpdate();
@@ -182,8 +181,7 @@ export class WalletWatchdog {
         //need to work out timings and ensure process does not reload when it's already running...
 
         if (this.workerProcessingWorking || !this.workerProcessingReady) {
-            logDebugMsg(`checkTransactionsInterval exiting...`, this.workerProcessingWorking, this.workerProcessingReady);
-            return;
+          return;
         }
 
         //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
@@ -225,7 +223,6 @@ export class WalletWatchdog {
 
         for (let tr of transactions) {
             if (typeof tr.height !== 'undefined') {
-                logDebugMsg(`Transaction height...`, tr.height, this.wallet.lastHeight);                
                 if (tr.height >= this.wallet.lastHeight) {
                     transactionsToAdd.push(tr);
                 }
@@ -297,8 +294,9 @@ export class WalletWatchdog {
                 if (previousStartBlock > self.lastMaximumHeight) previousStartBlock = self.lastMaximumHeight;
                 if (endBlock > self.lastMaximumHeight) endBlock = self.lastMaximumHeight;
 
+
                 self.explorer.getTransactionsForBlocks(previousStartBlock, endBlock, self.wallet.options.checkMinerTx).then(function (transactions: any) {
-                  logDebugMsg("getTransactionsForBlocks", previousStartBlock, endBlock, transactions);    
+                    logDebugMsg("getTransactionsForBlocks", previousStartBlock, endBlock, transactions);    
 
                     //to ensure no pile explosion
                     if (transactions === 'OK') {
