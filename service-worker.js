@@ -33,7 +33,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/css/main.css",
-    "revision": "b7f55c0a2eb0e0f84faaaca4a8d552fd"
+    "revision": "033241d839d1db8c60b92f759949f3b0"
   },
   {
     "url": "assets/img/coin_white.png",
@@ -89,7 +89,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "config.js",
-    "revision": "e57633e89efb27596cd14744c04ec4da"
+    "revision": "0d11546637244acfdb10b10d4d237936"
   },
   {
     "url": "d/vue-i118n.js",
@@ -317,7 +317,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/Wallet.js",
-    "revision": "5d79ec9ed18239ccb2a8df091795ecd8"
+    "revision": "ddcbd7292bb2b0647f72f3198b158815"
   },
   {
     "url": "model/WalletRepository.js",
@@ -325,11 +325,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/WalletWatchdog.js",
-    "revision": "2c4ebaf3b6c3bfd3199828a4e4c1f412"
+    "revision": "55577634c61d6e16b2f185422e102392"
   },
   {
     "url": "pages/account.html",
-    "revision": "f133441d7117500a7d26334d105dd96d"
+    "revision": "06fc5aa6f72331cd71dd2ba2d549b97c"
   },
   {
     "url": "pages/account.js",

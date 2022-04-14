@@ -33,7 +33,7 @@ global.config = {
     defaultMixin: 5,
     idleTimeout: 30,
     idleWarningDuration: 20,
-    syncBlockCount: 50,
+    syncBlockCount: 1000,
     coinSymbol: 'CCX',
     openAliasPrefix: "ccx",
     coinName: 'Conceal',

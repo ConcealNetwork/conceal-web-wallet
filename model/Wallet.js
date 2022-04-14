@@ -105,7 +105,6 @@ define(["require", "exports", "./Transaction", "./KeysRepository", "../lib/numbe
             return data;
         };
         Wallet.loadFromRaw = function (raw) {
-            logDebugMsg("Wallet.loadFromRaw");
             var wallet = new Wallet();
             wallet.transactions = [];
             for (var _i = 0, _a = raw.transactions; _i < _a.length; _i++) {

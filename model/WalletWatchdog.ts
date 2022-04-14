@@ -60,10 +60,9 @@ export class WalletWatchdog {
         this.workerProcessing = new Worker('./workers/TransferProcessingEntrypoint.js');
         this.workerProcessing.onmessage = function (data: MessageEvent) {
             let message: string | any = data.data;
-            //console.log("InitWorker message: ");
-            //console.log(message);
+            logDebugMsg("InitWorker message", message);
             if (message === 'ready') {
-                //console.info('worker ready');
+                logDebugMsg('worker ready');
                 self.signalWalletUpdate();
             } else if (message === 'readyWallet') {
                 self.workerProcessingReady = true;
@@ -75,12 +74,15 @@ export class WalletWatchdog {
                             self.wallet.addNew(Transaction.fromRaw(tx));
                         self.signalWalletUpdate();
                     }
+                    /*
                     if (self.workerCurrentProcessing.length > 0) {
                         let transactionHeight = self.workerCurrentProcessing[self.workerCurrentProcessing.length - 1].height;
                         if (typeof transactionHeight !== 'undefined')
                             self.wallet.lastHeight = transactionHeight;
                     }
+                    */
 
+                    // we are done processing now
                     self.workerProcessingWorking = false;
                 }
             }
@@ -89,7 +91,7 @@ export class WalletWatchdog {
 
     signalWalletUpdate() {
         let self = this;
-        //console.log('wallet update');
+        logDebugMsg('wallet update');
         this.lastBlockLoading = -1;//reset scanning
 
         if (this.wallet.options.customNode) {
@@ -175,8 +177,6 @@ export class WalletWatchdog {
     workerCountProcessed = 0;
 
     checkTransactionsInterval() {
-        logDebugMsg(`checkTransactionsInterval called...`);
-
         //somehow we're repeating and regressing back to re-process Tx's
         //loadHistory getting into a stack overflow ?
         //need to work out timings and ensure process does not reload when it's already running...
@@ -207,12 +207,12 @@ export class WalletWatchdog {
 
         if (transactionsToProcess.length > 0) {
             this.workerCurrentProcessing = transactionsToProcess;
+            this.workerProcessingWorking = true;
             this.workerProcessing.postMessage({
                 type: 'process',
                 transactions: transactionsToProcess
             });
             ++this.workerCountProcessed;
-            this.workerProcessingWorking = true;
         } else {
             clearInterval(this.intervalTransactionsProcess);
             this.intervalTransactionsProcess = 0;
@@ -259,12 +259,15 @@ export class WalletWatchdog {
 
         //don't reload until it's finished processing the last batch of transactions
         if (this.workerProcessingWorking || !this.workerProcessingReady) {
+            logDebugMsg(`Cannot process, need to wait...`, this.workerProcessingWorking, this.workerProcessingReady);     
             setTimeout(function () {
               self.loadHistory();
-            }, 100);
+            }, 1000);
             return;
         }
+
         if (this.transactionsToProcess.length > 500) {
+            logDebugMsg(`Having more then 500 TX packets in FIFO queue`, this.transactionsToProcess.length);             
             //to ensure no pile explosion
             setTimeout(function () {
               self.loadHistory();
@@ -272,16 +275,16 @@ export class WalletWatchdog {
             return;
         }
 
-        // console.log('checking');
         this.explorer.getHeight().then(function (height) {
-            console.log("Checking on height", height);            
             if (height > self.lastMaximumHeight) {
               self.lastMaximumHeight = height;
             } else {
-              setTimeout(function () {
-                self.loadHistory();
-              }, 1000);
-              return;
+              if (self.wallet.lastHeight >= self.lastMaximumHeight) {
+                setTimeout(function () {
+                  self.loadHistory();
+                }, 1000);
+                return;
+              }
             }
 
             // we are only here if the block is actually increased from last processing
@@ -295,7 +298,7 @@ export class WalletWatchdog {
                 if (endBlock > self.lastMaximumHeight) endBlock = self.lastMaximumHeight;
 
                 self.explorer.getTransactionsForBlocks(previousStartBlock, endBlock, self.wallet.options.checkMinerTx).then(function (transactions: any) {
-                    console.log("getTransactionsForBlocks", previousStartBlock, endBlock, transactions);    
+                  logDebugMsg("getTransactionsForBlocks", previousStartBlock, endBlock, transactions);    
 
                     //to ensure no pile explosion
                     if (transactions === 'OK') {
@@ -304,7 +307,7 @@ export class WalletWatchdog {
 
                         setTimeout(function () {
                             self.loadHistory();
-                        }, 100);
+                        }, 10);
                     } else if (transactions.length > 0) {
                         let lastTx = transactions[transactions.length - 1];
                         if (typeof lastTx.height !== 'undefined') {
@@ -315,7 +318,7 @@ export class WalletWatchdog {
 
                           setTimeout(function () {
                             self.loadHistory();
-                          }, 100);
+                          }, 1);
                         });
                     } else {
                         self.lastBlockLoading = endBlock;
@@ -325,8 +328,8 @@ export class WalletWatchdog {
                             self.loadHistory();
                         }, 30 * 1000);
                     }
-                }).catch(function () {
-                    logDebugMsg(`Error occured in loadHistory[1]...`);
+                }).catch(function (e) {
+                    logDebugMsg(`Error occured in loadHistory...`, e.message);
 
                     setTimeout(function () {
                         self.loadHistory();
@@ -337,8 +340,8 @@ export class WalletWatchdog {
                     self.loadHistory();
                 }, 30 * 1000);
             }
-        }).catch(function () {
-            logDebugMsg(`Error occured in loadHistory[2]...`);
+        }).catch(function (e) {
+            logDebugMsg(`Error occured in loadHistory...`, e.message);
 
             setTimeout(function () {
                 self.loadHistory();

@@ -61,10 +61,9 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             this.workerProcessing = new Worker('./workers/TransferProcessingEntrypoint.js');
             this.workerProcessing.onmessage = function (data) {
                 var message = data.data;
-                //console.log("InitWorker message: ");
-                //console.log(message);
+                logDebugMsg("InitWorker message", message);
                 if (message === 'ready') {
-                    //console.info('worker ready');
+                    logDebugMsg('worker ready');
                     self.signalWalletUpdate();
                 }
                 else if (message === 'readyWallet') {
@@ -80,11 +79,14 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                             }
                             self.signalWalletUpdate();
                         }
+                        /*
                         if (self.workerCurrentProcessing.length > 0) {
-                            var transactionHeight = self.workerCurrentProcessing[self.workerCurrentProcessing.length - 1].height;
+                            let transactionHeight = self.workerCurrentProcessing[self.workerCurrentProcessing.length - 1].height;
                             if (typeof transactionHeight !== 'undefined')
                                 self.wallet.lastHeight = transactionHeight;
                         }
+                        */
+                        // we are done processing now
                         self.workerProcessingWorking = false;
                     }
                 }
@@ -92,7 +94,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
         };
         WalletWatchdog.prototype.signalWalletUpdate = function () {
             var self = this;
-            //console.log('wallet update');
+            logDebugMsg('wallet update');
             this.lastBlockLoading = -1; //reset scanning
             if (this.wallet.options.customNode) {
                 config.nodeUrl = this.wallet.options.nodeUrl;
@@ -158,7 +160,6 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             this.workerCountProcessed = 0;
         };
         WalletWatchdog.prototype.checkTransactionsInterval = function () {
-            logDebugMsg("checkTransactionsInterval called...");
             //somehow we're repeating and regressing back to re-process Tx's
             //loadHistory getting into a stack overflow ?
             //need to work out timings and ensure process does not reload when it's already running...
@@ -183,12 +184,12 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             logDebugMsg('checkTransactionsInterval', 'Transactions to be processed', transactionsToProcess);
             if (transactionsToProcess.length > 0) {
                 this.workerCurrentProcessing = transactionsToProcess;
+                this.workerProcessingWorking = true;
                 this.workerProcessing.postMessage({
                     type: 'process',
                     transactions: transactionsToProcess
                 });
                 ++this.workerCountProcessed;
-                this.workerProcessingWorking = true;
             }
             else {
                 clearInterval(this.intervalTransactionsProcess);
@@ -226,29 +227,31 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                 this.lastBlockLoading = this.wallet.lastHeight;
             //don't reload until it's finished processing the last batch of transactions
             if (this.workerProcessingWorking || !this.workerProcessingReady) {
+                logDebugMsg("Cannot process, need to wait...", this.workerProcessingWorking, this.workerProcessingReady);
                 setTimeout(function () {
                     self.loadHistory();
-                }, 100);
+                }, 1000);
                 return;
             }
             if (this.transactionsToProcess.length > 500) {
+                logDebugMsg("Having more then 500 TX packets in FIFO queue", this.transactionsToProcess.length);
                 //to ensure no pile explosion
                 setTimeout(function () {
                     self.loadHistory();
                 }, 2 * 1000);
                 return;
             }
-            // console.log('checking');
             this.explorer.getHeight().then(function (height) {
-                console.log("Checking on height", height);
                 if (height > self.lastMaximumHeight) {
                     self.lastMaximumHeight = height;
                 }
                 else {
-                    setTimeout(function () {
-                        self.loadHistory();
-                    }, 1000);
-                    return;
+                    if (self.wallet.lastHeight >= self.lastMaximumHeight) {
+                        setTimeout(function () {
+                            self.loadHistory();
+                        }, 1000);
+                        return;
+                    }
                 }
                 // we are only here if the block is actually increased from last processing
                 if (self.lastBlockLoading === -1)
@@ -261,14 +264,14 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                     if (endBlock_1 > self.lastMaximumHeight)
                         endBlock_1 = self.lastMaximumHeight;
                     self.explorer.getTransactionsForBlocks(previousStartBlock_1, endBlock_1, self.wallet.options.checkMinerTx).then(function (transactions) {
-                        console.log("getTransactionsForBlocks", previousStartBlock_1, endBlock_1, transactions);
+                        logDebugMsg("getTransactionsForBlocks", previousStartBlock_1, endBlock_1, transactions);
                         //to ensure no pile explosion
                         if (transactions === 'OK') {
                             self.lastBlockLoading = endBlock_1;
                             self.wallet.lastHeight = endBlock_1;
                             setTimeout(function () {
                                 self.loadHistory();
-                            }, 100);
+                            }, 10);
                         }
                         else if (transactions.length > 0) {
                             var lastTx = transactions[transactions.length - 1];
@@ -279,7 +282,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                                 self.wallet.lastHeight = endBlock_1;
                                 setTimeout(function () {
                                     self.loadHistory();
-                                }, 100);
+                                }, 1);
                             });
                         }
                         else {
@@ -289,8 +292,8 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                                 self.loadHistory();
                             }, 30 * 1000);
                         }
-                    }).catch(function () {
-                        logDebugMsg("Error occured in loadHistory[1]...");
+                    }).catch(function (e) {
+                        logDebugMsg("Error occured in loadHistory...", e.message);
                         setTimeout(function () {
                             self.loadHistory();
                         }, 30 * 1000); //retry 30s later if an error occurred
@@ -301,8 +304,8 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                         self.loadHistory();
                     }, 30 * 1000);
                 }
-            }).catch(function () {
-                logDebugMsg("Error occured in loadHistory[2]...");
+            }).catch(function (e) {
+                logDebugMsg("Error occured in loadHistory...", e.message);
                 setTimeout(function () {
                     self.loadHistory();
                 }, 30 * 1000); //retry 30s later if an error occurred
