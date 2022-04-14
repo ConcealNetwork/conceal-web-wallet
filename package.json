@@ -4,7 +4,7 @@
   "description": "Fully client-side web-wallet for Conceal Network",
   "main": "index.js",
   "dependencies": {
-    "workbox-build": "^3.3.0"
+    "workbox-build": "^6.5.3"
   },
   "devDependencies": {
     "typescript": "^4.6.3"
