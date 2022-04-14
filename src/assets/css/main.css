@@ -1484,3 +1484,11 @@ body {
   font-size: 1.5em;
   padding-right: 1em;
 }
+
+.tx_direction_out {
+  color: #FF0000;
+}
+
+.tx_direction_in {
+  color: #6bc534;
+}
