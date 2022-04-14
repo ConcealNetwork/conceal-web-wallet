@@ -288,6 +288,9 @@ export class Wallet extends Observable{
 		for(let transaction of this.transactions){
 			news.push(Transaction.fromRaw(transaction.export()));
 		}
+    news.sort((a,b) =>{
+       return a.timestamp - b.timestamp;
+    })    
 		return news;
 	}
 
