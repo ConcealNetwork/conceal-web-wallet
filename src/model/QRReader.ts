@@ -84,53 +84,30 @@ class QRReader{
 				});
 		}
 
-		// if (!window.iOS) {
-		navigator.mediaDevices.enumerateDevices()
-			.then(function (devices) {
-				//console.log(devices);
-				let supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
-				//console.log(supportedConstraints);
-				let device = devices.filter(function(device) {
-					let deviceLabel = device.label.split(',')[1];
-					if (device.kind == "videoinput") {
-						return device;
-					}
-				});
+		navigator.mediaDevices.enumerateDevices().then(function (devices) {
+      //console.log(devices);
+      let supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
+      //console.log(supportedConstraints);
+      let device = devices.filter(function(device) {
+        let deviceLabel = device.label.split(',')[1];
+        if (device.kind == "videoinput") {
+          return device;
+        }
+      });
 
-				if (device.length > 1) {
-					let constraints = {
-						facingMode: 'environment',
-						video: {
-							mandatory: {
-								sourceId: device[1].deviceId ? device[1].deviceId : null
-							}
-						},
-						audio: false
-					};
-
-					startCapture(<MediaStreamConstraints>constraints);
-				}
-				else if (device.length) {
-					let constraints = {
-						facingMode: 'environment',
-						video: {
-							mandatory: {
-								sourceId: device[0].deviceId ? device[0].deviceId : null
-							}
-						},
-						audio: false
-					};
-
-					startCapture(<MediaStreamConstraints>constraints);
-				}
-				else {
-					startCapture({video:true});
-				}
-			})
-			.catch(function (error) {
-				showErrorMsg(error);
-			});
-		// }
+      if (device.length) {
+        startCapture({
+          audio: false,
+          video: {
+            facingMode: 'environment'
+          }
+        });
+      } else {
+        startCapture({video:true});
+      }      
+    }).catch(function (error) {
+      showErrorMsg(error);
+    });
 
 		function showErrorMsg(error : string) {
 			if(''+error === 'DOMException: Permission denied'){
