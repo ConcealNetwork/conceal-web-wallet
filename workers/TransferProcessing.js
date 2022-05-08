@@ -16,6 +16,7 @@ define(["require", "exports", "../model/TransactionsExplorer", "../model/Wallet"
         else if (event.type === 'process') {
             logDebugMsg("process new transactions...");
             if (typeof event.wallet !== 'undefined') {
+                logDebugMsg("loading wallet for the first time...");
                 currentWallet = Wallet_1.Wallet.loadFromRaw(event.wallet);
             }
             if (currentWallet === null) {

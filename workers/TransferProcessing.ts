@@ -22,6 +22,7 @@ onmessage = function (data: MessageEvent) {
     logDebugMsg(`process new transactions...`);
 
 		if (typeof event.wallet !== 'undefined') {
+      logDebugMsg(`loading wallet for the first time...`);
 			currentWallet = Wallet.loadFromRaw(event.wallet);
 		}
 

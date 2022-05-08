@@ -71,9 +71,7 @@ define(["require", "exports"], function (require, exports) {
                     showErrorMsg(err);
                 });
             }
-            // if (!window.iOS) {
-            navigator.mediaDevices.enumerateDevices()
-                .then(function (devices) {
+            navigator.mediaDevices.enumerateDevices().then(function (devices) {
                 //console.log(devices);
                 var supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
                 //console.log(supportedConstraints);
@@ -83,38 +81,20 @@ define(["require", "exports"], function (require, exports) {
                         return device;
                     }
                 });
-                if (device.length > 1) {
-                    var constraints = {
-                        facingMode: 'environment',
+                if (device.length) {
+                    startCapture({
+                        audio: false,
                         video: {
-                            mandatory: {
-                                sourceId: device[1].deviceId ? device[1].deviceId : null
-                            }
-                        },
-                        audio: false
-                    };
-                    startCapture(constraints);
-                }
-                else if (device.length) {
-                    var constraints = {
-                        facingMode: 'environment',
-                        video: {
-                            mandatory: {
-                                sourceId: device[0].deviceId ? device[0].deviceId : null
-                            }
-                        },
-                        audio: false
-                    };
-                    startCapture(constraints);
+                            facingMode: 'environment'
+                        }
+                    });
                 }
                 else {
                     startCapture({ video: true });
                 }
-            })
-                .catch(function (error) {
+            }).catch(function (error) {
                 showErrorMsg(error);
             });
-            // }
             function showErrorMsg(error) {
                 if ('' + error === 'DOMException: Permission denied') {
                     swal({

@@ -129,7 +129,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "lib/decoder.min.js",
-    "revision": "67a582366edae346b7aa0fb14be03348"
+    "revision": "d4b1f18a71eb23433107d044eedffaa9"
   },
   {
     "url": "lib/FileSaver.min.js",
@@ -297,7 +297,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/QRReader.js",
-    "revision": "3837640c1cd5257a0a22a577e2b4a93f"
+    "revision": "dad18501e542b58402ce5d54fa7b072b"
   },
   {
     "url": "model/Storage.js",
@@ -325,7 +325,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/WalletWatchdog.js",
-    "revision": "55577634c61d6e16b2f185422e102392"
+    "revision": "d208146cec3e6a4e253d543029f08c4a"
   },
   {
     "url": "pages/account.html",
@@ -549,7 +549,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "workers/TransferProcessing.js",
-    "revision": "4616d5601d1bb8767677f17535faf69f"
+    "revision": "c2da1477e4e08863c03acc07bf257ec5"
   },
   {
     "url": "workers/TransferProcessingEntrypoint.js",

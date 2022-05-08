@@ -61,7 +61,6 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             this.workerProcessing = new Worker('./workers/TransferProcessingEntrypoint.js');
             this.workerProcessing.onmessage = function (data) {
                 var message = data.data;
-                logDebugMsg("InitWorker message", message);
                 if (message === 'ready') {
                     logDebugMsg('worker ready');
                     self.signalWalletUpdate();
@@ -164,7 +163,6 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             //loadHistory getting into a stack overflow ?
             //need to work out timings and ensure process does not reload when it's already running...
             if (this.workerProcessingWorking || !this.workerProcessingReady) {
-                logDebugMsg("checkTransactionsInterval exiting...", this.workerProcessingWorking, this.workerProcessingReady);
                 return;
             }
             //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
@@ -202,7 +200,6 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             for (var _i = 0, transactions_2 = transactions; _i < transactions_2.length; _i++) {
                 var tr = transactions_2[_i];
                 if (typeof tr.height !== 'undefined') {
-                    logDebugMsg("Transaction height...", tr.height, this.wallet.lastHeight);
                     if (tr.height >= this.wallet.lastHeight) {
                         transactionsToAdd.push(tr);
                     }
