@@ -1,7 +1,7 @@
 {
   "website":{
 	"title":"Portefeuille pour Conceal",
-	"description":"Portefeuille en ligne officiel pour la monnaie Conceal, anonyme, sécurisé et entièrement géré dans votre navigateur for une sécurité optimale"
+	"description":"Portefeuille en ligne officiel pour la monnaie Conceal, anonyme, sécurisé et entièrement géré dans votre navigateur pour une sécurité optimale"
   },
   "messages": {
 	"menu": {
@@ -18,13 +18,13 @@
 	},
 	"global": {
 	  "loading": "Chargement",
-	  "disableSecurity":"Désactiver cette sécurité. Je comprend les risques",
+	  "disableSecurity":"Désactiver cette sécurité. Je comprends les risques",
 	  "passwordInvalidRequirements":"Le mot de passe doit avoir au moins 8 caractères, 1 lettre majuscule, 1 mettre minuscule, un chiffre et un caractère spécial",
 	  "passwordConfirmationNotMatching":"Le mot de passe ne correspond pas au premier écrit",
 	  "download":"Télécharger",
 	  "newVersionModal":{
 		"title":"Une nouvelle version est disponible",
-		"content":"Voulez vous recharger pour passer passer sur la nouvelle version ?",
+		"content":"Voulez vous recharger pour passer à la nouvelle version ?",
 		"confirmText":"Oui",
 		"cancelText":"Plus tard"
 	  },
@@ -122,7 +122,7 @@
 	  "title":"Changer mon mot de passe",
 	  "oldPassword":{
 		"label":"Ancien",
-		"invalid":"Mot de passe invalid"
+		"invalid":"Mot de passe invalide"
 	  },
 	  "newPassword":{
 		"label":"Nouveau mot de passe pour sécuriser"
@@ -144,7 +144,7 @@
 	  },
 	  "finalizationStep":{
 		"title":"C'était simple. Votre portefeuille est prêt !",
-		"subtitle":"Soyer près à utiliser Conceal le plus simplement possible",
+		"subtitle":"Soyez près à utiliser Conceal le plus simplement possible",
 		"passwordSelectionBlock":{
 		  "label":"Sécuriser mon portefeuille"
 		},
@@ -162,8 +162,8 @@
 		  "mnemonicPhrase":"Phrase mnémotechnique",
 		  "separatorManualMethodsSolution":" ou ",
 		  "confirmManuallyWritten":"Je les ais écrites",
-		  "warningMessage":"**Ne les perdez pas!** Il est impossible des les récupérer si vous les perdez.<br/>**Ne les paratagez pas!** Vos fonds peuvent être volé si vous utilisez ces informations sur des sites-tiers (malicieux/phishing).<br/>**Faites une sauvegarde!** Sécutisez vos identifiants comme si si vous possédiez des millions de dollars.<br/>",
-		  "finishButton":"Je comprend. Continuer"
+		  "warningMessage":"**Ne les perdez pas!** Il est impossible des les récupérer si vous les perdez.<br/>**Ne les paratagez pas!** Vos fonds peuvent être volés si vous utilisez ces informations sur des sites-tiers (malicieux/phishing).<br/>**Faites une sauvegarde!** Sécutisez vos identifiants comme si vous possédiez des millions de dollars.<br/>",
+		  "finishButton":"Je comprends. Continuer"
 		}
 	  },
 	  "disclaimerBlock":{
@@ -187,7 +187,7 @@
 	  "title":"Support",
 	  "subtitle":"Vous avez besoins d'aide, nous somme la pour aider !",
 	  "getInTouchBlock":{
-		"title":"Reston en contact !",
+		"title":"Restons en contact !",
 		"content":"Si vous rencontrez des problèmes avec votre portefeuille, contactez-nous !",
 		"discord":"Discord Officiel de Conceal"
 	  }
@@ -196,7 +196,7 @@
 	  "subtitle":"Comment restaurer l'accès à votre portefeuille",
 	  "forgotPasswordBlock":{
 		"title":"Si vous avez oublié le mot de passe, il est impossible de le réinitialiser !",
-		"content":"La seule façon de restaurer l'accès à votre portefeuille est de rappeler votre mot de passe ou de supprimer les données du portefeuille de la mémoire de votre navigateur et de restaurer le portefeuille à partir de la sauvegarde (par exemple, une phrase de récupération mnémonique).<br /> Si vous avez des clés de portefeuille ou une phrase de récupération , ci-dessous vous pouvez supprimer votre portefeuille. Ensuite, vous pourrez le restaurer et le synchroniser à partir de zéro.<br/> <strong>Veuillez vous assurer d'avoir une phrase de récupération avant de continuer !!!</strong>"
+		"content":"La seule façon de restaurer l'accès à votre portefeuille est de vous souvenir de votre mot de passe ou de supprimer les données du portefeuille de la mémoire de votre navigateur et de restaurer le portefeuille à partir de la sauvegarde (par exemple, une phrase de récupération mnémonique).<br /> Si vous avez des clés de portefeuille ou une phrase de récupération , ci-dessous vous pouvez supprimer votre portefeuille. Ensuite, vous pourrez le restaurer et le synchroniser à partir de zéro.<br/> <strong>Veuillez vous assurer d'avoir une phrase de récupération avant de continuer !!!</strong>"
 	  }
 	},
 	"networkPage":{
@@ -205,7 +205,7 @@
 	  "statsBlock":{
 		"hashrate":"Hashrate du réseau",
 		"height":"Hauteur de la Blockchain",
-		"difficulty":"Difficulty du réseau",
+		"difficulty":"Difficulté du réseau",
 		"lastTimeBlock":"Dernier block trouvé",
 		"lastReward":"Dernière récompense"
 	  }
@@ -227,7 +227,7 @@
 		},
 		"paymentId":{
 		  "label":"Identifiant du payment (optionnel)",
-		  "invalid":"L'identifiant du paiement est invalid. La longeur doit être de 16 ou 64 caractères"
+		  "invalid":"L'identifiant du paiement est invalide. La longeur doit être de 16 ou 64 caractères"
 		},
 		"mixin":{
 		  "label":"Confidentialité",
@@ -246,7 +246,7 @@
 	  },
 	  "thankYouDonationModal":{
 		"title":"Merci pour votre donation !",
-		"content":"Votre aide est apprécié. <br/>Cette donation contribuera à améliorer Conceal",
+		"content":"Votre aide est appréciée. <br/>Cette donation contribuera à améliorer Conceal",
 		"confirmText":"Fermer"
 	  },
 	  "transferSentModal":{
@@ -255,7 +255,7 @@
 	  },
 	  "transferExceptionModal":{
 		"title":"Oups...",
-		"content":"Une erreur est survenue. Merci de nous envoyer de rapport: {details}",
+		"content":"Une erreur est survenue. Merci de nous envoyer le rapport: {details}",
 		"confirmText":"Fermer"
 	  },
 	  "invalidAmountModal":{
@@ -311,7 +311,7 @@
 	},
 	"miningPage":{
 	  "title":"Miner directement depuis votre navigateur",
-	  "subtitle":"Supportez lé réseau en minant et en améliorant la stabilité du réseau tout en étant réponsé en CCX",
+	  "subtitle":"Supportez lé réseau en minant et en améliorant la stabilité du réseau tout en étant récompensé en CCX",
 	  "parameterBlock":{
 		"title":"Paramètres",
 		"labelDestinationAddress":"Portefeuille de destination",
@@ -337,7 +337,7 @@
 	  },
 	  "settingsBlock":{
 		"speed":{
-		  "label":"Vitesse d'actualisation du portefeuille (will consume more energy)",
+		  "label":"Vitesse d'actualisation du portefeuille (cela va consommer plus d'énergie)",
 		  "fastest":"Le plus vite",
 		  "fast":"Rapide",
 		  "medium":"Normal",
@@ -402,7 +402,7 @@
 	  }
 	},
 	"exportPage":{
-	  "title":"Sauvegarder de vos identifiants",
+	  "title":"Sauvegarde de vos identifiants",
 	  "publicAddressBlock":{
 		"title":"Votre adresse publique"
 	  },
@@ -412,21 +412,21 @@
 	  },
 	  "warningBlock":{
 		"title":"Attention",
-		"content":"Si vous choisissez de sauvegarder vos cléfs privées ou la phrase mnémotechnique, NE LE ECRIVEZ PAS dans un endroit non sécurisé (chiffré) ceci pour votre propre sécurité.<br/>Le fichier est une solution alternative où les identifiants sont chiffrés et contient également une sauvegarde de l'historique de vos transactions"
+		"content":"Si vous choisissez de sauvegarder vos clefs privées ou la phrase mnémotechnique, NE LES ECRIVEZ PAS dans un endroit non sécurisé (chiffré) ceci pour votre propre sécurité.<br/>Le fichier est une solution alternative où les identifiants sont chiffrés et contient également une sauvegarde de l'historique de vos transactions"
 	  },
 	  "exportBlock":{
 		"title":"Exporter vos identifiants (non chiffrés)",
-		"privateKeysButton":"Obtenir mes cléfs privées",
+		"privateKeysButton":"Obtenir mes clefs privées",
 		"mnemonicKeysButton":"Obtenir ma phrase mnémotechnique",
-		"fileButton":"Exporter ver un fichier"
+		"fileButton":"Exporter vers un fichier"
 	  },
 	  "walletKeysModal":{
 		"title":"Cléfs privées",
 		"confirmText":"OK",
-		"content":"Merci de stocker soigneusement ces cléfs. <b>Les posséder signifie posséder les fonds associé</b> !<br/>Clé privée de dépense: {privSpendKey}<br/>Clé privée de visualisation: {privViewKey}"
+		"content":"Merci de stocker soigneusement ces clefs. <b>Les posséder signifie posséder les fonds associés</b> !<br/>Clef privée de dépense: {privSpendKey}<br/>Clef privée de visualisation: {privViewKey}"
 	  },
 	  "mnemonicKeyModal":{
-		"title":"Clé privée",
+		"title":"Clef privée",
 		"confirmText":"OK",
 		"content":"Merci de stocker soigneusement cette phrase mnémotechnique. <b>La posséder signifie posséder les fonds associé</b> ! La phrase est :<br/>{mnemonic}"
 	  },
@@ -437,9 +437,9 @@
 	},
 	"importPage":{
 	  "title":"Créer un portefeuille",
-	  "subtitle":"Depuis des cléfs, une fichier ou une phrase mnémotechnique",
-	  "chooseMethod":"Choisissez votre méthode d'import",
-	  "fromKeys":"Depuis des cléfs privées",
+	  "subtitle":"Depuis des clefs, un fichier ou une phrase mnémotechnique",
+	  "chooseMethod":"Choisissez votre méthode d'importation",
+	  "fromKeys":"Depuis des clefs privées",
 	  "fromFile":"Depuis un fichier",
 	  "fromMnemonic":"Depuis une phrase mnémotechnique",
 	  "fromQr":"Depuis un QR code"
@@ -454,7 +454,7 @@
 	},
 	"importFromFilePage":{
 	  "title":"Importer un portefeuille depuis un fichier",
-	  "subtitle":"Utilisez votre sauvegarder pour récréer le portefeuille",
+	  "subtitle":"Utilisez votre sauvegarde pour récréer le portefeuille",
 	  "walletBlock":{
 		"title":"Fichier du portefeuille",
 		"label":"Sélectionner",
@@ -475,25 +475,25 @@
 	  }
 	},
 	"importFromKeysPage":{
-	  "title":"Importer un portefeuille depuis des cléfs",
-	  "subtitle":"Utilisez vos cléfs pour créer un portefeuille",
+	  "title":"Importer un portefeuille depuis des clefs",
+	  "subtitle":"Utilisez vos clefs pour créer un portefeuille",
 	  "parametersBlock":{
 		"viewOnlyWallet":{
 		  "label":"Voulez vous faire un portefeuille uniquement pour visualiser les fonds"
 		}
 	  },
 	  "keysBlock":{
-		"titleNotViewOnly":"Cléfs privées",
-		"titleViewOnly":"Cléfs de visualisation uniquement",
+		"titleNotViewOnly":"Clefs privées",
+		"titleViewOnly":"Clefs de visualisation uniquement",
 		"privateSpend":{
-		  "label":"Cléf privée de dépense"
+		  "label":"Clef privée de dépense"
 		},
 		"privateView":{
-		  "label":"Cléf privée de visualisation",
+		  "label":"Clef privée de visualisation",
 		  "optional":"(optionnel)"
 		},
 		"publicKey":{
-		  "label":"Cléf publique"
+		  "label":"Clef publique"
 		},
 		"importButton":"Importer"
 	  }
