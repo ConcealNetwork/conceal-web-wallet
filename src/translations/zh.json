@@ -72,24 +72,24 @@
         "create": "创建",
         "createWallet": "创建一个钱包"
       },
-	  "notes": {
-		"secure": {
-		  "title": "稳当",
-		  "description": "没有服务器，完全加密！"
-		},
-		"fast": {
-		  "title": "无障碍",
-		  "description": "基于浏览器！"
-		},
-		"technology": {
-		  "title": "客户端",
-		  "description": "钥匙在您的设备上"
-		},
-		"openSource": {
-		  "title": "开源",
-		  "description": "托管在 Github 上！"
-		}
-	  }
+      "notes": {
+        "secure": {
+          "title": "稳当",
+          "description": "没有服务器，完全加密！"
+        },
+        "fast": {
+          "title": "无障碍",
+          "description": "基于浏览器！"
+        },
+        "technology": {
+          "title": "客户端",
+          "description": "钥匙在您的设备上"
+        },
+        "openSource": {
+          "title": "开源",
+          "description": "托管在 Github 上！"
+        }
+      }
     },
     "accountPage": {
       "title": "帐户",
@@ -99,6 +99,8 @@
       },
       "balanceBlock": {
         "title": "您的余额",
+        "total": "Total",
+        "pending": "Pending",
         "unlocked": "解锁"
       },
       "historyBlock": {
@@ -194,11 +196,11 @@
         "discord": "卡博币 Discord频道"
       }
     },
-    "forgotPasswordPage":{
-      "subtitle":"如何恢复对钱包的访问",
-      "forgotPasswordBlock":{
-      "title":"如果您忘记了密码，将无法重新设置！",
-      "content":"恢复对钱包的访问的唯一方法是调用您的密码或从浏览器内存中删除钱包数据并从备份中恢复钱包（例如助记词恢复短语）。<br />如果您有钱包密钥或恢复短语 ，下面你可以删除你的钱包。 然后您就可以恢复它并从头开始同步。<br/> <strong>请在继续之前确保您有一个恢复短语！</strong> "
+    "forgotPasswordPage": {
+      "subtitle": "如何恢复对钱包的访问",
+      "forgotPasswordBlock": {
+        "title": "如果您忘记了密码，将无法重新设置！",
+        "content": "恢复对钱包的访问的唯一方法是调用您的密码或从浏览器内存中删除钱包数据并从备份中恢复钱包（例如助记词恢复短语）。<br />如果您有钱包密钥或恢复短语 ，下面你可以删除你的钱包。 然后您就可以恢复它并从头开始同步。<br/> <strong>请在继续之前确保您有一个恢复短语！</strong> "
       }
     },
     "networkPage": {
@@ -232,9 +234,9 @@
           "label": "付款ID（可选）",
           "invalid": "非法的付款ID. 长度必须是64位。"
         },
-        "mixin":{
-          "label":"隐私",
-          "invalid":"mixin 无效，应为 3 到 10 或零"
+        "mixin": {
+          "label": "隐私",
+          "invalid": "mixin 无效，应为 3 到 10 或零"
         },
         "sendButton": "发送",
         "cancelButton": "取消"
@@ -355,11 +357,11 @@
         "readMinerTx": {
           "label": "读取挖矿交易信息（仅适用于Solo挖矿）"
         },
-        "customNode":{
-          "label":"Use custom node"
+        "customNode": {
+          "label": "Use custom node"
         },
-        "nodeUrl":{
-          "label":"Node URL"
+        "nodeUrl": {
+          "label": "Node URL"
         }
       },
       "changePasswordButton": "更改我的钱包密码",

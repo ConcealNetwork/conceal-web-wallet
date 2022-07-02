@@ -1,513 +1,521 @@
 {
-  "website":{
-	"title":"Portefeuille pour Conceal",
-	"description":"Portefeuille en ligne officiel pour la monnaie Conceal, anonyme, sécurisé et entièrement géré dans votre navigateur for une sécurité optimale"
+  "website": {
+    "title": "Portefeuille pour Conceal",
+    "description": "Portefeuille en ligne officiel pour la monnaie Conceal, anonyme, sécurisé et entièrement géré dans votre navigateur for une sécurité optimale"
   },
   "messages": {
-	"menu": {
-	  "home": "Accueil",
-	  "account": "Compte",
-	  "send": "Envoyer",
-	  "receive": "Recevoir",
-	  "export": "Exporter",
-	  "donate": "Contribuer",
-	  "settings": "Paramètres",
-	  "disconnect": "Déconnection",
-	  "network": "Stats du réseau",
-	  "mining": "Minage"
-	},
-	"global": {
-	  "loading": "Chargement",
-	  "disableSecurity":"Désactiver cette sécurité. Je comprend les risques",
-	  "passwordInvalidRequirements":"Le mot de passe doit avoir au moins 8 caractères, 1 lettre majuscule, 1 mettre minuscule, un chiffre et un caractère spécial",
-	  "passwordConfirmationNotMatching":"Le mot de passe ne correspond pas au premier écrit",
-	  "download":"Télécharger",
-	  "newVersionModal":{
-		"title":"Une nouvelle version est disponible",
-		"content":"Voulez vous recharger pour passer passer sur la nouvelle version ?",
-		"confirmText":"Oui",
-		"cancelText":"Plus tard"
-	  },
-	  "openWalletModal":{
-		"title":"Mot de passe",
-		"confirmText":"Ouvrir",
-		"cancelText":"Annuler",
-		"forgotPassword": "Mot de passe oublié?"
-	  },
-	  "invalidPasswordModal":{
-		"title":"Oups...",
-		"content":"Votre mot de passe semble invalide",
-		"confirmText":"OK"
-	  },
-	  "invalidMnemonicModal":{
-		"title":"Oups...",
-		"content":"La phrase mnémotechnique est invalide",
-		"confirmText":"OK"
-	  },
-	  "passwordNotComplexEnoughModal":{
-		"title":"Le mot de passe n'est pas assez complexe",
-		"confirmText":"OK"
-	  },
-	  "permissionRequiredForCameraModal":{
-		"title":"Oups...",
-		"content":"Il est nécessaire de donner l'accès à la caméra afin de pouvoir scanner le QR Code",
-		"confirmText":"OK"
-	  }
-	},
-	"bottom": {
-	  "termsOfUse": "Conditions générales d'utilisation",
-	  "privacyPolicy": "Politique de confidentialité",
-	  "support": "Support",
-	  "donate": "Contribuer",
-	  "network": "Stats du réseau",
-	  "miningPool": "Pool de minage",
-	  "github": "GitHub"
-	},
-	"homepage": {
-	  "mainTitle": "Bienvenue dans Portefeuille pour Conceal",
-	  "tagLine": "Le moyen le plus simple d'utiliser Conceal, n'importe où, n'importe quand",
-	  "actions": {
-		"loadWallet": "Charger mon portefeuille",
-		"importWallet": "Importer un portefeuille",
-		"create": "Créer",
-		"createWallet": "Créer un portefeuille"
-	  },
-	  "notes": {
-		"secure": {
-		  "title": "Sécurisé",
-		  "description": "Entièrement chiffré!"
-		},
-		"fast": {
-		  "title": "Accessible",
-		  "description": "Basé sur un navigateur!"
-		},
-		"technology": {
-		  "title": "Côté client",
-		  "description": "Les clés de votre appareil!"
-		},
-		"openSource": {
-		  "title": "Open source",
-		  "description": "Hébergé sur Github!"
-		}
-	  }
-	},
-	"accountPage": {
-	  "title": "Mon compte",
-	  "subtitle": "Apperçu de votre compte et de l'historique des transactions",
-	  "synchronizingBlock": {
-		"text": "Synchronisation en cours "
-	  },
-	  "balanceBlock": {
-		"title": "Votre solde",
-		"unlocked": "Disponible"
-	  },
-	  "historyBlock": {
-		"title": "Historique des transactions",
-		"pendingTxStatus": "En attente",
-		"emptyWallet": "Vous n'avez aucun fond sur ce portefeuille",
-		"waitSync": "Veuillez attendre la fin de la synchronisation",
-		"beReallyPatient": "La première synchronisation peut prendre quelques minutes...",
-		"getCoinAddress": "Obtenir mon adresse pour recevoir des CCX"
-	  },
-	  "txDetails":{
-		"title":"Détails de la transaction",
-		"txHash":"Tx hash",
-		"feesOnTx":"Frais sur la tx",
-		"blockHeight":"Hauteur sur la blockchain",
-		"paymentId":"ID du paiement",
-        "txPrivKey":"Clé privée de transaction"
-	  }
-	},
-	"changeWalletPasswordPage":{
-	  "title":"Changer mon mot de passe",
-	  "oldPassword":{
-		"label":"Ancien",
-		"invalid":"Mot de passe invalid"
-	  },
-	  "newPassword":{
-		"label":"Nouveau mot de passe pour sécuriser"
-	  },
-	  "newPasswordConfirm":{
-		"label":"Confirmer mon nouveau mot de passe"
-	  },
-	  "confirm":"Changer",
-	  "modalSuccess":{
-		"title":"Mot de passe changé !",
-		"confirmText":"OK"
-	  }
-	},
-	"createWalletPage":{
-	  "generatingStep":{
-		"title":"Votre portefeuille se génère ...",
-		"subtitle":"Plus que quelques instants",
-		"waitingMessage":"Génération du portefeuille ..."
-	  },
-	  "finalizationStep":{
-		"title":"C'était simple. Votre portefeuille est prêt !",
-		"subtitle":"Soyer près à utiliser Conceal le plus simplement possible",
-		"passwordSelectionBlock":{
-		  "label":"Sécuriser mon portefeuille"
-		},
-		"passwordConfirmBlock":{
-		  "label":"Confirmer le mot de passe"
-		},
-		"validPassword":"Utiliser ce mot de passe",
-		"backupBlock":{
-		  "title":"Télécharger une copie chiffrée de mes identifiants pour un futur usage",
-		  "option1": "Option 1: ",
-		  "option2": "Option 2: ",
-		  "titlePdf":"Télécharger une copie PDF",
-		  "titleManualWrite":"Ecrire mes cléfs d'accès",
-		  "privateKeys":"Cléfs privées",
-		  "mnemonicPhrase":"Phrase mnémotechnique",
-		  "separatorManualMethodsSolution":" ou ",
-		  "confirmManuallyWritten":"Je les ais écrites",
-		  "warningMessage":"**Ne les perdez pas!** Il est impossible des les récupérer si vous les perdez.<br/>**Ne les paratagez pas!** Vos fonds peuvent être volé si vous utilisez ces informations sur des sites-tiers (malicieux/phishing).<br/>**Faites une sauvegarde!** Sécutisez vos identifiants comme si si vous possédiez des millions de dollars.<br/>",
-		  "finishButton":"Je comprend. Continuer"
-		}
-	  },
-	  "disclaimerBlock":{
-		"title":"Risques liés à l'utilisation de ConcealWallet",
-		"content":"ConcealWallet est un service web. Il vous aide à utiliser Conceal facilement sans avoir un installer des logiciels. <br/>Nous vous conseillons de traiter ce site comme vous traiteriez votre portefeuille."
-	  }
-	},
-	"donatePage":{
-	  "title":"Contribuer",
-	  "subtitle":"Aidez à financer le développement et payer les factures de ce service",
-	  "webwalletBlock":{
-		"title":"Portefeuille en ligne",
-		"content":"Ce portefeuille est développé par Gnock sur son temps libre.<br/>Si vous voulez aider au développement, payer les serveur et que vous aimez ce service, considérez une petite donation: <br/><br/>"
-	  },
-	  "devFundBlock":{
-		"title":"Fond de développement de Conceal",
-		"content":"Pour aidez Conceal globalement, vous pouvez donner à cette adresse"
-	  }
-	},
-	"supportPage":{
-	  "title":"Support",
-	  "subtitle":"Vous avez besoins d'aide, nous somme la pour aider !",
-	  "getInTouchBlock":{
-		"title":"Reston en contact !",
-		"content":"Si vous rencontrez des problèmes avec votre portefeuille, contactez-nous !",
-		"discord":"Discord Officiel de Conceal"
-	  }
-	},
-	"forgotPasswordPage":{
-	  "subtitle":"Comment restaurer l'accès à votre portefeuille",
-	  "forgotPasswordBlock":{
-		"title":"Si vous avez oublié le mot de passe, il est impossible de le réinitialiser !",
-		"content":"La seule façon de restaurer l'accès à votre portefeuille est de rappeler votre mot de passe ou de supprimer les données du portefeuille de la mémoire de votre navigateur et de restaurer le portefeuille à partir de la sauvegarde (par exemple, une phrase de récupération mnémonique).<br /> Si vous avez des clés de portefeuille ou une phrase de récupération , ci-dessous vous pouvez supprimer votre portefeuille. Ensuite, vous pourrez le restaurer et le synchroniser à partir de zéro.<br/> <strong>Veuillez vous assurer d'avoir une phrase de récupération avant de continuer !!!</strong>"
-	  }
-	},
-	"networkPage":{
-	  "title":"Statistiques du réseau",
-	  "subtitle":"Détails sur le réseaux Conceal",
-	  "statsBlock":{
-		"hashrate":"Hashrate du réseau",
-		"height":"Hauteur de la Blockchain",
-		"difficulty":"Difficulty du réseau",
-		"lastTimeBlock":"Dernier block trouvé",
-		"lastReward":"Dernière récompense"
-	  }
-	},
-	"sendPage":{
-	  "title":"Envoyer des CCX",
-	  "sendBlock":{
-		"address":{
-		  "label":"Adresse de destination",
-		  "placeholder":"Écrivez l'adresse où vous voulez envoyer des fonds",
-		  "invalid":"L'adresse de destination est invalide",
-		  "fundsTo":"Les fonds seront envoyé à ",
-		  "receiver":"Destinataire",
-		  "description":"Description"
-		},
-		"amount":{
-		  "label":"Montant à envoyer",
-		  "invalid":"Le montant est invalide"
-		},
-		"paymentId":{
-		  "label":"Identifiant du payment (optionnel)",
-		  "invalid":"L'identifiant du paiement est invalid. La longeur doit être de 16 ou 64 caractères"
-		},
-		"mixin":{
-		  "label":"Confidentialité",
-		  "invalid":"Le mixin est invalide, doit être compris entre 3 et 10 ou zéro"
-		},
-		"sendButton":"Envoyer",
-		"cancelButton":"Annuler"
-	  },
-	  "qrCodeScanning":{
-		"explication":"Présentez le QR Code"
-	  },
-	  "notEnoughMoneyModal":{
-		"title":"Oups...",
-		"content":"Vous n'avez pas assez de fonds pour effectuer ce tranfert",
-		"confirmText":"OK"
-	  },
-	  "thankYouDonationModal":{
-		"title":"Merci pour votre donation !",
-		"content":"Votre aide est apprécié. <br/>Cette donation contribuera à améliorer Conceal",
-		"confirmText":"Fermer"
-	  },
-	  "transferSentModal":{
-		"title":"Transfert envoyé avec succès!",
-		"confirmText":"Fermer"
-	  },
-	  "transferExceptionModal":{
-		"title":"Oups...",
-		"content":"Une erreur est survenue. Merci de nous envoyer de rapport: {details}",
-		"confirmText":"Fermer"
-	  },
-	  "invalidAmountModal":{
-		"title":"Oups...",
-		"content":"Montant invalide",
-		"confirmText":"Fermer"
-	  },
-	  "creatingTransferModal":{
-		"title":"Création du transfert ...",
-		"content":"Veuillez patienter ..."
-	  },
-	  "finalizingTransferModal":{
-		"title":"Finalisation du transfert ...",
-		"content":"Veuillez patienter ..."
-	  },
-	  "confirmTransactionModal":{
-		"title":"Confirmer le transfert ?",
-		"content":"Montant: {amount}<br/>Frais: {fees}<br/>Total: {total}",
-		"confirmText":"Confirmer",
-		"cancelText":"Annuler"
-	  },
-	  "waitingNfcModal":{
-		"title":"Attente du Nfc",
-		"content":"Veuillez rapprocher votre téléphone de l'autre appareil"
-	  }
-	},
-	"receivePage":{
-	  "title":"Recevoir des CCX",
-	  "receiveBlock":{
-		"address":{
-		  "title":"Votre adresse pour recevoir des fonds",
-		  "label":"Donner cette adresse pour recevoir des fonds"
-		},
-		"qrCode":{
-		  "title":"Ou personnalisez ce QR Code",
-		  "labelAmount":"Montant (optionnel)",
-		  "labelRecipient":"Nom du destinataire (optionnel)",
-		  "labelDescription":"Description (optionnel)",
-		  "updateButton":"Mettre à jour"
-		}
-	  },
-	  "qrBlock":{
-		"title":"Votre QR code customisé"
-	  },
-	  "waitingNfcToWriteModal":{
-		"title":"Waiting Nfc",
-		"titleSuccess":"Nfc Tag written",
-		"content":"Bring closer the NFC tag to write"
-	  },
-	  "nfcErrorModal":{
-		"titleInsufficientCapacity":"Tag capacity insufficient"
-	  }
-	},
-	"miningPage":{
-	  "title":"Miner directement depuis votre navigateur",
-	  "subtitle":"Supportez lé réseau en minant et en améliorant la stabilité du réseau tout en étant réponsé en CCX",
-	  "parameterBlock":{
-		"title":"Paramètres",
-		"labelDestinationAddress":"Portefeuille de destination",
-		"labelThreads":"Nombre de threads (plus = plus de hashrate)",
-		"start":"Commençer",
-		"stop":"Arrêter"
-	  },
-	  "statisticsBlocks":{
-		"title":"Statistiques",
-		"validShares":"Partages valides",
-		"hashrate":"HashRate",
-		"maxHashrate":"HashRate max",
-		"dedicatedHardware":"Avec un logiciel spécifique pour le minage, vous pourriez obtenir entre 2 et 3 fois plus de hashrate.<br/>Cela vous permettrait également de miner avec votre carte graphique (si vous en avez une).",
-		"miningHandledBy":"Le minage est géré par la pool Conceal.Network"
-	  }
-	},
-	"settingsPage":{
-	  "title":"Paramètres",
-	  "subtitle":"Changez vos paramètres ici",
-	  "versionBlock":{
-		"versionNumber":"Numéro de version: ",
-		"versionCode":"Code de la version: "
-	  },
-	  "settingsBlock":{
-		"speed":{
-		  "label":"Vitesse d'actualisation du portefeuille (will consume more energy)",
-		  "fastest":"Le plus vite",
-		  "fast":"Rapide",
-		  "medium":"Normal",
-		  "slow":"Lent"
-		},
-		"language":{
-		  "label":"Language"
-		},
-		"readMinerTx":{
-		  "label":"Lire les transactions de minage (uniquement pour les personnes faisant du solo-minage)"
-		},
-		  "customNode":{
-			  "label":"Use custom node"
-		  },
-		  "nodeUrl":{
-			  "label":"Node URL"
-		  }
-	  },
-	  "changePasswordButton":"Changer le mot de passe de mon portefeuille",
-	  "deleteWalletButton":"Supprimer mon portefeuille (copie locale)",
-	  "walletSettings":{
-		"creationHeight":{
-		  "label":"Hauteur à laquelle le portefeuille a été créé"
-		},
-		"currentScanningHeight": {
-		  "label": "Hauteur actuelle de scan de la blockchain"
-		},
-		"updateButton":"Mettre à jour"
-	  },
-	  "deleteWalletModal":{
-		"title":"Supprimer mon portefeuille (copie locale)",
-		"content":"Etes vous VRAIMENT sûr de vouloir supprimer votre portefeuille ?",
-		"confirmText":"Oui je suis sûr",
-		"cancelText":"Annuler"
-	  }
-	},
-	"importBasePage":{
-	  "parametersBlock":{
-		"title":"Paramètres",
-		"password":{
-		  "label":"Mot de passe pour protéger le portefeuille"
-		},
-		"passwordConfirm":{
-		  "label":"Confirmer le mot de passe",
-		  "invalid":"Le mot de passe ne correspond pas au premier entré"
-		},
-		"importHeight":{
-		  "label":"Hauteur de création du wallet"
-		}
-	  }
-	},
-	"importFromQrPage":{
-	  "title":"Importer depuis un QR code",
-	  "subtitle":"Importation depuis une sauvegarder hors ligne",
-	  "qrCodeBlock":{
-		"title":"QR code",
-		"startScanButton":"Commençer le scan",
-		"importButton":"Importer"
-	  },
-	  "qrScanningBlock":{
-		"title":"Présentez le QR code"
-	  }
-	},
-	"exportPage":{
-	  "title":"Sauvegarder de vos identifiants",
-	  "publicAddressBlock":{
-		"title":"Votre adresse publique"
-	  },
-	  "pdfBlock":{
-		"title":"Sauvegarde en Pdf",
-		"downloadButton":"Télécharger"
-	  },
-	  "warningBlock":{
-		"title":"Attention",
-		"content":"Si vous choisissez de sauvegarder vos cléfs privées ou la phrase mnémotechnique, NE LE ECRIVEZ PAS dans un endroit non sécurisé (chiffré) ceci pour votre propre sécurité.<br/>Le fichier est une solution alternative où les identifiants sont chiffrés et contient également une sauvegarde de l'historique de vos transactions"
-	  },
-	  "exportBlock":{
-		"title":"Exporter vos identifiants (non chiffrés)",
-		"privateKeysButton":"Obtenir mes cléfs privées",
-		"mnemonicKeysButton":"Obtenir ma phrase mnémotechnique",
-		"fileButton":"Exporter ver un fichier"
-	  },
-	  "walletKeysModal":{
-		"title":"Cléfs privées",
-		"confirmText":"OK",
-		"content":"Merci de stocker soigneusement ces cléfs. <b>Les posséder signifie posséder les fonds associé</b> !<br/>Clé privée de dépense: {privSpendKey}<br/>Clé privée de visualisation: {privViewKey}"
-	  },
-	  "mnemonicKeyModal":{
-		"title":"Clé privée",
-		"confirmText":"OK",
-		"content":"Merci de stocker soigneusement cette phrase mnémotechnique. <b>La posséder signifie posséder les fonds associé</b> ! La phrase est :<br/>{mnemonic}"
-	  },
-	  "mnemonicLangSelectionModal":{
-		"title":"Dans quelle langue souhaitez vous exporter la phrase mnémotechnique ?",
-		"confirmText":"Exporter"
-	  }
-	},
-	"importPage":{
-	  "title":"Créer un portefeuille",
-	  "subtitle":"Depuis des cléfs, une fichier ou une phrase mnémotechnique",
-	  "chooseMethod":"Choisissez votre méthode d'import",
-	  "fromKeys":"Depuis des cléfs privées",
-	  "fromFile":"Depuis un fichier",
-	  "fromMnemonic":"Depuis une phrase mnémotechnique",
-	  "fromQr":"Depuis un QR code"
-	},
-	"termsOfUsePage":{
-	  "title":"Conditions d'utilisations",
-	  "subtitle":"Merci de les lire et d'y préter attention"
-	},
-	"privacyPolicyPage":{
-	  "title":"Privacy Policy",
-	  "subtitle":"Merci de les lire et d'y préter attention"
-	},
-	"importFromFilePage":{
-	  "title":"Importer un portefeuille depuis un fichier",
-	  "subtitle":"Utilisez votre sauvegarder pour récréer le portefeuille",
-	  "walletBlock":{
-		"title":"Fichier du portefeuille",
-		"label":"Sélectionner",
-		"importButton":"Importer"
-	  }
-	},
-	"importFromMnemonicPage":{
-	  "title":"Importer un portefeuille depuis une phrase mnémotechnique",
-	  "subtitle":"Utiliser la phrase pour créer un portefeuille",
-	  "mnemonicBlock":{
-		"title":"Phrase mnémotechnique",
-		"mnemonic":{
-		  "label":"Phrase mnémotechnique : 25 mots",
-		  "invalid":"la phrase mnémotechnique est invalide",
-		  "language":"Langue"
-		},
-		"importButton":"Importer"
-	  }
-	},
-	"importFromKeysPage":{
-	  "title":"Importer un portefeuille depuis des cléfs",
-	  "subtitle":"Utilisez vos cléfs pour créer un portefeuille",
-	  "parametersBlock":{
-		"viewOnlyWallet":{
-		  "label":"Voulez vous faire un portefeuille uniquement pour visualiser les fonds"
-		}
-	  },
-	  "keysBlock":{
-		"titleNotViewOnly":"Cléfs privées",
-		"titleViewOnly":"Cléfs de visualisation uniquement",
-		"privateSpend":{
-		  "label":"Cléf privée de dépense"
-		},
-		"privateView":{
-		  "label":"Cléf privée de visualisation",
-		  "optional":"(optionnel)"
-		},
-		"publicKey":{
-		  "label":"Cléf publique"
-		},
-		"importButton":"Importer"
-	  }
-	}
+    "menu": {
+      "home": "Accueil",
+      "account": "Compte",
+      "send": "Envoyer",
+      "receive": "Recevoir",
+      "export": "Exporter",
+      "donate": "Contribuer",
+      "settings": "Paramètres",
+      "disconnect": "Déconnection",
+      "network": "Stats du réseau",
+      "mining": "Minage"
+    },
+    "global": {
+      "loading": "Chargement",
+      "disableSecurity": "Désactiver cette sécurité. Je comprend les risques",
+      "passwordInvalidRequirements": "Le mot de passe doit avoir au moins 8 caractères, 1 lettre majuscule, 1 mettre minuscule, un chiffre et un caractère spécial",
+      "passwordConfirmationNotMatching": "Le mot de passe ne correspond pas au premier écrit",
+      "download": "Télécharger",
+      "newVersionModal": {
+        "title": "Une nouvelle version est disponible",
+        "content": "Voulez vous recharger pour passer passer sur la nouvelle version ?",
+        "confirmText": "Oui",
+        "cancelText": "Plus tard"
+      },
+      "openWalletModal": {
+        "title": "Mot de passe",
+        "confirmText": "Ouvrir",
+        "cancelText": "Annuler",
+        "forgotPassword": "Mot de passe oublié?"
+      },
+      "invalidPasswordModal": {
+        "title": "Oups...",
+        "content": "Votre mot de passe semble invalide",
+        "confirmText": "OK"
+      },
+      "invalidMnemonicModal": {
+        "title": "Oups...",
+        "content": "La phrase mnémotechnique est invalide",
+        "confirmText": "OK"
+      },
+      "passwordNotComplexEnoughModal": {
+        "title": "Le mot de passe n'est pas assez complexe",
+        "confirmText": "OK"
+      },
+      "permissionRequiredForCameraModal": {
+        "title": "Oups...",
+        "content": "Il est nécessaire de donner l'accès à la caméra afin de pouvoir scanner le QR Code",
+        "confirmText": "OK"
+      }
+    },
+    "bottom": {
+      "termsOfUse": "Conditions générales d'utilisation",
+      "privacyPolicy": "Politique de confidentialité",
+      "support": "Support",
+      "donate": "Contribuer",
+      "network": "Stats du réseau",
+      "miningPool": "Pool de minage",
+      "github": "GitHub"
+    },
+    "homepage": {
+      "mainTitle": "Bienvenue dans Portefeuille pour Conceal",
+      "tagLine": "Le moyen le plus simple d'utiliser Conceal, n'importe où, n'importe quand",
+      "actions": {
+        "loadWallet": "Charger mon portefeuille",
+        "importWallet": "Importer un portefeuille",
+        "create": "Créer",
+        "createWallet": "Créer un portefeuille"
+      },
+      "notes": {
+        "secure": {
+          "title": "Sécurisé",
+          "description": "Entièrement chiffré!"
+        },
+        "fast": {
+          "title": "Accessible",
+          "description": "Basé sur un navigateur!"
+        },
+        "technology": {
+          "title": "Côté client",
+          "description": "Les clés de votre appareil!"
+        },
+        "openSource": {
+          "title": "Open source",
+          "description": "Hébergé sur Github!"
+        }
+      }
+    },
+    "accountPage": {
+      "title": "Mon compte",
+      "subtitle": "Apperçu de votre compte et de l'historique des transactions",
+      "synchronizingBlock": {
+        "text": "Synchronisation en cours "
+      },
+      "balanceBlock": {
+        "title": "Votre solde",
+        "total": "Total",
+        "pending": "Pending",
+        "unlocked": "Disponible"
+      },
+      "historyBlock": {
+        "title": "Historique des transactions",
+        "pendingTxStatus": "En attente",
+        "emptyWallet": "Vous n'avez aucun fond sur ce portefeuille",
+        "waitSync": "Veuillez attendre la fin de la synchronisation",
+        "beReallyPatient": "La première synchronisation peut prendre quelques minutes...",
+        "getCoinAddress": "Obtenir mon adresse pour recevoir des CCX"
+      },
+      "txDetails": {
+        "title": "Détails de la transaction",
+        "txHash": "Tx hash",
+        "feesOnTx": "Frais sur la tx",
+        "blockHeight": "Hauteur sur la blockchain",
+        "paymentId": "ID du paiement",
+        "txPrivKey": "Clé privée de transaction"
+      }
+    },
+    "changeWalletPasswordPage": {
+      "title": "Changer mon mot de passe",
+      "oldPassword": {
+        "label": "Ancien",
+        "invalid": "Mot de passe invalid"
+      },
+      "newPassword": {
+        "label": "Nouveau mot de passe pour sécuriser"
+      },
+      "newPasswordConfirm": {
+        "label": "Confirmer mon nouveau mot de passe"
+      },
+      "confirm": "Changer",
+      "modalSuccess": {
+        "title": "Mot de passe changé !",
+        "confirmText": "OK"
+      }
+    },
+    "createWalletPage": {
+      "generatingStep": {
+        "title": "Votre portefeuille se génère ...",
+        "subtitle": "Plus que quelques instants",
+        "waitingMessage": "Génération du portefeuille ..."
+      },
+      "finalizationStep": {
+        "title": "C'était simple. Votre portefeuille est prêt !",
+        "subtitle": "Soyer près à utiliser Conceal le plus simplement possible",
+        "passwordSelectionBlock": {
+          "label": "Sécuriser mon portefeuille"
+        },
+        "passwordConfirmBlock": {
+          "label": "Confirmer le mot de passe"
+        },
+        "validPassword": "Utiliser ce mot de passe",
+        "backupBlock": {
+          "title": "Télécharger une copie chiffrée de mes identifiants pour un futur usage",
+          "option1": "Option 1: ",
+          "option2": "Option 2: ",
+          "titlePdf": "Télécharger une copie PDF",
+          "titleManualWrite": "Ecrire mes cléfs d'accès",
+          "privateKeys": "Cléfs privées",
+          "mnemonicPhrase": "Phrase mnémotechnique",
+          "separatorManualMethodsSolution": " ou ",
+          "confirmManuallyWritten": "Je les ais écrites",
+          "warningMessage": "**Ne les perdez pas!** Il est impossible des les récupérer si vous les perdez.<br/>**Ne les paratagez pas!** Vos fonds peuvent être volé si vous utilisez ces informations sur des sites-tiers (malicieux/phishing).<br/>**Faites une sauvegarde!** Sécutisez vos identifiants comme si si vous possédiez des millions de dollars.<br/>",
+          "finishButton": "Je comprend. Continuer"
+        }
+      },
+      "disclaimerBlock": {
+        "title": "Risques liés à l'utilisation de ConcealWallet",
+        "content": "ConcealWallet est un service web. Il vous aide à utiliser Conceal facilement sans avoir un installer des logiciels. <br/>Nous vous conseillons de traiter ce site comme vous traiteriez votre portefeuille."
+      }
+    },
+    "donatePage": {
+      "title": "Contribuer",
+      "subtitle": "Aidez à financer le développement et payer les factures de ce service",
+      "webwalletBlock": {
+        "title": "Portefeuille en ligne",
+        "content": "Ce portefeuille est développé par Gnock sur son temps libre.<br/>Si vous voulez aider au développement, payer les serveur et que vous aimez ce service, considérez une petite donation: <br/><br/>"
+      },
+      "devFundBlock": {
+        "title": "Fond de développement de Conceal",
+        "content": "Pour aidez Conceal globalement, vous pouvez donner à cette adresse"
+      }
+    },
+    "supportPage": {
+      "title": "Support",
+      "subtitle": "Vous avez besoins d'aide, nous somme la pour aider !",
+      "getInTouchBlock": {
+        "title": "Reston en contact !",
+        "content": "Si vous rencontrez des problèmes avec votre portefeuille, contactez-nous !",
+        "discord": "Discord Officiel de Conceal"
+      }
+    },
+    "forgotPasswordPage": {
+      "subtitle": "Comment restaurer l'accès à votre portefeuille",
+      "forgotPasswordBlock": {
+        "title": "Si vous avez oublié le mot de passe, il est impossible de le réinitialiser !",
+        "content": "La seule façon de restaurer l'accès à votre portefeuille est de rappeler votre mot de passe ou de supprimer les données du portefeuille de la mémoire de votre navigateur et de restaurer le portefeuille à partir de la sauvegarde (par exemple, une phrase de récupération mnémonique).<br /> Si vous avez des clés de portefeuille ou une phrase de récupération , ci-dessous vous pouvez supprimer votre portefeuille. Ensuite, vous pourrez le restaurer et le synchroniser à partir de zéro.<br/> <strong>Veuillez vous assurer d'avoir une phrase de récupération avant de continuer !!!</strong>"
+      }
+    },
+    "networkPage": {
+      "title": "Statistiques du réseau",
+      "subtitle": "Détails sur le réseaux Conceal",
+      "statsBlock": {
+        "hashrate": "Hashrate du réseau",
+        "height": "Hauteur de la Blockchain",
+        "difficulty": "Difficulty du réseau",
+        "lastTimeBlock": "Dernier block trouvé",
+        "lastReward": "Dernière récompense"
+      }
+    },
+    "sendPage": {
+      "title": "Envoyer des CCX",
+      "sendBlock": {
+        "address": {
+          "label": "Adresse de destination",
+          "placeholder": "Écrivez l'adresse où vous voulez envoyer des fonds",
+          "invalid": "L'adresse de destination est invalide",
+          "fundsTo": "Les fonds seront envoyé à ",
+          "receiver": "Destinataire",
+          "description": "Description"
+        },
+        "amount": {
+          "label": "Montant à envoyer",
+          "invalid": "Le montant est invalide"
+        },
+        "paymentId": {
+          "label": "Identifiant du payment (optionnel)",
+          "invalid": "L'identifiant du paiement est invalid. La longeur doit être de 16 ou 64 caractères"
+        },
+        "mixin": {
+          "label": "Confidentialité",
+          "invalid": "Le mixin est invalide, doit être compris entre 3 et 10 ou zéro"
+        },
+        "sendButton": "Envoyer",
+        "cancelButton": "Annuler"
+      },
+      "qrCodeScanning": {
+        "explication": "Présentez le QR Code"
+      },
+      "notEnoughMoneyModal": {
+        "title": "Oups...",
+        "content": "Vous n'avez pas assez de fonds pour effectuer ce tranfert",
+        "confirmText": "OK"
+      },
+      "thankYouDonationModal": {
+        "title": "Merci pour votre donation !",
+        "content": "Votre aide est apprécié. <br/>Cette donation contribuera à améliorer Conceal",
+        "confirmText": "Fermer"
+      },
+      "transferSentModal": {
+        "title": "Transfert envoyé avec succès!",
+        "confirmText": "Fermer"
+      },
+      "transferExceptionModal": {
+        "title": "Oups...",
+        "content": "Une erreur est survenue. Merci de nous envoyer de rapport: {details}",
+        "confirmText": "Fermer"
+      },
+      "invalidAmountModal": {
+        "title": "Oups...",
+        "content": "Montant invalide",
+        "confirmText": "Fermer"
+      },
+      "creatingTransferModal": {
+        "title": "Création du transfert ...",
+        "content": "Veuillez patienter ..."
+      },
+      "finalizingTransferModal": {
+        "title": "Finalisation du transfert ...",
+        "content": "Veuillez patienter ..."
+      },
+      "confirmTransactionModal": {
+        "title": "Confirmer le transfert ?",
+        "content": "Montant: {amount}<br/>Frais: {fees}<br/>Total: {total}",
+        "confirmText": "Confirmer",
+        "cancelText": "Annuler"
+      },
+      "waitingNfcModal": {
+        "title": "Attente du Nfc",
+        "content": "Veuillez rapprocher votre téléphone de l'autre appareil"
+      }
+    },
+    "receivePage": {
+      "title": "Recevoir des CCX",
+      "receiveBlock": {
+        "address": {
+          "title": "Votre adresse pour recevoir des fonds",
+          "label": "Donner cette adresse pour recevoir des fonds"
+        },
+        "qrCode": {
+          "title": "Ou personnalisez ce QR Code",
+          "labelAmount": "Montant (optionnel)",
+          "labelRecipient": "Nom du destinataire (optionnel)",
+          "labelDescription": "Description (optionnel)",
+          "updateButton": "Mettre à jour"
+        }
+      },
+      "qrBlock": {
+        "title": "Votre QR code customisé"
+      },
+      "waitingNfcToWriteModal": {
+        "title": "Waiting Nfc",
+        "titleSuccess": "Nfc Tag written",
+        "content": "Bring closer the NFC tag to write"
+      },
+      "nfcErrorModal": {
+        "titleInsufficientCapacity": "Tag capacity insufficient"
+      }
+    },
+    "miningPage": {
+      "title": "Miner directement depuis votre navigateur",
+      "subtitle": "Supportez lé réseau en minant et en améliorant la stabilité du réseau tout en étant réponsé en CCX",
+      "parameterBlock": {
+        "title": "Paramètres",
+        "labelDestinationAddress": "Portefeuille de destination",
+        "labelThreads": "Nombre de threads (plus = plus de hashrate)",
+        "start": "Commençer",
+        "stop": "Arrêter"
+      },
+      "statisticsBlocks": {
+        "title": "Statistiques",
+        "validShares": "Partages valides",
+        "hashrate": "HashRate",
+        "maxHashrate": "HashRate max",
+        "dedicatedHardware": "Avec un logiciel spécifique pour le minage, vous pourriez obtenir entre 2 et 3 fois plus de hashrate.<br/>Cela vous permettrait également de miner avec votre carte graphique (si vous en avez une).",
+        "miningHandledBy": "Le minage est géré par la pool Conceal.Network"
+      }
+    },
+    "settingsPage": {
+      "title": "Paramètres",
+      "subtitle": "Changez vos paramètres ici",
+      "versionBlock": {
+        "versionNumber": "Numéro de version: ",
+        "versionCode": "Code de la version: "
+      },
+      "settingsBlock": {
+        "speed": {
+          "label": "Vitesse d'actualisation du portefeuille (will consume more energy)",
+          "fastest": "Le plus vite",
+          "fast": "Rapide",
+          "medium": "Normal",
+          "slow": "Lent"
+        },
+        "language": {
+          "label": "Language"
+        },
+        "readMinerTx": {
+          "label": "Lire les transactions de minage (uniquement pour les personnes faisant du solo-minage)"
+        },
+        "customNode": {
+          "label": "Use custom node"
+        },
+        "nodeUrl": {
+          "label": "Node URL"
+        }
+      },
+      "changePasswordButton": "Changer le mot de passe de mon portefeuille",
+      "deleteWalletButton": "Supprimer mon portefeuille (copie locale)",
+      "walletSettings": {
+        "creationHeight": {
+          "label": "Hauteur à laquelle le portefeuille a été créé"
+        },
+        "currentScanningHeight": {
+          "label": "Hauteur actuelle de scan de la blockchain"
+        },
+        "updateButton": "Mettre à jour"
+      },
+      "deleteWalletModal": {
+        "title": "Supprimer mon portefeuille (copie locale)",
+        "content": "Etes vous VRAIMENT sûr de vouloir supprimer votre portefeuille ?",
+        "confirmText": "Oui je suis sûr",
+        "cancelText": "Annuler"
+      }
+    },
+    "importBasePage": {
+      "parametersBlock": {
+        "title": "Paramètres",
+        "password": {
+          "label": "Mot de passe pour protéger le portefeuille"
+        },
+        "passwordConfirm": {
+          "label": "Confirmer le mot de passe",
+          "invalid": "Le mot de passe ne correspond pas au premier entré"
+        },
+        "importHeight": {
+          "label": "Hauteur de création du wallet"
+        }
+      }
+    },
+    "importFromQrPage": {
+      "title": "Importer depuis un QR code",
+      "subtitle": "Importation depuis une sauvegarder hors ligne",
+      "qrCodeBlock": {
+        "title": "QR code",
+        "startScanButton": "Commençer le scan",
+        "importButton": "Importer"
+      },
+      "qrScanningBlock": {
+        "title": "Présentez le QR code"
+      }
+    },
+    "exportPage": {
+      "title": "Sauvegarder de vos identifiants",
+      "publicAddressBlock": {
+        "title": "Votre adresse publique"
+      },
+      "pdfBlock": {
+        "title": "Sauvegarde en Pdf",
+        "downloadButton": "Télécharger"
+      },
+      "warningBlock": {
+        "title": "Attention",
+        "content": "Si vous choisissez de sauvegarder vos cléfs privées ou la phrase mnémotechnique, NE LE ECRIVEZ PAS dans un endroit non sécurisé (chiffré) ceci pour votre propre sécurité.<br/>Le fichier est une solution alternative où les identifiants sont chiffrés et contient également une sauvegarde de l'historique de vos transactions"
+      },
+      "exportBlock": {
+        "title": "Exporter vos identifiants (non chiffrés)",
+        "privateKeysButton": "Obtenir mes cléfs privées",
+        "mnemonicKeysButton": "Obtenir ma phrase mnémotechnique",
+        "fileButton": "Exporter ver un fichier"
+      },
+      "walletKeysModal": {
+        "title": "Cléfs privées",
+        "confirmText": "OK",
+        "content": "Merci de stocker soigneusement ces cléfs. <b>Les posséder signifie posséder les fonds associé</b> !<br/>Clé privée de dépense: {privSpendKey}<br/>Clé privée de visualisation: {privViewKey}"
+      },
+      "mnemonicKeyModal": {
+        "title": "Clé privée",
+        "confirmText": "OK",
+        "content": "Merci de stocker soigneusement cette phrase mnémotechnique. <b>La posséder signifie posséder les fonds associé</b> ! La phrase est :<br/>{mnemonic}"
+      },
+      "mnemonicLangSelectionModal": {
+        "title": "Dans quelle langue souhaitez vous exporter la phrase mnémotechnique ?",
+        "confirmText": "Exporter"
+      }
+    },
+    "importPage": {
+      "title": "Créer un portefeuille",
+      "subtitle": "Depuis des cléfs, une fichier ou une phrase mnémotechnique",
+      "chooseMethod": "Choisissez votre méthode d'import",
+      "fromKeys": "Depuis des cléfs privées",
+      "fromFile": "Depuis un fichier",
+      "fromMnemonic": "Depuis une phrase mnémotechnique",
+      "fromQr": "Depuis un QR code"
+    },
+    "termsOfUsePage": {
+      "title": "Conditions d'utilisations",
+      "subtitle": "Merci de les lire et d'y préter attention"
+    },
+    "privacyPolicyPage": {
+      "title": "Privacy Policy",
+      "subtitle": "Merci de les lire et d'y préter attention"
+    },
+    "importFromFilePage": {
+      "title": "Importer un portefeuille depuis un fichier",
+      "subtitle": "Utilisez votre sauvegarder pour récréer le portefeuille",
+      "walletBlock": {
+        "title": "Fichier du portefeuille",
+        "label": "Sélectionner",
+        "importButton": "Importer"
+      }
+    },
+    "importFromMnemonicPage": {
+      "title": "Importer un portefeuille depuis une phrase mnémotechnique",
+      "subtitle": "Utiliser la phrase pour créer un portefeuille",
+      "mnemonicBlock": {
+        "title": "Phrase mnémotechnique",
+        "mnemonic": {
+          "label": "Phrase mnémotechnique : 25 mots",
+          "invalid": "la phrase mnémotechnique est invalide",
+          "language": "Langue"
+        },
+        "importButton": "Importer"
+      }
+    },
+    "importFromKeysPage": {
+      "title": "Importer un portefeuille depuis des cléfs",
+      "subtitle": "Utilisez vos cléfs pour créer un portefeuille",
+      "parametersBlock": {
+        "viewOnlyWallet": {
+          "label": "Voulez vous faire un portefeuille uniquement pour visualiser les fonds"
+        }
+      },
+      "keysBlock": {
+        "titleNotViewOnly": "Cléfs privées",
+        "titleViewOnly": "Cléfs de visualisation uniquement",
+        "privateSpend": {
+          "label": "Cléf privée de dépense"
+        },
+        "privateView": {
+          "label": "Cléf privée de visualisation",
+          "optional": "(optionnel)"
+        },
+        "publicKey": {
+          "label": "Cléf publique"
+        },
+        "importButton": "Importer"
+      }
+    }
   },
-  "number":{
-  },
-  "date":{
-	"short": {
-	  "year": "numeric", "month": "short", "day": "numeric"
-	},
-	"long": {
-	  "year": "numeric", "month": "short", "day": "numeric",
-	  "weekday": "short", "hour": "numeric", "minute": "numeric", "hour12": false
-	}
+  "number": {},
+  "date": {
+    "short": {
+      "year": "numeric",
+      "month": "short",
+      "day": "numeric"
+    },
+    "long": {
+      "year": "numeric",
+      "month": "short",
+      "day": "numeric",
+      "weekday": "short",
+      "hour": "numeric",
+      "minute": "numeric",
+      "hour12": false
+    }
   }
 }
