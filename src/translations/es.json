@@ -74,24 +74,24 @@
         "create": "Crear",
         "createWallet": "Crear una cartera"
       },
-	  "notes": {
-		"secure": {
-		  "title": "Seguro",
-		  "description": "¡Totalmente encriptados!"
-		},
-		"fast": {
-		  "title": "Accesible",
-		  "description": "¡Basado en navegador!"
-		},
-		"technology": {
-		  "title": "Lado del cliente",
-		  "description": "¡Las llaves están en tu dispositivo!"
-		},
-		"openSource": {
-		  "title": "Fuente abierta",
-		  "description": "¡Alojado en Github!"
-		}
-	  }
+      "notes": {
+        "secure": {
+          "title": "Seguro",
+          "description": "¡Totalmente encriptados!"
+        },
+        "fast": {
+          "title": "Accesible",
+          "description": "¡Basado en navegador!"
+        },
+        "technology": {
+          "title": "Lado del cliente",
+          "description": "¡Las llaves están en tu dispositivo!"
+        },
+        "openSource": {
+          "title": "Fuente abierta",
+          "description": "¡Alojado en Github!"
+        }
+      }
     },
     "accountPage": {
       "title": "Cuenta",
@@ -101,6 +101,8 @@
       },
       "balanceBlock": {
         "title": "Su balance",
+        "total": "Total",
+        "pending": "Pending",
         "unlocked": "Desbloqueado"
       },
       "historyBlock": {
@@ -194,11 +196,11 @@
         "discord": "Canal de Conceal en Discord"
       }
     },
-    "forgotPasswordPage":{
-      "subtitle":"Cómo restaurar el acceso a su billetera",
-      "forgotPasswordBlock":{
-      "title":"Si olvidó la contraseña, ¡es imposible restablecerla!",
-      "content":"La única forma de restaurar el acceso a su billetera es recordar su contraseña o eliminar los datos de la billetera de la memoria de su navegador y restaurar la billetera desde la copia de seguridad (por ejemplo, frase de recuperación mnemotécnica).<br /> Si tiene claves de billetera o una frase de recuperación , a continuación puede eliminar su billetera. Luego podrá restaurarlo y sincronizarlo desde cero.<br/> <strong>Por favor, ¡asegúrese de tener una frase de recuperación antes de continuar!</strong>"
+    "forgotPasswordPage": {
+      "subtitle": "Cómo restaurar el acceso a su billetera",
+      "forgotPasswordBlock": {
+        "title": "Si olvidó la contraseña, ¡es imposible restablecerla!",
+        "content": "La única forma de restaurar el acceso a su billetera es recordar su contraseña o eliminar los datos de la billetera de la memoria de su navegador y restaurar la billetera desde la copia de seguridad (por ejemplo, frase de recuperación mnemotécnica).<br /> Si tiene claves de billetera o una frase de recuperación , a continuación puede eliminar su billetera. Luego podrá restaurarlo y sincronizarlo desde cero.<br/> <strong>Por favor, ¡asegúrese de tener una frase de recuperación antes de continuar!</strong>"
       }
     },
     "networkPage": {
@@ -231,9 +233,9 @@
           "label": "Identificación de pago (opcional)",
           "invalid": "El ID de pago no es válido. La longitud debe ser de 16 o 64 caracteres."
         },
-        "mixin":{
-          "label":"Intimidad",
-          "invalid":"El mixin no es válido, debe ser de 3 a 10, o cero"
+        "mixin": {
+          "label": "Intimidad",
+          "invalid": "El mixin no es válido, debe ser de 3 a 10, o cero"
         },
         "sendButton": "Enviar",
         "cancelButton": "Cancelar"
@@ -351,11 +353,11 @@
         "readMinerTx": {
           "label": "Leer transacciones mineras (solo para minería en solitario)"
         },
-        "customNode":{
-          "label":"Use custom node"
+        "customNode": {
+          "label": "Use custom node"
         },
-        "nodeUrl":{
-          "label":"Node URL"
+        "nodeUrl": {
+          "label": "Node URL"
         }
       },
       "changePasswordButton": "Cambiar mi contraseña de billetera",
