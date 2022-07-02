@@ -320,12 +320,18 @@ class SendView extends DestructableView {
 								title: i18n.t('sendPage.thankYouDonationModal.title'),
 								text: i18n.t('sendPage.thankYouDonationModal.content'),
 								confirmButtonText: i18n.t('sendPage.thankYouDonationModal.confirmText'),
+                onClose: () => {
+                  window.location.href = '#!account';
+                }                
 							});
 						} else
 							promise = swal({
 								type: 'success',
 								title: i18n.t('sendPage.transferSentModal.title'),
 								confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
+                onClose: () => {
+                  window.location.href = '#!account';
+                }                
 							});
 
 						promise.then(function () {
