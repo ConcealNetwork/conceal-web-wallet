@@ -22,11 +22,15 @@
 			<div class="body" >
 				<div class="header-title balance_title" >{{ $t("accountPage.balanceBlock.title") }}</div>
 				<div class="content balance_content" >
-          <div class="wallet_amount">
+          <div class="wallet_amount amount_total">
 		  			<div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.total") }}:</div>
             <div class="walletAmount amount_cell" >{{ $n(walletAmount / currencyDivider) }} {{ticker}}</div>
           </div>
-          <div class="wallet_amount amount unlocked" v-if="unlockedWalletAmount !== walletAmount">
+          <div class="wallet_amount amount_pending">
+            <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.pending") }}:</div>
+            <div class="walletAmount amount_cell">{{ $n((walletAmount - unlockedWalletAmount) / currencyDivider) }} {{ticker}}</div>
+          </div>
+          <div class="wallet_amount amount_unlocked" v-if="unlockedWalletAmount !== walletAmount">
             <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.unlocked") }}:</div>
             <div class="walletAmount amount_cell">{{ $n(unlockedWalletAmount / currencyDivider) }} {{ticker}}</div>
           </div>

@@ -293,6 +293,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                                     title: i18n.t('sendPage.thankYouDonationModal.title'),
                                     text: i18n.t('sendPage.thankYouDonationModal.content'),
                                     confirmButtonText: i18n.t('sendPage.thankYouDonationModal.confirmText'),
+                                    onClose: function () {
+                                        window.location.href = '#!account';
+                                    }
                                 });
                             }
                             else
@@ -300,6 +303,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                                     type: 'success',
                                     title: i18n.t('sendPage.transferSentModal.title'),
                                     confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
+                                    onClose: function () {
+                                        window.location.href = '#!account';
+                                    }
                                 });
                             promise.then(function () {
                                 if (self.redirectUrlAfterSend !== null) {

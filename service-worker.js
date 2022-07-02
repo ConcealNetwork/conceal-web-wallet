@@ -33,7 +33,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/css/main.css",
-    "revision": "033241d839d1db8c60b92f759949f3b0"
+    "revision": "8118f245d51728ee3cb6e1baa04f437b"
   },
   {
     "url": "assets/img/coin_white.png",
@@ -329,7 +329,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/account.html",
-    "revision": "06fc5aa6f72331cd71dd2ba2d549b97c"
+    "revision": "f54ad9e48a3b5dfb26cbca45287b35bd"
   },
   {
     "url": "pages/account.js",
@@ -453,7 +453,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/send.js",
-    "revision": "9703abe9f269a6469a4b2541f9b701cc"
+    "revision": "e8af3125d813eeafd1a0d6be91c628c2"
   },
   {
     "url": "pages/settings.html",
@@ -493,7 +493,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/en.json",
-    "revision": "f9f3663d5a6956b5c5eee5c2bb9fbb79"
+    "revision": "91855828f2eac70740e7416e35bf23a2"
   },
   {
     "url": "translations/es.json",
