@@ -100,6 +100,7 @@
 	  "balanceBlock": {
 		"title": "Your balance",
 		"total": "Total",
+		"pending": "Pending",
 		"unlocked": "Unlocked"
 	  },
 	  "historyBlock": {
