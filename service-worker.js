@@ -489,59 +489,59 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/de.json",
-    "revision": "04a8fd36ee079372f37d8c7750ab22d3"
+    "revision": "3214a353d93d4bc6ef5bef1d1b188bae"
   },
   {
     "url": "translations/en.json",
-    "revision": "91855828f2eac70740e7416e35bf23a2"
+    "revision": "ccf45934b35f26374469695b45976978"
   },
   {
     "url": "translations/es.json",
-    "revision": "584b15343d1ee8c13183a3523aec2c89"
+    "revision": "a6b30e3bb5c953ac40e2f17181bdbdb6"
   },
   {
     "url": "translations/fa.json",
-    "revision": "43a8f454b8fda66af1ce3f875609b091"
+    "revision": "3138ff1ac30b221c23cb91e4aa088528"
   },
   {
     "url": "translations/fr.json",
-    "revision": "75b90d856ef0ed3e53c50b800d4b3392"
+    "revision": "4b4a66a46c279ba081c8ca5af6596e13"
   },
   {
     "url": "translations/gr.json",
-    "revision": "b1673b9af1fa2ffb88c56b8da79c2314"
+    "revision": "e75a156aac2dc8b9108c6fd15a85a594"
   },
   {
     "url": "translations/hu.json",
-    "revision": "2d1d96f929f30ca1d4f1ae5daea95bc4"
+    "revision": "aba7c35446be1e123784187ef4e616d6"
   },
   {
     "url": "translations/it.json",
-    "revision": "a46b4e759ab5ce3e973c583180323a88"
+    "revision": "60af08a81a4782b778db5c2698424838"
   },
   {
     "url": "translations/ko.json",
-    "revision": "d5647b65b7ebe5983b4528b2c6c13f48"
+    "revision": "0b6a282381215c03c7f203dbbbd494d9"
   },
   {
     "url": "translations/pl.json",
-    "revision": "9e11fefd9545e2705ed04daea4342b58"
+    "revision": "84048f6e642175b978286a0522a07e1f"
   },
   {
     "url": "translations/ru.json",
-    "revision": "b3ffad23a8758b2695e82f320893fd3b"
+    "revision": "99dd49e5651c8575132c7bbd6012e0b3"
   },
   {
     "url": "translations/sr.json",
-    "revision": "e661160e25c5f46d7307bf4c68229e5e"
+    "revision": "ea34f6e436aa8767a40e6b6671493c89"
   },
   {
     "url": "translations/uk.json",
-    "revision": "952b1288db03767c7f5d0d73e4879481"
+    "revision": "8cc443bc5d79d9212625863249694039"
   },
   {
     "url": "translations/zh.json",
-    "revision": "6b215097853beb912187aafe41d9c124"
+    "revision": "12ca69bc1dd16328a06aa723284e58ed"
   },
   {
     "url": "utils/Url.js",
