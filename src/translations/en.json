@@ -1,7 +1,7 @@
 {
   "website": {
     "title": "Conceal Web Wallet",
-    "description": "Conceal Network Walleyt - Serverless and fully handled in your browser for optimal security"
+    "description": "Conceal Network Wallet - Serverless and fully handled in your browser for optimal security"
   },
   "messages": {
     "menu": {
@@ -170,7 +170,7 @@
       },
       "disclaimerBlock": {
         "title": "Risk of Using ConcealWallet",
-        "content": "ConcealWallet is a web-based interface. It helps you use Conceal without running a full Conceal node. <br/>We recommend you treat ConcealWallet like you will treat your actual wallet."
+        "content": "ConcealWallet is a web-based interface. It helps you use Conceal without running a full Conceal node. <br/>We recommend you treat Conceal Web Wallet like you will treat your actual wallet."
       }
     },
     "donatePage": {
@@ -487,12 +487,12 @@
       },
       "keysBlock": {
         "titleNotViewOnly": "Wallet keys",
-        "titleViewOnly": "View only wallet",
+        "titleViewOnly": "View-Only wallet",
         "privateSpend": {
-          "label": "Private spend key"
+          "label": "Private Spend-key"
         },
         "privateView": {
-          "label": "Private view key"
+          "label": "Private View-key"
         },
         "publicKey": {
           "label": "Public key"

@@ -489,8 +489,7 @@
 		  "label":"Clef privée de dépense"
 		},
 		"privateView":{
-		  "label":"Clef privée de visualisation",
-		  "optional":"(optionnel)"
+		  "label":"Clef privée de visualisation"
 		},
 		"publicKey":{
 		  "label":"Clef publique"
@@ -498,7 +497,6 @@
 		"importButton":"Importer"
 	  }
 	}
-
   },
   "number": {},
   "date": {
@@ -514,7 +512,7 @@
       "weekday": "short",
       "hour": "numeric",
       "minute": "numeric",
-      "hour12": false
+      "hour12": true
     }
   }
 }
