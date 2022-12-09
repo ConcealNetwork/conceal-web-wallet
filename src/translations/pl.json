@@ -98,6 +98,8 @@
       },
       "balanceBlock": {
         "title": "Stan konta",
+        "total": "Total",
+        "pending": "Pending",
         "unlocked": "Odblokowany"
       },
       "historyBlock": {

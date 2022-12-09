@@ -26,6 +26,7 @@ Developers:
 - [DaveLong](https://github.com/DaveLong) (initial adaptation of PHP Api for Bytecoin based coins)
 - [Aiwe](https://github.com/aivve) (adapted for Bytecoin/CryptoNote from Monero codebase)
 - [Krypt0x](https://github.com/krypt0x) (fixes, enhancements and forking to CN-CCX)
+- [Taegus](https://github.com/taeguscromis) (fixes, improved sync speed, gui improvements)
 
 # Translations:
 - Chinese: [mainframer](https://github.com/mainframer), [Alex Nnian](https://github.com/nnian)

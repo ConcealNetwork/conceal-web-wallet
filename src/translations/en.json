@@ -1,515 +1,521 @@
 {
-  "website":{
-	"title":"Conceal Web Wallet",
-	"description":"Conceal Network Walleyt - Serverless and fully handled in your browser for optimal security"
+  "website": {
+    "title": "Conceal Web Wallet",
+    "description": "Conceal Network Walleyt - Serverless and fully handled in your browser for optimal security"
   },
   "messages": {
-	"menu": {
-	  "home": "Home",
-	  "account": "Account",
-	  "send": "Send",
-	  "receive": "Receive",
-	  "export": "Export",
-	  "donate": "Donate",
-	  "settings": "Settings",
-	  "disconnect": "Disconnect",
-	  "network": "Network Stats",
-	  "mining": "Mining"
-	},
-	"global": {
-	  "loading": "Loading",
-	  "disableSecurity":"Disable this security, I understand the risk",
-	  "passwordInvalidRequirements":"The password needs at least 8 characters - 1 upper case letter, 1 lower case letter, one number, and one special character",
-	  "passwordConfirmationNotMatching":"The password does not match the first password you wrote",
-	  "download":"Download",
-	  "newVersionModal":{
-		"title":"A new version is available",
-		"content":"Do you want to reload to load the new version?",
-		"confirmText":"Yes",
-		"cancelText":"Back"
-	  },
-	  "openWalletModal":{
-		"title":"Wallet Password",
-		"confirmText":"Open",
-		"cancelText":"Cancel",
-		"forgotPassword": "Forgot password?"
-	  },
-	  "invalidPasswordModal":{
-		"title":"Oops...",
-		"content":"Your password seems invalid",
-		"confirmText":"OK"
-	  },
-	  "invalidMnemonicModal":{
-		"title":"Oops...",
-		"content":"The mnemonic phrase is invalid",
-		"confirmText":"OK"
-	  },
-	  "passwordNotComplexEnoughModal":{
-		"title":"The password is not complex enough",
-		"confirmText":"OK"
-	  },
-	  "permissionRequiredForCameraModal":{
-		"title":"Oops...",
-		"content":"The permission to access your camera is required to scan the QR code",
-		"confirmText":"OK"
-	  }
-	},
-	"bottom": {
-	  "termsOfUse": "Terms of Use",
-	  "privacyPolicy": "Privacy Policy",
-	  "support": "Support",
-	  "donate": "Donate",
-	  "network": "Network Stats",
-	  "miningPool": "Mining Pool",
-	  "github": "GitHub"
-	},
-	"homepage": {
-	  "mainTitle": "Welcome to Conceal Wallet",
-	  "tagLine": "The simplest way to use Conceal – anywhere and any time",
-	  "actions": {
-		"loadWallet": "Load my wallet",
-		"importWallet": "Import a wallet",
-		"create": "Create",
-		"createWallet": "Create a wallet"
-	  },
-	  "notes": {
-		"secure": {
-		  "title": "Secure",
-		  "description": "Fully encrypted!"
-		},
-		"fast": {
-		  "title": "Accessible",
-		  "description": "Browser based!"
-		},
-		"technology": {
-		  "title": "Client-side",
-		  "description": "Keys on your device!"
-		},
-		"openSource": {
-		  "title": "Open-source",
-		  "description": "Hosted on Github!"
-		}
-	  }
-	},
-	"accountPage": {
-	  "title": "Account",
-	  "subtitle": "Your account overview and transaction history",
-	  "synchronizingBlock": {
-		"text": "Synchronizing..."
-	  },
-	  "balanceBlock": {
-		"title": "Your balance",
-		"total": "Total",
-		"unlocked": "Unlocked"
-	  },
-	  "historyBlock": {
-		"title": "Transaction history",
-		"pendingTxStatus": "Pending",
-		"emptyWallet": "You currently have no funds in this wallet.",
-		"waitSync": "Please wait until the wallet is updated",
-		"beReallyPatient": "The initial setup can take some time...",
-		"getCoinAddress": "Receive CCX"
-	  },
-	  "txDetails":{
-		"title":"Transaction details",
-		"txHash":"Tx hash",
-		"feesOnTx":"Tx fees",
-		"blockHeight":"Block height",
-		"paymentId":"Payment ID",
-		"txPrivKey":"Transaction Private Key"
-	  }
-	},
-	"changeWalletPasswordPage":{
-	  "title":"Change your password",
-	  "oldPassword":{
-		"label":"Old password",
-		"invalid":"The password is invalid"
-	  },
-	  "newPassword":{
-		"label":"Choose a new password to protect your wallet"
-	  },
-	  "newPasswordConfirm":{
-		"label":"Confirm the new password"
-	  },
-	  "confirm":"Change the password",
-	  "modalSuccess":{
-		"title":"Password changed!",
-		"confirmText":"OK"
-	  }
-	},
-	"createWalletPage":{
-	  "generatingStep":{
-		"title":"Your wallet is being generated...",
-		"subtitle":"It's almost done",
-		"waitingMessage":"Generating your wallet..."
-	  },
-	  "finalizationStep":{
-		"title":"That was simple. Your account is ready!",
-		"subtitle":"Be ready to use Conceal like you never have",
-		"passwordSelectionBlock":{
-		  "label":"Protect your wallet"
-		},
-		"passwordConfirmBlock":{
-		  "label":"Confirm the password"
-		},
-		"validPassword":"Use this password",
-		"backupBlock":{
-		  "title":"Save your private credentials for recovery.",
-		  "option1":"Option 1: ",
-		  "option2":"Option 2: ",
-		  "titlePdf":"Download a PDF copy",
-		  "titleManualWrite":"Write down my keys",
-		  "privateKeys":"Private key",
-		  "mnemonicPhrase":"Mnemonic phrase",
-		  "separatorManualMethodsSolution":" or ",
-		  "confirmManuallyWritten":"I wrote my seed phrase down",
-		  "warningMessage":"**Do not lose it!** It cannot be recovered if you lose it.<br/>**Do not share it!** Your funds will be stolen if you use this file or seed on a malicious/phishing site.<br/>**Make a backup!** Secure it like the millions of dollars it may one day be worth.<br/>",
-		  "finishButton":"I understand. Continue."
-		}
-	  },
-	  "disclaimerBlock":{
-		"title":"Risk of Using ConcealWallet",
-		"content":"ConcealWallet is a web-based interface. It helps you use Conceal without running a full Conceal node. <br/>We recommend you treat ConcealWallet like you will treat your actual wallet."
-	  }
-	},
-	"donatePage":{
-	  "title":"Donate",
-	  "subtitle":"Help to fund the development and pay the bills",
-	  "webwalletBlock":{
-		"title":"Webwallet",
-		"content":"If you want to help to pay for the servers, to support new features development, and like this app, please consider a donation: <br/><br/>"
-	  },
-	  "devFundBlock":{
-		"title":"Conceal Dev fund",
-		"content":"To help Conceal, you can donate at these addresses"
-	  }
-	},
-	"supportPage":{
-	  "title":"Support",
-	  "subtitle":"We are here to help!",
-	  "getInTouchBlock":{
-		"title":"Let's Get In Touch!",
-		"content":"If you have any problems with your wallet, contact us!",
-		"discord":"Conceal Discord Channel"
-	  }
-	},
-	"forgotPasswordPage":{
-	  "subtitle":"How to restore access to your wallet",
-	  "forgotPasswordBlock":{
-		"title":"If you forgot the password, it is impossible to reset it!",
-		"content":"The only way to get back into your wallet is to recall your password or to delete wallet data from your browser's memory and restore it from the backup (e.g. mnemonic recovery phrase).<br /> If you have wallet keys or a recovery phrase, below you can delete your wallet. Then you will be able to restore it and sync from scratch.<br/> <strong>Please, make sure you have recovery phrase before you proceed!!!</strong>"
-	  }
-	},
-	"networkPage":{
-	  "title":"Network stats",
-	  "subtitle":"Insights on the Conceal network",
-	  "statsBlock":{
-		"connectNode": "Connected to node",
-		"hashrate":"Network hashrate",
-		"height":"Blockchain height",
-		"difficulty":"Network difficulty",
-		"lastTimeBlock":"Last block found",
-		"lastReward":"Last block reward"
-	  }
-	},
-	"sendPage":{
-	  "title":"Send CCX",
-	  "sendBlock":{
-		"address":{
-		  "label":"Destination address",
-		  "placeholder":"Write the address where you want to send funds",
-		  "invalid":"The destination address is invalid",
-		  "fundsTo":"The funds will be sent to",
-		  "receiver":"Receiver",
-		  "description":"Description"
-		},
-		"amount":{
-		  "label":"Amount to send",
-		  "invalid":"The amount is invalid"
-		},
-		"paymentId":{
-		  "label":"Payment ID (optional)",
-		  "invalid":"The payment ID is invalid. The length must be 16 or 64 characters"
-		},
-		"mixin":{
-		  "label":"Privacy Level",
-		  "invalid":"The mixin is invalid, should be from 3 to 10 (or 0 = no privacy)"
-		},
-		"sendButton":"Send",
-		"cancelButton":"Cancel"
-	  },
-	  "qrCodeScanning":{
-		"explication":"Present the QR code"
-	  },
-	  "notEnoughMoneyModal":{
-		"title":"Oops...",
-		"content":"You don't have enough funds in your wallet to execute this transfer",
-		"confirmText":"OK"
-	  },
-	  "thankYouDonationModal":{
-		"title":"Thank you for your donation!",
-		"content":"Your help is appreciated. This donation will help make Conceal better",
-		"confirmText":"OK"
-	  },
-	  "transferSentModal":{
-		"title":"Transfer sent successfully!",
-		"confirmText":"OK"
-	  },
-	  "transferExceptionModal":{
-		"title":"Oops...",
-		"content":"An error occurred. Please report this error: {details}",
-		"confirmText":"OK"
-	  },
-	  "invalidAmountModal":{
-		"title":"Oops...",
-		"content":"Invalid amount",
-		"confirmText":"OK"
-	  },
-	  "creatingTransferModal":{
-		"title":"Creating transfer ...",
-		"content":"Please wait..."
-	  },
-	  "finalizingTransferModal":{
-		"title":"Finalizing transfer ...",
-		"content":"Please wait..."
-	  },
-	  "confirmTransactionModal":{
-		"title":"Confirm transfer?",
-		"content":"Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
-		"confirmText":"Confirm",
-		"cancelText":"Cancel"
-	  },
-	  "waitingNfcModal":{
-		"title":"Waiting Nfc",
-		"content":"Bring closer to the other device"
-	  }
-	},
-	"receivePage":{
-	  "title":"Receive CCX",
-	  "receiveBlock":{
-		"address":{
-		  "title":"Your address to receive funds:",
-		  "label":"Give this address to receive funds"
-		},
-		"qrCode":{
-		  "title":"Or personalize the QR code:",
-		  "labelAmount":"Amount (optional)",
-		  "labelRecipient":"Recipient name (optional)",
-		  "labelDescription":"Transaction description (optional)",
-		  "updateButton":"Update"
-		}
-	  },
-	  "qrBlock":{
-		"title":"Your customized QR code"
-	  },
-	  "waitingNfcToWriteModal":{
-		"title":"Waiting Nfc",
-		"titleSuccess":"Nfc Tag written",
-		"content":"Bring closer the NFC tag to write"
-	  },
-	  "nfcErrorModal":{
-		"titleInsufficientCapacity":"Tag capacity insufficient"
-	  }
-	},
-	"miningPage":{
-	  "title":"Mine directly in your browser",
-	  "subtitle":"Support the network by mining and be rewarded with CCX",
-	  "parameterBlock":{
-		"title":"Parameters",
-		"labelDestinationAddress":"Wallet to mine",
-		"labelThreads":"Number of threads (more = higher hashrate)",
-		"start":"Start",
-		"stop":"Stop"
-	  },
-	  "statisticsBlocks":{
-		"title":"Statistics",
-		"validShares":"Valid shares",
-		"hashrate":"Hashrate",
-		"maxHashrate":"Max Hashrate",
-		"dedicatedHardware":"With dedicating mining software and hardware, you could earn more and help decentralize the network.",
-		"miningHandledBy":"This mining is handled by the mining pool Conceal.Network"
-	  }
-	},
-	"settingsPage":{
-	  "title":"Settings",
-	  "subtitle":"Change your parameters here",
-	  "versionBlock":{
-		"versionNumber":"Version number: ",
-		"versionCode":"Version code: "
-	  },
-	  "settingsBlock":{
-		"speed":{
-		  "label":"Speed to update the wallet (will consume more resources)",
-		  "fastest":"Fastest",
-		  "fast":"Fast",
-		  "medium":"Medium",
-		  "slow":"Slow"
-		},
-		"language":{
-		  "label":"Language"
-		},
-		"readMinerTx":{
-		  "label":"Read miner transactions (only for solo mining)"
-		},
-		"customNode":{
-		  "label":"Use custom node"
-		},
-	    "nodeUrl":{
-		  "label":"Node URL"
-		}
-	  },
-	  "changePasswordButton":"Change my wallet password",
-	  "deleteWalletButton":"Delete my wallet (local copy)",
-	  "walletSettings":{
-		"creationHeight":{
-		  "label":"Creation height of the wallet"
-		},
-		"currentScanningHeight": {
-		  "label": "Current scanning height"
-		},
-		"updateButton":"Update"
-	  },
-	  "deleteWalletModal":{
-		"title":"Delete My Wallet (local copy)",
-		"content":"Are you sure you REALLY want to delete your wallet ?",
-		"confirmText":"Yes I'm sure",
-		"cancelText":"Cancel"
-	  }
-	},
-	"importBasePage":{
-	  "parametersBlock":{
-		"title":"Parameters",
-		"password":{
-		  "label":"Password to protect your wallet"
-		},
-		"passwordConfirm":{
-		  "label":"Confirm the password",
-		  "invalid":"The password does not match the first password you wrote"
-		},
-		"importHeight":{
-		  "label":"Height to import from:"
-		}
-	  }
-	},
-	"importFromQrPage":{
-	  "title":"Importing wallet from a QR code",
-	  "subtitle":"Import a wallet from an offline backup",
-	  "qrCodeBlock":{
-		"title":"QR code",
-		"startScanButton":"Start the scan",
-		"importButton":"Import"
-	  },
-	  "qrScanningBlock":{
-		"title":"Present the QR code"
-	  }
-	},
-	"exportPage":{
-	  "title":"Backup your credentials",
-	  "publicAddressBlock":{
-		"title":"Your public address"
-	  },
-	  "pdfBlock":{
-		"title":"PDF Backup",
-		"downloadButton":"Download"
-	  },
-	  "warningBlock":{
-		"title":"Warning",
-		"content":"If you choose to save your private keys or your mnemonic phrase, PLEASE DO NOT store them in clear-text for your own safety.<br/>The file is an alternate solution where your keys are encrypted and contains a backup of all your transactions to spare you a future synchronisation."
-	  },
-	  "exportBlock":{
-		"title":"Export your RAW credentials",
-		"privateKeysButton":"Get my private keys",
-		"mnemonicKeysButton":"Get my mnemonic phrase",
-		"fileButton":"Export to a file"
-	  },
-	  "walletKeysModal":{
-		"title":"Private keys",
-		"confirmText":"OK",
-		"content":"Please carefully store these keys. <b>Possessing them means possessing the funds associated</b> !<br/>Spend key: {privSpendKey}<br/>Private view key: {privViewKey}"
-	  },
-	  "mnemonicKeyModal":{
-		"title":"Mnemonic phrase",
-		"confirmText":"OK",
-		"content":"Please store carefully this mnemonic phrase. <b>Possessing it means possessing the funds associated</b> ! The phrase is:<br/>{mnemonic}"
-	  },
-	  "mnemonicLangSelectionModal":{
-		"title":"In which language do you want your mnemonic phrase?",
-		"confirmText":"Export"
-	  }
-	},
-	"importPage":{
-	  "title":"Create a wallet",
-	  "subtitle":"From previously created keys, file, or mnemonic phrase",
-	  "chooseMethod":"Choose your import method:",
-	  "fromKeys":"From keys",
-	  "fromFile":"From a file",
-	  "fromMnemonic":"From a mnemonic phrase",
-	  "fromQr":"From a QR code"
-	},
-	"termsOfUsePage":{
-	  "title":"Terms of use",
-	  "subtitle":"Please read them carefully."
-	},
-	"privacyPolicyPage":{
-	  "title":"Privacy Policy",
-	  "subtitle":"Please read carefully."
-	},
-	"importFromFilePage":{
-	  "title":"Importing wallet from a backup file",
-	  "subtitle":"Use your backup file to create a wallet",
-	  "walletBlock":{
-		"title":"Wallet file",
-		"label":"Select the file",
-		"importButton":"Import"
-	  }
-	},
-	"importFromMnemonicPage":{
-	  "title":"Importing wallet from a mnemonic phrase",
-	  "subtitle":"Use your phrase to create a wallet",
-	  "mnemonicBlock":{
-		"title":"Mnemonic phrase",
-		"mnemonic":{
-		  "label":"Mnemonic phrase: 25 words",
-		  "invalid":"The mnemonic phrase is invalid",
-		  "language":"Language"
-		},
-		"importButton":"Import"
-	  }
-	},
-	"importFromKeysPage":{
-	  "title":"Importing wallet from keys",
-	  "subtitle":"Use your keys to create a wallet",
-	  "parametersBlock":{
-		"viewOnlyWallet":{
-		  "label":"Do you want a view only wallet?"
-		}
-	  },
-	  "keysBlock":{
-		"titleNotViewOnly":"Wallet keys",
-		"titleViewOnly":"View only wallet",
-		"privateSpend":{
-		  "label":"Private spend key"
-		},
-		"privateView":{
-		  "label":"Private view key",
-		  "optional":"(optional)"
-		},
-		"publicKey":{
-		  "label":"Public key"
-		},
-		"importButton":"Import"
-	  }
-	}
+    "menu": {
+      "home": "Home",
+      "account": "Account",
+      "send": "Send",
+      "receive": "Receive",
+      "export": "Export",
+      "donate": "Donate",
+      "settings": "Settings",
+      "disconnect": "Disconnect",
+      "network": "Network Stats",
+      "mining": "Mining"
+    },
+    "global": {
+      "loading": "Loading",
+      "disableSecurity": "Disable this security, I understand the risk",
+      "passwordInvalidRequirements": "The password needs at least 8 characters - 1 upper case letter, 1 lower case letter, one number, and one special character",
+      "passwordConfirmationNotMatching": "The password does not match the first password you wrote",
+      "download": "Download",
+      "newVersionModal": {
+        "title": "A new version is available",
+        "content": "Do you want to reload to load the new version?",
+        "confirmText": "Yes",
+        "cancelText": "Back"
+      },
+      "openWalletModal": {
+        "title": "Wallet Password",
+        "confirmText": "Open",
+        "cancelText": "Cancel",
+        "forgotPassword": "Forgot password?"
+      },
+      "invalidPasswordModal": {
+        "title": "Oops...",
+        "content": "Your password seems invalid",
+        "confirmText": "OK"
+      },
+      "invalidMnemonicModal": {
+        "title": "Oops...",
+        "content": "The mnemonic phrase is invalid",
+        "confirmText": "OK"
+      },
+      "passwordNotComplexEnoughModal": {
+        "title": "The password is not complex enough",
+        "confirmText": "OK"
+      },
+      "permissionRequiredForCameraModal": {
+        "title": "Oops...",
+        "content": "The permission to access your camera is required to scan the QR code",
+        "confirmText": "OK"
+      }
+    },
+    "bottom": {
+      "termsOfUse": "Terms of Use",
+      "privacyPolicy": "Privacy Policy",
+      "support": "Support",
+      "donate": "Donate",
+      "network": "Network Stats",
+      "miningPool": "Mining Pool",
+      "github": "GitHub"
+    },
+    "homepage": {
+      "mainTitle": "Welcome to Conceal Wallet",
+      "tagLine": "The simplest way to use Conceal – anywhere and any time",
+      "actions": {
+        "loadWallet": "Load my wallet",
+        "importWallet": "Import a wallet",
+        "create": "Create",
+        "createWallet": "Create a wallet"
+      },
+      "notes": {
+        "secure": {
+          "title": "Secure",
+          "description": "Fully encrypted!"
+        },
+        "fast": {
+          "title": "Accessible",
+          "description": "Browser based!"
+        },
+        "technology": {
+          "title": "Client-side",
+          "description": "Keys on your device!"
+        },
+        "openSource": {
+          "title": "Open-source",
+          "description": "Hosted on Github!"
+        }
+      }
+    },
+    "accountPage": {
+      "title": "Account",
+      "subtitle": "Your account overview and transaction history",
+      "synchronizingBlock": {
+        "text": "Synchronizing..."
+      },
+      "balanceBlock": {
+        "title": "Your balance",
+        "total": "Total",
+        "pending": "Pending",
+        "unlocked": "Unlocked"
+      },
+      "historyBlock": {
+        "title": "Transaction history",
+        "pendingTxStatus": "Pending",
+        "emptyWallet": "You currently have no funds in this wallet.",
+        "waitSync": "Please wait until the wallet is updated",
+        "beReallyPatient": "The initial setup can take some time...",
+        "getCoinAddress": "Receive CCX"
+      },
+      "txDetails": {
+        "title": "Transaction details",
+        "txHash": "Tx hash",
+        "feesOnTx": "Tx fees",
+        "blockHeight": "Block height",
+        "paymentId": "Payment ID",
+        "txPrivKey": "Transaction Private Key"
+      }
+    },
+    "changeWalletPasswordPage": {
+      "title": "Change your password",
+      "oldPassword": {
+        "label": "Old password",
+        "invalid": "The password is invalid"
+      },
+      "newPassword": {
+        "label": "Choose a new password to protect your wallet"
+      },
+      "newPasswordConfirm": {
+        "label": "Confirm the new password"
+      },
+      "confirm": "Change the password",
+      "modalSuccess": {
+        "title": "Password changed!",
+        "confirmText": "OK"
+      }
+    },
+    "createWalletPage": {
+      "generatingStep": {
+        "title": "Your wallet is being generated...",
+        "subtitle": "It's almost done",
+        "waitingMessage": "Generating your wallet..."
+      },
+      "finalizationStep": {
+        "title": "That was simple. Your account is ready!",
+        "subtitle": "Be ready to use Conceal like you never have",
+        "passwordSelectionBlock": {
+          "label": "Protect your wallet"
+        },
+        "passwordConfirmBlock": {
+          "label": "Confirm the password"
+        },
+        "validPassword": "Use this password",
+        "backupBlock": {
+          "title": "Save your private credentials for recovery.",
+          "option1": "Option 1: ",
+          "option2": "Option 2: ",
+          "titlePdf": "Download a PDF copy",
+          "titleManualWrite": "Write down my keys",
+          "privateKeys": "Private key",
+          "mnemonicPhrase": "Mnemonic phrase",
+          "separatorManualMethodsSolution": " or ",
+          "confirmManuallyWritten": "I wrote my seed phrase down",
+          "warningMessage": "**Do not lose it!** It cannot be recovered if you lose it.<br/>**Do not share it!** Your funds will be stolen if you use this file or seed on a malicious/phishing site.<br/>**Make a backup!** Secure it like the millions of dollars it may one day be worth.<br/>",
+          "finishButton": "I understand. Continue."
+        }
+      },
+      "disclaimerBlock": {
+        "title": "Risk of Using ConcealWallet",
+        "content": "ConcealWallet is a web-based interface. It helps you use Conceal without running a full Conceal node. <br/>We recommend you treat ConcealWallet like you will treat your actual wallet."
+      }
+    },
+    "donatePage": {
+      "title": "Donate",
+      "subtitle": "Help to fund the development and pay the bills",
+      "webwalletBlock": {
+        "title": "Webwallet",
+        "content": "If you want to help to pay for the servers, to support new features development, and like this app, please consider a donation: <br/><br/>"
+      },
+      "devFundBlock": {
+        "title": "Conceal Dev fund",
+        "content": "To help Conceal, you can donate at these addresses"
+      }
+    },
+    "supportPage": {
+      "title": "Support",
+      "subtitle": "We are here to help!",
+      "getInTouchBlock": {
+        "title": "Let's Get In Touch!",
+        "content": "If you have any problems with your wallet, contact us!",
+        "discord": "Conceal Discord Channel"
+      }
+    },
+    "forgotPasswordPage": {
+      "subtitle": "How to restore access to your wallet",
+      "forgotPasswordBlock": {
+        "title": "If you forgot the password, it is impossible to reset it!",
+        "content": "The only way to get back into your wallet is to recall your password or to delete wallet data from your browser's memory and restore it from the backup (e.g. mnemonic recovery phrase).<br /> If you have wallet keys or a recovery phrase, below you can delete your wallet. Then you will be able to restore it and sync from scratch.<br/> <strong>Please, make sure you have recovery phrase before you proceed!!!</strong>"
+      }
+    },
+    "networkPage": {
+      "title": "Network stats",
+      "subtitle": "Insights on the Conceal network",
+      "statsBlock": {
+        "connectNode": "Connected to node",
+        "hashrate": "Network hashrate",
+        "height": "Blockchain height",
+        "difficulty": "Network difficulty",
+        "lastTimeBlock": "Last block found",
+        "lastReward": "Last block reward"
+      }
+    },
+    "sendPage": {
+      "title": "Send CCX",
+      "sendBlock": {
+        "address": {
+          "label": "Destination address",
+          "placeholder": "Write the address where you want to send funds",
+          "invalid": "The destination address is invalid",
+          "fundsTo": "The funds will be sent to",
+          "receiver": "Receiver",
+          "description": "Description"
+        },
+        "amount": {
+          "label": "Amount to send",
+          "invalid": "The amount is invalid"
+        },
+        "paymentId": {
+          "label": "Payment ID (optional)",
+          "invalid": "The payment ID is invalid. The length must be 16 or 64 characters"
+        },
+        "mixin": {
+          "label": "Privacy Level",
+          "invalid": "The mixin is invalid, should be from 3 to 10 (or 0 = no privacy)"
+        },
+        "sendButton": "Send",
+        "cancelButton": "Cancel"
+      },
+      "qrCodeScanning": {
+        "explication": "Present the QR code"
+      },
+      "notEnoughMoneyModal": {
+        "title": "Oops...",
+        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "confirmText": "OK"
+      },
+      "thankYouDonationModal": {
+        "title": "Thank you for your donation!",
+        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "confirmText": "OK"
+      },
+      "transferSentModal": {
+        "title": "Transfer sent successfully!",
+        "confirmText": "OK"
+      },
+      "transferExceptionModal": {
+        "title": "Oops...",
+        "content": "An error occurred. Please report this error: {details}",
+        "confirmText": "OK"
+      },
+      "invalidAmountModal": {
+        "title": "Oops...",
+        "content": "Invalid amount",
+        "confirmText": "OK"
+      },
+      "creatingTransferModal": {
+        "title": "Creating transfer ...",
+        "content": "Please wait..."
+      },
+      "finalizingTransferModal": {
+        "title": "Finalizing transfer ...",
+        "content": "Please wait..."
+      },
+      "confirmTransactionModal": {
+        "title": "Confirm transfer?",
+        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
+        "confirmText": "Confirm",
+        "cancelText": "Cancel"
+      },
+      "waitingNfcModal": {
+        "title": "Waiting Nfc",
+        "content": "Bring closer to the other device"
+      }
+    },
+    "receivePage": {
+      "title": "Receive CCX",
+      "receiveBlock": {
+        "address": {
+          "title": "Your address to receive funds:",
+          "label": "Give this address to receive funds"
+        },
+        "qrCode": {
+          "title": "Or personalize the QR code:",
+          "labelAmount": "Amount (optional)",
+          "labelRecipient": "Recipient name (optional)",
+          "labelDescription": "Transaction description (optional)",
+          "updateButton": "Update"
+        }
+      },
+      "qrBlock": {
+        "title": "Your customized QR code"
+      },
+      "waitingNfcToWriteModal": {
+        "title": "Waiting Nfc",
+        "titleSuccess": "Nfc Tag written",
+        "content": "Bring closer the NFC tag to write"
+      },
+      "nfcErrorModal": {
+        "titleInsufficientCapacity": "Tag capacity insufficient"
+      }
+    },
+    "miningPage": {
+      "title": "Mine directly in your browser",
+      "subtitle": "Support the network by mining and be rewarded with CCX",
+      "parameterBlock": {
+        "title": "Parameters",
+        "labelDestinationAddress": "Wallet to mine",
+        "labelThreads": "Number of threads (more = higher hashrate)",
+        "start": "Start",
+        "stop": "Stop"
+      },
+      "statisticsBlocks": {
+        "title": "Statistics",
+        "validShares": "Valid shares",
+        "hashrate": "Hashrate",
+        "maxHashrate": "Max Hashrate",
+        "dedicatedHardware": "With dedicating mining software and hardware, you could earn more and help decentralize the network.",
+        "miningHandledBy": "This mining is handled by the mining pool Conceal.Network"
+      }
+    },
+    "settingsPage": {
+      "title": "Settings",
+      "subtitle": "Change your parameters here",
+      "versionBlock": {
+        "versionNumber": "Version number: ",
+        "versionCode": "Version code: "
+      },
+      "settingsBlock": {
+        "speed": {
+          "label": "Speed to update the wallet (will consume more resources)",
+          "fastest": "Fastest",
+          "fast": "Fast",
+          "medium": "Medium",
+          "slow": "Slow"
+        },
+        "language": {
+          "label": "Language"
+        },
+        "readMinerTx": {
+          "label": "Read miner transactions (only for solo mining)"
+        },
+        "customNode": {
+          "label": "Use custom node"
+        },
+        "nodeUrl": {
+          "label": "Node URL"
+        }
+      },
+      "changePasswordButton": "Change my wallet password",
+      "deleteWalletButton": "Delete my wallet (local copy)",
+      "walletSettings": {
+        "creationHeight": {
+          "label": "Creation height of the wallet"
+        },
+        "currentScanningHeight": {
+          "label": "Current scanning height"
+        },
+        "updateButton": "Update"
+      },
+      "deleteWalletModal": {
+        "title": "Delete My Wallet (local copy)",
+        "content": "Are you sure you REALLY want to delete your wallet ?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
+      }
+    },
+    "importBasePage": {
+      "parametersBlock": {
+        "title": "Parameters",
+        "password": {
+          "label": "Password to protect your wallet"
+        },
+        "passwordConfirm": {
+          "label": "Confirm the password",
+          "invalid": "The password does not match the first password you wrote"
+        },
+        "importHeight": {
+          "label": "Height to import from:"
+        }
+      }
+    },
+    "importFromQrPage": {
+      "title": "Importing wallet from a QR code",
+      "subtitle": "Import a wallet from an offline backup",
+      "qrCodeBlock": {
+        "title": "QR code",
+        "startScanButton": "Start the scan",
+        "importButton": "Import"
+      },
+      "qrScanningBlock": {
+        "title": "Present the QR code"
+      }
+    },
+    "exportPage": {
+      "title": "Backup your credentials",
+      "publicAddressBlock": {
+        "title": "Your public address"
+      },
+      "pdfBlock": {
+        "title": "PDF Backup",
+        "downloadButton": "Download"
+      },
+      "warningBlock": {
+        "title": "Warning",
+        "content": "If you choose to save your private keys or your mnemonic phrase, PLEASE DO NOT store them in clear-text for your own safety.<br/>The file is an alternate solution where your keys are encrypted and contains a backup of all your transactions to spare you a future synchronisation."
+      },
+      "exportBlock": {
+        "title": "Export your RAW credentials",
+        "privateKeysButton": "Get my private keys",
+        "mnemonicKeysButton": "Get my mnemonic phrase",
+        "fileButton": "Export to a file"
+      },
+      "walletKeysModal": {
+        "title": "Private keys",
+        "confirmText": "OK",
+        "content": "Please carefully store these keys. <b>Possessing them means possessing the funds associated</b> !<br/>Spend key: {privSpendKey}<br/>Private view key: {privViewKey}"
+      },
+      "mnemonicKeyModal": {
+        "title": "Mnemonic phrase",
+        "confirmText": "OK",
+        "content": "Please store carefully this mnemonic phrase. <b>Possessing it means possessing the funds associated</b> ! The phrase is:<br/>{mnemonic}"
+      },
+      "mnemonicLangSelectionModal": {
+        "title": "In which language do you want your mnemonic phrase?",
+        "confirmText": "Export"
+      }
+    },
+    "importPage": {
+      "title": "Create a wallet",
+      "subtitle": "From previously created keys, file, or mnemonic phrase",
+      "chooseMethod": "Choose your import method:",
+      "fromKeys": "From keys",
+      "fromFile": "From a file",
+      "fromMnemonic": "From a mnemonic phrase",
+      "fromQr": "From a QR code"
+    },
+    "termsOfUsePage": {
+      "title": "Terms of use",
+      "subtitle": "Please read them carefully."
+    },
+    "privacyPolicyPage": {
+      "title": "Privacy Policy",
+      "subtitle": "Please read carefully."
+    },
+    "importFromFilePage": {
+      "title": "Importing wallet from a backup file",
+      "subtitle": "Use your backup file to create a wallet",
+      "walletBlock": {
+        "title": "Wallet file",
+        "label": "Select the file",
+        "importButton": "Import"
+      }
+    },
+    "importFromMnemonicPage": {
+      "title": "Importing wallet from a mnemonic phrase",
+      "subtitle": "Use your phrase to create a wallet",
+      "mnemonicBlock": {
+        "title": "Mnemonic phrase",
+        "mnemonic": {
+          "label": "Mnemonic phrase: 25 words",
+          "invalid": "The mnemonic phrase is invalid",
+          "language": "Language"
+        },
+        "importButton": "Import"
+      }
+    },
+    "importFromKeysPage": {
+      "title": "Importing wallet from keys",
+      "subtitle": "Use your keys to create a wallet",
+      "parametersBlock": {
+        "viewOnlyWallet": {
+          "label": "Do you want a view only wallet?"
+        }
+      },
+      "keysBlock": {
+        "titleNotViewOnly": "Wallet keys",
+        "titleViewOnly": "View only wallet",
+        "privateSpend": {
+          "label": "Private spend key"
+        },
+        "privateView": {
+          "label": "Private view key"
+        },
+        "publicKey": {
+          "label": "Public key"
+        },
+        "importButton": "Import"
+      }
+    }
   },
-  "number":{
-  },
-  "date":{
-	"short": {
-	  "year": "numeric", "month": "short", "day": "numeric"
-	},
-	"long": {
-	  "year": "numeric", "month": "short", "day": "numeric",
-	  "weekday": "short", "hour": "numeric", "minute": "numeric", "hour12": true
-	}
+  "number": {},
+  "date": {
+    "short": {
+      "year": "numeric",
+      "month": "short",
+      "day": "numeric"
+    },
+    "long": {
+      "year": "numeric",
+      "month": "short",
+      "day": "numeric",
+      "weekday": "short",
+      "hour": "numeric",
+      "minute": "numeric",
+      "hour12": true
+    }
   }
 }
