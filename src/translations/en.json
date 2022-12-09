@@ -492,8 +492,7 @@
           "label": "Private spend key"
         },
         "privateView": {
-          "label": "Private view key",
-          "optional": "(optional)"
+          "label": "Private view key"
         },
         "publicKey": {
           "label": "Public key"
