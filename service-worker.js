@@ -493,7 +493,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/en.json",
-    "revision": "17d8da6aca8c14df3a578fbff8e27843"
+    "revision": "9a0f8726b4ed0ef91a57836ba1983e90"
   },
   {
     "url": "translations/es.json",
@@ -505,7 +505,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "translations/fr.json",
-    "revision": "0d3b54ce617d7bb7f9bf481fb1768250"
+    "revision": "6639ae70ccdc98fa7764826627ad8891"
   },
   {
     "url": "translations/gr.json",
