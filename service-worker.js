@@ -105,7 +105,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "index.js",
-    "revision": "be8581c7570fd5a4bb315abd38576265"
+    "revision": "8cab6c891dd762d593d84a40b260c85f"
   },
   {
     "url": "lib/base58.js",
@@ -185,7 +185,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "lib/numbersLab/DestructableView.js",
-    "revision": "6afa1f777849c59e67a42f94f0c8464d"
+    "revision": "bf06ac5b16fb1f754c5190c6e4a688a6"
   },
   {
     "url": "lib/numbersLab/Logger.js",
@@ -244,8 +244,12 @@ workbox.precaching.precacheAndRoute([
     "revision": "5d91e91213013f75e5e3c2d4a5918ac7"
   },
   {
+    "url": "model/Api.js",
+    "revision": "eb048c6d7146e806334f4710bb0812c6"
+  },
+  {
     "url": "model/AppState.js",
-    "revision": "3fe1415e64b86bd8f4a3e6951fe8981a"
+    "revision": "bfc1167588b193e3043e5d68f55fbcc7"
   },
   {
     "url": "model/blockchain/BlockchainExplorer.js",
@@ -317,7 +321,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/Wallet.js",
-    "revision": "ddcbd7292bb2b0647f72f3198b158815"
+    "revision": "41d41ae108baa7363fbc6fd8485f97fa"
   },
   {
     "url": "model/WalletRepository.js",
@@ -333,7 +337,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/account.js",
-    "revision": "eebdf2d70f6bbc99d10cb5cc1fa009e2"
+    "revision": "c3ec4acc4fda2fe10df78d695332ac30"
   },
   {
     "url": "pages/changeWalletPassword.html",
@@ -341,7 +345,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/changeWalletPassword.js",
-    "revision": "caccd06a3029d4f3c9afe2880cd2b174"
+    "revision": "209e1aee68c4cb853808ad3ef749655c"
   },
   {
     "url": "pages/createWallet.html",
@@ -349,7 +353,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/createWallet.js",
-    "revision": "ebf7e171b95d21b85a21fcfe294f76c0"
+    "revision": "6e676b0cec377d46ec6662a51e338a7b"
   },
   {
     "url": "pages/disconnect.html",
@@ -365,7 +369,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/donate.js",
-    "revision": "f3b91d98886b1832f2546d5bbacf078f"
+    "revision": "d65ed68add23b8d8fa95033bdb37467e"
   },
   {
     "url": "pages/export.html",
@@ -373,7 +377,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/export.js",
-    "revision": "a795ec5439ede9dcefaf81d930b9a594"
+    "revision": "c98a20e14d0b544d7ab944f88ae1b84f"
   },
   {
     "url": "pages/import.html",
@@ -381,7 +385,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/import.js",
-    "revision": "84f02034ef92f0bc0c8be5b9974c350b"
+    "revision": "27d9140b3940e24c404c3662c80ba651"
   },
   {
     "url": "pages/importFromFile.html",
@@ -389,7 +393,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromFile.js",
-    "revision": "d2f16c2eca0b70c39ee9e8a32d496aa7"
+    "revision": "b24a0750c6b96402dd85efe97452626e"
   },
   {
     "url": "pages/importFromKeys.html",
@@ -397,7 +401,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromKeys.js",
-    "revision": "0a0d736614fdec95d3eabf79ad1dddce"
+    "revision": "c24c27a0e6be26f13f6de05884f0220c"
   },
   {
     "url": "pages/importFromMnemonic.html",
@@ -405,7 +409,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromMnemonic.js",
-    "revision": "f6f7e542cbfa34a6d3d046cb80a56a4f"
+    "revision": "0f3be1232e6b0151c8824ab1e8b1b3c3"
   },
   {
     "url": "pages/importFromQr.html",
@@ -413,7 +417,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromQr.js",
-    "revision": "a3daa209d210f7c7d1836fb0f157ad7d"
+    "revision": "705dfbea523bdf751443b54b5cd52ce4"
   },
   {
     "url": "pages/index.html",
@@ -421,7 +425,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/index.js",
-    "revision": "44fe87058e5c8f0d634571acf76273ad"
+    "revision": "de8be9509c880a31f151a32abf395288"
   },
   {
     "url": "pages/network.html",
@@ -429,7 +433,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/network.js",
-    "revision": "7084f167b0a163a345bd097c55864fae"
+    "revision": "703713ced9451466845441a7c07d5eb1"
   },
   {
     "url": "pages/privacyPolicy.html",
@@ -437,7 +441,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/privacyPolicy.js",
-    "revision": "d6ceeaeccd8de4ef2001a301b0337715"
+    "revision": "cd3c961feb5b983889b21edeaf20afbd"
   },
   {
     "url": "pages/receive.html",
@@ -445,7 +449,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/receive.js",
-    "revision": "9f31c337c6f84fef72fd27f1a679d7fc"
+    "revision": "29fc7c0c469ffd9181ad8760c78e0132"
   },
   {
     "url": "pages/send.html",
@@ -453,7 +457,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/send.js",
-    "revision": "e8af3125d813eeafd1a0d6be91c628c2"
+    "revision": "e7391dbb287b0f8c627a3597076b76d4"
   },
   {
     "url": "pages/settings.html",
@@ -461,7 +465,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/settings.js",
-    "revision": "169fad1b5f309fb18c1e280263c69d0a"
+    "revision": "78e30d5ec6ef5ca794641b4306c8315f"
   },
   {
     "url": "pages/support.html",
@@ -469,7 +473,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/support.js",
-    "revision": "7f0c6f3dd035c44a802f7fa464e8931d"
+    "revision": "4cb168e6fc83406bfb2a0adaf05259ad"
   },
   {
     "url": "pages/termsOfUse.html",
@@ -477,11 +481,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/termsOfUse.js",
-    "revision": "45ca19345556e8f2454f167710183aa4"
+    "revision": "3e3524cae093fb1a0690ab73155cf729"
   },
   {
     "url": "providers/BlockchainExplorerProvider.js",
-    "revision": "588cb87114efa79bd6511bc197dbc49f"
+    "revision": "b800b7512d917e96de46385fce3ea571"
   },
   {
     "url": "service-worker-raw.js",
@@ -549,7 +553,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "workers/TransferProcessing.js",
-    "revision": "c2da1477e4e08863c03acc07bf257ec5"
+    "revision": "3001d90b7552db5aff7924bb8be0f36a"
   },
   {
     "url": "workers/TransferProcessingEntrypoint.js",

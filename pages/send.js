@@ -19,12 +19,10 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -39,7 +37,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numbersLab/VueAnnotate", "../model/TransactionsExplorer", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../utils/Url", "../model/CoinUri", "../model/QRReader", "../model/AppState", "../providers/BlockchainExplorerProvider", "../model/Nfc", "../model/Cn", "../model/WalletWatchdog"], function (require, exports, DestructableView_1, VueAnnotate_1, TransactionsExplorer_1, DependencyInjector_1, Wallet_1, Url_1, CoinUri_1, QRReader_1, AppState_1, BlockchainExplorerProvider_1, Nfc_1, Cn_1, WalletWatchdog_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
     var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
     AppState_1.AppState.enableLeftMenu();
     var SendView = /** @class */ (function (_super) {
@@ -281,7 +279,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             //save the tx private key
                             wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
                             //force a mempool check so the user is up to date
-                            var watchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name);
+                            var watchdog = DependencyInjector_1.DependencyInjectorInstance().getInstance(WalletWatchdog_1.WalletWatchdog.name);
                             if (watchdog !== null)
                                 watchdog.checkMempool();
                             var promise = Promise.resolve();
@@ -419,67 +417,67 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             }
         };
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            VueAnnotate_1.VueVar('')
         ], SendView.prototype, "destinationAddressUser", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            VueAnnotate_1.VueVar('')
         ], SendView.prototype, "destinationAddress", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(false)
+            VueAnnotate_1.VueVar(false)
         ], SendView.prototype, "destinationAddressValid", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('0')
+            VueAnnotate_1.VueVar('0')
         ], SendView.prototype, "amountToSend", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(false)
+            VueAnnotate_1.VueVar(false)
         ], SendView.prototype, "lockedForm", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(true)
+            VueAnnotate_1.VueVar(true)
         ], SendView.prototype, "amountToSendValid", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            VueAnnotate_1.VueVar('')
         ], SendView.prototype, "paymentId", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(true)
+            VueAnnotate_1.VueVar(true)
         ], SendView.prototype, "paymentIdValid", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('5')
+            VueAnnotate_1.VueVar('5')
         ], SendView.prototype, "mixIn", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(true)
+            VueAnnotate_1.VueVar(true)
         ], SendView.prototype, "mixinIsValid", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(null)
+            VueAnnotate_1.VueVar(null)
         ], SendView.prototype, "domainAliasAddress", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(null)
+            VueAnnotate_1.VueVar(null)
         ], SendView.prototype, "txDestinationName", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(null)
+            VueAnnotate_1.VueVar(null)
         ], SendView.prototype, "txDescription", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(true)
+            VueAnnotate_1.VueVar(true)
         ], SendView.prototype, "openAliasValid", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(false)
+            VueAnnotate_1.VueVar(false)
         ], SendView.prototype, "qrScanning", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(false)
+            VueAnnotate_1.VueVar(false)
         ], SendView.prototype, "nfcAvailable", void 0);
         __decorate([
-            (0, DependencyInjector_1.Autowire)(Nfc_1.Nfc.name)
+            DependencyInjector_1.Autowire(Nfc_1.Nfc.name)
         ], SendView.prototype, "nfc", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueWatched)()
+            VueAnnotate_1.VueWatched()
         ], SendView.prototype, "destinationAddressUserWatch", null);
         __decorate([
-            (0, VueAnnotate_1.VueWatched)()
+            VueAnnotate_1.VueWatched()
         ], SendView.prototype, "amountToSendWatch", null);
         __decorate([
-            (0, VueAnnotate_1.VueWatched)()
+            VueAnnotate_1.VueWatched()
         ], SendView.prototype, "paymentIdWatch", null);
         __decorate([
-            (0, VueAnnotate_1.VueWatched)()
+            VueAnnotate_1.VueWatched()
         ], SendView.prototype, "mixinWatch", null);
         return SendView;
     }(DestructableView_1.DestructableView));
@@ -487,7 +485,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         new SendView('#app');
     else {
         AppState_1.AppState.askUserOpenWallet(false).then(function () {
-            wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+            wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
             if (wallet === null)
                 throw 'e';
             new SendView('#app');

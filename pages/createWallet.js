@@ -2,12 +2,10 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -109,34 +107,34 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             }
         };
         __decorate([
-            (0, VueAnnotate_1.VueVar)(0)
+            VueAnnotate_1.VueVar(0)
         ], CreateViewWallet.prototype, "step", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            VueAnnotate_1.VueVar('')
         ], CreateViewWallet.prototype, "walletPassword", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            VueAnnotate_1.VueVar('')
         ], CreateViewWallet.prototype, "walletPassword2", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(false)
+            VueAnnotate_1.VueVar(false)
         ], CreateViewWallet.prototype, "insecurePassword", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(false)
+            VueAnnotate_1.VueVar(false)
         ], CreateViewWallet.prototype, "forceInsecurePassword", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(false)
+            VueAnnotate_1.VueVar(false)
         ], CreateViewWallet.prototype, "walletBackupMade", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(null)
+            VueAnnotate_1.VueVar(null)
         ], CreateViewWallet.prototype, "newWallet", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            VueAnnotate_1.VueVar('')
         ], CreateViewWallet.prototype, "mnemonicPhrase", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueWatched)()
+            VueAnnotate_1.VueWatched()
         ], CreateViewWallet.prototype, "walletPasswordWatch", null);
         __decorate([
-            (0, VueAnnotate_1.VueWatched)()
+            VueAnnotate_1.VueWatched()
         ], CreateViewWallet.prototype, "stepWatch", null);
         return CreateViewWallet;
     }(DestructableView_1.DestructableView));

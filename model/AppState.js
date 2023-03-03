@@ -45,23 +45,23 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
         }
         AppState.openWallet = function (wallet, password) {
             var walletWorker = new WalletWorker(wallet, password);
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, wallet);
+            DependencyInjector_1.DependencyInjectorInstance().register(Wallet_1.Wallet.name, wallet);
             var watchdog = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance().watchdog(wallet);
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, watchdog);
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, walletWorker);
+            DependencyInjector_1.DependencyInjectorInstance().register(WalletWatchdog_1.WalletWatchdog.name, watchdog);
+            DependencyInjector_1.DependencyInjectorInstance().register(WalletWorker.name, walletWorker);
             $('body').addClass('connected');
             if (wallet.isViewOnly())
                 $('body').addClass('viewOnlyWallet');
         };
         AppState.disconnect = function () {
-            var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
-            var walletWorker = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWorker.name, 'default', false);
-            var walletWatchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
+            var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+            var walletWorker = DependencyInjector_1.DependencyInjectorInstance().getInstance(WalletWorker.name, 'default', false);
+            var walletWatchdog = DependencyInjector_1.DependencyInjectorInstance().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
             if (walletWatchdog !== null)
                 walletWatchdog.stop();
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, undefined, 'default');
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, undefined, 'default');
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, undefined, 'default');
+            DependencyInjector_1.DependencyInjectorInstance().register(Wallet_1.Wallet.name, undefined, 'default');
+            DependencyInjector_1.DependencyInjectorInstance().register(WalletWorker.name, undefined, 'default');
+            DependencyInjector_1.DependencyInjectorInstance().register(WalletWatchdog_1.WalletWatchdog.name, undefined, 'default');
             $('body').removeClass('connected');
             $('body').removeClass('viewOnlyWallet');
         };
@@ -99,7 +99,7 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
                             });
                             var savePassword_1 = result.value;
                             // let password = prompt();
-                            var memoryWallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+                            var memoryWallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
                             if (memoryWallet === null) {
                                 WalletRepository_1.WalletRepository.getLocalWalletWithPassword(savePassword_1).then(function (wallet) {
                                     //console.log(wallet);
@@ -130,7 +130,7 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
                                                         if (wallet !== null) {
                                                             var tx = TransactionsExplorer_1.TransactionsExplorer.parse(rawTx, wallet);
                                                             if (tx !== null) {
-                                                                console.log("Added new Tx ".concat(tx.hash, " to wallet"));
+                                                                console.log("Added new Tx " + tx.hash + " to wallet");
                                                                 wallet.addNew(tx);
                                                             }
                                                         }

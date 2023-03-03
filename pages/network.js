@@ -19,12 +19,10 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -63,7 +61,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 //console.log(info);
                 _this.connectedNode = info.node;
                 _this.networkDifficulty = info.difficulty;
-                _this.networkHashrate = (0, Filters_1.VueFilterHashrate)(info.difficulty / config.avgBlockTime);
+                _this.networkHashrate = Filters_1.VueFilterHashrate(info.difficulty / config.avgBlockTime);
                 _this.blockchainHeight = info.height;
                 _this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
                 _this.ticker = config.coinSymbol;
@@ -71,28 +69,28 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             });
         };
         __decorate([
-            (0, VueAnnotate_1.VueVar)(0)
+            VueAnnotate_1.VueVar(0)
         ], NetworkView.prototype, "networkHashrate", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(0)
+            VueAnnotate_1.VueVar(0)
         ], NetworkView.prototype, "blockchainHeight", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(0)
+            VueAnnotate_1.VueVar(0)
         ], NetworkView.prototype, "networkDifficulty", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(0)
+            VueAnnotate_1.VueVar(0)
         ], NetworkView.prototype, "lastReward", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(0)
+            VueAnnotate_1.VueVar(0)
         ], NetworkView.prototype, "lastBlockFound", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(0)
+            VueAnnotate_1.VueVar(0)
         ], NetworkView.prototype, "connectedNode", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)(0)
+            VueAnnotate_1.VueVar(0)
         ], NetworkView.prototype, "ticker", void 0);
         NetworkView = __decorate([
-            (0, VueAnnotate_1.VueRequireFilter)('hashrate', Filters_1.VueFilterHashrate)
+            VueAnnotate_1.VueRequireFilter('hashrate', Filters_1.VueFilterHashrate)
         ], NetworkView);
         return NetworkView;
     }(DestructableView_1.DestructableView));

@@ -36,13 +36,13 @@ define(["require", "exports", "../model/TransactionsExplorer", "../model/Wallet"
                 }
                 var transaction = TransactionsExplorer_1.TransactionsExplorer.parse(rawTransaction, currentWallet);
                 if (transaction !== null) {
-                    logDebugMsg("parsed tx ".concat(transaction['hash'], " from rawTransaction"));
+                    logDebugMsg("parsed tx " + transaction['hash'] + " from rawTransaction");
                 }
                 if (transaction !== null) {
                     currentWallet.addNew(transaction);
-                    logDebugMsg("Added tx ".concat(transaction.hash, " to currentWallet"));
+                    logDebugMsg("Added tx " + transaction.hash + " to currentWallet");
                     transactions.push(transaction.export());
-                    logDebugMsg("pushed tx ".concat(transaction.hash, " to transactions[]"));
+                    logDebugMsg("pushed tx " + transaction.hash + " to transactions[]");
                 }
             }
             postMessage({

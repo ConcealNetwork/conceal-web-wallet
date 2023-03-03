@@ -19,12 +19,10 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -89,7 +87,7 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
                 $('body').removeClass('menuHidden');
         };
         MenuView = __decorate([
-            (0, VueAnnotate_1.VueClass)()
+            VueAnnotate_1.VueClass()
         ], MenuView);
         return MenuView;
     }(Vue));
@@ -173,13 +171,13 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
             Translations_1.Translations.loadLangTranslation(this.language);
         };
         __decorate([
-            (0, VueAnnotate_1.VueVar)('en')
+            VueAnnotate_1.VueVar('en')
         ], CopyrightView.prototype, "language", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueWatched)()
+            VueAnnotate_1.VueWatched()
         ], CopyrightView.prototype, "languageWatch", null);
         CopyrightView = __decorate([
-            (0, VueAnnotate_1.VueClass)()
+            VueAnnotate_1.VueClass()
         ], CopyrightView);
         return CopyrightView;
     }(Vue));
