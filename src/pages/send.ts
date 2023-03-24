@@ -29,7 +29,7 @@ import {QRReader} from "../model/QRReader";
 import {AppState} from "../model/AppState";
 import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
 import {NdefMessage, Nfc} from "../model/Nfc";
-import {BlockchainExplorer} from "../model/blockchain/BlockchainExplorer";
+import {BlockchainExplorer, RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {Cn} from "../model/Cn";
 import {WalletWatchdog} from "../model/WalletWatchdog";
 
@@ -42,12 +42,14 @@ class SendView extends DestructableView {
 	@VueVar('') destinationAddressUser !: string;
 	@VueVar('') destinationAddress !: string;
 	@VueVar(false) destinationAddressValid !: boolean;
-	@VueVar('10.5') amountToSend !: string;
+	@VueVar('0') amountToSend !: string;
 	@VueVar(false) lockedForm !: boolean;
 	@VueVar(true) amountToSendValid !: boolean;
 	@VueVar('') paymentId !: string;
 	@VueVar(true) paymentIdValid !: boolean;
-
+	@VueVar('5') mixIn !: string;
+	@VueVar(true) mixinIsValid !: boolean;
+	
 	@VueVar(null) domainAliasAddress !: string | null;
 	@VueVar(null) txDestinationName !: string | null;
 	@VueVar(null) txDescription !: string | null;
@@ -83,7 +85,7 @@ class SendView extends DestructableView {
 		this.lockedForm = false;
 		this.destinationAddressUser = '';
 		this.destinationAddress = '';
-		this.amountToSend = '10.5';
+		this.amountToSend = '0';
 		this.destinationAddressValid = false;
 		this.openAliasValid = false;
 		this.qrScanning = false;
@@ -91,7 +93,7 @@ class SendView extends DestructableView {
 		this.domainAliasAddress = null;
 		this.txDestinationName = null;
 		this.txDescription = null;
-
+		
 		this.stopScan();
 	}
 
@@ -249,9 +251,12 @@ class SendView extends DestructableView {
 						swal.showLoading();
 					}
 				});
+				
+				let mixinToSendWith: number = config.defaultMixin;
+				
 				TransactionsExplorer.createTx([{address: destinationAddress, amount: amountToSend}], self.paymentId, wallet, blockchainHeight,
-					function (numberOuts: number): Promise<any[]> {
-						return blockchainExplorer.getRandomOuts(numberOuts);
+					function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+						return blockchainExplorer.getRandomOuts(amounts, numberOuts);
 					}
 					, function (amount: number, feesAmount: number): Promise<void> {
 						if (amount + feesAmount > wallet.unlockedAmount(blockchainHeight)) {
@@ -295,7 +300,8 @@ class SendView extends DestructableView {
 								}).catch(reject);
 							}, 1);
 						});
-					}).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+					},
+					mixinToSendWith).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
 					blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
 						//save the tx private key
 						wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
@@ -307,21 +313,27 @@ class SendView extends DestructableView {
 
 						let promise = Promise.resolve();
 						if (
+							destinationAddress === 'ccx7NzuofXxcypov8Yqm2A118xT17HereBFjp3RScjzM7wncf8BRcnHZbACy63sWD71L7NmkJRgQKXFE3weCfAh31RAVFHgttf' ||
 							destinationAddress === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj' ||
-							destinationAddress === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj' ||
-							destinationAddress === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj'
+							destinationAddress === 'ccx7YZ4RC97fqMh1bmzrFtDoSSiEgvEYzhaLE53SR9bh4QrDBUhGUH3TCmXqv8MTLjJDtnCeeaT5bLC2ZSzp3ZmQ19DoiPLLXS'
 						) {
 							promise = swal({
 								type: 'success',
 								title: i18n.t('sendPage.thankYouDonationModal.title'),
 								text: i18n.t('sendPage.thankYouDonationModal.content'),
 								confirmButtonText: i18n.t('sendPage.thankYouDonationModal.confirmText'),
+                onClose: () => {
+                  window.location.href = '#!account';
+                }                
 							});
 						} else
 							promise = swal({
 								type: 'success',
 								title: i18n.t('sendPage.transferSentModal.title'),
 								confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
+                onClose: () => {
+                  window.location.href = '#!account';
+                }                
 							});
 
 						promise.then(function () {
@@ -429,6 +441,19 @@ class SendView extends DestructableView {
 		}
 	}
 
+	@VueWatched()
+	mixinWatch() {
+		try {
+			this.mixinIsValid = !isNaN(parseFloat(this.mixIn));
+
+			let mixin: number =  parseFloat(this.mixIn);
+			if (mixin > 10 || (mixin < 3 && mixin !== 0))
+			    this.mixinIsValid = false;
+
+		} catch (e) {
+			this.mixinIsValid = false;
+		}
+	}
 }
 
 

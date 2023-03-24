@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project

@@ -33,12 +33,12 @@ let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'def
 let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
 let walletWatchdog : WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name,'default', false);
 
-class SendView extends DestructableView{
+class SettingsView extends DestructableView{
 	@VueVar(10) readSpeed !: number;
 	@VueVar(false) checkMinerTx !: boolean;
 
 	@VueVar(false) customNode !: boolean;
-	@VueVar('http://node.conceal.network:32348/') nodeUrl !: string;
+	@VueVar('https://node.conceal.network:16000/') nodeUrl !: string;
 
 	@VueVar(0) creationHeight !: number;
 	@VueVar(0) scanHeight !: number;
@@ -143,6 +143,6 @@ class SendView extends DestructableView{
 
 
 if(wallet !== null && blockchainExplorer !== null)
-	new SendView('#app');
+	new SettingsView('#app');
 else
 	window.location.href = '#index';

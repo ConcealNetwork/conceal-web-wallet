@@ -19,11 +19,15 @@ onmessage = function (data: MessageEvent) {
 		currentWallet = Wallet.loadFromRaw(event.wallet);
 		postMessage('readyWallet');
 	} else if (event.type === 'process') {
+    logDebugMsg(`process new transactions...`);
+
 		if (typeof event.wallet !== 'undefined') {
+      logDebugMsg(`loading wallet for the first time...`);
 			currentWallet = Wallet.loadFromRaw(event.wallet);
 		}
 
 		if (currentWallet === null) {
+      logDebugMsg(`Wallet is missing...`);
 			postMessage('missing_wallet');
 			return;
 		}
@@ -33,6 +37,9 @@ onmessage = function (data: MessageEvent) {
 		let rawTransactions: RawDaemon_Transaction[] = event.transactions;
 		let transactions: any[] = [];
 
+    // log any raw transactions that need to be processed
+    logDebugMsg(`rawTransactions`, rawTransactions);
+
 		for (let rawTransaction of rawTransactions) {
 			if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
 				continue;
@@ -40,14 +47,14 @@ onmessage = function (data: MessageEvent) {
 
 			let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
 			if (transaction !== null) {
-				//console.log(`parsed tx ${transaction['hash']} from rawTransaction`);
+				logDebugMsg(`parsed tx ${transaction['hash']} from rawTransaction`);
 			}
 			if (transaction !== null) {
 				currentWallet.addNew(transaction);
-				//console.log(`Added tx ${transaction.hash} to currentWallet`);
+        logDebugMsg(`Added tx ${transaction.hash} to currentWallet`);
 
 				transactions.push(transaction.export());
-				//console.log(`pushed tx ${transaction.hash} to transactions[]`);
+        logDebugMsg(`pushed tx ${transaction.hash} to transactions[]`);
 			}
 		}
 		postMessage({

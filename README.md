@@ -1,20 +1,21 @@
-# Conceal Web Wallet (Serverless)
-This web wallet is doing everything on client-side to give the best privacy to its users.
+# Conceal Web Wallet
+This web wallet uses serverless technology and does everything on client-side to give the best privacy to its users.
 
 # Security
-No keys, seeds, or sensitive data is sent to the server (truly serverless and client).
+No keys, seeds, or sensitive data is sent to the server (truly serverless and client-side operated).
 
 Encryption is done with a certified library, [Tweetnacl.Js.](https://github.com/dchest/tweetnacl-js).
 
 If you find a potential security issue, please contact us via [Discord] (https://discord.conceal.network) so we can patch it as soon as possible.
 
 # Features
-- Serverless: Complete wallet sync without server side processing for security
-- Funds Transactions (Send/Receive $CCX)
+- Secure, light and fast
+- Serverless: Complete wallet sync without server-side processing for extra security
+- Advanced Import/Export (from private keys, mnemonic seed, or json file)
+- Mempool Support: Checking incoming transfers in realtime
+- Transactions: Send/Receive $CCX
 - Transactions History
-- Mempool Support (checking incoming transfers in realtime)
-- Custom QR codes
-- Import/Export from private keys, mnemonic seed, or json file (exported by the wallet)
+- Customizable QR Codes
 - View-Only Mode
 - Network Stats
 
@@ -25,6 +26,7 @@ Developers:
 - [DaveLong](https://github.com/DaveLong) (initial adaptation of PHP Api for Bytecoin based coins)
 - [Aiwe](https://github.com/aivve) (adapted for Bytecoin/CryptoNote from Monero codebase)
 - [Krypt0x](https://github.com/krypt0x) (fixes, enhancements and forking to CN-CCX)
+- [Taegus](https://github.com/taeguscromis) (fixes, improved sync speed, gui improvements)
 
 # Translations:
 - Chinese: [mainframer](https://github.com/mainframer), [Alex Nnian](https://github.com/nnian)

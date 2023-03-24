@@ -1,7 +1,7 @@
 {
-  "website":{
-	"title":"کیف پول کربو",
-	"description":"کیف پول کربو کاملا ایمن و سمت کاربر میباشد و تمامی کربو های شما بر روی دستگاهتان نگهداری میشود"
+  "website": {
+    "title": "کیف پول کربو",
+    "description": "کیف پول کربو کاملا ایمن و سمت کاربر میباشد و تمامی کربو های شما بر روی دستگاهتان نگهداری میشود"
   },
   "messages": {
     "menu": {
@@ -31,7 +31,8 @@
       "openWalletModal": {
         "title": "'رمز عبور کیف پول'",
         "confirmText": "تایید",
-        "cancelText": "لغو"
+        "cancelText": "لغو",
+        "forgotPassword": "رمز عبور را فراموش کرده اید؟"
       },
       "invalidPasswordModal": {
         "title": "متاسفیم",
@@ -97,6 +98,8 @@
       },
       "balanceBlock": {
         "title": "کل حساب",
+        "total": "Total",
+        "pending": "Pending",
         "unlocked": "در دسترس"
       },
       "historyBlock": {
@@ -176,7 +179,7 @@
         "title": "ولت آنلاین",
         "content": "ولت آنلاین توسط برنامه نویسان کربو توسعه داده میشود<br/>اگر به تداوم پروژه اهمیت میدهید لطفا مقداری کربو به عنوان کادو برای ما بفرستید<br/><br/>"
       },
-      "masariFundBlock": {
+      "devFundBlock": {
         "title": "کیف پول جهت ارسال کادو",
         "content": "اگر مایل به ارسال کادو هستید آن را به آدرس کیف پول زیر ارسال نمایید"
       }
@@ -186,8 +189,15 @@
       "subtitle": "اگر به کمک نیاز دارید ما میتوانیم به شما کمک کنیم",
       "getInTouchBlock": {
         "title": "با ما در تماس باشید",
-        "content": "اگر ایده یا پیشنهادی دارید که به ارتقای این کیف پول کمک میکنید با ما در تماس باشید",
+        "content": "اگر با کیف پول خود مشکلی دارید، با ما تماس بگیرید!",
         "discord": "سرور دیسکورد کربو"
+      }
+    },
+    "forgotPasswordPage": {
+      "subtitle": "نحوه بازیابی دسترسی به کیف پول",
+      "forgotPasswordBlock": {
+        "title": "اگر رمز عبور را فراموش کرده اید، تنظیم مجدد آن غیرممکن است!",
+        "content": "تنها راه برای بازگرداندن دسترسی به کیف پول شما این است که رمز عبور خود را فراخوانی کنید یا داده های کیف پول را از حافظه مرورگر خود حذف کنید و کیف پول را از نسخه پشتیبان بازیابی کنید (به عنوان مثال عبارت بازیابی حافظه).<br /> اگر کلیدهای کیف پول یا عبارت بازیابی دارید. ، در زیر می توانید کیف پول خود را حذف کنید. سپس می‌توانید آن را بازیابی و از ابتدا همگام‌سازی کنید.<br/> <strong>لطفاً قبل از ادامه، از داشتن عبارت بازیابی مطمئن شوید!!!</strong>"
       }
     },
     "networkPage": {
@@ -218,6 +228,10 @@
         "paymentId": {
           "label": "شناسه واریز",
           "invalid": "شناسه ی واریز اشتباه است مقداری را بین شانزده تا شصت و چهار کاراکتر وارد نمایید"
+        },
+        "mixin": {
+          "label": "حریم خصوصی",
+          "invalid": "میکسین نامعتبر است، باید از 3 تا 10 یا صفر باشد"
         },
         "sendButton": "ارسال",
         "cancelButton": "لغو"
@@ -325,11 +339,11 @@
         "readMinerTx": {
           "label": "تراکنش های ماینینگ فقط بصورت تکی"
         },
-        "customNode":{
-          "label":"Use custom node"
+        "customNode": {
+          "label": "Use custom node"
         },
-        "nodeUrl":{
-          "label":"Node URL"
+        "nodeUrl": {
+          "label": "Node URL"
         }
       },
       "changePasswordButton": "تغییر رمز عبور کیف پول",
@@ -472,15 +486,21 @@
       }
     }
   },
-  "number":{
-  },
-  "date":{
-	"short": {
-	  "year": "numeric", "month": "short", "day": "numeric"
-	},
-	"long": {
-	  "year": "numeric", "month": "short", "day": "numeric",
-	  "weekday": "short", "hour": "numeric", "minute": "numeric", "hour12": false
-	}
+  "number": {},
+  "date": {
+    "short": {
+      "year": "numeric",
+      "month": "short",
+      "day": "numeric"
+    },
+    "long": {
+      "year": "numeric",
+      "month": "short",
+      "day": "numeric",
+      "weekday": "short",
+      "hour": "numeric",
+      "minute": "numeric",
+      "hour12": false
+    }
   }
 }
