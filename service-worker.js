@@ -291,7 +291,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/MnemonicLang.js",
-    "revision": "bdc28d699fcd85d3445167b1671b5cd1"
+    "revision": "670ec0fe92754db2ff4f61d14e69a7b9"
   },
   {
     "url": "model/Nfc.js",
