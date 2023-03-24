@@ -47,3 +47,6 @@ Developers:
 - You can contribute by translation the wallet in your native language, it's really easy!  
 Read [the translations guide](TRANSLATIONS.md) to get instructions on how to do that
 - Report bugs & ideas to help us improve the web wallet by opening an [issue](https://github.com/ConcealNetwork/conceal-web-wallet/issues/new)
+
+# Copyright
+© 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
