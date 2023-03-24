@@ -4,6 +4,8 @@
  * Copyright (c) 2018-2020 The Karbo developers
  * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
  * Copyright (c) 2022, The Karbo Developers
+ * Copyright (c) 2022, Conceal Devs
+ * Copyright (c) 2022, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *

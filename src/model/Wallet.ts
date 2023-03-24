@@ -31,7 +31,7 @@ export class WalletOptions{
 	checkMinerTx:boolean = false;
 	readSpeed:number = 10;
 	customNode:boolean = false;
-	nodeUrl:string = 'http://node.conceal.network:32348/';
+	nodeUrl:string = 'https://node.conceal.network:16000/';
 
 	static fromRaw(raw : RawWalletOptions){
 		let options = new WalletOptions();
@@ -112,7 +112,7 @@ export class Wallet extends Observable{
 	}
 
 	static loadFromRaw(raw : RawWallet) : Wallet{
-		let wallet = new Wallet();
+    let wallet = new Wallet();
 		wallet.transactions = [];
 		for(let rawTransac of raw.transactions){
 			wallet.transactions.push(Transaction.fromRaw(rawTransac));
@@ -286,6 +286,9 @@ export class Wallet extends Observable{
 		for(let transaction of this.transactions){
 			news.push(Transaction.fromRaw(transaction.export()));
 		}
+    news.sort((a,b) =>{
+       return a.timestamp - b.timestamp;
+    })    
 		return news;
 	}
 

@@ -1,4 +1,4 @@
-﻿{
+{
   "website": {
     "title": "카르보 지갑",
     "description": "카르보 통화를위한 공식 온라인 지갑 - 최적의 보안을 위해 브라우저에서 완벽하게 처리됩니다. 본인만 사용하는 기기에서 접속해 주세요."
@@ -31,7 +31,8 @@
       "openWalletModal": {
         "title": "비밀번호",
         "confirmText": "열기",
-        "cancelText": "취소"
+        "cancelText": "취소",
+        "forgotPassword": "비밀번호를 잊으 셨나요?"
       },
       "invalidPasswordModal": {
         "title": "비밀번호",
@@ -71,24 +72,24 @@
         "create": "지갑 만들기",
         "createWallet": "지갑 만들기"
       },
-	  "notes": {
-		"secure": {
-		  "title": "안전한",
-		  "description": "완전 암호화!"
-		},
-		"fast": {
-		  "title": "얻기 쉬운",
-		  "description": "브라우저 기반!"
-		},
-		"technology": {
-		  "title": "고객 입장에서",
-		  "description": "기기에 키가 있습니다"
-		},
-		"openSource": {
-		  "title": "오픈 소스",
-		  "description": "Github에서 호스팅!"
-		}
-	  }
+      "notes": {
+        "secure": {
+          "title": "안전한",
+          "description": "완전 암호화!"
+        },
+        "fast": {
+          "title": "얻기 쉬운",
+          "description": "브라우저 기반!"
+        },
+        "technology": {
+          "title": "고객 입장에서",
+          "description": "기기에 키가 있습니다"
+        },
+        "openSource": {
+          "title": "오픈 소스",
+          "description": "Github에서 호스팅!"
+        }
+      }
     },
     "accountPage": {
       "title": "계정",
@@ -98,6 +99,8 @@
       },
       "balanceBlock": {
         "title": "잔액",
+        "total": "Total",
+        "pending": "Pending",
         "unlocked": "해제완료"
       },
       "historyBlock": {
@@ -189,8 +192,15 @@
       "subtitle": "어떻게 도와드릴까요?",
       "getInTouchBlock": {
         "title": "코어팀에게 연락하고 싶습니다.",
-        "content": "웹지갑 서비스의 개선에 관련된 새로운 아이디어나 피드백이 있으신가요? 그렇다면 연락주세요!",
+        "content": "지갑에 문제가 있다면 연락주세요!",
         "discord": "카르보 코인 디스코드 채널"
+      }
+    },
+    "forgotPasswordPage": {
+      "subtitle": "지갑에 대한 액세스를 복원하는 방법",
+      "forgotPasswordBlock": {
+        "title": "비밀번호를 잊어버리셨다면 재설정이 불가능합니다!",
+        "content": "지갑에 대한 액세스를 복원하는 유일한 방법은 비밀번호를 불러오거나 브라우저 메모리에서 지갑 데이터를 삭제하고 백업에서 지갑을 복원하는 것입니다(예: 니모닉 복구 구문).<br /> 지갑 키 또는 복구 구문이 있는 경우 , 아래에서 지갑을 삭제할 수 있습니다. 그러면 복원하고 처음부터 동기화할 수 있습니다.<br/> <strong>계속하기 전에 복구 문구가 있는지 확인하세요!!!</strong>"
       }
     },
     "networkPage": {
@@ -223,6 +233,10 @@
         "paymentId": {
           "label": "페이먼트 ID (옵션)",
           "invalid": "페이먼트 ID가 올바르지 않습니다. 올바른 ID의 문자길이는 16 또는 64 문자입니다."
+        },
+        "mixin": {
+          "label": "은둔",
+          "invalid": "믹스인이 잘못되었습니다. 3에서 10 또는 0이어야 합니다."
         },
         "sendButton": "보내기",
         "cancelButton": "취소"
@@ -343,11 +357,11 @@
         "readMinerTx": {
           "label": "채굴관련 송금 확인 (오직 단독 채굴에 적용됨)"
         },
-        "customNode":{
-          "label":"Use custom node"
+        "customNode": {
+          "label": "Use custom node"
         },
-        "nodeUrl":{
-          "label":"Node URL"
+        "nodeUrl": {
+          "label": "Node URL"
         }
       },
       "changePasswordButton": "비밀번호 변경",

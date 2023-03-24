@@ -288,7 +288,7 @@ if (!isCordovaApp && 'serviceWorker' in navigator) {
 
 		switch (event.data) {
 			case 'reload-window-update':
-				window.location.reload(true);
+				window.location.reload();
 				break;
 			default:
 				// NOOP
