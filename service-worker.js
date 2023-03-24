@@ -1,7 +1,9 @@
 "use strict";
 /*
- * Copyright (c) 2018, Gnock
- * Copyright (c) 2018, The Masari Project
+ * Copyright (c) 2018 Gnock
+ * Copyright (c) 2018-2019 The Masari Project
+ * Copyright (c) 2018-2020 The Karbo developers
+ * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -17,11 +19,11 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.2.0/workbox
 workbox.precaching.precacheAndRoute([
   {
     "url": "api.html",
-    "revision": "41b3bc679d6e2c8e31b1a8ec298b22f0"
+    "revision": "608d12f44c72b15d13959b539521b820"
   },
   {
     "url": "api.js",
-    "revision": "9d76ce35b4a493232c5d76f2f86e1942"
+    "revision": "2ace1a08b832583ede8e92a678fc43d4"
   },
   {
     "url": "assets/css/font-awesome.css",
@@ -33,7 +35,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "assets/css/main.css",
-    "revision": "8118f245d51728ee3cb6e1baa04f437b"
+    "revision": "7aa83b0649a4a7f08a0d02219fb28b57"
   },
   {
     "url": "assets/img/coin_white.png",
@@ -101,11 +103,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "index.html",
-    "revision": "2bc42675414310b8039eb47d5f615bdf"
+    "revision": "bdb2f6282f403a24aab08c40641ce504"
   },
   {
     "url": "index.js",
-    "revision": "8cab6c891dd762d593d84a40b260c85f"
+    "revision": "6c7cd32d7d8c0bb3c78cfe8a236cb8a0"
   },
   {
     "url": "lib/base58.js",
@@ -121,7 +123,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "lib/cn_utils.js",
-    "revision": "931c90bcc1519d2476e75e2d6b42870a"
+    "revision": "3edfe20f27a092062598a3e9c5339ae0"
   },
   {
     "url": "lib/crypto.js",
@@ -249,15 +251,15 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/AppState.js",
-    "revision": "bfc1167588b193e3043e5d68f55fbcc7"
+    "revision": "108ada0a79bc9b44fbf4b8ecc2105ac3"
   },
   {
     "url": "model/blockchain/BlockchainExplorer.js",
-    "revision": "4c5f54978a36f58b757edcee7966fd9b"
+    "revision": "df07fd4bf68fc0d598808ffa7ffe8e80"
   },
   {
     "url": "model/blockchain/BlockchainExplorerRPCDaemon.js",
-    "revision": "6b0843e122980daf9f48e78fd6d4bd37"
+    "revision": "a2708423a83328e8e18303ba36a9f89d"
   },
   {
     "url": "model/Cn.js",
@@ -265,11 +267,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/CoinUri.js",
-    "revision": "d2d519118955da95a6ce6f102c61cf0b"
+    "revision": "e36273952db5e1f467cbd4fd07716107"
   },
   {
     "url": "model/Constants.js",
-    "revision": "8acf6d5f8d2a68ea372d2d91d3c427ac"
+    "revision": "c4eea9adc1b590842df5134c4f29c146"
   },
   {
     "url": "model/Functions.js",
@@ -277,19 +279,19 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/KeysRepository.js",
-    "revision": "c9a201b23d69a0c9f0292a192a52da9d"
+    "revision": "f5d5eb9df2b29f84e63796980c887a1f"
   },
   {
     "url": "model/MathUtil.js",
-    "revision": "1dafc5a68cf404bfdc7846d634797282"
+    "revision": "d6d4f6454d3a7f55f86cfa51812954d3"
   },
   {
     "url": "model/Mnemonic.js",
-    "revision": "83a96b38d502c9192477ff0f568f6945"
+    "revision": "f0cf6e5b3b52dc6cca8ecf76a0e42760"
   },
   {
     "url": "model/MnemonicLang.js",
-    "revision": "8b6d66c821c1e04f954c99c3757b6075"
+    "revision": "bdc28d699fcd85d3445167b1671b5cd1"
   },
   {
     "url": "model/Nfc.js",
@@ -297,15 +299,15 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/Password.js",
-    "revision": "7d20fa7546897358d43a821b0bc8adb1"
+    "revision": "5525ec49866a5a8a20c9a1a7701b207d"
   },
   {
     "url": "model/QRReader.js",
-    "revision": "dad18501e542b58402ce5d54fa7b072b"
+    "revision": "899bdb34b170151e3fb443222abe3d65"
   },
   {
     "url": "model/Storage.js",
-    "revision": "39e0693482284ed1beabf1ac048f7791"
+    "revision": "5140609b8f1df7567dc0a6fab2116a0d"
   },
   {
     "url": "model/Transaction.js",
@@ -317,15 +319,15 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "model/Translations.js",
-    "revision": "6cd6934dceadd3c97599bc093207fd06"
+    "revision": "bcc4ad9ee2a03ae4226c59cc3e6b180c"
   },
   {
     "url": "model/Wallet.js",
-    "revision": "41d41ae108baa7363fbc6fd8485f97fa"
+    "revision": "c9122d7a4d3320037a0194b6a3936d82"
   },
   {
     "url": "model/WalletRepository.js",
-    "revision": "11536d9f1da86f3b1d331028c1aa913d"
+    "revision": "f28a3719209661ca01de27f1217dbd32"
   },
   {
     "url": "model/WalletWatchdog.js",
@@ -337,7 +339,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/account.js",
-    "revision": "c3ec4acc4fda2fe10df78d695332ac30"
+    "revision": "70c3ef1d511b8f3e315ce40fd75a54e3"
   },
   {
     "url": "pages/changeWalletPassword.html",
@@ -345,7 +347,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/changeWalletPassword.js",
-    "revision": "209e1aee68c4cb853808ad3ef749655c"
+    "revision": "ebd5b3de8545bb75a642f1bde1044f31"
   },
   {
     "url": "pages/createWallet.html",
@@ -361,7 +363,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/disconnect.js",
-    "revision": "3594698740c48755bfb42a88ac737180"
+    "revision": "a97764bbd8a54623aadfcaef59700682"
   },
   {
     "url": "pages/donate.html",
@@ -369,7 +371,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/donate.js",
-    "revision": "d65ed68add23b8d8fa95033bdb37467e"
+    "revision": "e15453bca1879fa3f2c419df591071f4"
   },
   {
     "url": "pages/export.html",
@@ -377,7 +379,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/export.js",
-    "revision": "c98a20e14d0b544d7ab944f88ae1b84f"
+    "revision": "06bceaaf4c112539dd1abdca395e3b98"
   },
   {
     "url": "pages/import.html",
@@ -385,7 +387,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/import.js",
-    "revision": "27d9140b3940e24c404c3662c80ba651"
+    "revision": "fd018d4e9a8eff3d400be7cd5167ba52"
   },
   {
     "url": "pages/importFromFile.html",
@@ -393,7 +395,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromFile.js",
-    "revision": "b24a0750c6b96402dd85efe97452626e"
+    "revision": "ee382d4bb6f0150aa87f287dc383f712"
   },
   {
     "url": "pages/importFromKeys.html",
@@ -401,7 +403,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromKeys.js",
-    "revision": "c24c27a0e6be26f13f6de05884f0220c"
+    "revision": "dbe89e41505b2239f465340081c0ade1"
   },
   {
     "url": "pages/importFromMnemonic.html",
@@ -409,7 +411,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromMnemonic.js",
-    "revision": "0f3be1232e6b0151c8824ab1e8b1b3c3"
+    "revision": "642ada48c431688eea69542223baed9e"
   },
   {
     "url": "pages/importFromQr.html",
@@ -417,7 +419,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/importFromQr.js",
-    "revision": "705dfbea523bdf751443b54b5cd52ce4"
+    "revision": "823bebde509da0824f1b8e72a9ce5b4b"
   },
   {
     "url": "pages/index.html",
@@ -425,7 +427,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/index.js",
-    "revision": "de8be9509c880a31f151a32abf395288"
+    "revision": "f13e19f61eae6ae28ab574ff74dbe305"
   },
   {
     "url": "pages/network.html",
@@ -433,11 +435,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/network.js",
-    "revision": "703713ced9451466845441a7c07d5eb1"
+    "revision": "73643a5a15fbd7320a0f548669eddca9"
   },
   {
     "url": "pages/privacyPolicy.html",
-    "revision": "2a584b7cf7785deb243838da29e8ae07"
+    "revision": "6b9078e65a28fd5b0079c149c7a3642c"
   },
   {
     "url": "pages/privacyPolicy.js",
@@ -449,7 +451,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/receive.js",
-    "revision": "29fc7c0c469ffd9181ad8760c78e0132"
+    "revision": "a6a549af4eeb9c9d4930c1a2118abfca"
   },
   {
     "url": "pages/send.html",
@@ -457,7 +459,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/send.js",
-    "revision": "e7391dbb287b0f8c627a3597076b76d4"
+    "revision": "8ab1cfa4d33b0bddec9a2387485f85b2"
   },
   {
     "url": "pages/settings.html",
@@ -465,7 +467,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "pages/settings.js",
-    "revision": "78e30d5ec6ef5ca794641b4306c8315f"
+    "revision": "7f67a676bdf9fa7d1e2c0f11028d6d51"
   },
   {
     "url": "pages/support.html",
@@ -485,11 +487,11 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "providers/BlockchainExplorerProvider.js",
-    "revision": "b800b7512d917e96de46385fce3ea571"
+    "revision": "7e9047953d981c72932b0d1ca02cbccd"
   },
   {
     "url": "service-worker-raw.js",
-    "revision": "3f7443e2724e74587330aff15f93149e"
+    "revision": "34187159e29637963b75590a9c9f72b7"
   },
   {
     "url": "translations/de.json",
@@ -549,7 +551,7 @@ workbox.precaching.precacheAndRoute([
   },
   {
     "url": "utils/Url.js",
-    "revision": "49f1aa1b3729b2f5e19d742da52c03e0"
+    "revision": "871a72da2a5aceea2a12e6b41d78c2ec"
   },
   {
     "url": "workers/TransferProcessing.js",

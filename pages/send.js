@@ -1,6 +1,8 @@
 /*
- * Copyright (c) 2018, Gnock
- * Copyright (c) 2018, The Masari Project
+ * Copyright (c) 2018 Gnock
+ * Copyright (c) 2018-2019 The Masari Project
+ * Copyright (c) 2018-2020 The Karbo developers
+ * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
  * Copyright (c) 2022, The Karbo Developers
  * Copyright (c) 2022, Conceal Devs
  * Copyright (c) 2022, Conceal Network
