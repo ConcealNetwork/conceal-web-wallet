@@ -19,8 +19,8 @@ global.config = {
 	testnet: false,
     
 	coinUnitPlaces: 6,
-  coinDisplayUnitPlaces: 6,
-	txMinConfirms: 10,
+	coinDisplayUnitPlaces: 6,
+  	txMinConfirms: 10,
 	txCoinbaseMinConfirms: 10,
 	
 	addressPrefix: 0x7AD4,
