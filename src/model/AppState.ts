@@ -33,7 +33,7 @@ export class WalletWorker {
 	constructor(wallet: Wallet, password: string) {
 		this.wallet = wallet;
 		this.password = password;
-		let self = this;
+		let self: any = this;
 		wallet.addObserver(Observable.EVENT_MODIFIED, function () {
 			if (self.intervalSave === 0)
 				self.intervalSave = setTimeout(function () {
