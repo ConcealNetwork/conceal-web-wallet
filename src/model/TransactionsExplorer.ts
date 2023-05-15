@@ -608,17 +608,16 @@ export class TransactionsExplorer {
 				}
 				let nbOutsNeeded: number = mixin + 1;
 
-                obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts: any[]) {
-						
-				console.log('------------------------------mix_outs');
-				console.log('amounts', amounts);
-				console.log('lots_mix_outs', lotsMixOuts);
+        obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts: any[]) {			
+          console.log('------------------------------mix_outs');
+          console.log('amounts', amounts);
+          console.log('lots_mix_outs', lotsMixOuts);
 
-				    TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
-					resolve(data);
-				    }).catch(function (e) {
+  		    TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+	  				resolve(data);
+			    }).catch(function (e) {
 						reject(e);
-					  });
+				  });
 				});
 			});
 		});

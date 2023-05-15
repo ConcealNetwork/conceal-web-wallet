@@ -15,10 +15,24 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
+import {BlockchainExplorer, RawDaemon_Out} from "./blockchain/BlockchainExplorer";
 import {Transaction, TransactionIn, TransactionOut} from "./Transaction";
+import {TransactionsExplorer} from "./TransactionsExplorer";
 import {KeysRepository, UserKeys} from "./KeysRepository";
 import {Observable} from "../lib/numbersLab/Observable";
 import {Cn, CnNativeBride, CnTransactions} from "./Cn";
+import {Constants} from "./Constants";
+import {MathUtil} from "./MathUtil";
+
+type RawOutForTx = {
+	keyImage: string,
+	amount: number,
+	public_key: string,
+	index: number,
+	global_index: number,
+	tx_pub_key: string
+};
 
 export type RawWalletOptions = {
 	checkMinerTx?:boolean,
@@ -414,4 +428,110 @@ export class Wallet extends Observable{
 		}
 	}
 
+  optimizationNeeded(blockchainHeight: number, threshhold: number) {
+    let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(this, blockchainHeight);
+    let counter: number = 0;    
+
+    // first sort the outs in ascending order
+    unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
+    console.log("unspentOuts", unspentOuts.length);
+
+    for (let i = 0; i < unspentOuts.length; i++) {
+      if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < 10)) {
+        counter++;
+      } else {
+        break;
+      }
+    }  
+
+    return (counter >= 10);
+  }
+
+  optimize(blockchainHeight: number, threshhold: number, blockchainExplorer: BlockchainExplorer, obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>) {
+    let wallet = this as Wallet;
+    let txSize = 10;
+
+		return new Promise<number>(function (resolve, reject) {
+			let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(wallet, blockchainHeight);
+			let neededFee = new JSBigInt((<any>window).config.coinFee);
+      let stillData = unspentOuts.length >= txSize;
+      let iteration = 0;
+
+      //selecting outputs to fit the desired amount (totalAmount);
+      function pop_random_value(list: any[]) {
+        let idx = Math.floor(MathUtil.randomFloat() * list.length);
+        let val = list[idx];
+        list.splice(idx, 1);
+        return val;
+      }
+
+      (async function() {
+        try {
+          // first sort the outs in ascending order only once
+          unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
+          let processedOuts = 0;
+
+          while (stillData && (iteration < 7)) {
+            let dsts: { address: string, amount: number }[] = [];
+            let totalAmountWithoutFee = new JSBigInt(0);
+            let counter = 0;
+            
+            for (let i = iteration * 100; i < unspentOuts.length; i++) {
+              if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < txSize)) {
+                processedOuts++;
+                counter++;
+              } else {
+                stillData = counter >= txSize;
+                break;
+              }
+            }
+
+            let usingOuts: RawOutForTx[] = [];
+            let usingOuts_amount = new JSBigInt(0);
+            let unusedOuts = unspentOuts.slice(iteration * txSize, (iteration * txSize) + counter);
+
+            for (let i = 0; i < unusedOuts.length; i++) {
+              totalAmountWithoutFee = totalAmountWithoutFee.add(unspentOuts[i].amount);
+            }  
+        
+            if (totalAmountWithoutFee < wallet.unlockedAmount(blockchainHeight)) {
+              // substract fee from the amount we have available              
+              let totalAmount = totalAmountWithoutFee.subtract(neededFee);
+
+              dsts.push({
+                address: wallet.getPublicAddress(),
+                amount: new JSBigInt(totalAmount)
+              });
+
+              while (usingOuts_amount.compare(totalAmount) < 0 && unusedOuts.length > 0) {
+                let out = pop_random_value(unusedOuts);
+                usingOuts.push(out);
+                usingOuts_amount = usingOuts_amount.add(out.amount);
+              }
+                              
+              let amounts: number[] = [];
+              for (let l = 0; l < usingOuts.length; l++) {
+                amounts.push(usingOuts[l].amount);
+              }      
+
+              let nbOutsNeeded: number = config.defaultMixin + 1;
+              let lotsMixOuts: any[] = await obtainMixOutsCallback(amounts, nbOutsNeeded);
+
+              let data = await TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '');
+              await blockchainExplorer.sendRawTx(data.raw.raw);
+              wallet.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
+              iteration++;
+            } else {
+              stillData = false;
+            }
+          }
+ 
+          // finished here
+          resolve(processedOuts);
+        } catch (err) {
+          reject(err);
+        }
+      })();
+    });
+  }
 }
