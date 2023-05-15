@@ -437,24 +437,23 @@ export class Wallet extends Observable{
     console.log("unspentOuts", unspentOuts.length);
 
     for (let i = 0; i < unspentOuts.length; i++) {
-      if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < 10)) {
+      if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < config.optimizeOutputs)) {
         counter++;
       } else {
         break;
       }
     }  
 
-    return (counter >= 10);
+    return (counter >= config.optimizeOutputs);
   }
 
   optimize(blockchainHeight: number, threshhold: number, blockchainExplorer: BlockchainExplorer, obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>) {
     let wallet = this as Wallet;
-    let txSize = 10;
 
 		return new Promise<number>(function (resolve, reject) {
 			let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(wallet, blockchainHeight);
 			let neededFee = new JSBigInt((<any>window).config.coinFee);
-      let stillData = unspentOuts.length >= txSize;
+      let stillData = unspentOuts.length >= config.optimizeOutputs;
       let iteration = 0;
 
       //selecting outputs to fit the desired amount (totalAmount);
@@ -471,24 +470,24 @@ export class Wallet extends Observable{
           unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
           let processedOuts = 0;
 
-          while (stillData && (iteration < 7)) {
+          while (stillData && ((iteration * config.optimizeOutputs) < unspentOuts.length) && (iteration < 5)) {
             let dsts: { address: string, amount: number }[] = [];
             let totalAmountWithoutFee = new JSBigInt(0);
             let counter = 0;
             
-            for (let i = iteration * 100; i < unspentOuts.length; i++) {
-              if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < txSize)) {
+            for (let i = iteration * config.optimizeOutputs; i < unspentOuts.length; i++) {
+              if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < config.optimizeOutputs)) {
                 processedOuts++;
                 counter++;
               } else {
-                stillData = counter >= txSize;
+                stillData = counter >= config.optimizeOutputs;
                 break;
               }
             }
 
             let usingOuts: RawOutForTx[] = [];
             let usingOuts_amount = new JSBigInt(0);
-            let unusedOuts = unspentOuts.slice(iteration * txSize, (iteration * txSize) + counter);
+            let unusedOuts = unspentOuts.slice(iteration * config.optimizeOutputs, (iteration * config.optimizeOutputs) + counter);
 
             for (let i = 0; i < unusedOuts.length; i++) {
               totalAmountWithoutFee = totalAmountWithoutFee.add(unspentOuts[i].amount);
@@ -498,32 +497,34 @@ export class Wallet extends Observable{
               // substract fee from the amount we have available              
               let totalAmount = totalAmountWithoutFee.subtract(neededFee);
 
-              dsts.push({
-                address: wallet.getPublicAddress(),
-                amount: new JSBigInt(totalAmount)
-              });
+              if (totalAmount > 0) {
+                dsts.push({
+                  address: wallet.getPublicAddress(),
+                  amount: new JSBigInt(totalAmount)
+                });
 
-              while (usingOuts_amount.compare(totalAmount) < 0 && unusedOuts.length > 0) {
-                let out = pop_random_value(unusedOuts);
-                usingOuts.push(out);
-                usingOuts_amount = usingOuts_amount.add(out.amount);
+                while (usingOuts_amount.compare(totalAmount) < 0 && unusedOuts.length > 0) {
+                  let out = pop_random_value(unusedOuts);
+                  usingOuts.push(out);
+                  usingOuts_amount = usingOuts_amount.add(out.amount);
+                }
+                                
+                let amounts: number[] = [];
+                for (let l = 0; l < usingOuts.length; l++) {
+                  amounts.push(usingOuts[l].amount);
+                }      
+
+                let nbOutsNeeded: number = config.defaultMixin + 1;
+                let lotsMixOuts: any[] = await obtainMixOutsCallback(amounts, nbOutsNeeded);
+
+                let data = await TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '');
+                await blockchainExplorer.sendRawTx(data.raw.raw);
+                wallet.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
+                iteration++;
               }
-                              
-              let amounts: number[] = [];
-              for (let l = 0; l < usingOuts.length; l++) {
-                amounts.push(usingOuts[l].amount);
-              }      
-
-              let nbOutsNeeded: number = config.defaultMixin + 1;
-              let lotsMixOuts: any[] = await obtainMixOutsCallback(amounts, nbOutsNeeded);
-
-              let data = await TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '');
-              await blockchainExplorer.sendRawTx(data.raw.raw);
-              wallet.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
-              iteration++;
             } else {
               stillData = false;
-            }
+            }            
           }
  
           // finished here

@@ -20,7 +20,7 @@ myGlobal.config = {
 
 	coinUnitPlaces: 6,
 	coinDisplayUnitPlaces: 6,
-  	txMinConfirms: 10,
+ 	txMinConfirms: 10,
 	txCoinbaseMinConfirms: 10,
 
 	addressPrefix: 0x7AD4,
@@ -34,6 +34,7 @@ myGlobal.config = {
 	feePerKB: new JSBigInt('1000'), //for testnet its not used, as fee is dynamic.
 	dustThreshold: new JSBigInt('10'),//used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
 	defaultMixin: 5, // default value mixin
+  optimizeOutputs: 10, // how many outputs we put into a fusion tx
 
 	idleTimeout: 30,
 	idleWarningDuration: 20,
