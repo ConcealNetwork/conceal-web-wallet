@@ -385,15 +385,7 @@ export class TransactionsExplorer {
 			}
 
 			for (let out of tr.outs) {
-
-				let rct = '';
-				if (out.rtcAmount !== '') {
-					rct = out.rtcOutPk + out.rtcMask + out.rtcAmount;
-				} else {
-					rct = CnTransactions.zeroCommit(CnUtils.d2s(out.amount));
-				}
-
-				unspentOuts.push({
+        unspentOuts.push({
 					keyImage: out.keyImage,
 					amount: out.amount,
 					public_key: out.pubKey,
@@ -409,9 +401,8 @@ export class TransactionsExplorer {
 			//console.log(tr.ins);
 			for (let i of tr.ins) {
 				for (let iOut = 0; iOut < unspentOuts.length; ++iOut) {
-					let out = unspentOuts[iOut];
-					let exist = out.keyImage === i.keyImage;
-					if (exist) {
+					if (unspentOuts[iOut].keyImage === i.keyImage) {
+            //console.log("splicing......");
 						unspentOuts.splice(iOut, 1);
 						break;
 					}
