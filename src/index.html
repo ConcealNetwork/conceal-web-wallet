@@ -7,7 +7,7 @@
 	<meta property="twitter:title" content="Conceal Wallet" />
 
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<meta http-equiv="Content-Security-Policy" content="default-src *  data: blob: filesystem: about: ws: wss: 'unsafe-inline' 'unsafe-eval' 'unsafe-dynamic'; script-src * data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src * data: blob: 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src * data: blob: ; style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline';">
 
@@ -32,6 +32,11 @@
 	<!-- Windows -->
 	<meta name="msapplication-TileColor" content="#363636">
 	<meta name="theme-color" content="#363636">
+	<style>
+		body {
+			background-color: #363636;
+		}
+	</style>
 
 	<meta name="description" content="Conceal Wallet" />
 	<meta property="og:description" content="" />
@@ -52,7 +57,7 @@
 <body class="menuHidden menuDisabled">
 
 <div id="topBar">
-	<a href="#!index" class="toggleMenu"><i class="fa fa-bars" aria-hidden="true"></i></a>
+	<a href="#!index" class="toggleMenu" aria-label="Toggle menu"><i class="fa fa-bars" aria-hidden="true"></i></a>
 </div>
 
 <div id="menu">
@@ -84,7 +89,7 @@
 		<a class="hideOnNative" href="#!donate" >{{ $t("bottom.donate") }}</a>
 		<a class="hideOnNative" href="#!network" >{{ $t("bottom.network") }}</a>
 		<!--a class="hideOnNative" href="https://pool.conceal.network" target="_blank" >{{ $t("bottom.miningPool") }}</a-->
-		<a class="hideOnNative" href="https://github.com/ConcealNetwork/conceal-web-wallet" target="_blank">{{ $t("bottom.github") }}</a>
+		<a class="hideOnNative" href="https://github.com/ConcealNetwork/conceal-web-wallet" target="_blank" rel="noopener">{{ $t("bottom.github") }}</a>
 	</div>
 	<div class="cb" ></div>
 </div>
