@@ -1003,6 +1003,13 @@ body {
 	margin-bottom: 22px;
 }
 
+.panel .subtitle {
+	font-size: 14px;
+	line-height: 1;
+	color: #ccc;
+	margin-bottom: 20px;
+}
+
 .panel.nopadding .header-title {
 	padding: 32px 40px 0 40px;
 }
@@ -1464,7 +1471,7 @@ body {
 }
 
 .balance_title {
-  font-size: 2em;  
+  font-size: 2em;
   font-weight: bold;
 }
 
