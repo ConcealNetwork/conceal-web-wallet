@@ -49,7 +49,7 @@ class SendView extends DestructableView {
 	@VueVar(true) paymentIdValid !: boolean;
 	@VueVar('5') mixIn !: string;
 	@VueVar(true) mixinIsValid !: boolean;
-	
+
 	@VueVar(null) domainAliasAddress !: string | null;
 	@VueVar(null) txDestinationName !: string | null;
 	@VueVar(null) txDescription !: string | null;
@@ -57,6 +57,8 @@ class SendView extends DestructableView {
 
 	@VueVar(false) qrScanning !: boolean;
 	@VueVar(false) nfcAvailable !: boolean;
+
+	@VueVar(false) optimizeIsNeeded !: boolean;
 
 	@Autowire(Nfc.name) nfc !: Nfc;
 
@@ -93,7 +95,7 @@ class SendView extends DestructableView {
 		this.domainAliasAddress = null;
 		this.txDestinationName = null;
 		this.txDescription = null;
-		
+
 		this.stopScan();
 	}
 
@@ -251,9 +253,9 @@ class SendView extends DestructableView {
 						swal.showLoading();
 					}
 				});
-				
+
 				let mixinToSendWith: number = config.defaultMixin;
-				
+
 				TransactionsExplorer.createTx([{address: destinationAddress, amount: amountToSend}], self.paymentId, wallet, blockchainHeight,
 					function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
 						return blockchainExplorer.getRandomOuts(amounts, numberOuts);
@@ -324,7 +326,7 @@ class SendView extends DestructableView {
 								confirmButtonText: i18n.t('sendPage.thankYouDonationModal.confirmText'),
                 onClose: () => {
                   window.location.href = '#!account';
-                }                
+                }
 							});
 						} else
 							promise = swal({
@@ -333,7 +335,7 @@ class SendView extends DestructableView {
 								confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
                 onClose: () => {
                   window.location.href = '#!account';
-                }                
+                }
 							});
 
 						promise.then(function () {
@@ -377,6 +379,31 @@ class SendView extends DestructableView {
 					confirmButtonText: i18n.t('sendPage.invalidAmountModal.confirmText'),
 				});
 			}
+		});
+	}
+
+	checkOptimization() {
+    let height:any = blockchainExplorer.getHeight();
+    let isNeeded:boolean = wallet.optimizationNeeded(height, 5);
+    if(isNeeded) {
+      this.optimizeIsNeeded = true;
+    }
+  }
+
+	startOptimization() {
+		let height:any = blockchainExplorer.getHeight();
+		wallet.optimize(height, 5, blockchainExplorer,
+			function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+				return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+		}).then(function (processeOuts: number) {
+			let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+			console.log("processeOuts", processeOuts);
+			//force a mempool check so the user is up to date
+			if (watchdog !== null) {
+				watchdog.checkMempool();
+			}
+		}).catch(function(err) {
+			console.log(err);
 		});
 	}
 
