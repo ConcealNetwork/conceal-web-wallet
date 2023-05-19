@@ -385,6 +385,8 @@ class SendView extends DestructableView {
 	checkOptimization() {
     let height:any = blockchainExplorer.getHeight();
     let isNeeded:boolean = wallet.optimizationNeeded(height, 5);
+		console.log('isNeeded:', isNeeded);
+		console.log("unspentouts", "end");
     if(isNeeded) {
       this.optimizeIsNeeded = true;
     }
