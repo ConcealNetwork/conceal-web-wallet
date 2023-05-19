@@ -31,9 +31,11 @@ self.addEventListener('message', (event) => {
 	switch (event.data) {
 		case 'force-activate':
 			(<any>self).skipWaiting();
-			(<any>self).clients.claim();
-			(<any>self).clients.matchAll().then((clients : any[]) => {
-				clients.forEach((client : any) => client.postMessage('reload-window-update'));
+			(<any>self).clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients : any[]) => {
+				clients.forEach((client : any) => {
+					client.focus();
+					client.postMessage('reload-window-update');
+				});
 			});
 			break;
 		default:
