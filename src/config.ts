@@ -8,7 +8,9 @@ myGlobal.config = {
     nodeList: [
         "https://seed1.conceal.network/daemon/",
         "https://seed2.conceal.network/daemon/",
-        "https://seed3.conceal.network/daemon/"
+        "https://seed3.conceal.network/daemon/",
+        "https://ccxapi.conceal.network/daemon/",
+        "https://explorer.conceal.network/daemon/"
     ],
 	nodeUrl: "",
 	mainnetExplorerUrl: "https://explorer.conceal.network/",
@@ -42,7 +44,8 @@ myGlobal.config = {
 	idleTimeout: 30,
 	idleWarningDuration: 20,
 	syncBlockCount: 500, // how many block we sync at once for a single remote node
-  maxRemoteNodes: 4, // what is the max remote nodes we use in a sync process
+  maxRemoteNodes: 8, // what is the max remote nodes we use in a sync process
+  maxWorkerCores: 8, // max cores that the workers can use. If lower they will use numberOfCores - 1
 
 	coinSymbol: 'CCX',
 	openAliasPrefix: "ccx",

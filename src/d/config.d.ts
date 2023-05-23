@@ -33,6 +33,7 @@ declare var config : {
 	idleWarningDuration: number,
 	syncBlockCount: number,
   maxRemoteNodes: number
+  maxWorkerCores: number,
 	maxBlockNumber: number,
 	avgBlockTime: number
 };

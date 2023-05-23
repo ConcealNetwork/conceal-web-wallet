@@ -160,8 +160,7 @@ export class WalletWatchdog {
   transactionsToProcess: RawDaemon_Transaction[][] = [];
 
   constructor(wallet: Wallet, explorer: BlockchainExplorer) {
-    let cpuCores = Math.max(window.navigator.hardwareConcurrency ? (window.navigator.hardwareConcurrency - 1) : 1, 4);
-    console.log("cpuCores", cpuCores);
+    let cpuCores = Math.min(window.navigator.hardwareConcurrency ? (window.navigator.hardwareConcurrency - 1) : 1, config.maxWorkerCores);
 
     this.wallet = wallet;
     this.explorer = explorer;
@@ -256,7 +255,6 @@ export class WalletWatchdog {
     for (let i = 0; i < this.watchdogWorkers.getCount(); ++i) {
       if (this.transactionsToProcess.length > 0) {
         if (!(this.watchdogWorkers.getWorking(i) || !this.watchdogWorkers.getReady(i))) {
-          console.log("procesing worker:", i);
           //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
           //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
           if (this.watchdogWorkers.getProcessed(i) >= 5 * 1000) {
@@ -348,8 +346,6 @@ export class WalletWatchdog {
         }
       }
 
-      console.log("heights", self.lastBlockLoading, self.wallet.lastHeight, self.lastMaximumHeight);
-
       // we are only here if the block is actually increased from last processing
       if (self.lastBlockLoading === -1) { 
         self.lastBlockLoading = self.wallet.lastHeight;
@@ -363,13 +359,12 @@ export class WalletWatchdog {
         }
 
         self.explorer.getTransactionsForBlocksEx(previousStartBlock, height, self.wallet.options.checkMinerTx).then(function (rawTxData: { transactions: any[], endBlock: number }) {
-          console.log("getTransactionsForBlocksEx", rawTxData);          
+          //console.log("getTransactionsForBlocksEx", rawTxData);          
 
           if (rawTxData.transactions.length > 0) {
             let lastTx = rawTxData.transactions[rawTxData.transactions.length - 1];
 
             if (typeof lastTx.height !== 'undefined') {
-              console.log("processed blocks:", lastTx.height - self.lastBlockLoading);
               self.lastBlockLoading = lastTx.height + 1;
 
               self.processTransactions(rawTxData.transactions, function() {
