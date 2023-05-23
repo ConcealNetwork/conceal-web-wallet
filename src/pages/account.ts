@@ -83,13 +83,13 @@ class AccountView extends DestructableView{
 		swal({
 			title:i18n.t('accountPage.txDetails.title'),
 			html:`
-<div class="tl" >
-	<div>`+i18n.t('accountPage.txDetails.txHash')+`: <a href="`+explorerUrlHash.replace('{ID}', transaction.hash)+`" target="_blank">`+transaction.hash+`</a></div>
-	`+paymentId+`
-	`+feesHtml+`
-	`+txPrivKeyMessage+`
-	<div>`+i18n.t('accountPage.txDetails.blockHeight')+`: <a href="`+explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)+`" target="_blank">`+transaction.blockHeight+`</a></div>
-</div>`
+        <div class="tl" >
+          <div>`+i18n.t('accountPage.txDetails.txHash')+`: <a href="`+explorerUrlHash.replace('{ID}', transaction.hash)+`" target="_blank">`+transaction.hash+`</a></div>
+          `+paymentId+`
+          `+feesHtml+`
+          `+txPrivKeyMessage+`
+          <div>`+i18n.t('accountPage.txDetails.blockHeight')+`: <a href="`+explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)+`" target="_blank">`+transaction.blockHeight+`</a></div>
+        </div>`
 		});
 	}
 

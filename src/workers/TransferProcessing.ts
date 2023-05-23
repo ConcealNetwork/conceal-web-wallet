@@ -17,7 +17,10 @@ onmessage = function (data: MessageEvent) {
 	let event: any = data.data;
 	if (event.type === 'initWallet') {
 		currentWallet = Wallet.loadFromRaw(event.wallet);
-		postMessage('readyWallet');
+		postMessage({
+			type: 'readyWallet',
+      wrkIndex: event.wrkIndex
+		});
 	} else if (event.type === 'process') {
     logDebugMsg(`process new transactions...`);
 
@@ -41,24 +44,27 @@ onmessage = function (data: MessageEvent) {
     logDebugMsg(`rawTransactions`, rawTransactions);
 
 		for (let rawTransaction of rawTransactions) {
-			if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
-				continue;
-			}
+      if (rawTransaction) {
+        if (rawTransaction.height) {
+          if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
+            continue;
+          }
 
-			let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
-			if (transaction !== null) {
-				logDebugMsg(`parsed tx ${transaction['hash']} from rawTransaction`);
-			}
-			if (transaction !== null) {
-				currentWallet.addNew(transaction);
-        logDebugMsg(`Added tx ${transaction.hash} to currentWallet`);
+          let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
 
-				transactions.push(transaction.export());
-        logDebugMsg(`pushed tx ${transaction.hash} to transactions[]`);
-			}
+          if (transaction !== null) {
+            currentWallet.addNew(transaction);
+            logDebugMsg(`Added tx ${transaction.hash} to currentWallet`);
+
+            transactions.push(transaction.export());
+            logDebugMsg(`pushed tx ${transaction.hash} to transactions[]`);
+          }
+        }
+      }
 		}
 		postMessage({
 			type: 'processed',
+      wrkIndex: event.wrkIndex,
 			transactions: transactions
 		});
 	}

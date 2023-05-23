@@ -40,7 +40,8 @@ myGlobal.config = {
 
 	idleTimeout: 30,
 	idleWarningDuration: 20,
-	syncBlockCount: 1000,
+	syncBlockCount: 500,
+  maxRemoteNodes: 4,
 
 	coinSymbol: 'CCX',
 	openAliasPrefix: "ccx",

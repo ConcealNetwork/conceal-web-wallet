@@ -94,17 +94,31 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     }
 
     protected makeRequest(method: 'GET' | 'POST', url: string, body: any = undefined): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
-            $.ajax({
-                url: config.nodeUrl + url,
-                method: method,
-                data: typeof body === 'string' ? body : JSON.stringify(body)
-            }).done(function (raw: any) {
-                resolve(raw);
-            }).fail(function (data: any) {
-                reject(data);
-            });
+      return new Promise<any>((resolve, reject) => {
+        $.ajax({
+          url: config.nodeUrl + url,
+          method: method,
+          data: typeof body === 'string' ? body : JSON.stringify(body)
+        }).done(function (raw: any) {
+          resolve(raw);
+        }).fail(function (data: any) {
+          reject(data);
         });
+      });
+    }
+
+    protected makeRequestByCustomNode(method: 'GET' | 'POST', baseUrl: string, apiName: string, body: any = undefined): Promise<any> {
+      return new Promise<any>((resolve, reject) => {
+        $.ajax({
+          url: baseUrl + apiName,
+          method: method,
+          data: typeof body === 'string' ? body : JSON.stringify(body)
+        }).done(function (raw: any) {
+          resolve(raw);
+        }).fail(function (data: any) {
+          reject(data);
+        });
+      });
     }
 
     cacheInfo: any = null;
@@ -112,41 +126,40 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     lastTimeRetrieveInfo = 0;
 
     getInfo(): Promise<DaemonResponseGetInfo> {
-        if (Date.now() - this.lastTimeRetrieveInfo < 20 * 1000 && this.cacheInfo !== null) {
-            return Promise.resolve(this.cacheInfo);
-        }
+      if (Date.now() - this.lastTimeRetrieveInfo < 20 * 1000 && this.cacheInfo !== null) {
+        return Promise.resolve(this.cacheInfo);
+      }
 
-        this.lastTimeRetrieveInfo = Date.now();
-        return this.makeRequest('GET', 'getinfo').then((data: DaemonResponseGetInfo) => {
-            this.cacheInfo = data;
-            console.log(`GetInfo: `)
-            return data;
-        })
+      this.lastTimeRetrieveInfo = Date.now();
+      return this.makeRequest('GET', 'getinfo').then((data: DaemonResponseGetInfo) => {
+        this.cacheInfo = data;
+        return data;
+      });
     }
 
     getHeight(): Promise<number> {
-        if (Date.now() - this.lastTimeRetrieveInfo < 20 * 1000 && this.cacheHeight !== 0) {
-            return Promise.resolve(this.cacheHeight);
-        }
+      if (Date.now() - this.lastTimeRetrieveInfo < 20 * 1000 && this.cacheHeight !== 0) {
+        return Promise.resolve(this.cacheHeight);
+      }
 
-        this.lastTimeRetrieveInfo = Date.now();
-        return this.makeRequest('GET', 'getheight').then((data: any) => {
-            let height = parseInt(data.height);
-            this.cacheHeight = height;
-            return height;
-        })
+      this.lastTimeRetrieveInfo = Date.now();
+      return this.makeRequest('GET', 'getheight').then((data: any) => {
+        let height = parseInt(data.height);
+        this.cacheHeight = height;
+        return height;
+      });
     }
 
     scannedHeight: number = 0;
 
     getScannedHeight(): number {
-        return this.scannedHeight;
+      return this.scannedHeight;
     }
 
     watchdog(wallet: Wallet): WalletWatchdog {
-        let watchdog = new WalletWatchdog(wallet, this);
-        watchdog.loadHistory();
-        return watchdog;
+      let watchdog = new WalletWatchdog(wallet, this);
+      watchdog.loadHistory();
+      return watchdog;
     }
 
     /**
@@ -164,89 +177,165 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     }
 
     getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTxs: boolean): Promise<any> {
-        let tempStartBlock;
-        if (startBlock === 0) {
-            tempStartBlock = 1;
-        } else {
-            tempStartBlock = startBlock;
+      let tempStartBlock;
+      if (startBlock === 0) {
+        tempStartBlock = 1;
+      } else {
+        tempStartBlock = startBlock;
+      }
+
+      console.log(tempStartBlock, endBlock);
+      console.log("includeMinerTxs", includeMinerTxs);
+      let start = Date.now();
+
+      return this.makeRequest('POST', 'get_raw_transactions_by_heights', {
+        heights: [tempStartBlock, endBlock],
+        include_miner_txs: includeMinerTxs,
+        range: true
+      }).then((response: {
+        status: 'OK' | 'string',
+        transactions: { transaction: any, timestamp: number, output_indexes: number[], height: number, block_hash: string, hash: string, fee: number }[]
+      }) => {
+        let formatted: RawDaemon_Transaction[] = [];
+        let timeTaken = Date.now() - start;
+        console.log("Total time taken for RPC : " + timeTaken + " milliseconds");
+
+        if (response.status !== 'OK') {
+          throw 'invalid_transaction_answer';
         }
 
-        return this.makeRequest('POST', 'get_raw_transactions_by_heights', {
-            heights: [tempStartBlock, endBlock],
-            include_miner_txs: includeMinerTxs,
-            range: true
-        }).then((response: {
-            status: 'OK' | 'string',
-            transactions: { transaction: any, timestamp: number, output_indexes: number[], height: number, block_hash: string, hash: string, fee: number }[]
-        }) => {
-            let formatted: RawDaemon_Transaction[] = [];
+        if (response.transactions.length > 0) {
+          for (let rawTx of response.transactions) {
+            let tx: RawDaemon_Transaction | null = null;
 
-            if (response.status !== 'OK') throw 'invalid_transaction_answer';
+            if (rawTx && rawTx.transaction) {
+              tx = rawTx.transaction;
 
-            if (response.transactions.length > 0) {
-                for (let rawTx of response.transactions) {
-                    let tx: RawDaemon_Transaction | null = null;
-                    try {
-                        tx = rawTx.transaction;
-                    } catch (e) {
-                        try {
-                            //compat for some invalid endpoints
-                            tx = rawTx.transaction;
-                        } catch (e) {
-                        }
-                    }
-                    if (tx !== null) {
-                        tx.ts = rawTx.timestamp;
-                        tx.height = rawTx.height;
-                        tx.hash = rawTx.hash;
-                        if (rawTx.output_indexes.length > 0)
-                            tx.global_index_start = rawTx.output_indexes[0];
-                        tx.output_indexes = rawTx.output_indexes;
-                        formatted.push(tx);
-                    }
-                }
-
-                return formatted;
-            } else {
-                return response.status;
+              if (tx !== null) {
+                tx.ts = rawTx.timestamp;
+                tx.height = rawTx.height;
+                tx.hash = rawTx.hash;
+                if (rawTx.output_indexes.length > 0)
+                  tx.global_index_start = rawTx.output_indexes[0];
+                tx.output_indexes = rawTx.output_indexes;
+                formatted.push(tx);
+              }
             }
-        });
+          }
+
+          return formatted;
+        } else {
+          return response.status;
+        }
+      });
+    }
+
+    getTransactionsForBlocksEx(startBlock: number, maxBlock: number, includeMinerTxs: boolean): Promise<{transactions: any[], endBlock: number}> {
+      let requests: Promise<any>[] = [];
+      let lastBlock: number = 0;
+      let randomNodes: any[];
+      let currentBlock;
+
+      function getMultipleRandom(arr: any[], num: number) {
+        const shuffled = [...arr].sort(() => 0.5 - Math.random());
+      
+        return shuffled.slice(0, num);
+      }      
+
+      if (startBlock === 0) {
+        currentBlock = 1;
+      } else {
+        currentBlock = startBlock;
+      }
+
+      // get up to config.maxRemoteNodes random nodes for each request 
+      randomNodes = getMultipleRandom(config.nodeList, Math.min(config.maxRemoteNodes, config.nodeList.length));
+      console.log("randomNodes", randomNodes)
+
+      // make a request to each of the random nodes
+      for (let i = 0; i < config.nodeList.length; ++i) {
+        if (currentBlock >= maxBlock) break;
+
+        lastBlock = Math.min(currentBlock + config.syncBlockCount, maxBlock);
+        let url = config.nodeList[i]; 
+
+        let body = { 
+          heights: [currentBlock, lastBlock],
+          include_miner_txs: includeMinerTxs,
+          range: true
+        };
+
+        requests.push(this.makeRequestByCustomNode('POST', url, 'get_raw_transactions_by_heights', body));                
+        currentBlock = currentBlock + config.syncBlockCount + 1;
+      }
+
+      return Promise.all(requests).then((values) => {
+        let formatted: RawDaemon_Transaction[] = [];
+        console.log("Promise.all", values);
+
+        for (let i = 0; i < values.length; ++i) {
+          if (values[i].status !== 'OK') {
+            throw 'invalid_transaction_answer';
+          }
+
+          if (values[i].transactions.length > 0) {
+            for (let rawTx of values[i].transactions) {
+              let tx: RawDaemon_Transaction | null = null;
+
+              if (rawTx && rawTx.transaction) {
+                tx = rawTx.transaction;
+
+                if (tx !== null) {
+                  tx.ts = rawTx.timestamp;
+                  tx.height = rawTx.height;
+                  tx.hash = rawTx.hash;
+                  if (rawTx.output_indexes.length > 0)
+                    tx.global_index_start = rawTx.output_indexes[0];
+                  tx.output_indexes = rawTx.output_indexes;
+                  formatted.push(tx);
+                }
+              }
+            }
+          }
+        }
+
+        // return all tx
+        return {
+          transactions: formatted,
+          endBlock: lastBlock
+        };
+      });
     }
 
     getTransactionPool(): Promise<RawDaemon_Transaction[]> {
-        return this.makeRequest('GET', 'getrawtransactionspool').then(
-              (response: {
-                status: 'OK' | 'string',
-                transactions: { transaction: any, timestamp: number, output_indexes: number[], height: number, block_hash: string, hash: string, fee: number }[]
-              }) => {
+      return this.makeRequest('GET', 'getrawtransactionspool').then(
+        (response: {
+          status: 'OK' | 'string',
+          transactions: { transaction: any, timestamp: number, output_indexes: number[], height: number, block_hash: string, hash: string, fee: number }[]
+        }) => {
+          let formatted: RawDaemon_Transaction[] = [];
 
-                let formatted: RawDaemon_Transaction[] = [];
+          for (let rawTx of response.transactions) {
+            let tx: RawDaemon_Transaction | null = null;
 
-                for (let rawTx of response.transactions) {
-                    let tx: RawDaemon_Transaction | null = null;
-                    try {
-                        tx = rawTx.transaction;
-                    } catch (e) {
-                        try {
-                            //compat for some invalid endpoints
-                            tx = rawTx.transaction;
-                        } catch (e) {
-                        }
-                    }
-                    if (tx !== null) {
-                        tx.ts = rawTx.timestamp;
-                        tx.height = rawTx.height;
-                        tx.hash = rawTx.hash;
-                        if (rawTx.output_indexes.length > 0) {
-                            tx.global_index_start = rawTx.output_indexes[0];
-                            tx.output_indexes = rawTx.output_indexes;
-                        }
-                        formatted.push(tx);
-                    }
+            if (rawTx && rawTx.transaction) {
+              tx = rawTx.transaction;
+
+              if (tx !== null) {
+                tx.ts = rawTx.timestamp;
+                tx.height = rawTx.height;
+                tx.hash = rawTx.hash;
+                if (rawTx.output_indexes.length > 0) {
+                  tx.global_index_start = rawTx.output_indexes[0];
+                  tx.output_indexes = rawTx.output_indexes;
                 }
+                formatted.push(tx);
+              }
+            }
+          }
 
-                return formatted;
-        });
+          return formatted;
+      });
     }
 
     getRandomOuts(amounts: number[], nbOutsNeeded: number): Promise<RawDaemon_Out[]> {
@@ -259,7 +348,6 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
         }) => {
             if (response.status !== 'OK') throw 'invalid_getrandom_outs_answer';
             if (response.outs.length > 0) {
-                console.log("Got random outs: ");
                 console.log(response.outs);
             }
 

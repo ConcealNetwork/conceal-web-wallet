@@ -140,7 +140,6 @@ export class TransactionsExplorer {
 
 		if (!Array.isArray(rawTransaction.vout) || rawTransaction.vout.length === 0) {
 			console.error('Weird tx !', rawTransaction);
-
 			return false;
 		}
 
@@ -354,7 +353,6 @@ export class TransactionsExplorer {
 			transaction.outs = outs;
 			transaction.ins = ins;
 		}
-
 
 		return transaction;
 	}
