@@ -38,12 +38,15 @@ class AccountView extends DestructableView{
 	@VueVar(0) blockchainHeight !: number;
 	@VueVar(Math.pow(10, config.coinUnitPlaces)) currencyDivider !: number;
 
+	@VueVar(false) optimizeIsNeeded !: boolean;
+
 	intervalRefresh : number = 0;
 
 	constructor(container : string) {
 		super(container);
 		let self = this;
 	    this.ticker = config.coinSymbol;
+			this.checkOptimization();
 		AppState.enableLeftMenu();
 		this.intervalRefresh = <any>setInterval(function(){
 			self.refresh();
@@ -64,6 +67,18 @@ class AccountView extends DestructableView{
 
 		this.refreshWallet();
 	}
+
+	checkOptimization = () => {
+    let self = this;
+    blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
+      let isNeeded: boolean = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
+        console.log('isNeeded:', isNeeded);
+        console.log("unspentouts", "end");
+      if(isNeeded) {
+        self.optimizeIsNeeded = true;
+      }
+    });
+  }
 
   optimizeWallet = () => {
     blockchainExplorer.getHeight().then(function (blockchainHeight: number) {

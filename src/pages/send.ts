@@ -326,7 +326,7 @@ class SendView extends DestructableView {
                   window.location.href = '#!account';
                 }
               });
-            } else 
+            } else
               promise = swal({
                 type: 'success',
                 title: i18n.t('sendPage.transferSentModal.title'),
@@ -392,20 +392,21 @@ class SendView extends DestructableView {
     });
   }
 
-  startOptimization = () => {
+  optimizeWallet = () => {
     blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
-      wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer, function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
-        return blockchainExplorer.getRandomOuts(amounts, numberOuts);
-      }).then(function (processeOuts: number) {
-        let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
-        console.log("processeOuts", processeOuts);
-        //force a mempool check so the user is up to date
-        if (watchdog !== null) {
-          watchdog.checkMempool();
-        }
-      }).catch(function(err) {
-        console.log(err);
-      });
+      wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
+        function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+          return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+        }).then(function (processedOuts: number) {
+          let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+          console.log("processedOuts", processedOuts);
+          //force a mempool check so the user is up to date
+          if (watchdog !== null) {
+            watchdog.checkMempool();
+          }
+        }).catch(function(err) {
+          console.log(err);
+        });
     });
   }
 

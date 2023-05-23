@@ -26,7 +26,7 @@ import {AppState} from "../model/AppState";
 import {Storage} from "../model/Storage";
 import {Translations} from "../model/Translations";
 import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
-import {BlockchainExplorer} from "../model/blockchain/BlockchainExplorer";
+import {BlockchainExplorer, RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {WalletWatchdog} from "../model/WalletWatchdog";
 
 let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
@@ -49,6 +49,8 @@ class SettingsView extends DestructableView{
 	@VueVar(0) nativeVersionCode !: number;
 	@VueVar('') nativeVersionNumber !: string;
 
+	@VueVar(false) optimizeIsNeeded !: boolean;
+
 	constructor(container : string) {
 		super(container);
 		let self = this;
@@ -60,6 +62,8 @@ class SettingsView extends DestructableView{
 
 		this.creationHeight = wallet.creationHeight;
 		this.scanHeight = wallet.lastHeight;
+
+		this.checkOptimization();
 
 		blockchainExplorer.getHeight().then(function (height: number) {
 			self.maxHeight = height;
@@ -101,6 +105,36 @@ class SettingsView extends DestructableView{
 			}
 		});
 	}
+
+	checkOptimization = () => {
+    let self = this;
+    blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
+      let isNeeded: boolean = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
+        console.log('isNeeded:', isNeeded);
+        console.log("unspentouts", "end");
+      if(isNeeded) {
+        self.optimizeIsNeeded = true;
+      }
+    });
+  }
+
+  optimizeWallet = () => {
+    blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
+      wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
+        function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+          return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+        }).then(function (processedOuts: number) {
+          let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+          console.log("processedOuts", processedOuts);
+          //force a mempool check so the user is up to date
+          if (watchdog !== null) {
+            watchdog.checkMempool();
+          }
+        }).catch(function(err) {
+          console.log(err);
+        });
+    });
+  }
 
 	@VueWatched()	readSpeedWatch(){this.updateWalletOptions();}
 	@VueWatched()	checkMinerTxWatch(){this.updateWalletOptions();}
