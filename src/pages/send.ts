@@ -219,14 +219,14 @@ class SendView extends DestructableView {
 
   }
 
-  destruct(): Promise<void> {
+  destruct = (): Promise<void> => {
     this.stopScan();
     this.stopNfcScan();
     swal.close();
     return super.destruct();
   }
 
-  send() {
+  send = () => {
     let self = this;
     blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
       let amount = parseFloat(self.amountToSend);
@@ -314,28 +314,26 @@ class SendView extends DestructableView {
               watchdog.checkMempool();
 
             let promise = Promise.resolve();
-            if (
-              destinationAddress === 'ccx7NzuofXxcypov8Yqm2A118xT17HereBFjp3RScjzM7wncf8BRcnHZbACy63sWD71L7NmkJRgQKXFE3weCfAh31RAVFHgttf' ||
-              destinationAddress === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj' ||
-              destinationAddress === 'ccx7YZ4RC97fqMh1bmzrFtDoSSiEgvEYzhaLE53SR9bh4QrDBUhGUH3TCmXqv8MTLjJDtnCeeaT5bLC2ZSzp3ZmQ19DoiPLLXS'
-            ) {
+            if (destinationAddress === 'ccx7NzuofXxcypov8Yqm2A118xT17HereBFjp3RScjzM7wncf8BRcnHZbACy63sWD71L7NmkJRgQKXFE3weCfAh31RAVFHgttf' ||
+                destinationAddress === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj' ||
+                destinationAddress === 'ccx7YZ4RC97fqMh1bmzrFtDoSSiEgvEYzhaLE53SR9bh4QrDBUhGUH3TCmXqv8MTLjJDtnCeeaT5bLC2ZSzp3ZmQ19DoiPLLXS') {
               promise = swal({
                 type: 'success',
                 title: i18n.t('sendPage.thankYouDonationModal.title'),
                 text: i18n.t('sendPage.thankYouDonationModal.content'),
                 confirmButtonText: i18n.t('sendPage.thankYouDonationModal.confirmText'),
-        onClose: () => {
-          window.location.href = '#!account';
-        }
+                onClose: () => {
+                  window.location.href = '#!account';
+                }
               });
-            } else
+            } else 
               promise = swal({
                 type: 'success',
                 title: i18n.t('sendPage.transferSentModal.title'),
                 confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
-        onClose: () => {
-          window.location.href = '#!account';
-        }
+                onClose: () => {
+                  window.location.href = '#!account';
+                }
               });
 
             promise.then(function () {
@@ -382,30 +380,32 @@ class SendView extends DestructableView {
     });
   }
 
-  checkOptimization() {
-    let height:any = blockchainExplorer.getHeight();
-    let isNeeded:boolean = wallet.optimizationNeeded(height, 5);
-      console.log('isNeeded:', isNeeded);
-      console.log("unspentouts", "end");
-    if(isNeeded) {
-      this.optimizeIsNeeded = true;
-    }
+  checkOptimization = () => {
+    let self = this;
+    blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
+      let isNeeded: boolean = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
+        console.log('isNeeded:', isNeeded);
+        console.log("unspentouts", "end");
+      if(isNeeded) {
+        self.optimizeIsNeeded = true;
+      }
+    });
   }
 
-  startOptimization() {
-    let height:any = blockchainExplorer.getHeight();
-    wallet.optimize(height, 5, blockchainExplorer,
-      function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+  startOptimization = () => {
+    blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
+      wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer, function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
         return blockchainExplorer.getRandomOuts(amounts, numberOuts);
-    }).then(function (processeOuts: number) {
-      let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
-      console.log("processeOuts", processeOuts);
-      //force a mempool check so the user is up to date
-      if (watchdog !== null) {
-        watchdog.checkMempool();
-      }
-    }).catch(function(err) {
-      console.log(err);
+      }).then(function (processeOuts: number) {
+        let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+        console.log("processeOuts", processeOuts);
+        //force a mempool check so the user is up to date
+        if (watchdog !== null) {
+          watchdog.checkMempool();
+        }
+      }).catch(function(err) {
+        console.log(err);
+      });
     });
   }
 

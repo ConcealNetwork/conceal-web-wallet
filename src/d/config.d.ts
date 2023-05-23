@@ -12,6 +12,7 @@ declare var config : {
 	testnet: boolean,
 	coinUnitPlaces: number,
   optimizeOutputs: number,
+  optimizeThreshold: number,
 	txMinConfirms: number,         // corresponds to CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE in Monero
 	txCoinbaseMinConfirms: number, // corresponds to CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW in Monero
 	coinSymbol: string,

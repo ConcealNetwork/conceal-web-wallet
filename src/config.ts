@@ -37,11 +37,12 @@ myGlobal.config = {
 	dustThreshold: new JSBigInt('10'),//used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
 	defaultMixin: 5, // default value mixin
   optimizeOutputs: 10, // how many outputs we put into a fusion tx
+  optimizeThreshold: 1, // what is the optimization threshold in CCX
 
 	idleTimeout: 30,
 	idleWarningDuration: 20,
-	syncBlockCount: 500,
-  maxRemoteNodes: 4,
+	syncBlockCount: 500, // how many block we sync at once for a single remote node
+  maxRemoteNodes: 4, // what is the max remote nodes we use in a sync process
 
 	coinSymbol: 'CCX',
 	openAliasPrefix: "ccx",

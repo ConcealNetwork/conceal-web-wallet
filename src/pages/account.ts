@@ -67,7 +67,7 @@ class AccountView extends DestructableView{
 
   optimizeWallet = () => {
     blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
-      wallet.optimize(blockchainHeight, 1, blockchainExplorer,
+      wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
         function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
           return blockchainExplorer.getRandomOuts(amounts, numberOuts);
         }).then(function (processedOuts: number) {
