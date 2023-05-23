@@ -22,6 +22,8 @@ import {DestructableView} from "../lib/numbersLab/DestructableView";
 import {Constants} from "../model/Constants";
 import {AppState} from "../model/AppState";
 import {Transaction, TransactionIn} from "../model/Transaction";
+import {RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
+import {WalletWatchdog} from "../model/WalletWatchdog";
 
 let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name,'default', false);
 let blockchainExplorer = DependencyInjectorInstance().getInstance(Constants.BLOCKCHAIN_EXPLORER);
@@ -38,7 +40,7 @@ class AccountView extends DestructableView{
 
 	intervalRefresh : number = 0;
 
-	constructor(container : string){
+	constructor(container : string) {
 		super(container);
 		let self = this;
 	    this.ticker = config.coinSymbol;
@@ -49,12 +51,12 @@ class AccountView extends DestructableView{
 		this.refresh();
 	}
 
-	destruct(): Promise<void> {
+	destruct = (): Promise<void> => {
 		clearInterval(this.intervalRefresh);
 		return super.destruct();
 	}
 
-	refresh(){
+	refresh = () => {
 		let self = this;
 		blockchainExplorer.getHeight().then(function(height : number){
 			self.blockchainHeight = height;
@@ -63,7 +65,25 @@ class AccountView extends DestructableView{
 		this.refreshWallet();
 	}
 
-	moreInfoOnTx(transaction : Transaction){
+  optimizeWallet = () => {
+    blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
+      wallet.optimize(blockchainHeight, 1, blockchainExplorer,
+        function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+          return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+        }).then(function (processedOuts: number) {
+          let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+          console.log("processedOuts", processedOuts);
+          //force a mempool check so the user is up to date
+          if (watchdog !== null) {
+            watchdog.checkMempool();
+          }
+        }).catch(function(err) {
+          console.log(err);
+        });
+    });
+  }
+
+	moreInfoOnTx = (transaction : Transaction) => {
 		let explorerUrlHash = config.testnet ? config.testnetExplorerUrlHash : config.mainnetExplorerUrlHash;
 		let explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
 		let feesHtml = '';
@@ -93,7 +113,7 @@ class AccountView extends DestructableView{
 		});
 	}
 
-	refreshWallet(){
+	refreshWallet = () => {
 		this.currentScanBlock = wallet.lastHeight;
 		this.walletAmount = wallet.amount;
 		this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
