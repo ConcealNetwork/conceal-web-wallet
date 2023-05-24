@@ -102,51 +102,36 @@ class BlockList {
   }
 }
 
-class WatchdogWorkers {  
+class ParseWorker {  
   wallet: Wallet;
-  instances: number;
+  isReady: boolean;
   watchdog: WalletWatchdog;
+  isWorking: boolean;
   blockList: BlockList; 
-  workersProcessing: Worker[];
-  workersCountProcessed: number[] = [];
-  workersProcessingReady: boolean[] = [];
-  workersProcessingWorking: boolean[] = [];
+  workerProcess: Worker;
+  countProcessed: number;
   
-  constructor(instances: number, wallet: Wallet, watchdog: WalletWatchdog, blockList: BlockList) {
-    this.instances = instances;
+  constructor(wallet: Wallet, watchdog: WalletWatchdog, blockList: BlockList) {
     this.blockList = blockList;
     this.watchdog = watchdog;
     this.wallet = wallet;
 
-    this.workersProcessing = new Array(instances);
-    this.workersCountProcessed = new Array(instances);
-    this.workersProcessingReady = new Array(instances);
-    this.workersProcessingWorking = new Array(instances);
-
-    for (let i = 0; i < instances; ++i) {
-      this.workersCountProcessed[i] = 0;
-      this.workersProcessingReady[i] = false;
-      this.workersProcessingWorking[i] = false;
-    }
+    this.workerProcess = this.initWorker();
+    this.countProcessed = 0;
+    this.isWorking = false;
+    this.isReady = false;   
   }
   
-  initWorker = (index: number) => {    
-    if (this.wallet.options.customNode) {
-      config.nodeUrl = this.wallet.options.nodeUrl;
-    } else {
-      let randNodeInt:number = Math.floor(Math.random() * Math.floor(config.nodeList.length));
-      config.nodeUrl = config.nodeList[randNodeInt];
-    }
-
-    this.workersProcessing[index] = new Worker('./workers/TransferProcessingEntrypoint.js');
-    this.workersProcessing[index].onmessage = (data: MessageEvent)  => {
+  initWorker = (): Worker => {    
+    this.workerProcess = new Worker('./workers/TransferProcessingEntrypoint.js');
+    this.workerProcess.onmessage = (data: MessageEvent)  => {
       let message: string | any = data.data;
       if (message === 'ready') {
         logDebugMsg('worker ready');
         this.watchdog.signalWalletUpdate();
       } else if (message.type) {
         if (message.type === 'readyWallet') {
-          this.setIsReady(message.wrkIndex, true);
+          this.setIsReady(true);
         } else if (message.type === 'processed') {
           let transactions = message.transactions;
           
@@ -158,55 +143,47 @@ class WatchdogWorkers {
 
           // we are done processing now
           this.blockList.finishBlockRange(message.maxHeight);
-          this.setIsWorking(message.wrkIndex, false);
+          this.setIsWorking(false);
         }
       }
     };
+
+    return this.workerProcess;
   }
 
-  initWorkers = () => {
-    for (let i = 0; i < this.getCount(); ++i) {
-      this.initWorker(i);
-    }
+  terminateWorker = () => {
+    this.workerProcess.terminate();
+    this.countProcessed = 0;
+    this.isWorking = false;
+    this.isReady = false;
+  }    
+
+  getWorker = (): Worker => {
+    return this.workerProcess;
   }
 
-  terminateWorker = (index: number) => {
-    this.workersProcessing[index].terminate();
-    this.workersProcessingWorking[index] = false;
-    this.workersProcessingReady[index] = false;
-    this.workersCountProcessed[index] = 0;
+  getIsReady = (): boolean => {
+    return this.isReady;
   }
 
-  getWorker = (index: number): Worker => {
-    return this.workersProcessing[index];
+  getIsWorking = (): boolean => {
+    return this.isWorking;
   }
 
-  getIsReady = (index: number): boolean => {
-    return this.workersProcessingReady[index];
+  setIsReady = (value: boolean) => {
+    this.isReady = value;
   }
 
-  getIsWorking = (index: number): boolean => {
-    return this.workersProcessingWorking[index];
+  setIsWorking = (value: boolean) => {
+    this.isWorking = value;
   }
 
-  setIsReady = (index: number, value: boolean) => {
-    this.workersProcessingReady[index] = value;
+  getProcessed = (): number => {
+    return this.countProcessed;
   }
 
-  setIsWorking = (index: number, value: boolean) => {
-    this.workersProcessingWorking[index] = value;
-  }
-
-  getProcessed = (index: number): number => {
-    return this.workersCountProcessed[index];
-  }
-
-  incProcessed = (index: number) => {
-    ++this.workersCountProcessed[index];  
-  }
-
-  getCount = (): number => {
-    return this.instances;
+  incProcessed = () => {
+    ++this.countProcessed;  
   }
 }
 
@@ -271,7 +248,7 @@ export class WalletWatchdog {
   blockList: BlockList;
   explorer: BlockchainExplorer;
   syncWorkers: SyncWorker[] = [];
-  watchdogWorkers: WatchdogWorkers;  
+  parseWorkers: ParseWorker[] = [];  
   lastBlockLoading: number = -1;
   lastMaximumHeight: number = 0;
   intervalTransactionsProcess: any = 0;
@@ -284,14 +261,28 @@ export class WalletWatchdog {
     this.wallet = wallet;
     this.explorer = explorer;
     this.blockList = new BlockList(wallet);
-    this.watchdogWorkers = new WatchdogWorkers(cpuCores, wallet, this, this.blockList);
-    this.watchdogWorkers.initWorkers();
-    this.initMempool();
+
+    // set the default node for session
+    if (this.wallet.options.customNode) {
+      config.nodeUrl = this.wallet.options.nodeUrl;
+    } else {
+      let randNodeInt:number = Math.floor(Math.random() * Math.floor(config.nodeList.length));
+      config.nodeUrl = config.nodeList[randNodeInt];
+    }
+
+    // create parse workers
+    for (let i = 0; i < cpuCores; ++i) {
+      let parseWorker: ParseWorker = new ParseWorker(wallet, this, this.blockList);
+      this.parseWorkers.push(parseWorker);
+    }    
 
     // create a worker for each random node
     for (let i = 0; i < randomNodes.length; ++i) {
       this.syncWorkers.push(new SyncWorker(randomNodes[i], explorer));
     }    
+
+    // init the mempool
+    this.initMempool();
   }
 
   signalWalletUpdate() {
@@ -306,11 +297,9 @@ export class WalletWatchdog {
       config.nodeUrl = config.nodeList[randNodeInt];
     }
 
-
-    for (let i = 0; i < this.watchdogWorkers.getCount(); ++i) {
-      this.watchdogWorkers.getWorker(i).postMessage({
+    for (let i = 0; i < this.parseWorkers.length; ++i) {
+      this.parseWorkers[i].getWorker().postMessage({
         type: 'initWallet',
-        wrkIndex: i,
         wallet: this.wallet.exportToRaw()
       });
     }
@@ -378,13 +367,13 @@ export class WalletWatchdog {
     //need to work out timings and ensure process does not reload when it's already running...
 
     if (this.transactionsToProcess.length > 0) {
-      for (let i = 0; i < this.watchdogWorkers.getCount(); ++i) {
-        if (!(this.watchdogWorkers.getIsWorking(i) || !this.watchdogWorkers.getIsReady(i))) {
+      for (let i = 0; i < this.parseWorkers.length; ++i) {
+        if (!(this.parseWorkers[i].getIsWorking() || !this.parseWorkers[i].getIsReady())) {
           //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
           //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
-          if (this.watchdogWorkers.getProcessed(i) >= 5 * 1000) {
-            this.watchdogWorkers.terminateWorker(i);
-            this.watchdogWorkers.initWorker(i);
+          if (this.parseWorkers[i].getProcessed() >= 5 * 1000) {
+            this.parseWorkers[i].terminateWorker();
+            this.parseWorkers[i].initWorker();
             logDebugMsg('Recreated worker..');
             return;
           }
@@ -400,13 +389,12 @@ export class WalletWatchdog {
           logDebugMsg('checkTransactionsInterval', 'Transactions to be processed', transactionsToProcess);
 
           if (transactionsToProcess.length > 0) {
-            this.watchdogWorkers.setIsWorking(i, true);
-            this.watchdogWorkers.getWorker(i).postMessage({
+            this.parseWorkers[i].setIsWorking(true);
+            this.parseWorkers[i].getWorker().postMessage({
               type: 'process',
-              wrkIndex: i,
               transactions: transactionsToProcess
             });
-            this.watchdogWorkers.incProcessed(i);
+            this.parseWorkers[i].incProcessed();
           } else {
             clearInterval(this.intervalTransactionsProcess);
             this.intervalTransactionsProcess = 0;

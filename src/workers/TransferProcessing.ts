@@ -17,10 +17,7 @@ onmessage = function (data: MessageEvent) {
 	let event: any = data.data;
 	if (event.type === 'initWallet') {
 		currentWallet = Wallet.loadFromRaw(event.wallet);
-		postMessage({
-			type: 'readyWallet',
-      wrkIndex: event.wrkIndex
-		});
+		postMessage({ type: 'readyWallet'	});
 	} else if (event.type === 'process') {
     logDebugMsg(`process new transactions...`);
 
@@ -68,7 +65,6 @@ onmessage = function (data: MessageEvent) {
 
 		postMessage({
 			type: 'processed',
-      wrkIndex: event.wrkIndex,
       maxHeight: maxHeight,
 			transactions: transactions
 		});
