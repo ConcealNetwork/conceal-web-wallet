@@ -43,15 +43,17 @@ interface IBlockRange {
 class BlockList {  
   blocks: IBlockRange[];
   wallet: Wallet;
-  explorer: BlockchainExplorer;
+  chainHeight: number;
 
-  constructor(wallet: Wallet, explorer: BlockchainExplorer) {
+  constructor(wallet: Wallet) {
     this.blocks = [];
     this.wallet = wallet;
-    this.explorer = explorer;
+    this.chainHeight = 0;
   }
 
-  addBlockRange = (startBlock: number, endBlock: number) => {   
+  addBlockRange = (startBlock: number, endBlock: number, chainHeight: number) => {   
+    this.chainHeight = Math.max(this.chainHeight, chainHeight);
+
     let rangeData: IBlockRange = {
       startBlock: startBlock,
       endBlock: endBlock,
@@ -80,7 +82,7 @@ class BlockList {
   finishBlockRange = (lastBlock: number) => {
     if (lastBlock > -1) {
       for (var i = this.blocks.length - 1; i >= 0; i--) {
-        if ((lastBlock >= this.blocks[i].startBlock) && (lastBlock <= this.blocks[i].endBlock)) {
+        if ((lastBlock > this.blocks[i].startBlock) && (lastBlock <= this.blocks[i].endBlock)) {
           this.blocks[i].finished = true;
           break;
         }
@@ -98,9 +100,7 @@ class BlockList {
       }    
 
       if (maxBlock > -1) {
-        this.explorer.getHeight().then(height => {
-          this.wallet.lastHeight = Math.min(height, Math.max(this.wallet.lastHeight, maxBlock));
-        }); 
+        this.wallet.lastHeight = Math.min(this.chainHeight, Math.max(this.wallet.lastHeight, maxBlock));
       }
     }
   }
@@ -276,7 +276,7 @@ export class WalletWatchdog {
 
     this.wallet = wallet;
     this.explorer = explorer;
-    this.blockList = new BlockList(wallet, explorer);
+    this.blockList = new BlockList(wallet);
 
     // set the default node for session
     if (this.wallet.options.customNode) {
@@ -502,7 +502,7 @@ export class WalletWatchdog {
     
             if (freeWorker) {
               // add the blocks to be processed to the block list
-              self.blockList.addBlockRange(startBlock, endBlock);
+              self.blockList.addBlockRange(startBlock, endBlock, height);
               self.lastBlockLoading = Math.max(self.lastBlockLoading, endBlock); 
     
               // try to fetch the block range with a currently selected sync worker
