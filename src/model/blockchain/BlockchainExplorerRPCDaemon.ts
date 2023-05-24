@@ -177,14 +177,18 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     }
 
     getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTxs: boolean): Promise<any> {
-      let tempStartBlock;
+      return this.getTransactionsForBlocksEx(startBlock, endBlock, config.nodeUrl, includeMinerTxs);
+    }
+
+    getTransactionsForBlocksEx(startBlock: number, endBlock: number, url: string, includeMinerTxs: boolean): Promise<RawDaemon_Transaction[]> {
+      let tempStartBlock: number;
       if (startBlock === 0) {
         tempStartBlock = 1;
       } else {
         tempStartBlock = startBlock;
       }
 
-      return this.makeRequest('POST', 'get_raw_transactions_by_heights', {
+      return this.makeRequestByCustomNode('POST', url, 'get_raw_transactions_by_heights', {
         heights: [tempStartBlock, endBlock],
         include_miner_txs: includeMinerTxs,
         range: true
@@ -216,86 +220,9 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
               }
             }
           }
-
-          return formatted;
-        } else {
-          return response.status;
-        }
-      });
-    }
-
-    getTransactionsForBlocksEx(startBlock: number, maxBlock: number, includeMinerTxs: boolean): Promise<{transactions: any[], endBlock: number}> {
-      let requests: Promise<any>[] = [];
-      let lastBlock: number = 0;
-      let randomNodes: any[];
-      let currentBlock;
-
-      function getMultipleRandom(arr: any[], num: number) {
-        const shuffled = [...arr].sort(() => 0.5 - Math.random());
-      
-        return shuffled.slice(0, num);
-      }      
-
-      if (startBlock === 0) {
-        currentBlock = 1;
-      } else {
-        currentBlock = startBlock;
-      }
-
-      // get up to config.maxRemoteNodes random nodes for each request 
-      randomNodes = getMultipleRandom(config.nodeList, Math.min(config.maxRemoteNodes, config.nodeList.length));
-
-      // make a request to each of the random nodes
-      for (let i = 0; i < config.nodeList.length; ++i) {
-        if (currentBlock >= maxBlock) break;
-
-        lastBlock = Math.min(currentBlock + config.syncBlockCount, maxBlock);
-        let url = randomNodes[i]; 
-
-        let body = { 
-          heights: [currentBlock, lastBlock],
-          include_miner_txs: includeMinerTxs,
-          range: true
-        };
-
-        requests.push(this.makeRequestByCustomNode('POST', url, 'get_raw_transactions_by_heights', body));                
-        currentBlock = currentBlock + config.syncBlockCount + 1;
-      }
-
-      return Promise.all(requests).then((values) => {
-        let formatted: RawDaemon_Transaction[] = [];
-
-        for (let i = 0; i < values.length; ++i) {
-          if (values[i].status !== 'OK') {
-            throw 'invalid_transaction_answer';
-          }
-
-          if (values[i].transactions.length > 0) {
-            for (let rawTx of values[i].transactions) {
-              let tx: RawDaemon_Transaction | null = null;
-
-              if (rawTx && rawTx.transaction) {
-                tx = rawTx.transaction;
-
-                if (tx !== null) {
-                  tx.ts = rawTx.timestamp;
-                  tx.height = rawTx.height;
-                  tx.hash = rawTx.hash;
-                  if (rawTx.output_indexes.length > 0)
-                    tx.global_index_start = rawTx.output_indexes[0];
-                  tx.output_indexes = rawTx.output_indexes;
-                  formatted.push(tx);
-                }
-              }
-            }
-          }
         }
 
-        // return all tx
-        return {
-          transactions: formatted,
-          endBlock: lastBlock
-        };
+        return formatted;
       });
     }
 

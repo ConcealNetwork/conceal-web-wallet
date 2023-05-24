@@ -36,9 +36,9 @@ onmessage = function (data: MessageEvent) {
 		}
 
 		let readMinersTx = typeof currentWallet.options.checkMinerTx !== 'undefined' && currentWallet.options.checkMinerTx;
-
 		let rawTransactions: RawDaemon_Transaction[] = event.transactions;
 		let transactions: any[] = [];
+    let maxHeight: number = -1;
 
     // log any raw transactions that need to be processed
     logDebugMsg(`rawTransactions`, rawTransactions);
@@ -46,10 +46,13 @@ onmessage = function (data: MessageEvent) {
 		for (let rawTransaction of rawTransactions) {
       if (rawTransaction) {
         if (rawTransaction.height) {
+          maxHeight = Math.max(rawTransaction.height, maxHeight);
+
           if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
             continue;
           }
 
+          // parse the transaction to see if we need to include it in the wallet
           let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
 
           if (transaction !== null) {
@@ -62,9 +65,11 @@ onmessage = function (data: MessageEvent) {
         }
       }
 		}
+
 		postMessage({
 			type: 'processed',
       wrkIndex: event.wrkIndex,
+      maxHeight: maxHeight,
 			transactions: transactions
 		});
 	}

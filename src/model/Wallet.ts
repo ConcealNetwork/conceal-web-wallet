@@ -207,9 +207,7 @@ export class Wallet extends Observable{
 		return outs;
 	}
 
-	addNew(transaction : Transaction, replace = true){
-    console.log("adding new transaction...");
-
+	addNew(transaction : Transaction, replace = true) {
 		let exist = this.findWithTxPubKey(transaction.txPubKey);
 		if(!exist || replace) {
 			if(!exist) {

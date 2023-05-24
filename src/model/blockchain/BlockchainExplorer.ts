@@ -71,7 +71,7 @@ export interface BlockchainExplorer {
 
     getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTx: boolean): Promise<RawDaemon_Transaction[]>;
 
-    getTransactionsForBlocksEx(startBlock: number, maxBlock: number, includeMinerTxs: boolean): Promise<{transactions: any[], endBlock: number}>;
+    getTransactionsForBlocksEx(startBlock: number, endBlock: number, url: string, includeMinerTxs: boolean): Promise<RawDaemon_Transaction[]>;
 
     sendRawTx(rawTx: string): Promise<any>;
 
