@@ -43,10 +43,12 @@ interface IBlockRange {
 class BlockList {  
   blocks: IBlockRange[];
   wallet: Wallet;
+  explorer: BlockchainExplorer;
 
-  constructor(wallet: Wallet) {
+  constructor(wallet: Wallet, explorer: BlockchainExplorer) {
     this.blocks = [];
     this.wallet = wallet;
+    this.explorer = explorer;
   }
 
   addBlockRange = (startBlock: number, endBlock: number) => {   
@@ -95,8 +97,10 @@ class BlockList {
         }
       }    
 
-      if (maxBlock > -1) { 
-        this.wallet.lastHeight = maxBlock; 
+      if (maxBlock > -1) {
+        this.explorer.getHeight().then(height => {
+          this.wallet.lastHeight = Math.min(height, Math.max(this.wallet.lastHeight, maxBlock));
+        }); 
       }
     }
   }
@@ -127,8 +131,16 @@ class ParseWorker {
     this.workerProcess.onmessage = (data: MessageEvent)  => {
       let message: string | any = data.data;
       if (message === 'ready') {
-        logDebugMsg('worker ready');
-        this.watchdog.signalWalletUpdate();
+        logDebugMsg('worker ready...');
+        // signal the wallet update
+        this.watchdog.checkMempool();
+        // post the wallet to the worker
+        this.workerProcess.postMessage({
+          type: 'initWallet',
+          wallet: this.wallet.exportToRaw()
+        });
+      } else if (message === "missing_wallet") {
+        logDebugMsg("Wallet is missing for the worker...");
       } else if (message.type) {
         if (message.type === 'readyWallet') {
           this.setIsReady(true);
@@ -136,9 +148,11 @@ class ParseWorker {
           let transactions = message.transactions;
           
           if (transactions.length > 0) {
-            for (let tx of transactions)
-            this.wallet.addNew(Transaction.fromRaw(tx));
-              this.watchdog.signalWalletUpdate();
+            for (let tx of transactions) {
+              // add all new transactions to the wallet
+              this.wallet.addNew(Transaction.fromRaw(tx));
+            }
+            this.watchdog.checkMempool();            
           }
 
           // we are done processing now
@@ -245,10 +259,12 @@ class SyncWorker {
 
 export class WalletWatchdog {
   wallet: Wallet;
+  stopped: boolean = false;
   blockList: BlockList;
   explorer: BlockchainExplorer;
   syncWorkers: SyncWorker[] = [];
   parseWorkers: ParseWorker[] = [];  
+  intervalMempool: any = 0;
   lastBlockLoading: number = -1;
   lastMaximumHeight: number = 0;
   intervalTransactionsProcess: any = 0;
@@ -260,7 +276,7 @@ export class WalletWatchdog {
 
     this.wallet = wallet;
     this.explorer = explorer;
-    this.blockList = new BlockList(wallet);
+    this.blockList = new BlockList(wallet, explorer);
 
     // set the default node for session
     if (this.wallet.options.customNode) {
@@ -279,57 +295,44 @@ export class WalletWatchdog {
     // create a worker for each random node
     for (let i = 0; i < randomNodes.length; ++i) {
       this.syncWorkers.push(new SyncWorker(randomNodes[i], explorer));
-    }    
+    }        
 
     // init the mempool
     this.initMempool();
+
+    // set the interval for checking the new transactions
+    this.intervalTransactionsProcess = setInterval(() => {
+      this.checkTransactionsInterval();
+    }, this.wallet.options.readSpeed);
+
   }
 
-  signalWalletUpdate() {
-    let self = this;
+  signalWalletUpdate = () => {
     logDebugMsg('wallet update in progress');
-    this.lastBlockLoading = -1;//reset scanning
 
+    // set the default node for session
     if (this.wallet.options.customNode) {
       config.nodeUrl = this.wallet.options.nodeUrl;
     } else {
       let randNodeInt:number = Math.floor(Math.random() * Math.floor(config.nodeList.length));
       config.nodeUrl = config.nodeList[randNodeInt];
-    }
-
-    for (let i = 0; i < this.parseWorkers.length; ++i) {
-      this.parseWorkers[i].getWorker().postMessage({
-        type: 'initWallet',
-        wallet: this.wallet.exportToRaw()
-      });
-    }
-
-    clearInterval(this.intervalTransactionsProcess);
-    this.intervalTransactionsProcess = setInterval(function () {
-      self.checkTransactionsInterval();
-    }, this.wallet.options.readSpeed);
-
-    //force mempool update after a wallet update (new tx, ...)
-    self.checkMempool();
-  }
-
-  intervalMempool: any = 0;
+    }   
+    
+    this.checkMempool();
+  }  
 
   initMempool = (force: boolean = false) => {
-    let self = this;
     if (this.intervalMempool === 0 || force) {
       if (force && this.intervalMempool !== 0) {
         clearInterval(this.intervalMempool);
       }
 
-      this.intervalMempool = setInterval(function () {
-        self.checkMempool();
+      this.intervalMempool = setInterval(() => {
+        this.checkMempool();
       }, config.avgBlockTime / 2 * 1000);
     }
-    self.checkMempool();
-  }
-
-  stopped: boolean = false;
+    this.checkMempool();
+  }  
 
   stop = () => {
     clearInterval(this.intervalTransactionsProcess);
@@ -348,10 +351,10 @@ export class WalletWatchdog {
     this.explorer.getTransactionPool().then(function (pool: any) {
       if (typeof pool !== 'undefined') {
         for (let rawTx of pool) {
-            let tx = TransactionsExplorer.parse(rawTx, self.wallet);
-            if (tx !== null) {
-                self.wallet.txsMem.push(tx);
-            }
+          let tx = TransactionsExplorer.parse(rawTx, self.wallet);
+          if (tx !== null) {
+            self.wallet.txsMem.push(tx);
+          }
         }
       }
     }).catch(function (err) {
@@ -392,12 +395,10 @@ export class WalletWatchdog {
             this.parseWorkers[i].setIsWorking(true);
             this.parseWorkers[i].getWorker().postMessage({
               type: 'process',
+              wallet: this.wallet.exportToRaw(),
               transactions: transactionsToProcess
             });
             this.parseWorkers[i].incProcessed();
-          } else {
-            clearInterval(this.intervalTransactionsProcess);
-            this.intervalTransactionsProcess = 0;
           }
         }
       }
@@ -406,17 +407,8 @@ export class WalletWatchdog {
 
   processTransactions(transactions: RawDaemon_Transaction[], callback: Function) {
     logDebugMsg(`processTransactions called...`, transactions);
-
     // add the raw transaction to the processing FIFO list
     this.transactionsToProcess.push(transactions);
-
-    if (this.intervalTransactionsProcess === 0) {
-      let self = this;
-      this.intervalTransactionsProcess = setInterval(function () {
-        self.checkTransactionsInterval();
-      }, this.wallet.options.readSpeed);
-    }
-
     // signal we are finished
     callback();
   }
@@ -483,6 +475,11 @@ export class WalletWatchdog {
           // get the current height of the chain
           let height = await self.explorer.getHeight();
 
+          // make sure we are not ahead of chain
+          if (self.lastBlockLoading > height) {
+            self.lastBlockLoading = height;
+          }
+
           if (height > self.lastMaximumHeight) {
             self.lastMaximumHeight = height;
           } else {
@@ -493,9 +490,11 @@ export class WalletWatchdog {
           }
       
           if (self.lastBlockLoading < height) {
-            let startBlock: number = Number(self.lastBlockLoading) + 1;
+            let startBlock: number = Number(self.lastBlockLoading);
             let endBlock: number = startBlock + config.syncBlockCount;
             let freeWorker: SyncWorker = self.getFreeWorker();
+            // make sure endBlock is not over current height
+            endBlock = Math.min(endBlock, height + 1);
     
             if (startBlock > self.lastMaximumHeight) {
               startBlock = self.lastMaximumHeight;

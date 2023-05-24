@@ -15,64 +15,63 @@ let currentWallet: Wallet | null = null;
 onmessage = function (data: MessageEvent) {
 	// if(data.isTrusted){
 	let event: any = data.data;
-	if (event.type === 'initWallet') {
-		currentWallet = Wallet.loadFromRaw(event.wallet);
-		postMessage({ type: 'readyWallet'	});
-	} else if (event.type === 'process') {
-    logDebugMsg(`process new transactions...`);
+  try {
+    if (event.type === 'initWallet') {
+      currentWallet = Wallet.loadFromRaw(event.wallet);
+      postMessage({ type: 'readyWallet'	});
+    } else if (event.type === 'process') {
+      logDebugMsg(`process new transactions...`);
 
-		if (typeof event.wallet !== 'undefined') {
-      logDebugMsg(`loading wallet for the first time...`);
-			currentWallet = Wallet.loadFromRaw(event.wallet);
-		}
+      if (typeof event.wallet !== 'undefined') {
+        logDebugMsg(`loading wallet for the first time...`);
+        currentWallet = Wallet.loadFromRaw(event.wallet);
+      }
 
-		if (currentWallet === null) {
-      logDebugMsg(`Wallet is missing...`);
-			postMessage('missing_wallet');
-			return;
-		}
+      if (currentWallet === null) {
+        logDebugMsg(`Wallet is missing...`);
+        postMessage('missing_wallet');
+        return;
+      }
 
-		let readMinersTx = typeof currentWallet.options.checkMinerTx !== 'undefined' && currentWallet.options.checkMinerTx;
-		let rawTransactions: RawDaemon_Transaction[] = event.transactions;
-		let transactions: any[] = [];
-    let maxHeight: number = -1;
+      let readMinersTx = typeof currentWallet.options.checkMinerTx !== 'undefined' && currentWallet.options.checkMinerTx;
+      let rawTransactions: RawDaemon_Transaction[] = event.transactions;
+      let transactions: any[] = [];
+      let maxHeight: number = -1;
 
-    // log any raw transactions that need to be processed
-    logDebugMsg(`rawTransactions`, rawTransactions);
+      // log any raw transactions that need to be processed
+      logDebugMsg(`rawTransactions`, rawTransactions);
 
-		for (let rawTransaction of rawTransactions) {
-      if (rawTransaction) {
-        if (rawTransaction.height) {
-          maxHeight = Math.max(rawTransaction.height, maxHeight);
+      for (let rawTransaction of rawTransactions) {
+        if (rawTransaction) {
+          if (rawTransaction.height) {
+            maxHeight = Math.max(rawTransaction.height, maxHeight);
 
-          if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
-            continue;
-          }
+            if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
+              continue;
+            }
 
-          // parse the transaction to see if we need to include it in the wallet
-          let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
+            // parse the transaction to see if we need to include it in the wallet
+            let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
 
-          if (transaction !== null) {
-            currentWallet.addNew(transaction);
-            logDebugMsg(`Added tx ${transaction.hash} to currentWallet`);
-
-            transactions.push(transaction.export());
-            logDebugMsg(`pushed tx ${transaction.hash} to transactions[]`);
+            if (transaction !== null) {              
+              currentWallet.addNew(transaction);
+              logDebugMsg(`Added tx ${transaction.hash} to currentWallet`);
+              transactions.push(transaction.export());
+              logDebugMsg(`pushed tx ${transaction.hash} to transactions[]`);
+            }
           }
         }
       }
-		}
 
-		postMessage({
-			type: 'processed',
-      maxHeight: maxHeight,
-			transactions: transactions
-		});
-	}
-	// let transaction = TransactionsExplorer.parse(rawTransaction, height, this.wallet);
-	// }else {
-	// 	console.warn('Non trusted data', data.data, JSON.stringify(data.data));
-	// }
+      postMessage({
+        type: 'processed',
+        maxHeight: maxHeight,
+        transactions: transactions
+      });
+	  }
+  } catch(err: any) {
+    reportError(err);
+  } 
 };
 
 postMessage('ready');

@@ -87,9 +87,6 @@ export type RawFullyEncryptedWallet = {
 }
 
 export class Wallet extends Observable{
-	// lastHeight : number = 114000;
-	// lastHeight : number = 75900;
-	// private _lastHeight : number = 50000;
 	private _lastHeight : number = 0;
 
 	private transactions : Transaction[] = [];
@@ -125,7 +122,7 @@ export class Wallet extends Observable{
 		return data;
 	}
 
-	static loadFromRaw(raw : RawWallet) : Wallet{
+	static loadFromRaw(raw : RawWallet): Wallet {
     let wallet = new Wallet();
 		wallet.transactions = [];
 		for(let rawTransac of raw.transactions){
@@ -133,11 +130,11 @@ export class Wallet extends Observable{
 		}
 		wallet._lastHeight = raw.lastHeight;
 		if(typeof raw.encryptedKeys === 'string' && raw.encryptedKeys !== '') {
-			if(raw.encryptedKeys.length === 128) {
+			if (raw.encryptedKeys.length === 128) {
 				let privView = raw.encryptedKeys.substr(0, 64);
 				let privSpend = raw.encryptedKeys.substr(64, 64);
 				wallet.keys =  KeysRepository.fromPriv(privSpend, privView);
-			}else{
+			} else {
 				let privView = raw.encryptedKeys.substr(0, 64);
 				let pubViewKey = raw.encryptedKeys.substr(64, 64);
 				let pubSpendKey = raw.encryptedKeys.substr(128, 64);
