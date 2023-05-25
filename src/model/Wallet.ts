@@ -260,6 +260,8 @@ export class Wallet extends Observable{
 
 	addTxPrivateKeyWithTxHash = (txHash : string, txPrivKey : string): void => {
 		this.txPrivateKeys[txHash] = txPrivKey;
+    this.modifiedTS = new Date();
+   	this.modified = true;
 	}
 
 	getTransactionKeyImages = () => {
@@ -330,14 +332,14 @@ export class Wallet extends Observable{
 			}
 		}
 
-		//console.log(this.txsMem);
-		for(let transaction of this.txsMem){
+		console.log(this.txsMem);
+		for (let transaction of this.txsMem) {
 			//console.log(transaction.paymentId);
 			// for(let out of transaction.outs){
 			// 	amount += out.amount;
 			// }
-			if(transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1)
-				for(let nout of transaction.outs){
+			if (transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1)
+				for (let nout of transaction.outs) {
 					amount += nout.amount;
 					//console.log('+'+nout.amount);
 				}
@@ -458,8 +460,8 @@ export class Wallet extends Observable{
 
 		return new Promise<number>(function (resolve, reject) {
 			let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(wallet, blockchainHeight);
-			let neededFee = new JSBigInt((<any>window).config.coinFee);
       let stillData = unspentOuts.length >= config.optimizeOutputs;
+			let neededFee = new JSBigInt((<any>window).config.coinFee);
       let iteration = 0;
 
       //selecting outputs to fit the desired amount (totalAmount);

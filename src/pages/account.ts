@@ -76,8 +76,8 @@ class AccountView extends DestructableView{
     let self = this;
     blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
       let isNeeded: boolean = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
-        console.log('isNeeded:', isNeeded);
-        console.log("unspentouts", "end");
+      logDebugMsg('isNeeded:', isNeeded);
+      logDebugMsg("unspentouts", "end");
       if(isNeeded) {
         self.optimizeIsNeeded = true;
       }
@@ -91,7 +91,7 @@ class AccountView extends DestructableView{
           return blockchainExplorer.getRandomOuts(amounts, numberOuts);
         }).then(function (processedOuts: number) {
           let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
-          console.log("processedOuts", processedOuts);
+          logDebugMsg("processedOuts", processedOuts);
           //force a mempool check so the user is up to date
           if (watchdog !== null) {
             watchdog.checkMempool();
@@ -135,7 +135,9 @@ class AccountView extends DestructableView{
 	refreshWallet = () => {
     this.currentScanBlock = wallet.lastHeight;
 
-    if (this.refreshTimestamp < wallet.modifiedTimestamp()) {      
+    if (this.refreshTimestamp < wallet.modifiedTimestamp()) {   
+      logDebugMsg("refreshWallet", this.currentScanBlock);
+   
       this.refreshTimestamp = new Date();
       this.walletAmount = wallet.amount;
       this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);

@@ -105,6 +105,7 @@ class BlockList {
               let transaction = TransactionsExplorer.parse(tx, this.wallet);
 
               if (transaction) {
+                logDebugMsg("Added new transaction", transaction);
                 this.wallet.addNew(transaction);
               }
             }

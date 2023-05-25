@@ -226,12 +226,12 @@ export namespace CnUtils{
 		return vali;*/
 		// return JSBigInt.parse(test,16);
 		// let bytes = Crypto.hextobin(test);
-		// console.log('bytes',bytes, test,swapEndianC(test));
-		// console.log(JSBigInt.parse(swapEndianC(test),16).valueOf());
-		// console.log(JSBigInt.parse(test.substr(0,12),16).valueOf());
+		// logDebugMsg('bytes',bytes, test,swapEndianC(test));
+		// logDebugMsg(JSBigInt.parse(swapEndianC(test),16).valueOf());
+		// logDebugMsg(JSBigInt.parse(test.substr(0,12),16).valueOf());
 		let vali = 0;
 		for (let j = 7; j >= 0; j--) {
-			// console.log(vali,vali*256,bytes[j]);
+			// logDebugMsg(vali,vali*256,bytes[j]);
 			vali = (vali * 256 + parseInt(hex.slice(j*2, j*2+2), 16));
 		}
 		return vali;
@@ -846,12 +846,12 @@ export namespace Cn{
 		intPaymentId: string|null
 	}{
 		let dec = cnBase58.decode(address);
-		console.log(dec,CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX);
+		logDebugMsg(dec,CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX,CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX);
 		let expectedPrefix = CnUtils.encode_varint(CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX);
 		let expectedPrefixInt = CnUtils.encode_varint(CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX);
 		let expectedPrefixSub = CnUtils.encode_varint(CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX);
 		let prefix = dec.slice(0, expectedPrefix.length);
-		console.log(prefix,expectedPrefixInt,expectedPrefix);
+		logDebugMsg(prefix,expectedPrefixInt,expectedPrefix);
 		if (prefix !== expectedPrefix && prefix !== expectedPrefixInt && prefix !== expectedPrefixSub) {
 			throw "Invalid address prefix";
 		}
@@ -972,19 +972,19 @@ export namespace CnTransactions{
 		// CHECK_AND_ASSERT_MES(rv.type == RCTTypeSimple || rv.type == RCTTypeSimpleBulletproof, false, "decodeRct called on non simple rctSig");
 		// CHECK_AND_ASSERT_THROW_MES(i < rv.ecdhInfo.size(), "Bad index");
 		// CHECK_AND_ASSERT_THROW_MES(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
-// console.log(i < rv.ecdhInfo.length ? undefined : 'Bad index');
-// console.log(rv.outPk.length == rv.ecdhInfo.length ? undefined : 'Mismatched sizes of rv.outPk and rv.ecdhInfo');
+// logDebugMsg(i < rv.ecdhInfo.length ? undefined : 'Bad index');
+// logDebugMsg(rv.outPk.length == rv.ecdhInfo.length ? undefined : 'Mismatched sizes of rv.outPk and rv.ecdhInfo');
 
 		//mask amount and mask
-		// console.log('decode',rv.ecdhInfo[i], sk, h2d(rv.ecdhInfo[i].amount));
+		// logDebugMsg('decode',rv.ecdhInfo[i], sk, h2d(rv.ecdhInfo[i].amount));
 		let ecdh_info = CnUtils.decode_rct_ecdh(rv.ecdhInfo[i], sk);
-		// console.log('ecdh_info',ecdh_info);
+		// logDebugMsg('ecdh_info',ecdh_info);
 		// mask = ecdh_info.mask;
 		let amount = ecdh_info.amount;
 		let C = rv.outPk[i].mask;
 
-		// console.log('amount', amount);
-		// console.log('C', C);
+		// logDebugMsg('amount', amount);
+		// logDebugMsg('C', C);
 		// DP("C");
 		// DP(C);
 		// key Ctmp;
@@ -1013,7 +1013,7 @@ export namespace CnTransactions{
 
 		try
 		{
-			// console.log(rv.type,'RCTTypeSimple='+RCTTypeSimple,'RCTTypeFull='+RCTTypeFull);
+			// logDebugMsg(rv.type,'RCTTypeSimple='+RCTTypeSimple,'RCTTypeFull='+RCTTypeFull);
 			switch (rv.type)
 			{
 				case CnVars.RCT_TYPE.Simple:
@@ -1041,7 +1041,7 @@ export namespace CnTransactions{
 						mask);
 					break;
 				default:
-					console.log('Unsupported rc type', rv.type);
+					logDebugMsg('Unsupported rc type', rv.type);
 					// cerr << "Unsupported rct type: " << rv.type << endl;
 					return false;
 			}
@@ -1049,7 +1049,7 @@ export namespace CnTransactions{
 		catch (e)
 		{
 			console.error(e);
-			console.log("Failed to decode input " +i);
+			logDebugMsg("Failed to decode input " +i);
 			return false;
 		}
 
@@ -1061,7 +1061,7 @@ export namespace CnTransactions{
 		if(recv_derivation === null)
 			recv_derivation = CnNativeBride.generate_key_derivation(tx_public_key, ack.view_secret_key);
 		// recv_derivation = CnUtilNative.generate_key_derivation(tx_public_key, ack.view_secret_key);
-		// console.log('recv_derivation', recv_derivation);
+		// logDebugMsg('recv_derivation', recv_derivation);
 
 		// CHECK_AND_ASSERT_MES(r, false, "key image helper: failed to generate_key_derivation(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
 		//
@@ -1070,14 +1070,14 @@ export namespace CnTransactions{
 
 		let in_ephemeral_pub = CnNativeBride.derive_public_key(recv_derivation, real_output_index, ack.public_spend_key);
 		// let in_ephemeral_pub = CnUtilNative.derive_public_key(recv_derivation, real_output_index, ack.public_spend_key);
-		// console.log('in_ephemeral_pub',in_ephemeral_pub);
+		// logDebugMsg('in_ephemeral_pub',in_ephemeral_pub);
 
 
 		// CHECK_AND_ASSERT_MES(r, false, "key image helper: failed to derive_public_key(" << recv_derivation << ", " << real_output_index <<  ", " << ack.m_account_address.m_spend_public_key << ")");
 		//
 		let in_ephemeral_sec = CnNativeBride.derive_secret_key(recv_derivation, real_output_index, ack.spend_secret_key);
 		// let in_ephemeral_sec = CnNativeBride.derive_secret_key(recv_derivation, real_output_index, ack.spend_secret_key);
-		// console.log('in_ephemeral_sec',in_ephemeral_sec);
+		// logDebugMsg('in_ephemeral_sec',in_ephemeral_sec);
 
 
 
@@ -1085,7 +1085,7 @@ export namespace CnTransactions{
 		let ki = CnNativeBride.generate_key_image_2(in_ephemeral_pub, in_ephemeral_sec);
 
 		// let end = Date.now();
-		// console.log(end-start);
+		// logDebugMsg(end-start);
 
 		return {
 			ephemeral_pub:in_ephemeral_pub,
@@ -1198,7 +1198,7 @@ export namespace CnTransactions{
 	//TODO merge
 	export function add_additionnal_pub_keys_to_extra(extra : string, keys : string[]){
 		//do not add if there is no additional keys
-		console.log('Add additionnal keys to extra', keys);
+		logDebugMsg('Add additionnal keys to extra', keys);
 		if(keys.length === 0)return extra;
 
 		extra += TX_EXTRA_TAGS.ADDITIONAL_PUBKEY;
@@ -1346,7 +1346,7 @@ export namespace CnTransactions{
 		//  vout: [{amount: uint64, target: {key: hex}},...],
 		//  signatures: [[s,s,...],...]
 		//}
-		console.log('serialize tx ', JSON.parse(JSON.stringify(tx)));
+		logDebugMsg('serialize tx ', JSON.parse(JSON.stringify(tx)));
 		let buf = "";
 		buf += CnUtils.encode_varint(tx.version);
 		buf += CnUtils.encode_varint(tx.unlock_time);
@@ -1354,15 +1354,15 @@ export namespace CnTransactions{
 		let i, j;
 		for (i = 0; i < tx.vin.length; i++) {
 			let vin = tx.vin[i];
-			console.log('start vin', vin);
+			logDebugMsg('start vin', vin);
 			switch (vin.type) {
 				case "input_to_key":
 					buf += "02";
 					buf += CnUtils.encode_varint(vin.amount);
 					buf += CnUtils.encode_varint(vin.key_offsets.length);
-					console.log(vin.key_offsets,vin.key_offsets.length);
+					logDebugMsg(vin.key_offsets,vin.key_offsets.length);
 					for (j = 0; j < vin.key_offsets.length; j++) {
-						console.log(j, vin.key_offsets[j]);
+						logDebugMsg(j, vin.key_offsets[j]);
 						buf += CnUtils.encode_varint(vin.key_offsets[j]);
 					}
 					buf += vin.k_image;
@@ -1370,9 +1370,9 @@ export namespace CnTransactions{
 				default:
 					throw "Unhandled vin type: " + vin.type;
 			}
-			console.log('end vin', vin);
+			logDebugMsg('end vin', vin);
 		}
-		console.log('serialize tx ', tx);
+		logDebugMsg('serialize tx ', tx);
 		buf += CnUtils.encode_varint(tx.vout.length);
 		for (i = 0; i < tx.vout.length; i++) {
 			let vout = tx.vout[i];
@@ -1386,12 +1386,12 @@ export namespace CnTransactions{
 					throw "Unhandled txout target type: " + vout.target.type;
 			}
 		}
-		console.log('serialize tx ', tx);
+		logDebugMsg('serialize tx ', tx);
 
 		if (!CnUtils.valid_hex(tx.extra)) {
 			throw "Tx extra has invalid hex";
 		}
-		console.log('serialize tx ', tx);
+		logDebugMsg('serialize tx ', tx);
 
 		buf += CnUtils.encode_varint(tx.extra.length / 2);
 		buf += tx.extra;
@@ -1405,7 +1405,7 @@ export namespace CnTransactions{
 				}
 			}
 		}
-		console.log('serialize tx ', buf);
+		logDebugMsg('serialize tx ', buf);
 		return buf;
 	}
 
@@ -1802,7 +1802,7 @@ export namespace CnTransactions{
 		txnFee : string,
 		bulletproof : boolean = false
 	){
-		console.log('MIXIN:', mixRing);
+		logDebugMsg('MIXIN:', mixRing);
 		if (outAmounts.length !== amountKeys.length ){throw "different number of amounts/amount_keys";}
 		for (let i = 0; i < mixRing.length; i++){
 			if (mixRing[i].length <= indices[i]){throw "bad mixRing/index size";}
@@ -1811,7 +1811,7 @@ export namespace CnTransactions{
 		if (inAmounts.length !== inSk.length){throw "mismatched inAmounts/inSk";}
 		if (indices.length !== inSk.length){throw "mismatched indices/inSk";}
 
-		console.log('======t');
+		logDebugMsg('======t');
 
 		let rv : RctSignature = {
 			type: inSk.length === 1 ? CnVars.RCT_TYPE.Full : CnVars.RCT_TYPE.Simple,
@@ -1833,7 +1833,7 @@ export namespace CnTransactions{
 			mask: ''
 		};
 
-		console.log('====a');
+		logDebugMsg('====a');
 
 		let p = rv.p;
 		if(p) {
@@ -1847,15 +1847,15 @@ export namespace CnTransactions{
 				// 	p.bulletproofs[i] = CnTransactions.proveRangeBulletproof(cmObj, outAmounts[i], nrings, 0, 0);
 
 				let testfinish = new Date().getTime() - teststart;
-				console.log("Time take for range proof " + i + ": " + testfinish);
+				logDebugMsg("Time take for range proof " + i + ": " + testfinish);
 				rv.outPk[i] = cmObj.C;
 				sumout = CnNativeBride.sc_add(sumout, cmObj.mask);
 				rv.ecdhInfo[i] = CnUtils.encode_rct_ecdh({mask: cmObj.mask, amount: CnUtils.d2s(outAmounts[i])}, amountKeys[i]);
 			}
-			console.log('====a');
+			logDebugMsg('====a');
 
 			//simple
-			console.log('-----------rv type', rv.type);
+			logDebugMsg('-----------rv type', rv.type);
 			if (rv.type === CnVars.RCT_TYPE.Simple) {
 				let ai = [];
 				let sumpouts = CnVars.Z;
@@ -1909,20 +1909,20 @@ export namespace CnTransactions{
 	){
 		//we move payment ID stuff here, because we need txkey to encrypt
 		let txkey = Cn.random_keypair();
-		console.log(txkey);
+		logDebugMsg(txkey);
 		let extra = '';
 		if (payment_id) {
 			if (pid_encrypt && payment_id.length !== INTEGRATED_ID_SIZE * 2) {
 				throw "payment ID must be " + INTEGRATED_ID_SIZE + " bytes to be encrypted!";
 			}
-			console.log("Adding payment id: " + payment_id);
+			logDebugMsg("Adding payment id: " + payment_id);
 			if (pid_encrypt && realDestViewKey) { //get the derivation from our passed viewkey, then hash that + tail to get encryption key
 				let pid_key = CnUtils.cn_fast_hash(Cn.generate_key_derivation(realDestViewKey, txkey.sec) + ENCRYPTED_PAYMENT_ID_TAIL.toString(16)).slice(0, INTEGRATED_ID_SIZE * 2);
-				console.log("Txkeys:", txkey, "Payment ID key:", pid_key);
+				logDebugMsg("Txkeys:", txkey, "Payment ID key:", pid_key);
 				payment_id = CnUtils.hex_xor(payment_id, pid_key);
 			}
 			let nonce = CnTransactions.get_payment_id_nonce(payment_id, pid_encrypt);
-			console.log("Extra nonce: " + nonce);
+			logDebugMsg("Extra nonce: " + nonce);
 			extra = CnTransactions.add_nonce_to_extra(extra, nonce);
 		}
 		let tx : CnTransactions.Transaction = {
@@ -1954,11 +1954,11 @@ export namespace CnTransactions{
 		let inputs_money = JSBigInt.ZERO;
 		let i, j;
 
-		console.log('Sources: ');
+		logDebugMsg('Sources: ');
 		//run the for loop twice to sort ins by key image
 		//first generate key image and other construction data to sort it all in one go
 		for (i = 0; i < sources.length; i++) {
-			console.log(i + ': ' + Cn.formatMoneyFull(sources[i].amount));
+			logDebugMsg(i + ': ' + Cn.formatMoneyFull(sources[i].amount));
 			if (sources[i].real_out >= sources[i].outputs.length) {
 				throw "real index >= outputs.length";
 			}
@@ -1975,7 +1975,7 @@ export namespace CnTransactions{
 			// coinbaser ringct txs.
 			//is_rct_coinbases.push((sources[i].mask ? sources[i].mask === I : 0));
 
-			console.log('res.in_ephemeral.pub', res, res.in_ephemeral.pub, sources, i);
+			logDebugMsg('res.in_ephemeral.pub', res, res.in_ephemeral.pub, sources, i);
 			if (res.in_ephemeral.pub !== sources[i].outputs[sources[i].real_out].key) {
 				throw "in_ephemeral.pub != source.real_out.key";
 			}
@@ -1997,12 +1997,12 @@ export namespace CnTransactions{
 				key_offsets:[],
 			};
 			for (j = 0; j < sources[i].outputs.length; ++j) {
-				console.log('add to key offsets',sources[i].outputs[j].index, j, sources[i].outputs);
+				logDebugMsg('add to key offsets',sources[i].outputs[j].index, j, sources[i].outputs);
 				input_to_key.key_offsets.push(sources[i].outputs[j].index);
 			}
-			console.log('key offsets before abs',input_to_key.key_offsets);
+			logDebugMsg('key offsets before abs',input_to_key.key_offsets);
 			input_to_key.key_offsets = CnTransactions.abs_to_rel_offsets(input_to_key.key_offsets);
-			console.log('key offsets after abs',input_to_key.key_offsets);
+			logDebugMsg('key offsets after abs',input_to_key.key_offsets);
 			tx.vin.push(input_to_key);
 		}
 		let outputs_money = JSBigInt.ZERO;
@@ -2036,7 +2036,7 @@ export namespace CnTransactions{
 			}
 		}
 
-		console.log('Destinations resume:', unique_dst_addresses, num_stdaddresses, num_subaddresses );
+		logDebugMsg('Destinations resume:', unique_dst_addresses, num_stdaddresses, num_subaddresses );
 
 		if (num_stdaddresses == 0 && num_subaddresses == 1) {
 			let uniqueSubaddressDecoded = Cn.decode_address(single_dest_subaddress);
@@ -2143,13 +2143,13 @@ export namespace CnTransactions{
 				outAmounts.push(tx.vout[i].amount);
 				tx.vout[i].amount = 0; //zero out all rct outputs
 			}
-			console.log('rc signature----');
+			logDebugMsg('rc signature----');
 			let tx_prefix_hash = CnTransactions.get_tx_prefix_hash(tx);
-			console.log('rc signature----');
+			logDebugMsg('rc signature----');
 			tx.rct_signatures = CnTransactions.genRct(tx_prefix_hash, inSk, keyimages, /*destinations, */inAmounts, outAmounts, mixRing, amountKeys, indices, txnFee);
 
 		}
-		console.log(tx);
+		logDebugMsg(tx);
 		return tx;
 	}
 
@@ -2212,7 +2212,7 @@ export namespace CnTransactions{
 		}
 		let found_money = JSBigInt.ZERO;
 		let sources : CnTransactions.Source[] = [];
-		console.log('Selected transfers: ', outputs);
+		logDebugMsg('Selected transfers: ', outputs);
 		for (i = 0; i < outputs.length; ++i) {
 			found_money = found_money.add(outputs[i].amount);
 			if (found_money.compare(UINT64_MAX) !== -1) {
@@ -2235,21 +2235,21 @@ export namespace CnTransactions{
 			src.amount = new JSBigInt(outputs[i].amount).toString();
 			if (mix_outs.length !== 0) { //if mixin
 				// Sort fake outputs by global index
-				console.log('mix outs before sort',mix_outs[i].outs);
+				logDebugMsg('mix outs before sort',mix_outs[i].outs);
 				mix_outs[i].outs.sort(function(a, b) {
 					return new JSBigInt(a.global_index).compare(b.global_index);
 				});
 				j = 0;
 
-				console.log('mix outs sorted',mix_outs[i].outs);
+				logDebugMsg('mix outs sorted',mix_outs[i].outs);
 
 				while ((src.outputs.length < fake_outputs_count) && (j < mix_outs[i].outs.length)) {
 					let out = mix_outs[i].outs[j];
-					console.log('chekcing mixin');
-					console.log("out: ", out);
-					console.log("output ", i, ": ", outputs[i]);
+					logDebugMsg('chekcing mixin');
+					logDebugMsg("out: ", out);
+					logDebugMsg("output ", i, ": ", outputs[i]);
 					if (out.global_index === outputs[i].global_index) {
-						console.log('got mixin the same as output, skipping');
+						logDebugMsg('got mixin the same as output, skipping');
 						j++;
 						continue;
 					}
@@ -2278,13 +2278,13 @@ export namespace CnTransactions{
 				key:outputs[i].public_key,
 				commit:'',
 			};
-			console.log('OUT FOR REAL:',outputs[i].global_index);
+			logDebugMsg('OUT FOR REAL:',outputs[i].global_index);
 			/*
 			if (rct){
 				if (outputs[i].rct) {
 					real_oe.commit = outputs[i].rct.slice(0,64); //add commitment for real input
 				} else {
-					console.log('ZERO COMMIT');
+					logDebugMsg('ZERO COMMIT');
 					real_oe.commit = zeroCommit(CnUtils.d2s(src.amount)); //create identity-masked commitment for non-rct input
 				}
 			}
@@ -2298,19 +2298,19 @@ export namespace CnTransactions{
 				}
 			}
 			// Add real_oe to outputs
-			console.log('inserting real ouput at index', real_index, real_oe, outputs[i], i);
+			logDebugMsg('inserting real ouput at index', real_index, real_oe, outputs[i], i);
 			src.outputs.splice(real_index, 0, real_oe);
 			src.real_out_tx_key = outputs[i].tx_pub_key;
 			// Real output entry index
 			src.real_out = real_index;
 			src.real_out_in_tx = outputs[i].index;
-			console.log('check mask', outputs, rct, i);
+			logDebugMsg('check mask', outputs, rct, i);
 			/*
 			if (rct){
 				if (outputs[i].rct) {
 					src.mask = outputs[i].rct.slice(64,128); //encrypted or idenity mask for coinbase txs.
 				} else {
-					console.log('NULL MASK');
+					logDebugMsg('NULL MASK');
 					src.mask = null; //will be set by generate_key_image_helper_rct
 				}
 			}
@@ -2318,7 +2318,11 @@ export namespace CnTransactions{
 			 */
 			sources.push(src);
 		}
-		console.log('sources: ', sources);
+
+    logDebugMsg('found_money: ', found_money);
+    logDebugMsg('needed_money: ', needed_money);
+		logDebugMsg('sources: ', sources);
+
 		let change = {
 			amount: JSBigInt.ZERO
 		};

@@ -150,7 +150,7 @@ export class TransactionsExplorer {
 			txExtras = this.parseExtra(hexExtra);
 		} catch (e) {
 			console.error(e);
-			console.log('Error when scanning transaction on block ' + rawTransaction.height, rawTransaction);
+			logDebugMsg('Error when scanning transaction on block ' + rawTransaction.height, rawTransaction);
 			return false;
 		}
 
@@ -164,7 +164,7 @@ export class TransactionsExplorer {
 		}
 
 		if (tx_pub_key === '') {
-			console.log(`tx_pub_key === null`);
+			logDebugMsg(`tx_pub_key === null`);
 			return false;
 		}
 
@@ -195,7 +195,7 @@ export class TransactionsExplorer {
 		try {
 			derivation = CnNativeBride.generate_key_derivation(tx_pub_key, keys.priv.view);
 		} catch (e) {
-			console.log('UNABLE TO CREATE DERIVATION', e);
+			logDebugMsg('UNABLE TO CREATE DERIVATION', e);
 			return false;
 		}
 
@@ -266,7 +266,7 @@ export class TransactionsExplorer {
 			txExtras = this.parseExtra(hexExtra);
 		} catch (e) {
 			console.error(e);
-			console.log('Error when scanning transaction on block ' + rawTransaction.height, rawTransaction);
+			logDebugMsg('Error when scanning transaction on block ' + rawTransaction.height, rawTransaction);
 
 			return null;
 		}
@@ -281,7 +281,7 @@ export class TransactionsExplorer {
 		}
 
 		if (tx_pub_key === '') {
-			console.log(`tx_pub_key === null`);
+			logDebugMsg(`tx_pub_key === null`);
 			return null;
 		}
 
@@ -312,7 +312,7 @@ export class TransactionsExplorer {
 		try {
 			derivation = CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
 		} catch (e) {
-			console.log('UNABLE TO CREATE DERIVATION', e);
+			logDebugMsg('UNABLE TO CREATE DERIVATION', e);
 			return null;
 		}
 
@@ -378,7 +378,7 @@ export class TransactionsExplorer {
 			for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
 				let vin = rawTransaction.vin[iIn];
 				if (vin.value && keyImages.indexOf(vin.value.k_image) !== -1) {
-					//console.log('found in', vin);
+					//logDebugMsg('found in', vin);
 					let walletOuts = wallet.getAllOuts();
 					for (let ut of walletOuts) {
 						if (ut.keyImage == vin.value.k_image) {
@@ -389,7 +389,7 @@ export class TransactionsExplorer {
 							transactionIn.amount = ut.amount;
 							transactionIn.keyImage = ut.keyImage;
 							ins.push(transactionIn);
-							// console.log(ut);
+							// logDebugMsg(ut);
 							break;
 						}
 					}
@@ -492,13 +492,13 @@ export class TransactionsExplorer {
 			}
 		}
 
-		//console.log('outs count before spend:', unspentOuts.length, unspentOuts);
+		//logDebugMsg('outs count before spend:', unspentOuts.length, unspentOuts);
 		for (let tr of wallet.getAll().concat(wallet.txsMem)) {
-			//console.log(tr.ins);
+			//logDebugMsg(tr.ins);
 			for (let i of tr.ins) {
 				for (let iOut = 0; iOut < unspentOuts.length; ++iOut) {
 					if (unspentOuts[iOut].keyImage === i.keyImage) {
-            //console.log("splicing......");
+            //logDebugMsg("splicing......");
 						unspentOuts.splice(iOut, 1);
 						break;
 					}
@@ -523,7 +523,7 @@ export class TransactionsExplorer {
 		return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>(function (resolve, reject) {
 			let signed;
 			try {
-				//console.log('Destinations: ');
+				//logDebugMsg('Destinations: ');
 				//need to get viewkey for encrypting here, because of splitting and sorting
 				let realDestViewKey = undefined;
 				if (pid_encrypt) {
@@ -544,7 +544,7 @@ export class TransactionsExplorer {
 					payment_id, pid_encrypt,
 					realDestViewKey, 0, rct);
 
-				console.log("signed tx: ", signed);
+				logDebugMsg("signed tx: ", signed);
 				let raw_tx_and_hash = CnTransactions.serialize_tx_with_hash(signed);
 				resolve({raw: raw_tx_and_hash, signed: signed});
 
@@ -626,7 +626,7 @@ export class TransactionsExplorer {
 
 			let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(wallet, blockchainHeight);
 
-			//console.log('outs available:', unspentOuts.length, unspentOuts);
+			//logDebugMsg('outs available:', unspentOuts.length, unspentOuts);
 
 			let usingOuts: RawOutForTx[] = [];
 			let usingOuts_amount = new JSBigInt(0);
@@ -646,15 +646,15 @@ export class TransactionsExplorer {
 				let out = pop_random_value(unusedOuts);
 				usingOuts.push(out);
 				usingOuts_amount = usingOuts_amount.add(out.amount);
-				//console.log("Using output: " + out.amount + " - " + JSON.stringify(out));
+				//logDebugMsg("Using output: " + out.amount + " - " + JSON.stringify(out));
 			}
 
-			console.log("Selected outs:", usingOuts);
-			console.log('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)) + ' CCX');
+			logDebugMsg("Selected outs:", usingOuts);
+			logDebugMsg('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)) + ' CCX');
 			
 			confirmCallback(totalAmountWithoutFee, neededFee).then(function () {
 				if (usingOuts_amount.compare(totalAmount) < 0) {
-					console.log("Not enough spendable outputs / balance too low (have "
+					logDebugMsg("Not enough spendable outputs / balance too low (have "
 						+ Cn.formatMoneyFull(usingOuts_amount) + " but need "
 						+ Cn.formatMoneyFull(totalAmount)
 						+ " (estimated fee " + Cn.formatMoneyFull(neededFee) + " CCX included)");
@@ -664,7 +664,7 @@ export class TransactionsExplorer {
 				} else if (usingOuts_amount.compare(totalAmount) > 0) {
 					let changeAmount = usingOuts_amount.subtract(totalAmount);
 					//add entire change for rct
-					console.log("1) Sending change of " + Cn.formatMoneySymbol(changeAmount)
+					logDebugMsg("1) Sending change of " + Cn.formatMoneySymbol(changeAmount)
 						+ " to " + wallet.getPublicAddress());
 					dsts.push({
 						address: wallet.getPublicAddress(),
@@ -679,7 +679,7 @@ export class TransactionsExplorer {
 					//create random destination to keep 2 outputs always in case of 0 change
 					
 					let fakeAddress = Cn.create_address(CnRandom.random_scalar()).public_addr;
-					console.log("Sending 0 CCX to a fake address to keep tx uniform (no change exists): " + fakeAddress);
+					logDebugMsg("Sending 0 CCX to a fake address to keep tx uniform (no change exists): " + fakeAddress);
 					dsts.push({
 						address: fakeAddress,
 						amount: 0
@@ -687,7 +687,7 @@ export class TransactionsExplorer {
 				}
 				*/
 				
-				console.log('destinations', dsts);
+				logDebugMsg('destinations', dsts);
 
 				let amounts: number[] = [];
 				for (let l = 0; l < usingOuts.length; l++) {
@@ -696,9 +696,9 @@ export class TransactionsExplorer {
 				let nbOutsNeeded: number = mixin + 1;
 
         obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts: any[]) {			
-          console.log('------------------------------mix_outs');
-          console.log('amounts', amounts);
-          console.log('lots_mix_outs', lotsMixOuts);
+          logDebugMsg('------------------------------mix_outs');
+          logDebugMsg('amounts', amounts);
+          logDebugMsg('lots_mix_outs', lotsMixOuts);
 
   		    TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
 	  				resolve(data);
