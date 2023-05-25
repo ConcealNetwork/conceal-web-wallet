@@ -538,6 +538,9 @@ export class Wallet extends Observable{
                   logDebugMsg('optimization done', processedOuts);
                 } catch(err) {
                   console.log(err);
+
+                  unspentOuts = TransactionsExplorer.formatWalletOutsForTx(wallet, blockchainHeight);
+                  unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
                   errorCount++;
                 }
               }
