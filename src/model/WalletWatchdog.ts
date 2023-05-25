@@ -53,38 +53,39 @@ class TxQueue {
     this.transactions = [];
   }
   
-
-  processTransaction = (): Promise<number> => {
-    return new Promise<number>((resolve, reject) => {
+  processTransaction = (): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
       if (this.transactions.length > 0) {
         let transaction = TransactionsExplorer.parse(this.transactions.shift()!, this.wallet);
 
         if (transaction) {
           logDebugMsg("Added new transaction", transaction);
           this.wallet.addNew(transaction);
-          resolve(10);
+          resolve(true);
         }
       } else {
-        resolve(1000);
+        resolve(false);
       }     
     });
   }
 
   runProcessLoop = () => {
-    this.isRunning = true;
+    if (!this.isRunning) {
+      this.isRunning = true;
 
-    (async function loop(self) {
-      if (self.isRunning) {
-        try {
-          let timeout: number = await self.processTransaction();
-          await new Promise(r => setTimeout(r, timeout));
-          await loop(self);
-        } catch(err) {
-          console.error('Error on single processTransaction iteration', err);
-          await loop(self);
-        }              
-      } 
-    }(this));        
+      (async function loop(self) {
+        if (self.isRunning) {
+          try {
+            self.isRunning = await self.processTransaction();
+            await new Promise(r => setTimeout(r, 5));
+            await loop(self);
+          } catch(err) {
+            console.error('Error on single processTransaction iteration', err);
+            await loop(self);
+          }              
+        } 
+      }(this));
+    }
   }
 
   stopProcessLoop = () => {
@@ -93,6 +94,7 @@ class TxQueue {
 
   addTransactions = (transactions: RawDaemon_Transaction[]) => {
     this.transactions = this.transactions.concat(transactions);
+    this.runProcessLoop();
   }
 }
 
@@ -109,7 +111,6 @@ class BlockList {
     this.chainHeight = 0;
     this.watchdog = watchdog;
     this.txQueue = new TxQueue(wallet);
-    this.txQueue.runProcessLoop();
   }
 
   addBlockRange = (startBlock: number, endBlock: number, chainHeight: number) => {   

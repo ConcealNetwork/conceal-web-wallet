@@ -140,9 +140,10 @@ class AccountView extends DestructableView{
 	}
 
 	refreshWallet = () => {
+    let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
     this.currentScanBlock = wallet.lastHeight;
 
-    if (this.refreshTimestamp < wallet.modifiedTimestamp()) {   
+    if ((this.refreshTimestamp < wallet.modifiedTimestamp()) && (timeDiff > 500)) {   
       logDebugMsg("refreshWallet", this.currentScanBlock);
    
       this.refreshTimestamp = new Date();
