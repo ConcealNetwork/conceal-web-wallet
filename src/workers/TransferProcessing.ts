@@ -10,30 +10,25 @@ import {RawDaemon_Transaction} from "../model/blockchain/BlockchainExplorer";
 (<any>self).mn_decode = Mnemonic.mn_decode;
 (<any>self).mn_encode = Mnemonic.mn_encode;
 
-let currentWallet: Wallet | null = null;
+let walletKeys: any = null;
 
 onmessage = function (data: MessageEvent) {
 	// if(data.isTrusted){
 	let event: any = data.data;
   try {
     if (event.type === 'initWallet') {
-      currentWallet = Wallet.loadFromRaw(event.wallet);
+      walletKeys = event.keys;
       postMessage({ type: 'readyWallet'	});
     } else if (event.type === 'process') {
       logDebugMsg(`process new transactions...`);
 
-      if (typeof event.wallet !== 'undefined') {
-        logDebugMsg(`loading wallet for the first time...`);
-        currentWallet = Wallet.loadFromRaw(event.wallet);
-      }
-
-      if (currentWallet === null) {
-        logDebugMsg(`Wallet is missing...`);
-        postMessage('missing_wallet');
+      if (walletKeys === null) {
+        logDebugMsg(`Wallet keys are missing...`);
+        postMessage('missing_wallet_keys');
         return;
       }
 
-      let readMinersTx = typeof currentWallet.options.checkMinerTx !== 'undefined' && currentWallet.options.checkMinerTx;
+      let readMinersTx = typeof event.readMinersTx !== 'undefined' && event.readMinersTx;
       let rawTransactions: RawDaemon_Transaction[] = event.transactions;
       let transactions: any[] = [];
       let maxHeight: number = -1;
@@ -51,13 +46,9 @@ onmessage = function (data: MessageEvent) {
             }
 
             // parse the transaction to see if we need to include it in the wallet
-            let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
-
-            if (transaction !== null) {              
-              currentWallet.addNew(transaction);
-              logDebugMsg(`Added tx ${transaction.hash} to currentWallet`);
-              transactions.push(transaction.export());
-              logDebugMsg(`pushed tx ${transaction.hash} to transactions[]`);
+            if (TransactionsExplorer.ownsTx(rawTransaction, walletKeys)) {              
+              transactions.push(rawTransaction);
+              logDebugMsg(`pushed tx to transactions[]`);
             }
           }
         }

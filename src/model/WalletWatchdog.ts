@@ -38,17 +38,21 @@ interface IBlockRange {
   startBlock: number;
   endBlock: number;
   finished: boolean;
+  timestamp: Date; 
+  transactions: RawDaemon_Transaction[];
 }   
 
 class BlockList {  
   blocks: IBlockRange[];
   wallet: Wallet;
   chainHeight: number;
+  watchdog: WalletWatchdog;
 
-  constructor(wallet: Wallet) {
+  constructor(wallet: Wallet, watchdog: WalletWatchdog) {
     this.blocks = [];
     this.wallet = wallet;
     this.chainHeight = 0;
+    this.watchdog = watchdog;
   }
 
   addBlockRange = (startBlock: number, endBlock: number, chainHeight: number) => {   
@@ -57,7 +61,9 @@ class BlockList {
     let rangeData: IBlockRange = {
       startBlock: startBlock,
       endBlock: endBlock,
-      finished: false
+      finished: false,
+      timestamp: new Date(),
+      transactions: []
     }
 
     if (this.blocks.length > 0) {
@@ -79,10 +85,11 @@ class BlockList {
     }
   }
 
-  finishBlockRange = (lastBlock: number) => {
+  finishBlockRange = (lastBlock: number, transactions: RawDaemon_Transaction[]) => {
     if (lastBlock > -1) {
-      for (var i = this.blocks.length - 1; i >= 0; i--) {
-        if ((lastBlock > this.blocks[i].startBlock) && (lastBlock <= this.blocks[i].endBlock)) {
+      for (let i = 0; i < this.blocks.length; ++i) {
+        if (lastBlock <= this.blocks[i].endBlock) {
+          this.blocks[i].transactions = transactions.slice();
           this.blocks[i].finished = true;
           break;
         }
@@ -92,6 +99,18 @@ class BlockList {
       // remove all finished block
       while (this.blocks.length > 0) {
         if (this.blocks[0].finished) {
+          // add transactions to the wallet if we have any
+          if (this.blocks[0].transactions.length > 0) {
+            for (let tx of this.blocks[0].transactions) {
+              let transaction = TransactionsExplorer.parse(tx, this.wallet);
+
+              if (transaction) {
+                this.wallet.addNew(transaction);
+              }
+            }
+          }
+
+          // check what the max block for this range is
           maxBlock = this.blocks[0].endBlock;
           this.blocks.shift()!;
         } else {
@@ -101,6 +120,7 @@ class BlockList {
 
       if (maxBlock > -1) {
         this.wallet.lastHeight = Math.min(this.chainHeight, Math.max(this.wallet.lastHeight, maxBlock));
+        this.watchdog.checkMempool();            
       }
     }
   }
@@ -137,26 +157,16 @@ class ParseWorker {
         // post the wallet to the worker
         this.workerProcess.postMessage({
           type: 'initWallet',
-          wallet: this.wallet.exportToRaw()
+          keys: this.wallet.keys
         });
-      } else if (message === "missing_wallet") {
-        logDebugMsg("Wallet is missing for the worker...");
+      } else if (message === "missing_wallet_keys") {
+        logDebugMsg("Wallet keys are missing for the worker...");
       } else if (message.type) {
         if (message.type === 'readyWallet') {
           this.setIsReady(true);
         } else if (message.type === 'processed') {
-          let transactions = message.transactions;
-          
-          if (transactions.length > 0) {
-            for (let tx of transactions) {
-              // add all new transactions to the wallet
-              this.wallet.addNew(Transaction.fromRaw(tx));
-            }
-            this.watchdog.checkMempool();            
-          }
-
           // we are done processing now
-          this.blockList.finishBlockRange(message.maxHeight);
+          this.blockList.finishBlockRange(message.maxHeight, message.transactions);
           this.setIsWorking(false);
         }
       }
@@ -276,7 +286,7 @@ export class WalletWatchdog {
 
     this.wallet = wallet;
     this.explorer = explorer;
-    this.blockList = new BlockList(wallet);
+    this.blockList = new BlockList(wallet, this);
 
     // set the default node for session
     if (this.wallet.options.customNode) {
@@ -343,7 +353,7 @@ export class WalletWatchdog {
 
   checkMempool = (): boolean => {
     let self = this;
-    if (this.lastMaximumHeight - this.lastBlockLoading > 1) { //only check memory pool if the user is up to date to ensure outs & ins will be found in the wallet
+    if ((this.lastMaximumHeight - this.lastBlockLoading > 1) && (this.lastMaximumHeight > 0))  { //only check memory pool if the user is up to date to ensure outs & ins will be found in the wallet
       return false;
     }
 
@@ -396,7 +406,8 @@ export class WalletWatchdog {
             this.parseWorkers[i].getWorker().postMessage({
               type: 'process',
               wallet: this.wallet.exportToRaw(),
-              transactions: transactionsToProcess
+              transactions: transactionsToProcess,
+              readMinersTx: this.wallet.options.checkMinerTx
             });
             this.parseWorkers[i].incProcessed();
           }
@@ -510,7 +521,7 @@ export class WalletWatchdog {
                 if (blockData.transactions.length > 0) {
                   self.processTransactions(blockData.transactions, function() {});
                 } else {
-                  self.blockList.finishBlockRange(blockData.lastBlock);
+                  self.blockList.finishBlockRange(blockData.lastBlock, []);
                 }
               });
             } else {
