@@ -1,7 +1,7 @@
 /**
  *     Copyright (c) 2018-2020, ExploShot
  *     Copyright (c) 2018-2020, The Qwertycoin Project
- *     Copyright (c) 2018-2020, The Conceal Network
+ *     Copyright (c) 2018-2023, The Conceal Network
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -125,6 +125,23 @@ class BlockList {
       }
     }
   }
+
+  getFirstIdleRange = (reset: boolean): IBlockRange | null => {
+    for (let i = 0; i < this.blocks.length; ++i) {
+      let timeDiff: number = new Date().getTime() - this.blocks[i].timestamp.getTime();
+      if ((timeDiff / 1000) > 60) {
+        if (reset) { this.blocks[i].timestamp = new Date(); }        
+        return this.blocks[i];
+      }
+    }
+
+    // none found
+    return null;
+  }
+
+  getSize = (): number => {
+    return this.blocks.length;
+  }  
 }
 
 class ParseWorker {  
@@ -433,7 +450,7 @@ export class WalletWatchdog {
     return shuffled.slice(0, num);
   }   
   
-  getFreeWorker = (): any => {
+  getFreeWorker = (): SyncWorker | null => {
     for (let i = 0; i < this.syncWorkers.length; ++i) {
       if (!this.syncWorkers[i].getIsWorking() && !this.syncWorkers[i].getHasToManyErrors()) {
         return this.syncWorkers[i];
@@ -447,23 +464,27 @@ export class WalletWatchdog {
 
     return new Promise<{transactions: RawDaemon_Transaction[], lastBlock: number}>(function (resolve, reject) {
       (async function() {
-        let currWorker: any = worker;
+        let currWorker: SyncWorker | null = worker;
+        let failed: boolean = false;
 
         while (currWorker) {
           try {
             let txResult = await currWorker.fetchBlocks(startBlock, endBlock);            
+            currWorker = null;           
+            failed = false;
+
             resolve({
               transactions: txResult,
               lastBlock: endBlock
             }); 
-            currWorker = null;           
           } catch(lastBlock) {
             currWorker = self.getFreeWorker();
+            failed = true;
           }
         }
 
         // if we are here we failed
-        if (!currWorker) {
+        if (!currWorker && failed) {
           reject({
             transactions: [],
             lastBlock: startBlock
@@ -480,9 +501,17 @@ export class WalletWatchdog {
           if (self.lastBlockLoading === -1) {
             self.lastBlockLoading = self.wallet.lastHeight;
           }
-      
+
+          // check if transactions to process stack is to big
           if (self.transactionsToProcess.length > 500) {
             logDebugMsg(`Having more then 500 TX packets in FIFO queue`, self.transactionsToProcess.length);
+            await new Promise(r => setTimeout(r, 5000));
+            continue;
+          }
+
+          // check if block range list is to big
+          if (self.blockList.getSize() > 50) {
+            logDebugMsg('Block range list is to big', self.blockList.getSize());
             await new Promise(r => setTimeout(r, 5000));
             continue;
           }
@@ -507,7 +536,7 @@ export class WalletWatchdog {
           if (self.lastBlockLoading < height) {
             let startBlock: number = Number(self.lastBlockLoading);
             let endBlock: number = startBlock + config.syncBlockCount;
-            let freeWorker: SyncWorker = self.getFreeWorker();
+            let freeWorker: SyncWorker | null = self.getFreeWorker();
             // make sure endBlock is not over current height
             endBlock = Math.min(endBlock, height + 1);
     
@@ -516,9 +545,18 @@ export class WalletWatchdog {
             }
     
             if (freeWorker) {
-              // add the blocks to be processed to the block list
-              self.blockList.addBlockRange(startBlock, endBlock, height);
-              self.lastBlockLoading = Math.max(self.lastBlockLoading, endBlock); 
+              // first check if we have any stale ranges available
+              let idleRange = self.blockList.getFirstIdleRange(true);
+
+              if (idleRange) {
+                logDebugMsg('Found idle block range', idleRange);
+                startBlock = idleRange.startBlock;
+                endBlock = idleRange.endBlock;
+              } else {
+                // add the blocks to be processed to the block list
+                self.blockList.addBlockRange(startBlock, endBlock, height);
+                self.lastBlockLoading = Math.max(self.lastBlockLoading, endBlock); 
+              }
     
               // try to fetch the block range with a currently selected sync worker
               self.fetchBlocks(freeWorker, startBlock, endBlock).then(function(blockData: {transactions: RawDaemon_Transaction[], lastBlock: number}) {
