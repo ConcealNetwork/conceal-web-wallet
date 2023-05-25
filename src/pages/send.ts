@@ -59,6 +59,8 @@ class SendView extends DestructableView {
   @VueVar(false) nfcAvailable !: boolean;
 
   @VueVar(false) optimizeIsNeeded !: boolean;
+  @VueVar(false) optimizeLoading !: boolean;
+
 
   @Autowire(Nfc.name) nfc !: Nfc;
 
@@ -393,6 +395,8 @@ class SendView extends DestructableView {
   }
 
   optimizeWallet = () => {
+    let self = this;
+    self.optimizeLoading = true; // set loading state to true
     blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
       wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
         function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
@@ -404,8 +408,12 @@ class SendView extends DestructableView {
           if (watchdog !== null) {
             watchdog.checkMempool();
           }
+          self.optimizeLoading = false; // set loading state to false
+          self.checkOptimization(); // check if optimization is still needed
         }).catch(function(err) {
           console.log(err);
+          self.optimizeLoading = false; // set loading state to false
+          self.checkOptimization(); // check if optimization is still needed
         });
     });
   }

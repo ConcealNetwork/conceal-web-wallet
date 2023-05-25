@@ -11,11 +11,6 @@
 
 		<div class="panel inline" v-if="currentScanBlock+2 < blockchainHeight" >
 
-			<!-- <div class="progress-container">
-				<span class="percentage">{{(((currentScanBlock+1)/blockchainHeight*1000 | 0) / 10)}}%</span>
-				<div class="progress-bar" :style="'width:'+((currentScanBlock+1)/blockchainHeight*100 | 0)+'%'" ></div>
-		</div> -->
-
 			<div class="progress">
 				<div class="bar" :style="'width:'+((currentScanBlock+1)/blockchainHeight*100 | 0)+'%'" >{{(((currentScanBlock+1)/blockchainHeight*1000 | 0) / 10)}}%</div>
 				<label>
@@ -47,10 +42,12 @@
 
 		<div class="panel" :hidden="!optimizeIsNeeded">
 			<div class="body">
-				<div class="header-title">{{ $t("accountPage.optimize.label") }}</div>
-				<div class="subtitle">{{ $t("accountPage.optimize.subtitle") }}</div>
+				<div class="header-title">{{ $t("global.optimize.label") }}</div>
+				<div class="subtitle">{{ $t("global.optimize.subtitle") }}</div>
 				<div class="actions tc">
-					<button type="button" class="btn primary" @click="optimizeWallet()">{{ $t("accountPage.optimize.button") }}</button>
+					<button type="button" class="btn primary" @click="optimizeWallet()" :disabled="optimizeLoading">
+						{{ optimizeLoading ? $t('global.optimize.loadingText') : $t('global.optimize.button') }}
+					</button>
 				</div>
 			</div>
 		</div>
