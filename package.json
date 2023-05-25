@@ -4,7 +4,7 @@
   "description": "Fully client-side web-wallet for Conceal Network",
   "scripts": {
     "start": "serve .\\src\\",
-    "build": "node ./node_modules/typescript/bin/tsc --project tsconfig.prod.json && node build.js",
+    "build": "node ./node_modules/typescript/bin/tsc --project tsconfig.prod.json && node build.js && serve .\\src\\",
     "test": ""
   },
   "main": "index.js",
