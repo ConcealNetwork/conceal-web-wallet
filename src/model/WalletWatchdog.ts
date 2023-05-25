@@ -320,6 +320,9 @@ export class WalletWatchdog {
   signalWalletUpdate = () => {
     logDebugMsg('wallet update in progress');
 
+    // reset the last block loading
+    this.lastBlockLoading = -1;//reset scanning
+
     // set the default node for session
     if (this.wallet.options.customNode) {
       config.nodeUrl = this.wallet.options.nodeUrl;
