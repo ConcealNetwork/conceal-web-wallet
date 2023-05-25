@@ -42,9 +42,64 @@ interface IBlockRange {
   transactions: RawDaemon_Transaction[];
 }   
 
+class TxQueue {
+  wallet: Wallet;
+  isRunning: boolean;
+  transactions: RawDaemon_Transaction[];
+
+  constructor(wallet: Wallet) {
+    this.wallet = wallet;
+    this.isRunning = false;
+    this.transactions = [];
+  }
+  
+
+  processTransaction = (): Promise<number> => {
+    return new Promise<number>((resolve, reject) => {
+      if (this.transactions.length > 0) {
+        let transaction = TransactionsExplorer.parse(this.transactions.shift()!, this.wallet);
+
+        if (transaction) {
+          logDebugMsg("Added new transaction", transaction);
+          this.wallet.addNew(transaction);
+          resolve(10);
+        }
+      } else {
+        resolve(1000);
+      }     
+    });
+  }
+
+  runProcessLoop = () => {
+    this.isRunning = true;
+
+    (async function loop(self) {
+      if (self.isRunning) {
+        try {
+          let timeout: number = await self.processTransaction();
+          await new Promise(r => setTimeout(r, timeout));
+          await loop(self);
+        } catch(err) {
+          console.error('Error on single processTransaction iteration', err);
+          await loop(self);
+        }              
+      } 
+    }(this));        
+  }
+
+  stopProcessLoop = () => {
+    this.isRunning = false;
+  }
+
+  addTransactions = (transactions: RawDaemon_Transaction[]) => {
+    this.transactions = this.transactions.concat(transactions);
+  }
+}
+
 class BlockList {  
   blocks: IBlockRange[];
   wallet: Wallet;
+  txQueue: TxQueue;
   chainHeight: number;
   watchdog: WalletWatchdog;
 
@@ -53,6 +108,8 @@ class BlockList {
     this.wallet = wallet;
     this.chainHeight = 0;
     this.watchdog = watchdog;
+    this.txQueue = new TxQueue(wallet);
+    this.txQueue.runProcessLoop();
   }
 
   addBlockRange = (startBlock: number, endBlock: number, chainHeight: number) => {   
@@ -101,14 +158,7 @@ class BlockList {
         if (this.blocks[0].finished) {
           // add transactions to the wallet if we have any
           if (this.blocks[0].transactions.length > 0) {
-            for (let tx of this.blocks[0].transactions) {
-              let transaction = TransactionsExplorer.parse(tx, this.wallet);
-
-              if (transaction) {
-                logDebugMsg("Added new transaction", transaction);
-                this.wallet.addNew(transaction);
-              }
-            }
+            this.txQueue.addTransactions(this.blocks[0].transactions);
           }
 
           // check what the max block for this range is
@@ -249,10 +299,9 @@ class SyncWorker {
 
   fetchBlocks = (startBlock: number, endBlock: number): Promise<any> => {
     this.isWorking = true;
-    let self = this;
 
-		return new Promise<any>(function (resolve, reject) {      
-      self.explorer.getTransactionsForBlocksEx(startBlock, endBlock, self.url, false).then(function(transactions: RawDaemon_Transaction[]) {
+		return new Promise<any>((resolve, reject) => {      
+      this.explorer.getTransactionsForBlocksEx(startBlock, endBlock, this.url, false).then((transactions: RawDaemon_Transaction[]) => {
         if (transactions.length > 0) {
           let lastTx = transactions[transactions.length - 1];
 
@@ -263,11 +312,11 @@ class SyncWorker {
 
         // report the transactions
         resolve(transactions);
-      }).catch(function(err) { 
-        ++self.errors;
+      }).catch((err) => { 
+        ++this.errors;
         reject(startBlock);
-      }).finally(function() {
-        self.isWorking = false;
+      }).finally(() => {
+        this.isWorking = false;
       });
     });
   }
@@ -460,10 +509,8 @@ export class WalletWatchdog {
   }
 
   fetchBlocks = (worker: SyncWorker, startBlock: number, endBlock: number): Promise<{transactions: RawDaemon_Transaction[], lastBlock: number}> => {
-    let self = this;
-
-    return new Promise<{transactions: RawDaemon_Transaction[], lastBlock: number}>(function (resolve, reject) {
-      (async function() {
+    return new Promise<{transactions: RawDaemon_Transaction[], lastBlock: number}>((resolve, reject) => {
+      (async function(self) {
         let currWorker: SyncWorker | null = worker;
         let failed: boolean = false;
 
@@ -477,7 +524,7 @@ export class WalletWatchdog {
               transactions: txResult,
               lastBlock: endBlock
             }); 
-          } catch(lastBlock) {
+          } catch {
             currWorker = self.getFreeWorker();
             failed = true;
           }
@@ -490,7 +537,7 @@ export class WalletWatchdog {
             lastBlock: startBlock
           });        
         }
-      })();
+      })(this);
     });
   }
 
