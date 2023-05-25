@@ -333,22 +333,22 @@ export class Wallet extends Observable{
 		}
 
     // debug log of mem pool
-		logDebugMsgle.log("mempool tx", this.txsMem);
+		logDebugMsg("mempool tx", this.txsMem);
 
 		for (let transaction of this.txsMem) {
-			//logDebugMsgle.log(transaction.paymentId);
+			//logDebugMsg(transaction.paymentId);
 			// for(let out of transaction.outs){
 			// 	amount += out.amount;
 			// }
 			if (transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1)
 				for (let nout of transaction.outs) {
 					amount += nout.amount;
-					//logDebugMsgle.log('+'+nout.amount);
+					//logDebugMsg('+'+nout.amount);
 				}
 
 			for(let nin of transaction.ins){
 				amount -= nin.amount;
-				//logDebugMsgle.log('-'+nin.amount);
+				//logDebugMsg('-'+nin.amount);
 			}
 		}
 
@@ -411,7 +411,7 @@ export class Wallet extends Observable{
 
 					if(vin.amount < 0) {
 						if (this.keyImages.indexOf(vin.keyImage) != -1) {
-							//logDebugMsgle.log('found in', vin);
+							//logDebugMsg('found in', vin);
 							let walletOuts = this.getAllOuts();
 							for (let ut of walletOuts) {
 								if (ut.keyImage == vin.keyImage) {
@@ -444,7 +444,7 @@ export class Wallet extends Observable{
 
     // first sort the outs in ascending order
     unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
-    logDebugMsgle.log("unspentOuts", unspentOuts.length);
+    logDebugMsg("unspentOuts", unspentOuts.length);
 
     for (let i = 0; i < unspentOuts.length; i++) {
       if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < config.optimizeOutputs)) {
