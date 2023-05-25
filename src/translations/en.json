@@ -52,6 +52,12 @@
         "title": "Oops...",
         "content": "The permission to access your camera is required to scan the QR code",
         "confirmText": "OK"
+      },
+      "optimize": {
+        "label": "Optimization",
+        "subtitle": "Your wallet needs to be optimized",
+        "button": "Optimize Now",
+        "loadingText": "Optimizing your wallet, please wait..."
       }
     },
     "bottom": {
@@ -118,11 +124,6 @@
         "blockHeight": "Block height",
         "paymentId": "Payment ID",
         "txPrivKey": "Transaction Private Key"
-      },
-      "optimize": {
-        "label": "Optimization",
-        "subtitle": "Your wallet needs to be optimized",
-        "button": "Optimize Now"
       }
     },
     "changeWalletPasswordPage": {
@@ -240,11 +241,6 @@
         "mixin": {
           "label": "Privacy Level",
           "invalid": "The mixin is invalid, should be from 3 to 10 (or 0 = no privacy)"
-        },
-        "optimize": {
-          "label": "Optimization",
-          "subtitle": "Your wallet needs to be optimized",
-          "button": "Optimize Now"
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -368,10 +364,6 @@
         "nodeUrl": {
           "label": "Node URL"
         }
-      },
-      "optimize": {
-        "label": "Optimization",
-        "button": "Optimize Now"
       },
       "changePasswordButton": "Change my wallet password",
       "deleteWalletButton": "Delete my wallet (local copy)",

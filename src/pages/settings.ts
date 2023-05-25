@@ -49,7 +49,8 @@ class SettingsView extends DestructableView{
 	@VueVar(0) nativeVersionCode !: number;
 	@VueVar('') nativeVersionNumber !: string;
 
-	@VueVar(false) optimizeIsNeeded !: boolean;
+  @VueVar(false) optimizeIsNeeded !: boolean;
+  @VueVar(false) optimizeLoading !: boolean;
 
 	constructor(container : string) {
 		super(container);
@@ -119,6 +120,8 @@ class SettingsView extends DestructableView{
   }
 
   optimizeWallet = () => {
+    let self = this;
+    self.optimizeLoading = true; // set loading state to true
     blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
       wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
         function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
@@ -130,8 +133,12 @@ class SettingsView extends DestructableView{
           if (watchdog !== null) {
             watchdog.checkMempool();
           }
+          self.optimizeLoading = false; // set loading state to false
+          self.checkOptimization(); // check if optimization is still needed
         }).catch(function(err) {
           console.log(err);
+          self.optimizeLoading = false; // set loading state to false
+          self.checkOptimization(); // check if optimization is still needed
         });
     });
   }

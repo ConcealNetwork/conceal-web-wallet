@@ -16,10 +16,12 @@
 
       <div class="panel" :hidden="!optimizeIsNeeded">
         <div class="body">
-          <div class="header-title">{{ $t("sendPage.sendBlock.optimize.label") }}</div>
-          <div class="subtitle">{{ $t("sendPage.sendBlock.optimize.subtitle") }}</div>
+          <div class="header-title">{{ $t("global.optimize.label") }}</div>
+          <div class="subtitle">{{ $t("global.optimize.subtitle") }}</div>
           <div class="actions tc">
-            <button type="button" class="btn primary" @click="optimizeWallet()">{{ $t("sendPage.sendBlock.optimize.button") }}</button>
+            <button type="button" class="btn primary" @click="optimizeWallet()" :disabled="optimizeLoading">
+              {{ optimizeLoading ? $t('global.optimize.loadingText') : $t('global.optimize.button') }}
+            </button>
           </div>
         </div>
       </div>
@@ -64,7 +66,7 @@
           </div>
 
           <div class="actions tc">
-            <button type="button" class="btn primary" @click="send()" :disabled="!destinationAddressValid || !amountToSendValid" >{{ $t("sendPage.sendBlock.sendButton") }}</button>
+            <button type="button" class="btn primary" @click="send()" :disabled="!destinationAddressValid || !amountToSendValid || optimizeIsNeeded || optimizeLoading" >{{ $t("sendPage.sendBlock.sendButton") }}</button>
           </div>
           <div class="actions tc" v-if="lockedForm" >
             <button type="button" class="btn small" @click="reset()" >{{ $t("sendPage.sendBlock.cancelButton") }}</button>
