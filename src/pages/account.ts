@@ -40,17 +40,21 @@ class AccountView extends DestructableView{
 
 	@VueVar(false) optimizeIsNeeded !: boolean;
 
-	intervalRefresh : number = 0;
+	intervalRefresh : NodeJS.Timer;
+  refreshTimestamp: Date;
 
 	constructor(container : string) {
 		super(container);
-		let self = this;
-	    this.ticker = config.coinSymbol;
-			this.checkOptimization();
+
+    this.refreshTimestamp = new Date(0);
+    this.ticker = config.coinSymbol;
+  	this.checkOptimization();
 		AppState.enableLeftMenu();
-		this.intervalRefresh = <any>setInterval(function(){
-			self.refresh();
-		}, 1*1000);
+
+		this.intervalRefresh = setInterval(() => {
+			this.refresh();
+		}, 1 * 1000);
+
 		this.refresh();
 	}
 
@@ -129,16 +133,18 @@ class AccountView extends DestructableView{
 	}
 
 	refreshWallet = () => {
-		this.currentScanBlock = wallet.lastHeight;
-		this.walletAmount = wallet.amount;
-		this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
-		if(wallet.getAll().length+wallet.txsMem.length !== this.transactions.length) {
-			this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
-		}
+    if (this.refreshTimestamp < wallet.modifiedTimestamp()) {
+      this.refreshTimestamp = new Date();
+
+      this.currentScanBlock = wallet.lastHeight;
+      this.walletAmount = wallet.amount;
+      this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
+      this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
+    }
 	}
 }
 
-if(wallet !== null && blockchainExplorer !== null)
+if (wallet !== null && blockchainExplorer !== null)
 	new AccountView('#app');
 else
 	window.location.href = '#index';
