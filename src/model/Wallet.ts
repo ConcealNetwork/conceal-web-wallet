@@ -458,13 +458,10 @@ export class Wallet extends Observable{
   }
 
   optimize = (blockchainHeight: number, threshhold: number, blockchainExplorer: BlockchainExplorer, obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>) => {
-    let wallet = this as Wallet;
-
-		return new Promise<number>(function (resolve, reject) {
-			let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(wallet, blockchainHeight);
+		return new Promise<number>((resolve, reject) => {
+			let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(this, blockchainHeight);
       let stillData = unspentOuts.length >= config.optimizeOutputs;
 			let neededFee = new JSBigInt((<any>window).config.coinFee);
-      let errorCount = 0;
       let iteration = 0;
 
       //selecting outputs to fit the desired amount (totalAmount);
@@ -475,86 +472,74 @@ export class Wallet extends Observable{
         return val;
       }
 
-      (async function() {
-        try {
-          // first sort the outs in ascending order only once
-          unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
-          let processedOuts = 0;
+      (async () => {
+        // first sort the outs in ascending order only once
+        unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
+        let processedOuts = 0;
 
-          while (stillData && ((iteration * config.optimizeOutputs) < unspentOuts.length) && (iteration < 5) && (errorCount < 5)) {
-            let dsts: { address: string, amount: number }[] = [];
-            let totalAmountWithoutFee = new JSBigInt(0);
-            let counter = 0;
-            
-            for (let i = iteration * config.optimizeOutputs; i < unspentOuts.length; i++) {
-              if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < config.optimizeOutputs)) {
-                processedOuts++;
-                counter++;
-              } else {
-                stillData = counter >= config.optimizeOutputs;
-                break;
-              }
-            }
-
-            let usingOuts: RawOutForTx[] = [];
-            let usingOuts_amount = new JSBigInt(0);
-            let unusedOuts = unspentOuts.slice(iteration * config.optimizeOutputs, (iteration * config.optimizeOutputs) + counter);
-
-            for (let i = 0; i < unusedOuts.length; i++) {
-              totalAmountWithoutFee = totalAmountWithoutFee.add(unspentOuts[i].amount);
-            }  
-        
-            if (totalAmountWithoutFee < wallet.unlockedAmount(blockchainHeight)) {
-              // substract fee from the amount we have available              
-              let totalAmount = totalAmountWithoutFee.subtract(neededFee);
-
-              if (totalAmount > 0) {
-                dsts.push({
-                  address: wallet.getPublicAddress(),
-                  amount: new JSBigInt(totalAmount)
-                });
-
-                while (usingOuts_amount.compare(totalAmount) < 0 && unusedOuts.length > 0) {
-                  let out = pop_random_value(unusedOuts);
-                  usingOuts.push(out);
-                  usingOuts_amount = usingOuts_amount.add(out.amount);
-                }
-                                
-                let amounts: number[] = [];
-                for (let l = 0; l < usingOuts.length; l++) {
-                  amounts.push(usingOuts[l].amount);
-                }      
-
-                let nbOutsNeeded: number = config.defaultMixin + 1;
-                let lotsMixOuts: any[] = await obtainMixOutsCallback(amounts, nbOutsNeeded);
-
-                try {
-                  let data = await TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '');
-                  await blockchainExplorer.sendRawTx(data.raw.raw);
-                  wallet.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
-                  errorCount = 0;
-                  iteration++;
-
-                  logDebugMsg('optimization done', processedOuts);
-                } catch(err) {
-                  console.log(err);
-
-                  unspentOuts = TransactionsExplorer.formatWalletOutsForTx(wallet, blockchainHeight);
-                  unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
-                  errorCount++;
-                }
-              }
+        while (stillData && ((iteration * config.optimizeOutputs) < unspentOuts.length) && (iteration < 5)) {
+          let dsts: { address: string, amount: number }[] = [];
+          let totalAmountWithoutFee = new JSBigInt(0);
+          let counter = 0;
+          
+          for (let i = iteration * config.optimizeOutputs; i < unspentOuts.length; i++) {
+            if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < config.optimizeOutputs)) {
+              processedOuts++;
+              counter++;
             } else {
-              stillData = false;
-            }            
+              stillData = counter >= config.optimizeOutputs;
+              break;
+            }
           }
- 
-          // finished here
-          resolve(processedOuts);
-        } catch (err) {
-          reject(err);
+
+          let usingOuts: RawOutForTx[] = [];
+          let usingOuts_amount = new JSBigInt(0);
+          let unusedOuts = unspentOuts.slice(iteration * config.optimizeOutputs, (iteration * config.optimizeOutputs) + counter);
+
+          for (let i = 0; i < unusedOuts.length; i++) {
+            totalAmountWithoutFee = totalAmountWithoutFee.add(unusedOuts[i].amount);
+          }  
+      
+          if (totalAmountWithoutFee < this.unlockedAmount(blockchainHeight)) {
+            // substract fee from the amount we have available              
+            let totalAmount = totalAmountWithoutFee.subtract(neededFee);
+
+            if (totalAmount > 0) {
+              dsts.push({
+                address: this.getPublicAddress(),
+                amount: new JSBigInt(totalAmount)
+              });
+
+              while ((usingOuts_amount.compare(totalAmount) < 0) && (unusedOuts.length > 0)) {
+                let out = pop_random_value(unusedOuts);
+                usingOuts.push(out);
+                usingOuts_amount = usingOuts_amount.add(out.amount);
+              }
+                              
+              let amounts: number[] = [];
+              for (let l = 0; l < usingOuts.length; l++) {
+                amounts.push(usingOuts[l].amount);
+              }      
+
+              let nbOutsNeeded: number = config.defaultMixin + 1;
+              let lotsMixOuts: any[] = await obtainMixOutsCallback(amounts, nbOutsNeeded);
+
+              let data = await TransactionsExplorer.createRawTx(dsts, this, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '');
+              await blockchainExplorer.sendRawTx(data.raw.raw);
+              this.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
+              logDebugMsg('optimization done', processedOuts);
+              iteration++;
+            }
+          } else {
+            stillData = false;
+          }            
         }
-      })();
+
+        // finished here
+        resolve(processedOuts);
+      })().catch(err => {
+        reject(err);
+      });
     });
   }
 }

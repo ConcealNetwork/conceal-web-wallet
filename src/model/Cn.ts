@@ -2318,7 +2318,7 @@ export namespace CnTransactions{
 			 */
 			sources.push(src);
 		}
-
+    
     logDebugMsg('found_money: ', found_money);
     logDebugMsg('needed_money: ', needed_money);
 		logDebugMsg('sources: ', sources);
