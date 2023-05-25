@@ -464,6 +464,7 @@ export class Wallet extends Observable{
 			let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(wallet, blockchainHeight);
       let stillData = unspentOuts.length >= config.optimizeOutputs;
 			let neededFee = new JSBigInt((<any>window).config.coinFee);
+      let errorCount = 0;
       let iteration = 0;
 
       //selecting outputs to fit the desired amount (totalAmount);
@@ -480,7 +481,7 @@ export class Wallet extends Observable{
           unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
           let processedOuts = 0;
 
-          while (stillData && ((iteration * config.optimizeOutputs) < unspentOuts.length) && (iteration < 5)) {
+          while (stillData && ((iteration * config.optimizeOutputs) < unspentOuts.length) && (iteration < 5) && (errorCount < 5)) {
             let dsts: { address: string, amount: number }[] = [];
             let totalAmountWithoutFee = new JSBigInt(0);
             let counter = 0;
@@ -527,10 +528,18 @@ export class Wallet extends Observable{
                 let nbOutsNeeded: number = config.defaultMixin + 1;
                 let lotsMixOuts: any[] = await obtainMixOutsCallback(amounts, nbOutsNeeded);
 
-                let data = await TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '');
-                await blockchainExplorer.sendRawTx(data.raw.raw);
-                wallet.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
-                iteration++;
+                try {
+                  let data = await TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '');
+                  await blockchainExplorer.sendRawTx(data.raw.raw);
+                  wallet.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
+                  errorCount = 0;
+                  iteration++;
+
+                  logDebugMsg('optimization done', processedOuts);
+                } catch(err) {
+                  console.log(err);
+                  errorCount++;
+                }
               }
             } else {
               stillData = false;
