@@ -140,10 +140,10 @@ class AccountView extends DestructableView{
 	}
 
 	refreshWallet = () => {
-    if (this.refreshTimestamp < wallet.modifiedTimestamp()) {
-      this.refreshTimestamp = new Date();
+    this.currentScanBlock = wallet.lastHeight;
 
-      this.currentScanBlock = wallet.lastHeight;
+    if (this.refreshTimestamp < wallet.modifiedTimestamp()) {      
+      this.refreshTimestamp = new Date();
       this.walletAmount = wallet.amount;
       this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
       this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
