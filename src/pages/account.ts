@@ -41,6 +41,7 @@ class AccountView extends DestructableView{
 	@VueVar(0) blockchainHeight !: number;
 	@VueVar(Math.pow(10, config.coinUnitPlaces)) currencyDivider !: number;
 
+	@VueVar(false) isWalletProcessing !: boolean;  
   @VueVar(false) optimizeIsNeeded !: boolean;
   @VueVar(false) optimizeLoading !: boolean;
 	@VueVar(false) isWalletSyncing !: boolean;
@@ -149,10 +150,12 @@ class AccountView extends DestructableView{
 
 	refreshWallet = () => {
     let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
-    this.isWalletSyncing = (wallet.lastHeight + 2 < this.blockchainHeight) || (walletWatchdog.getBlockList().getTxQueue().getSize() > 0);
     this.processingQueue = walletWatchdog.getBlockList().getSize(); 
     this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
     this.currentScanBlock = wallet.lastHeight;    
+
+    this.isWalletSyncing = (wallet.lastHeight + 2 < this.blockchainHeight);
+    this.isWalletProcessing = this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().getSize() > 0);
 
     if ((this.refreshTimestamp < wallet.modifiedTimestamp()) && (timeDiff > 500)) {   
       logDebugMsg("refreshWallet", this.currentScanBlock);
