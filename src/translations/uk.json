@@ -95,7 +95,9 @@
       "title": "Аккаунт",
       "subtitle": "Огляд вашого профілю та історії транзакцій",
       "synchronizingBlock": {
-        "text": "Синхронізація..."
+        "text": "Синхронізація...",
+        "lastBlock": "Last block",
+        "Queue": "Queue"        
       },
       "balanceBlock": {
         "title": "Ваш баланс",

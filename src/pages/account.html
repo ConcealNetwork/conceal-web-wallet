@@ -17,7 +17,7 @@
 					{{ $t("accountPage.synchronizingBlock.text") }} <span class="currentScanBlock" >{{currentScanBlock+1}}</span>/<span class="blockchainHeight" >{{blockchainHeight}}</span>
 				</label>
 			</div>
-      <div class="detInfo" >Last block: {{lastBlockLoading}} / Queue: {{processingQueue}}</div>
+      <div class="detInfo" >{{ $t("accountPage.synchronizingBlock.lastBlock") }}: {{lastBlockLoading}} / {{ $t("accountPage.synchronizingBlock.Queue") }}: {{processingQueue}}</div>
 		</div>
 
 		<div class="panel">

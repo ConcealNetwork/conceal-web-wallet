@@ -95,7 +95,9 @@
 	  "title": "Mon compte",
 	  "subtitle": "Apperçu de votre compte et de l'historique des transactions",
 	  "synchronizingBlock": {
-		"text": "Synchronisation en cours "
+      "text": "Synchronisation en cours ",
+      "lastBlock": "Last block",
+      "Queue": "Queue"        
 	  },
 	  "balanceBlock": {
 		"title": "Votre solde",

@@ -94,7 +94,9 @@
       "title": "Account",
       "subtitle": "Panoramica del tuo account e cronologia delle transazioni",
       "synchronizingBlock": {
-        "text": "Sincronizzazione... "
+        "text": "Sincronizzazione... ",
+        "lastBlock": "Last block",
+        "Queue": "Queue"        
       },
       "balanceBlock": {
         "title": "Il tuo bilancio",

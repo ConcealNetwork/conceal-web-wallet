@@ -95,7 +95,9 @@
       "title": "Λογαριασμός",
       "subtitle": "Επισκόπηση του λογαριασμού σας και ιστορικό συναλλαγών",
       "synchronizingBlock": {
-        "text": "Συγχρονισμός..."
+        "text": "Συγχρονισμός...",
+        "lastBlock": "Last block",
+        "Queue": "Queue"        
       },
       "balanceBlock": {
         "title": "Το υπόλοιπό σας",

@@ -95,7 +95,9 @@
       "title": "帐户",
       "subtitle": "您的帐户概览和交易记录",
       "synchronizingBlock": {
-        "text": "同步中..."
+        "text": "同步中...",
+        "lastBlock": "Last block",
+        "Queue": "Queue"        
       },
       "balanceBlock": {
         "title": "您的余额",
