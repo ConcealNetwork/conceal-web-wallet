@@ -167,7 +167,7 @@ class AccountView extends DestructableView{
     this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
     this.currentScanBlock = wallet.lastHeight;    
 
-    this.isWalletSyncing = (wallet.lastHeight + 2 < this.blockchainHeight);
+    this.isWalletSyncing = (wallet.lastHeight + 2) < this.blockchainHeight;
     this.isWalletProcessing = this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().getSize() > 0);
 
     if (oldIsWalletSyncing && !this.isWalletSyncing) {

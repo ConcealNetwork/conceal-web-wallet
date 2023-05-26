@@ -134,9 +134,7 @@ export class TransactionsExplorer {
 
   static ownsTx(rawTransaction: RawDaemon_Transaction, keys: any): Boolean {
 		let transaction: Transaction | null = null;
-
 		let tx_pub_key = '';
-		let paymentId: string | null = null;
 
 		let txExtras = [];
 		try {
@@ -169,27 +167,6 @@ export class TransactionsExplorer {
 		}
 
 		tx_pub_key = CnUtils.bintohex(tx_pub_key);
-		let encryptedPaymentId: string | null = null;
-
-		for (let extra of txExtras) {
-			if (extra.type === TX_EXTRA_NONCE) {
-				if (extra.data[0] === TX_EXTRA_NONCE_PAYMENT_ID) {
-					paymentId = '';
-					for (let i = 1; i < extra.data.length; ++i) {
-						paymentId += String.fromCharCode(extra.data[i]);
-					}
-					paymentId = CnUtils.bintohex(paymentId);
-					break;
-				} else if (extra.data[0] === TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID) {
-					encryptedPaymentId = '';
-					for (let i = 1; i < extra.data.length; ++i) {
-						encryptedPaymentId += String.fromCharCode(extra.data[i]);
-					}
-					encryptedPaymentId = CnUtils.bintohex(encryptedPaymentId);
-					break;
-				}
-			}
-		}
 
 		let derivation = null;
 		try {
@@ -199,53 +176,20 @@ export class TransactionsExplorer {
 			return false;
 		}
 
-		let outs: TransactionOut[] = [];
 
 		for (let iOut = 0; iOut < rawTransaction.vout.length; iOut++) {
 			let out = rawTransaction.vout[iOut];
 			let txout_k = out.target.data;
-			let amount: number = 0;
-			try {
-				amount = out.amount;
-			} catch (e) {
-				console.error(e);
-				continue;
-			}
 
 			let output_idx_in_tx = iOut;
 			let generated_tx_pubkey = CnNativeBride.derive_public_key(derivation, output_idx_in_tx, keys.pub.spend);
 
-			// check if generated public key matches the current output's key
-			let mine_output = (txout_k.key == generated_tx_pubkey);
-
-			if (mine_output) {
-				let transactionOut = new TransactionOut();
-				if (typeof rawTransaction.global_index_start !== 'undefined')
-					transactionOut.globalIndex = rawTransaction.output_indexes[output_idx_in_tx];
-				else
-					transactionOut.globalIndex = output_idx_in_tx;
-
-				transactionOut.amount = amount;
-				transactionOut.pubKey = txout_k.key;
-				transactionOut.outputIdx = output_idx_in_tx;
-
-        if (keys.priv.spend !== null && keys.priv.spend !== '') {
-					let m_key_image = CnTransactions.generate_key_image_helper({
-						view_secret_key: keys.priv.view,
-						spend_secret_key: keys.priv.spend,
-						public_spend_key: keys.pub.spend,
-					}, tx_pub_key, output_idx_in_tx, derivation);
-
-					transactionOut.keyImage = m_key_image.key_image;
-					transactionOut.ephemeralPub = m_key_image.ephemeral_pub;
-				}
-
-				outs.push(transactionOut);				
+			if (txout_k.key == generated_tx_pubkey) {
+        return true;
 			} 
 		}
 
-    // do we own it
-    return outs.length > 0;
+    return false;
   }
 
 	static parse(rawTransaction: RawDaemon_Transaction, wallet: Wallet): Transaction | null {

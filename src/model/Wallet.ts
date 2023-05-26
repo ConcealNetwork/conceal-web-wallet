@@ -94,6 +94,7 @@ export class Wallet extends Observable {
 	private _lastHeight : number = 0;
 
 	private transactions : Transaction[] = [];
+  private txLookupMap: Map<string, Transaction> = new Map<string, Transaction>();
 	txsMem : Transaction[] = [];
 	private modified = true;
   private modifiedTS: Date = new Date();
@@ -104,6 +105,11 @@ export class Wallet extends Observable {
 	keys !: UserKeys;
 
 	private _options : WalletOptions = new WalletOptions();
+
+  signalChanged = () => {
+    this.modifiedTS = new Date();
+    this.modified = true;
+  }
 
 	exportToRaw = (): RawWallet => {
 		let transactions : any[] = [];
@@ -132,11 +138,14 @@ export class Wallet extends Observable {
 	static loadFromRaw(raw : RawWallet): Wallet {
     let wallet = new Wallet();
 		wallet.transactions = [];
-		for(let rawTransac of raw.transactions){
-			wallet.transactions.push(Transaction.fromRaw(rawTransac));
+    wallet.txLookupMap.clear();
+		for (let rawTransac of raw.transactions) {
+      let transaction = Transaction.fromRaw(rawTransac);
+			wallet.transactions.push(transaction);
+      wallet.txLookupMap.set(transaction.txPubKey, transaction);
 		}
 		wallet._lastHeight = raw.lastHeight;
-		if(typeof raw.encryptedKeys === 'string' && raw.encryptedKeys !== '') {
+		if (typeof raw.encryptedKeys === 'string' && raw.encryptedKeys !== '') {
 			if (raw.encryptedKeys.length === 128) {
 				let privView = raw.encryptedKeys.substr(0, 64);
 				let privSpend = raw.encryptedKeys.substr(64, 64);
@@ -197,8 +206,7 @@ export class Wallet extends Observable {
 
 	set options(value: WalletOptions) {
 		this._options = value;
-    this.modifiedTS = new Date();
-		this.modified = true;
+    this.signalChanged();
 	}
 
 	getAll = (forceReload = false): Transaction[] => {
@@ -215,13 +223,16 @@ export class Wallet extends Observable {
 	}
 
 	addNew = (transaction : Transaction, replace = true) => {
-		let exist = this.findWithTxPubKey(transaction.txPubKey);
-		if(!exist || replace) {
-			if(!exist) {
+		let exist = this.findWithTxPubKey(transaction.txPubKey); 
+
+		if (!exist || replace) {
+			if (!exist) {
+        this.txLookupMap.set(transaction.txPubKey, transaction);
 				this.transactions.push(transaction);
 			} else {
 				for(let tr = 0; tr < this.transactions.length; ++tr) {
 					if(this.transactions[tr].txPubKey === transaction.txPubKey) {
+            this.txLookupMap.set(transaction.txPubKey, transaction);
 						this.transactions[tr] = transaction;
 					}
 				}
@@ -236,10 +247,16 @@ export class Wallet extends Observable {
 				}
 			}
 
-			// this.saveAll();
-			this.recalculateKeyImages();
-      this.modifiedTS = new Date();
-			this.modified = true;
+      for (let out of transaction.outs) {
+				if (out.keyImage !== null && out.keyImage !== '') {
+          this.keyImages.push(out.keyImage);
+        }
+    		if (out.globalIndex !== 0) {
+          this.txOutIndexes.push(out.globalIndex);
+        }
+			}  
+
+      this.signalChanged();
 			this.notify();
 		}
 	}
@@ -264,8 +281,7 @@ export class Wallet extends Observable {
     }
     
     if (modified) {
-      this.modifiedTS = new Date();
-      this.modified = true;
+      this.signalChanged();
     }
   }
 
@@ -274,10 +290,13 @@ export class Wallet extends Observable {
   }
 
 	findWithTxPubKey = (pubKey : string): Transaction | null => {
-		for(let tr of this.transactions)
-			if(tr.txPubKey === pubKey)
-				return tr;
-		return null;
+    let transaction: Transaction | undefined = this.txLookupMap.get(pubKey); 
+
+    if (transaction !== undefined) {
+      return transaction;
+    } else {
+      return null;
+    }
 	}
 
 	findMemWithTxPubKey = (pubKey : string): Transaction | null => {
@@ -295,8 +314,7 @@ export class Wallet extends Observable {
 
 	addTxPrivateKeyWithTxHash = (txHash : string, txPrivKey : string): void => {
 		this.txPrivateKeys[txHash] = txPrivKey;
-    this.modifiedTS = new Date();
-   	this.modified = true;
+    this.signalChanged();
 	}
 
 	getTransactionKeyImages = () => {
@@ -322,11 +340,11 @@ export class Wallet extends Observable {
 	private recalculateKeyImages(){
 		let keys : string[] = [];
 		let indexes : number[] = [];
-		for(let transaction of this.transactions){
-			for(let out of transaction.outs){
-				if(out.keyImage !== null && out.keyImage !== '')
+		for (let transaction of this.transactions) {
+			for (let out of transaction.outs) {
+				if (out.keyImage !== null && out.keyImage !== '')
 					keys.push(out.keyImage);
-				if(out.globalIndex !== 0)
+				if (out.globalIndex !== 0)
 					indexes.push(out.globalIndex);
 			}
 		}
@@ -340,7 +358,7 @@ export class Wallet extends Observable {
 			news.push(Transaction.fromRaw(transaction.export()));
 		}
     news.sort((a,b) =>{
-       return a.timestamp - b.timestamp;
+      return a.timestamp - b.timestamp;
     })    
 		return news;
 	}
@@ -424,7 +442,7 @@ export class Wallet extends Observable {
 
 							out.keyImage = m_key_image.key_image;
 							out.ephemeralPub = m_key_image.ephemeral_pub;
-							this.modified = true;
+              this.signalChanged();
 						}
 					}
 				}
@@ -434,8 +452,8 @@ export class Wallet extends Observable {
 				this.recalculateKeyImages();
       }
 
-			for(let iTx = 0; iTx < this.transactions.length; ++iTx){
-				for(let iIn = 0; iIn < this.transactions[iTx].ins.length;++iIn){
+			for (let iTx = 0; iTx < this.transactions.length; ++iTx) {
+				for(let iIn = 0; iIn < this.transactions[iTx].ins.length; ++iIn){
 					let vin = this.transactions[iTx].ins[iIn];
 
 					if(vin.amount < 0) {
@@ -447,7 +465,7 @@ export class Wallet extends Observable {
 									this.transactions[iTx].ins[iIn].amount = ut.amount;
 									this.transactions[iTx].ins[iIn].keyImage = ut.keyImage;
 
-									this.modified = true;
+									this.signalChanged();
 									break;
 								}
 							}
@@ -568,8 +586,7 @@ export class Wallet extends Observable {
         }
 
         // we modifed the wallet, mark it
-        this.modifiedTS = new Date();
-   	    this.modified = true;
+        this.signalChanged();
 
         // finished here
         resolve(processedOuts);

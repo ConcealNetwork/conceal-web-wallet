@@ -69,6 +69,8 @@ class TxQueue {
           this.wallet.addNew(transaction);   
           this.processingCallback(transaction.blockHeight);       
           resolve(true);
+        } else {
+          resolve(false);
         }
       } else {
         resolve(false);
@@ -84,10 +86,11 @@ class TxQueue {
         if (self.isRunning) {
           try {
             self.isRunning = await self.processTransaction();
-            await new Promise(r => setTimeout(r, 5));
+            await new Promise(r => setTimeout(r, 10));
             await loop(self);
           } catch(err) {
             console.error('Error on single processTransaction iteration', err);
+            self.isRunning = true;
             await loop(self);
           }              
         } else {
