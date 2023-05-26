@@ -244,6 +244,16 @@ export class Wallet extends Observable {
 		}
 	}
 
+  addNewMemTx = (transaction : Transaction) => {
+    this.txsMem.push(transaction);
+    this.modifiedTS = new Date();
+    this.modified = true;    
+  }
+
+  clearMemTx = () => {
+    this.txsMem = [];
+  }
+
 	findWithTxPubKey = (pubKey : string): Transaction | null => {
 		for(let tr of this.transactions)
 			if(tr.txPubKey === pubKey)

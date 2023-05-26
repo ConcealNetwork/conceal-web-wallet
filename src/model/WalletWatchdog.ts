@@ -424,7 +424,7 @@ export class WalletWatchdog {
 
       this.intervalMempool = setInterval(() => {
         this.checkMempool();
-      }, config.avgBlockTime / 2 * 1000);
+      }, config.avgBlockTime / 4 * 1000);
     }
     this.checkMempool();
   }  
@@ -437,17 +437,19 @@ export class WalletWatchdog {
   }
 
   checkMempool = (): boolean => {
+    logDebugMsg("checkMempool", this.lastMaximumHeight, this.wallet.lastHeight);
+
     if (((this.lastMaximumHeight - this.wallet.lastHeight) > 1) && (this.lastMaximumHeight > 0))  { //only check memory pool if the user is up to date to ensure outs & ins will be found in the wallet
       return false;
     }
 
-    this.wallet.txsMem = [];
+    this.wallet.clearMemTx();
     this.explorer.getTransactionPool().then((pool: any) => {
       if (typeof pool !== 'undefined') {
         for (let rawTx of pool) {
           let tx = TransactionsExplorer.parse(rawTx, this.wallet);
           if (tx !== null) {
-            this.wallet.txsMem.push(tx);
+            this.wallet.addNewMemTx(tx);
           }
         }
       }
