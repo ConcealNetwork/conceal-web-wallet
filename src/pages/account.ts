@@ -149,6 +149,7 @@ class AccountView extends DestructableView{
 	}
 
 	refreshWallet = () => {
+    let oldIsWalletSyncing = this.isWalletSyncing;
     let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
     this.processingQueue = walletWatchdog.getBlockList().getSize(); 
     this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
@@ -156,6 +157,10 @@ class AccountView extends DestructableView{
 
     this.isWalletSyncing = (wallet.lastHeight + 2 < this.blockchainHeight);
     this.isWalletProcessing = this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().getSize() > 0);
+
+    if (oldIsWalletSyncing && !this.isWalletSyncing) {
+      this.checkOptimization();
+    }
 
     if ((this.refreshTimestamp < wallet.modifiedTimestamp()) && (timeDiff > 500)) {   
       logDebugMsg("refreshWallet", this.currentScanBlock);
@@ -165,7 +170,7 @@ class AccountView extends DestructableView{
       this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
       this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
 
-      if ((!this.isWalletSyncing) && (timeDiff > 3000)) {
+      if (!this.isWalletSyncing) {
         this.checkOptimization();
       }  
     }
