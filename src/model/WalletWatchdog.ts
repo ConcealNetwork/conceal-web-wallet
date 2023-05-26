@@ -42,15 +42,21 @@ interface IBlockRange {
   transactions: RawDaemon_Transaction[];
 }   
 
+type ProcessingCallback = (blockNumber: number) => void;
+
 class TxQueue {
   wallet: Wallet;
   isRunning: boolean;
+  maxBlockNum: number;
   transactions: RawDaemon_Transaction[];
+  processingCallback: ProcessingCallback;
 
-  constructor(wallet: Wallet) {
+  constructor(wallet: Wallet, processingCallback: ProcessingCallback) {
     this.wallet = wallet;
     this.isRunning = false;
+    this.maxBlockNum = 0;
     this.transactions = [];
+    this.processingCallback = processingCallback;
   }
   
   processTransaction = (): Promise<boolean> => {
@@ -60,7 +66,8 @@ class TxQueue {
 
         if (transaction) {
           logDebugMsg("Added new transaction", transaction);
-          this.wallet.addNew(transaction);
+          this.wallet.addNew(transaction);   
+          this.processingCallback(transaction.blockHeight);       
           resolve(true);
         }
       } else {
@@ -83,7 +90,9 @@ class TxQueue {
             console.error('Error on single processTransaction iteration', err);
             await loop(self);
           }              
-        } 
+        } else {
+          self.processingCallback(self.maxBlockNum);
+        }
       }(this));
     }
   }
@@ -92,8 +101,9 @@ class TxQueue {
     this.isRunning = false;
   }
 
-  addTransactions = (transactions: RawDaemon_Transaction[]) => {
+  addTransactions = (transactions: RawDaemon_Transaction[], maxBlockNum: number) => {
     this.transactions = this.transactions.concat(transactions);
+    this.maxBlockNum = Math.max(this.maxBlockNum, maxBlockNum);
     this.runProcessLoop();
   }
 
@@ -114,7 +124,10 @@ class BlockList {
     this.wallet = wallet;
     this.chainHeight = 0;
     this.watchdog = watchdog;
-    this.txQueue = new TxQueue(wallet);
+    this.txQueue = new TxQueue(wallet, (blockNumber: number) => {
+      this.wallet.lastHeight = Math.min(this.chainHeight, Math.max(this.wallet.lastHeight, blockNumber));
+      this.watchdog.checkMempool();            
+    });
   }
 
   addBlockRange = (startBlock: number, endBlock: number, chainHeight: number) => {   
@@ -157,27 +170,16 @@ class BlockList {
         }
       }
 
-      let maxBlock = -1;
       // remove all finished block
       while (this.blocks.length > 0) {
         if (this.blocks[0].finished) {
           let block = this.blocks.shift()!;
-          // add transactions to the wallet if we have any
-          if (block.transactions.length > 0) {
-            this.txQueue.addTransactions(block.transactions.slice());
-          }
-
-          // check what the max block for this range is
-          maxBlock = block.endBlock;
+          // add any transactions to the wallet 
+          this.txQueue.addTransactions(block.transactions.slice(), block.endBlock);
         } else {
           break;
         }
       }    
-
-      if (maxBlock > -1) {
-        this.wallet.lastHeight = Math.min(this.chainHeight, Math.max(this.wallet.lastHeight, maxBlock));
-        this.watchdog.checkMempool();            
-      }
     }
   }
 
@@ -435,22 +437,21 @@ export class WalletWatchdog {
   }
 
   checkMempool = (): boolean => {
-    let self = this;
-    if ((this.lastMaximumHeight - this.lastBlockLoading > 1) && (this.lastMaximumHeight > 0))  { //only check memory pool if the user is up to date to ensure outs & ins will be found in the wallet
+    if (((this.lastMaximumHeight - this.wallet.lastHeight) > 1) && (this.lastMaximumHeight > 0))  { //only check memory pool if the user is up to date to ensure outs & ins will be found in the wallet
       return false;
     }
 
     this.wallet.txsMem = [];
-    this.explorer.getTransactionPool().then(function (pool: any) {
+    this.explorer.getTransactionPool().then((pool: any) => {
       if (typeof pool !== 'undefined') {
         for (let rawTx of pool) {
-          let tx = TransactionsExplorer.parse(rawTx, self.wallet);
+          let tx = TransactionsExplorer.parse(rawTx, this.wallet);
           if (tx !== null) {
-            self.wallet.txsMem.push(tx);
+            this.wallet.txsMem.push(tx);
           }
         }
       }
-    }).catch(function (err) {
+    }).catch((err) => {
       console.log(err)
     });
 
