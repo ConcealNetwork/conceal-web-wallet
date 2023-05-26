@@ -157,14 +157,14 @@ class BlockList {
       // remove all finished block
       while (this.blocks.length > 0) {
         if (this.blocks[0].finished) {
+          let block = this.blocks.shift()!;
           // add transactions to the wallet if we have any
-          if (this.blocks[0].transactions.length > 0) {
-            this.txQueue.addTransactions(this.blocks[0].transactions);
+          if (block.transactions.length > 0) {
+            this.txQueue.addTransactions(block.transactions.slice());
           }
 
           // check what the max block for this range is
-          maxBlock = this.blocks[0].endBlock;
-          this.blocks.shift()!;
+          maxBlock = block.endBlock;
         } else {
           break;
         }
@@ -179,10 +179,14 @@ class BlockList {
 
   getFirstIdleRange = (reset: boolean): IBlockRange | null => {
     for (let i = 0; i < this.blocks.length; ++i) {
-      let timeDiff: number = new Date().getTime() - this.blocks[i].timestamp.getTime();
-      if ((timeDiff / 1000) > 60) {
-        if (reset) { this.blocks[i].timestamp = new Date(); }        
-        return this.blocks[i];
+      if (!this.blocks[i].finished) {
+        let timeDiff: number = new Date().getTime() - this.blocks[i].timestamp.getTime();
+        if ((timeDiff / 1000) > 60) {
+          if (reset) { this.blocks[i].timestamp = new Date(); }        
+          return this.blocks[i];
+        }
+      } else {
+        return null;
       }
     }
 
@@ -508,6 +512,14 @@ export class WalletWatchdog {
     }     
     return null;
   }
+
+  getBlockList = (): BlockList => {
+    return this.blockList;
+  }
+
+  getLastBlockLoading = (): number => {
+    return this.lastBlockLoading;
+  } 
 
   fetchBlocks = (worker: SyncWorker, startBlock: number, endBlock: number): Promise<{transactions: RawDaemon_Transaction[], lastBlock: number}> => {
     return new Promise<{transactions: RawDaemon_Transaction[], lastBlock: number}>((resolve, reject) => {

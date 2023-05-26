@@ -69,7 +69,6 @@ export class WalletOptions{
 	}
 }
 
-
 export type RawWallet = {
 	transactions : any[],
 	txPrivateKeys?:any,
@@ -86,7 +85,7 @@ export type RawFullyEncryptedWallet = {
 	nonce:string
 }
 
-export class Wallet extends Observable{
+export class Wallet extends Observable {
 	private _lastHeight : number = 0;
 
 	private transactions : Transaction[] = [];
@@ -101,9 +100,9 @@ export class Wallet extends Observable{
 
 	private _options : WalletOptions = new WalletOptions();
 
-	exportToRaw() : RawWallet{
+	exportToRaw = (): RawWallet => {
 		let transactions : any[] = [];
-		for(let transaction of this.transactions){
+		for (let transaction of this.transactions ){
 			transactions.push(transaction.export());
 		}
 
@@ -118,7 +117,9 @@ export class Wallet extends Observable{
 
 		data.keys = this.keys;
 
-		if(this.creationHeight !== 0) data.creationHeight = this.creationHeight;
+		if(this.creationHeight !== 0) { 
+      data.creationHeight = this.creationHeight;
+    }
 
 		return data;
 	}
@@ -151,7 +152,7 @@ export class Wallet extends Observable{
 					}
 				};
 			}
-		}else if(typeof raw.keys !== 'undefined'){
+		} else if (typeof raw.keys !== 'undefined') {
 			wallet.keys = raw.keys;
 		}
 		if(typeof raw.creationHeight !== 'undefined') wallet.creationHeight = raw.creationHeight;
@@ -223,7 +224,7 @@ export class Wallet extends Observable{
 
 			// remove from unconfirmed
 			let existMem = this.findMemWithTxPubKey(transaction.txPubKey);
-			if(existMem) {
+			if (existMem) {
 				let trIndex = this.txsMem.indexOf(existMem);
 				if(trIndex != -1) {
 					this.txsMem.splice(trIndex, 1);

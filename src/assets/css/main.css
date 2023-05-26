@@ -1456,6 +1456,7 @@ body {
 	border-radius: .28571429rem;
 	-webkit-transition: width .1s ease, background-color .1s ease;
 	transition: width .1s ease, background-color .1s ease;
+  margin-bottom: 5px;
 	height: 24px;
 	line-height: 24px;
 	color: white;
@@ -1524,4 +1525,10 @@ body {
 	height: 100%;
 	background: linear-gradient(to right, red, yellow, lime);
 	transition: width 1s ease-in-out;
+}
+
+.detInfo {
+  font-size: 0.8em;
+  text-align: center;  
+  color: #ccc;
 }

@@ -13,11 +13,11 @@
 
 			<div class="progress">
 				<div class="bar" :style="'width:'+((currentScanBlock+1)/blockchainHeight*100 | 0)+'%'" >{{(((currentScanBlock+1)/blockchainHeight*1000 | 0) / 10)}}%</div>
-				<label>
+				<label class="barLabel">
 					{{ $t("accountPage.synchronizingBlock.text") }} <span class="currentScanBlock" >{{currentScanBlock+1}}</span>/<span class="blockchainHeight" >{{blockchainHeight}}</span>
 				</label>
 			</div>
-
+      <div class="detInfo" >Last block: {{lastBlockLoading}} / Queue: {{processingQueue}}</div>
 		</div>
 
 		<div class="panel">

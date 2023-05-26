@@ -27,9 +27,12 @@ import {WalletWatchdog} from "../model/WalletWatchdog";
 
 let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name,'default', false);
 let blockchainExplorer = DependencyInjectorInstance().getInstance(Constants.BLOCKCHAIN_EXPLORER);
+let walletWatchdog : WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name,'default', false);
 
 class AccountView extends DestructableView{
 	@VueVar([]) transactions !: Transaction[];
+	@VueVar(0) lastBlockLoading !: number;
+	@VueVar(0) processingQueue !: number;
 	@VueVar(0) walletAmount !: number;
 	@VueVar(0) unlockedWalletAmount !: number;
 	@VueVar(0) ticker !: string;
@@ -65,46 +68,44 @@ class AccountView extends DestructableView{
 	}
 
 	refresh = () => {
-		let self = this;
-		blockchainExplorer.getHeight().then(function(height : number){
-			self.blockchainHeight = height;
+		blockchainExplorer.getHeight().then((height : number) => {
+			this.blockchainHeight = height;
 		});
 
 		this.refreshWallet();
 	}
 
 	checkOptimization = () => {
-    let self = this;
-    blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
+    blockchainExplorer.getHeight().then((blockchainHeight: number) => {
       let isNeeded: boolean = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
       logDebugMsg('isNeeded:', isNeeded);
       logDebugMsg("unspentouts", "end");
       if(isNeeded) {
-        self.optimizeIsNeeded = true;
+        this.optimizeIsNeeded = true;
       }
     });
   }
 
   optimizeWallet = () => {
-    let self = this;
-    self.optimizeLoading = true; // set loading state to true
-    blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
+    this.optimizeLoading = true; // set loading state to true
+
+    blockchainExplorer.getHeight().then((blockchainHeight: number) => {
       wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
         function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
           return blockchainExplorer.getRandomOuts(amounts, numberOuts);
-        }).then(function (processedOuts: number) {
+        }).then((processedOuts: number) => {
           let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
           logDebugMsg("processedOuts", processedOuts);
           //force a mempool check so the user is up to date
           if (watchdog !== null) {
             watchdog.checkMempool();
           }
-          self.optimizeLoading = false; // set loading state to false
-          self.checkOptimization(); // check if optimization is still needed
-        }).catch(function(err) {
+          this.optimizeLoading = false; // set loading state to false
+          this.checkOptimization(); // check if optimization is still needed
+        }).catch((err) => {
           console.log(err);
-          self.optimizeLoading = false; // set loading state to false
-          self.checkOptimization(); // check if optimization is still needed
+          this.optimizeLoading = false; // set loading state to false
+          this.checkOptimization(); // check if optimization is still needed
         });
     });
   }
@@ -141,6 +142,8 @@ class AccountView extends DestructableView{
 
 	refreshWallet = () => {
     let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
+    this.processingQueue = walletWatchdog.getBlockList().getSize(); 
+    this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
     this.currentScanBlock = wallet.lastHeight;
 
     if ((this.refreshTimestamp < wallet.modifiedTimestamp()) && (timeDiff > 500)) {   
