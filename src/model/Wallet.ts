@@ -247,15 +247,8 @@ export class Wallet extends Observable {
 				}
 			}
 
-      for (let out of transaction.outs) {
-				if (out.keyImage !== null && out.keyImage !== '') {
-          this.keyImages.push(out.keyImage);
-        }
-    		if (out.globalIndex !== 0) {
-          this.txOutIndexes.push(out.globalIndex);
-        }
-			}  
-
+      // finalize the add tx function
+      this.recalculateKeyImages();
       this.signalChanged();
 			this.notify();
 		}
