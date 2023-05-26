@@ -43,7 +43,9 @@ class AccountView extends DestructableView{
 
   @VueVar(false) optimizeIsNeeded !: boolean;
   @VueVar(false) optimizeLoading !: boolean;
-
+	@VueVar(false) isWalletSyncing !: boolean;
+	@VueVar(0) optimizeOutputs !: number;
+  
 	intervalRefresh : NodeJS.Timer;
   refreshTimestamp: Date;
 
@@ -77,11 +79,12 @@ class AccountView extends DestructableView{
 
 	checkOptimization = () => {
     blockchainExplorer.getHeight().then((blockchainHeight: number) => {
-      let isNeeded: boolean = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
-      logDebugMsg('isNeeded:', isNeeded);
-      logDebugMsg("unspentouts", "end");
-      if(isNeeded) {
-        this.optimizeIsNeeded = true;
+      let optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
+      logDebugMsg("optimizeInfo.numOutputs", optimizeInfo.numOutputs);
+      logDebugMsg('optimizeInfo.isNeeded', optimizeInfo.isNeeded);
+      this.optimizeIsNeeded = optimizeInfo.isNeeded;
+      if(optimizeInfo.isNeeded) {
+        this.optimizeOutputs = optimizeInfo.numOutputs;
       }
     });
   }
@@ -101,11 +104,15 @@ class AccountView extends DestructableView{
             watchdog.checkMempool();
           }
           this.optimizeLoading = false; // set loading state to false
-          this.checkOptimization(); // check if optimization is still needed
+          setTimeout(() => {
+            this.checkOptimization(); // check if optimization is still needed
+          }, 1000);  
         }).catch((err) => {
           console.log(err);
           this.optimizeLoading = false; // set loading state to false
-          this.checkOptimization(); // check if optimization is still needed
+          setTimeout(() => {
+            this.checkOptimization(); // check if optimization is still needed
+          }, 1000);  
         });
     });
   }
@@ -142,17 +149,22 @@ class AccountView extends DestructableView{
 
 	refreshWallet = () => {
     let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
+    this.isWalletSyncing = (wallet.lastHeight + 2 < this.blockchainHeight) || (walletWatchdog.getBlockList().getTxQueue().getSize() > 0);
     this.processingQueue = walletWatchdog.getBlockList().getSize(); 
     this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
-    this.currentScanBlock = wallet.lastHeight;
+    this.currentScanBlock = wallet.lastHeight;    
 
     if ((this.refreshTimestamp < wallet.modifiedTimestamp()) && (timeDiff > 500)) {   
       logDebugMsg("refreshWallet", this.currentScanBlock);
-   
+
       this.refreshTimestamp = new Date();
       this.walletAmount = wallet.amount;
       this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
       this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
+
+      if ((!this.isWalletSyncing) && (timeDiff > 3000)) {
+        this.checkOptimization();
+      }  
     }
 	}
 }

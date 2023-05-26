@@ -96,6 +96,10 @@ class TxQueue {
     this.transactions = this.transactions.concat(transactions);
     this.runProcessLoop();
   }
+
+  getSize = (): number => {
+    return this.transactions.length; 
+  }
 }
 
 class BlockList {  
@@ -192,6 +196,10 @@ class BlockList {
 
     // none found
     return null;
+  }
+
+  getTxQueue = (): TxQueue => {
+    return this.txQueue;
   }
 
   getSize = (): number => {

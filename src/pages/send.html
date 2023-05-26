@@ -17,7 +17,7 @@
       <div class="panel" :hidden="!optimizeIsNeeded">
         <div class="body">
           <div class="header-title">{{ $t("global.optimize.label") }}</div>
-          <div class="subtitle">{{ $t("global.optimize.subtitle") }}</div>
+          <div class="subtitle">{{ $t("global.optimize.subtitle") }} ({{optimizeOutputs}})</div>
           <div class="actions tc">
             <button type="button" class="btn primary" @click="optimizeWallet()" :disabled="optimizeLoading">
               {{ optimizeLoading ? $t('global.optimize.loadingText') : $t('global.optimize.button') }}

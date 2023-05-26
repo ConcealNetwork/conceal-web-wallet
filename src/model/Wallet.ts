@@ -34,6 +34,11 @@ type RawOutForTx = {
 	tx_pub_key: string
 };
 
+interface IOptimizeInfo {
+  numOutputs: number;
+  isNeeded: boolean;
+}   
+
 export type RawWalletOptions = {
 	checkMinerTx?:boolean,
 	readSpeed:number,
@@ -439,7 +444,7 @@ export class Wallet extends Observable {
 		}
 	}
 
-  optimizationNeeded = (blockchainHeight: number, threshhold: number) => {
+  optimizationNeeded = (blockchainHeight: number, threshhold: number): IOptimizeInfo => {
     let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(this, blockchainHeight);
     let counter: number = 0;    
 
@@ -455,7 +460,10 @@ export class Wallet extends Observable {
       }
     }  
 
-    return (counter >= config.optimizeOutputs);
+    return {
+      numOutputs: unspentOuts.length,
+      isNeeded: counter >= config.optimizeOutputs 
+    }
   }
 
   optimize = (blockchainHeight: number, threshhold: number, blockchainExplorer: BlockchainExplorer, obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>) => {
@@ -535,6 +543,10 @@ export class Wallet extends Observable {
             stillData = false;
           }            
         }
+
+        // we modifed the wallet, mark it
+        this.modifiedTS = new Date();
+   	    this.modified = true;
 
         // finished here
         resolve(processedOuts);
