@@ -49,12 +49,14 @@ class AccountView extends DestructableView{
   
 	intervalRefresh : NodeJS.Timer;
   refreshTimestamp: Date;
+  lastPending: number;
 
 	constructor(container : string) {
 		super(container);
 
     this.refreshTimestamp = new Date(0);
     this.ticker = config.coinSymbol;
+    this.lastPending = 0;
   	this.checkOptimization();
 		AppState.enableLeftMenu();
 
@@ -162,17 +164,23 @@ class AccountView extends DestructableView{
       this.checkOptimization();
     }
 
-    if ((this.refreshTimestamp < wallet.modifiedTimestamp()) && (timeDiff > 500)) {   
+    if (((this.refreshTimestamp < wallet.modifiedTimestamp()) || (this.lastPending > 0)) && (timeDiff > 500)) {   
       logDebugMsg("refreshWallet", this.currentScanBlock);
 
-      this.refreshTimestamp = new Date();
       this.walletAmount = wallet.amount;
       this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
-      this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
+      this.lastPending = this.walletAmount - this.unlockedWalletAmount;
 
-      if (!this.isWalletSyncing) {
-        this.checkOptimization();
-      }  
+      if (this.refreshTimestamp < wallet.modifiedTimestamp()) {
+        this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
+
+        if (!this.isWalletSyncing) {
+          this.checkOptimization();
+        }  
+      }
+
+      // set new refresh timestamp to now 
+      this.refreshTimestamp = new Date();
     }
 	}
 }

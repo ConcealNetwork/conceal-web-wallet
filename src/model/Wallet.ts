@@ -244,10 +244,29 @@ export class Wallet extends Observable {
 		}
 	}
 
-  addNewMemTx = (transaction : Transaction) => {
-    this.txsMem.push(transaction);
-    this.modifiedTS = new Date();
-    this.modified = true;    
+  addNewMemTx = (transaction : Transaction, replace = true) => {
+    let modified: boolean = false;
+    let foundTx: boolean = false;
+
+    for (let i = 0; i < this.txsMem.length; ++i) {
+      if (this.txsMem[i].hash === transaction.hash) {
+        if (replace) {
+          this.txsMem[i] = transaction;
+          modified = true;
+        }
+        foundTx = true;
+      }
+    }
+
+    if (!foundTx) {
+      this.txsMem.push(transaction);
+      modified = true;
+    }
+    
+    if (modified) {
+      this.modifiedTS = new Date();
+      this.modified = true;
+    }
   }
 
   clearMemTx = () => {
@@ -332,17 +351,16 @@ export class Wallet extends Observable {
 
 	unlockedAmount = (currentBlockHeight : number = -1) : number => {
 		let amount = 0;
-		for(let transaction of this.transactions){
-			if(!transaction.isFullyChecked())
+		for (let transaction of this.transactions) {
+			if (!transaction.isFullyChecked())
 				continue;
 
-			// if(transaction.ins.length > 0){
-			// 	amount -= transaction.fees;
-			// }
-			if(transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1)
-				for(let out of transaction.outs){
+			if (transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1) {      
+				for (let out of transaction.outs) {
 					amount += out.amount;
 				}
+      }
+
 			for(let nin of transaction.ins){
 				amount -= nin.amount;
 			}
@@ -352,19 +370,14 @@ export class Wallet extends Observable {
 		logDebugMsg("mempool tx", this.txsMem);
 
 		for (let transaction of this.txsMem) {
-			//logDebugMsg(transaction.paymentId);
-			// for(let out of transaction.outs){
-			// 	amount += out.amount;
-			// }
-			if (transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1)
+			if (transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1) {
 				for (let nout of transaction.outs) {
 					amount += nout.amount;
-					//logDebugMsg('+'+nout.amount);
 				}
+      }
 
 			for(let nin of transaction.ins){
 				amount -= nin.amount;
-				//logDebugMsg('-'+nin.amount);
 			}
 		}
 

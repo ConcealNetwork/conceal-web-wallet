@@ -175,12 +175,15 @@ export class Transaction {
     }
 
     isConfirmed(blockchainHeight: number) {
-        if (this.isCoinbase() && this.blockHeight + config.txCoinbaseMinConfirms < blockchainHeight) {
-            return true;
-        } else if (!this.isCoinbase() && this.blockHeight + config.txMinConfirms < blockchainHeight) {
-            return true;
-        }
+      if (this.blockHeight === 0) {
         return false;
+      } else if (this.isCoinbase() && this.blockHeight + config.txCoinbaseMinConfirms < blockchainHeight) {
+        return true;
+      } else if (!this.isCoinbase() && this.blockHeight + config.txMinConfirms < blockchainHeight) {
+        return true;
+      }
+      
+      return false;
     }
 
     isFullyChecked() {
