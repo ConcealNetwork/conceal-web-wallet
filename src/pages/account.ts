@@ -33,6 +33,7 @@ class AccountView extends DestructableView{
 	@VueVar([]) transactions !: Transaction[];
 	@VueVar(0) lastBlockLoading !: number;
 	@VueVar(0) processingQueue !: number;
+	@VueVar(0) processingTxNum !: number;  
 	@VueVar(0) walletAmount !: number;
 	@VueVar(0) unlockedWalletAmount !: number;
 	@VueVar(0) allTransactionsCount !: number;  
@@ -163,6 +164,7 @@ class AccountView extends DestructableView{
 	refreshWallet = (forceRedraw: boolean = false) => {
     let oldIsWalletSyncing = this.isWalletSyncing;
     let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
+    this.processingTxNum = walletWatchdog.getBlockList().getTxQueue().getSize(); 
     this.processingQueue = walletWatchdog.getBlockList().getSize(); 
     this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
     this.currentScanBlock = wallet.lastHeight;    

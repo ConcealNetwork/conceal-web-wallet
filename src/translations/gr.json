@@ -96,8 +96,9 @@
       "subtitle": "Επισκόπηση του λογαριασμού σας και ιστορικό συναλλαγών",
       "synchronizingBlock": {
         "text": "Συγχρονισμός...",
-        "lastBlock": "Last block",
-        "Queue": "Queue"        
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
       },
       "balanceBlock": {
         "title": "Το υπόλοιπό σας",

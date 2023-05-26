@@ -96,8 +96,9 @@
       "subtitle": "Számlaáttekintés és tranzakciós előzmények",
       "synchronizingBlock": {
         "text": "Szinkronizálás...",
-        "lastBlock": "Last block",
-        "Queue": "Queue"        
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
       },
       "balanceBlock": {
         "title": "Egyenleg",

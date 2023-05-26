@@ -95,8 +95,9 @@
       "subtitle": "صفحه ی اصلی کیف پول کربو",
       "synchronizingBlock": {
         "text": "در حال همگام سازی با شبکه",
-        "lastBlock": "Last block",
-        "Queue": "Queue"        
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
       },
       "balanceBlock": {
         "title": "کل حساب",

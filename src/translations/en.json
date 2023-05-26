@@ -102,8 +102,9 @@
       "subtitle": "Your account overview and transaction history",
       "synchronizingBlock": {
         "text": "Synchronizing...",
-        "lastBlock": "Last block",
-        "Queue": "Queue"
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
       },
       "balanceBlock": {
         "title": "Your balance",

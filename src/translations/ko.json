@@ -96,8 +96,9 @@
       "subtitle": "계정 정보 및 트랜젝션 기록",
       "synchronizingBlock": {
         "text": "동기화중...",
-        "lastBlock": "Last block",
-        "Queue": "Queue"        
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
       },
       "balanceBlock": {
         "title": "잔액",

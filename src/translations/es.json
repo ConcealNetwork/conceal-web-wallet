@@ -98,8 +98,9 @@
       "subtitle": "Resumen de su cuenta e historial de transacciones",
       "synchronizingBlock": {
         "text": "Sincronizando...",
-        "lastBlock": "Last block",
-        "Queue": "Queue"        
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
       },
       "balanceBlock": {
         "title": "Su balance",

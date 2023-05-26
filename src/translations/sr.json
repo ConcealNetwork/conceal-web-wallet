@@ -96,8 +96,9 @@
       "subtitle": "Преглед налога и трансакција",
       "synchronizingBlock": {
         "text": "Синхронизација у току",
-        "lastBlock": "Last block",
-        "Queue": "Queue"        
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
       },
       "balanceBlock": {
         "title": "Ваша средства",
