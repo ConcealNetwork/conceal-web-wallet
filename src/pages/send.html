@@ -66,7 +66,7 @@
           </div>
 
           <div class="actions tc">
-            <button type="button" class="btn primary" @click="send()" :disabled="!destinationAddressValid || !amountToSendValid || optimizeIsNeeded || optimizeLoading" >{{ $t("sendPage.sendBlock.sendButton") }}</button>
+            <button type="button" class="btn primary" @click="send()" :disabled="!destinationAddressValid || !amountToSendValid || optimizeLoading" >{{ $t("sendPage.sendBlock.sendButton") }}</button>
           </div>
           <div class="actions tc" v-if="lockedForm" >
             <button type="button" class="btn small" @click="reset()" >{{ $t("sendPage.sendBlock.cancelButton") }}</button>
