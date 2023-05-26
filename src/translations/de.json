@@ -111,7 +111,8 @@
         "emptyWallet": "Du hast zur Zeit kein Guthaben auf dieser Wallet",
         "waitSync": "Warte bis die Wallet upgedated ist",
         "beReallyPatient": "Die erste Einrichtung kann etwas dauern...",
-        "getCoinAddress": "Hol die deine Adresse um CCX zu empfangen"
+        "getCoinAddress": "Hol die deine Adresse um CCX zu empfangen",
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "Transaktionsdetails",

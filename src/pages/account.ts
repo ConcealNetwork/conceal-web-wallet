@@ -35,6 +35,9 @@ class AccountView extends DestructableView{
 	@VueVar(0) processingQueue !: number;
 	@VueVar(0) walletAmount !: number;
 	@VueVar(0) unlockedWalletAmount !: number;
+	@VueVar(0) allTransactionsCount !: number;  
+	@VueVar(0) pagesCount !: number;
+	@VueVar(0) txPerPage !: number;
 	@VueVar(0) ticker !: string;
 
 	@VueVar(0) currentScanBlock !: number;
@@ -57,6 +60,8 @@ class AccountView extends DestructableView{
     this.refreshTimestamp = new Date(0);
     this.ticker = config.coinSymbol;
     this.lastPending = 0;
+    this.pagesCount = 1;
+    this.txPerPage = 200;
   	this.checkOptimization();
 		AppState.enableLeftMenu();
 
@@ -120,6 +125,11 @@ class AccountView extends DestructableView{
     });
   }
 
+  increasePageCount = () => {
+    ++this.pagesCount;
+    this.refreshWallet(true);
+  }
+
 	moreInfoOnTx = (transaction : Transaction) => {
 		let explorerUrlHash = config.testnet ? config.testnetExplorerUrlHash : config.mainnetExplorerUrlHash;
 		let explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
@@ -150,7 +160,7 @@ class AccountView extends DestructableView{
 		});
 	}
 
-	refreshWallet = () => {
+	refreshWallet = (forceRedraw: boolean = false) => {
     let oldIsWalletSyncing = this.isWalletSyncing;
     let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
     this.processingQueue = walletWatchdog.getBlockList().getSize(); 
@@ -164,22 +174,24 @@ class AccountView extends DestructableView{
       this.checkOptimization();
     }
 
-    if (((this.refreshTimestamp < wallet.modifiedTimestamp()) || (this.lastPending > 0)) && (timeDiff > 500)) {   
+    if ((((this.refreshTimestamp < wallet.modifiedTimestamp()) || (this.lastPending > 0)) && (timeDiff > 500)) || forceRedraw) {   
       logDebugMsg("refreshWallet", this.currentScanBlock);
 
       this.walletAmount = wallet.amount;
       this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
       this.lastPending = this.walletAmount - this.unlockedWalletAmount;
 
-      if (this.refreshTimestamp < wallet.modifiedTimestamp()) {
-        this.transactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
+      if ((this.refreshTimestamp < wallet.modifiedTimestamp()) || forceRedraw) {
+        let allTransactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse()); 
+        this.transactions = allTransactions.slice(0, this.pagesCount * this.txPerPage);
+        this.allTransactionsCount = allTransactions.length; 
 
         if (!this.isWalletSyncing) {
           this.checkOptimization();
         }  
       }
 
-      // set new refresh timestamp to now 
+      // set new refresh timestamp to 
       this.refreshTimestamp = new Date();
     }
 	}

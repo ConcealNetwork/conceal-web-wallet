@@ -110,7 +110,8 @@
         "emptyWallet": "کیف پول شما در حال حاضر خالی میباشد",
         "waitSync": "لطفا برای بارگذاری مجدد کیف پول صبر کنید",
         "beReallyPatient": "این پروسه ممکن است مقداری به طول بیانجامد",
-        "getCoinAddress": "آدرس کیف پول شما"
+        "getCoinAddress": "آدرس کیف پول شما",
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "جزییات تراکنش ها",

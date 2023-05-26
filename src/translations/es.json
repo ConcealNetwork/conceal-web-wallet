@@ -113,7 +113,8 @@
         "emptyWallet": "Actualmente no tiene fondos en esta billetera.",
         "waitSync": "Por favor, espere hasta que la billetera se actualice",
         "beReallyPatient": "La configuración inicial puede tomar algún tiempo...",
-        "getCoinAddress": "Recibir CCX"
+        "getCoinAddress": "Recibir CCX",
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "Detalles de la transacción",

@@ -110,7 +110,8 @@
         "emptyWallet": "Obecnie nie masz środków w tym portfelu.",
         "waitSync": "Poczekaj, aż portfel zostanie zaktualizowany.",
         "beReallyPatient": "Wstępna konfiguracja może zająć trochę czasu...",
-        "getCoinAddress": "Odbierz CCX"
+        "getCoinAddress": "Odbierz CCX",
+        "loadMoreBtn": "Load more"        
       },
       "txDetails":{
         "title":"Szczegóły stransakcji",

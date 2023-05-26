@@ -111,7 +111,8 @@
         "emptyWallet": "현재 지갑에 잔액이 없습니다",
         "waitSync": "지갑이 업데이트되고 있습니다. 잠시만 기다려주세요.",
         "beReallyPatient": "초기 셋업중입니다. 잠시만 기다려주세요.",
-        "getCoinAddress": "카르보 코인 받기"
+        "getCoinAddress": "카르보 코인 받기",
+        "loadMoreBtn": "Load more"        
       },
       "txDetails": {
         "title": "트랜젝션 세부내용",

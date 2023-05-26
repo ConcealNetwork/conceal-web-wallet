@@ -111,7 +111,8 @@
         "emptyWallet": "Jelenleg nincsen egyenleged ebben a tárcában.",
         "waitSync": "Kérlek, várj, míg a tárca naprakész lesz",
         "beReallyPatient": "A kezdeti beállítás némi időbe telhet...",
-        "getCoinAddress": "CCX fogadása"
+        "getCoinAddress": "CCX fogadása",
+        "loadMoreBtn": "Load more"        
       },
       "txDetails": {
         "title": "Tranzakciórészletek",

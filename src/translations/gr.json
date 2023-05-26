@@ -111,7 +111,8 @@
         "emptyWallet": "Αυτή τη στιγμή δεν έχετε χρήματα σε αυτό το πορτοφόλι.",
         "waitSync": "Παρακαλώ περιμένετε μέχρι να ανανεωθεί το πορτοφόλι",
         "beReallyPatient": "Η αρχική ρύθμιση μπορεί να διαρκέσει λίγη ώρα...",
-        "getCoinAddress": "Λήψη CCX"
+        "getCoinAddress": "Λήψη CCX",
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "Λεπτομέρειες συναλλαγής",

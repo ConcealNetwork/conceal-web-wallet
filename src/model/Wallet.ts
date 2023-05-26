@@ -509,7 +509,7 @@ export class Wallet extends Observable {
         unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
         let processedOuts = 0;
 
-        while (stillData && ((iteration * config.optimizeOutputs) < unspentOuts.length) && (iteration < 5)) {
+        while (stillData && ((iteration * config.optimizeOutputs) < unspentOuts.length)) {
           let dsts: { address: string, amount: number }[] = [];
           let totalAmountWithoutFee = new JSBigInt(0);
           let counter = 0;

@@ -111,7 +111,8 @@
         "emptyWallet": "Тренутно немате средстава у новчанику",
         "waitSync": "Сачекајте да се новчаник освежи",
         "beReallyPatient": "Овај поступак може да потраје...",
-        "getCoinAddress": "Адреса за пријем новчића"
+        "getCoinAddress": "Адреса за пријем новчића",
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "Transaction details",

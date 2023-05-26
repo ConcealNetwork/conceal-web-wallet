@@ -54,9 +54,8 @@
 
 		<div class="panel nopadding">
 			<div class="body" >
-				<div class="header-title" >{{ $t("accountPage.historyBlock.title") }} ({{ $n(transactions.length) }})</div>
+				<div class="header-title" >{{ $t("accountPage.historyBlock.title") }} ({{ $n(transactions.length) }} / {{ $n(allTransactionsCount) }})</div>
 				<div class="content" >
-
 					<div class="transactions" id="accountTransactions">
 						<table>
 							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked()">
@@ -92,7 +91,11 @@
 							</tr>
 						</table>
 					</div>
-
+          <div class="txLoadMore">
+            <button type="button" class="btn primary" @click="increasePageCount()" :disabled="optimizeLoading || isWalletProcessing || (transactions.length >= allTransactionsCount)">
+              {{ $t("accountPage.historyBlock.loadMoreBtn") }}...
+            </button>  
+          </div>
 				</div>
 			</div>
 		</div>

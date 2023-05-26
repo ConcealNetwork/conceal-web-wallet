@@ -111,7 +111,8 @@
         "emptyWallet": "У цьому гаманці поки немає коштів.",
         "waitSync": "Будь ласка, зачекайте гаманець оновлює дані",
         "beReallyPatient": "Початкова установка може зайняти деякий час...",
-        "getCoinAddress": "Отримати CCX"
+        "getCoinAddress": "Отримати CCX",
+        "loadMoreBtn": "Load more"        
       },
       "txDetails": {
         "title": "Деталі транзакції",

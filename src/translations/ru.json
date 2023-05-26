@@ -111,7 +111,8 @@
         "emptyWallet": "В этом кошельке пока нет средств.",
         "waitSync": "Пожалуйста подождите пока кошелек обновляется",
         "beReallyPatient": "Начальная установка может занять некоторое время...",
-        "getCoinAddress": "Получить CCX"
+        "getCoinAddress": "Получить CCX",
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "Детали транзакции",

@@ -111,7 +111,8 @@
         "emptyWallet": "您的钱包目前没有资金。",
         "waitSync": "请等待钱包更新完毕",
         "beReallyPatient": "初始化设置可能比较耗时......",
-        "getCoinAddress": "收到CCX"
+        "getCoinAddress": "收到CCX",
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "交易明细",

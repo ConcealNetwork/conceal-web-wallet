@@ -1532,3 +1532,9 @@ body {
   text-align: center;  
   color: #ccc;
 }
+
+.txLoadMore {
+  width: 100%;
+  text-align: center;
+  padding: 1em;
+}
