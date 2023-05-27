@@ -494,7 +494,6 @@ export class WalletWatchdog {
             this.parseWorkers[i].setIsWorking(true);
             this.parseWorkers[i].getWorker().postMessage({
               type: 'process',
-              wallet: this.wallet.exportToRaw(),
               transactions: transactionsToProcess,
               readMinersTx: this.wallet.options.checkMinerTx
             });
