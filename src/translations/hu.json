@@ -52,6 +52,12 @@
         "title": "Hupsz...",
         "content": "A kamerához való hozzáférés szükséges a QR-kód beolvasásához",
         "confirmText": "OK"
+      },
+      "optimize": {
+        "label": "Optimalizálás",
+        "subtitle": "A tárca optimalizálásra szorul",
+        "button": "Optimalizálás most",
+        "loadingText": "Optimalizálás folyamatban, kis türelmet..."
       }
     },
     "bottom": {
@@ -113,7 +119,7 @@
         "waitSync": "Kérlek, várj, míg a tárca naprakész lesz",
         "beReallyPatient": "A kezdeti beállítás némi időbe telhet...",
         "getCoinAddress": "CCX fogadása",
-        "loadMoreBtn": "Load more"        
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "Tranzakciórészletek",

@@ -51,7 +51,13 @@
 		"title":"Oops...",
 		"content":"Zezwolenie na dostęp do kamery jest wymagane do zeskanowania kodu QR",
 		"confirmText":"OK"
-	  }
+  },
+  "optimize": {
+    "label": "Optymalizacja",
+    "subtitle": "Twój portfel wymaga optymalizacji",
+    "button": "Optymalizuj teraz",
+    "loadingText": "Optymalizowanie, proszę czekać..."
+  }
   },
   "bottom": {
 	  "termsOfUse": "Warunki korzystania",
@@ -112,7 +118,7 @@
         "waitSync": "Poczekaj, aż portfel zostanie zaktualizowany.",
         "beReallyPatient": "Wstępna konfiguracja może zająć trochę czasu...",
         "getCoinAddress": "Odbierz CCX",
-        "loadMoreBtn": "Load more"        
+        "loadMoreBtn": "Load more"
       },
       "txDetails":{
         "title":"Szczegóły stransakcji",

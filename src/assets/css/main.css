@@ -375,7 +375,10 @@ body.transparent #copyright {
 }
 
 #accountTransactions {
-	padding: 10px 35px;
+	padding: 0px 40px;
+}
+
+.transactions table {
 	overflow-y: scroll;
 	height: 500px;
 	display: block;
@@ -1529,7 +1532,7 @@ body {
 
 .detInfo {
   font-size: 0.8em;
-  text-align: center;  
+  text-align: center;
   color: #ccc;
 }
 

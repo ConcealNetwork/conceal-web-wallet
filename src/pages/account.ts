@@ -33,10 +33,10 @@ class AccountView extends DestructableView{
 	@VueVar([]) transactions !: Transaction[];
 	@VueVar(0) lastBlockLoading !: number;
 	@VueVar(0) processingQueue !: number;
-	@VueVar(0) processingTxNum !: number;  
+	@VueVar(0) processingTxNum !: number;
 	@VueVar(0) walletAmount !: number;
 	@VueVar(0) unlockedWalletAmount !: number;
-	@VueVar(0) allTransactionsCount !: number;  
+	@VueVar(0) allTransactionsCount !: number;
 	@VueVar(0) pagesCount !: number;
 	@VueVar(0) txPerPage !: number;
 	@VueVar(0) ticker !: string;
@@ -45,12 +45,12 @@ class AccountView extends DestructableView{
 	@VueVar(0) blockchainHeight !: number;
 	@VueVar(Math.pow(10, config.coinUnitPlaces)) currencyDivider !: number;
 
-	@VueVar(false) isWalletProcessing !: boolean;  
+	@VueVar(false) isWalletProcessing !: boolean;
   @VueVar(false) optimizeIsNeeded !: boolean;
   @VueVar(false) optimizeLoading !: boolean;
 	@VueVar(false) isWalletSyncing !: boolean;
 	@VueVar(0) optimizeOutputs !: number;
-  
+
 	intervalRefresh : NodeJS.Timer;
   refreshTimestamp: Date;
   lastPending: number;
@@ -115,13 +115,13 @@ class AccountView extends DestructableView{
           this.optimizeLoading = false; // set loading state to false
           setTimeout(() => {
             this.checkOptimization(); // check if optimization is still needed
-          }, 1000);  
+          }, 1000);
         }).catch((err) => {
-          console.log(err);
+          console.error("optimize error:", err);
           this.optimizeLoading = false; // set loading state to false
           setTimeout(() => {
             this.checkOptimization(); // check if optimization is still needed
-          }, 1000);  
+          }, 1000);
         });
     });
   }
@@ -164,10 +164,10 @@ class AccountView extends DestructableView{
 	refreshWallet = (forceRedraw: boolean = false) => {
     let oldIsWalletSyncing = this.isWalletSyncing;
     let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
-    this.processingTxNum = walletWatchdog.getBlockList().getTxQueue().getSize(); 
-    this.processingQueue = walletWatchdog.getBlockList().getSize(); 
+    this.processingTxNum = walletWatchdog.getBlockList().getTxQueue().getSize();
+    this.processingQueue = walletWatchdog.getBlockList().getSize();
     this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
-    this.currentScanBlock = wallet.lastHeight;    
+    this.currentScanBlock = wallet.lastHeight;
 
     this.isWalletSyncing = (wallet.lastHeight + 2) < this.blockchainHeight;
     this.isWalletProcessing = this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().getSize() > 0);
@@ -176,7 +176,7 @@ class AccountView extends DestructableView{
       this.checkOptimization();
     }
 
-    if ((((this.refreshTimestamp < wallet.modifiedTimestamp()) || (this.lastPending > 0)) && (timeDiff > 500)) || forceRedraw) {   
+    if ((((this.refreshTimestamp < wallet.modifiedTimestamp()) || (this.lastPending > 0)) && (timeDiff > 500)) || forceRedraw) {
       logDebugMsg("refreshWallet", this.currentScanBlock);
 
       this.walletAmount = wallet.amount;
@@ -184,16 +184,16 @@ class AccountView extends DestructableView{
       this.lastPending = this.walletAmount - this.unlockedWalletAmount;
 
       if ((this.refreshTimestamp < wallet.modifiedTimestamp()) || forceRedraw) {
-        let allTransactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse()); 
+        let allTransactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
         this.transactions = allTransactions.slice(0, this.pagesCount * this.txPerPage);
-        this.allTransactionsCount = allTransactions.length; 
+        this.allTransactionsCount = allTransactions.length;
 
         if (!this.isWalletSyncing) {
           this.checkOptimization();
-        }  
+        }
       }
 
-      // set new refresh timestamp to 
+      // set new refresh timestamp to
       this.refreshTimestamp = new Date();
     }
 	}

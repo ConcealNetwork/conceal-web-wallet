@@ -52,6 +52,12 @@
         "title": "糟糕！",
         "content": "扫描二维码需要访问您相机的权限",
         "confirmText": "确认"
+      },
+      "optimize": {
+        "label": "优化",
+        "subtitle": "您的钱包需要优化",
+        "button": "立即优化",
+        "loadingText": "正在优化，请稍候..."
       }
     },
     "bottom": {

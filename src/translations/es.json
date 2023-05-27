@@ -54,6 +54,12 @@
         "title": "Oops...",
         "content": "Se requiere permiso para acceder a su cámara para escanear el código QR",
         "confirmText": "OK"
+      },
+      "optimize": {
+        "label": "Optimización",
+        "subtitle": "Su billetera necesita ser optimizada",
+        "button": "Optimizar ahora",
+        "loadingText": "Optimizando, por favor espere..."
       }
     },
     "bottom": {
