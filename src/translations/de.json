@@ -52,6 +52,12 @@
         "title": "Uups...",
         "content": "Das Recht zum benutzen der Kamera wird benötigt um den QR Code zu scannen",
         "confirmText": "OK"
+      },
+      "optimize": {
+        "label": "Optimierung",
+        "subtitle": "Deine Wallet muss optimiert werden",
+        "button": "Jetzt optimieren",
+        "loadingText": "Optimiere, bitte warten..."
       }
     },
     "bottom": {

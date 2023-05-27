@@ -57,7 +57,7 @@
         "label": "Optimization",
         "subtitle": "Your wallet needs to be optimized",
         "button": "Optimize Now",
-        "loadingText": "Optimizing your wallet, please wait..."
+        "loadingText": "Optimizing, please wait..."
       }
     },
     "bottom": {

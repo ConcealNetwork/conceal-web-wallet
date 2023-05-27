@@ -52,6 +52,12 @@
         "title": "Упс...",
         "content": "Потребна дозвола за приступ камери у циљу скенирања QR кода",
         "confirmText": "У реду"
+      },
+      "optimize": {
+        "label": "Optimizacija",
+        "subtitle": "Vaš novčanik treba da se optimizuje",
+        "button": "Optimizuj sada",
+        "loadingText": "Optimizacija u toku, molimo sačekajte..."
       }
     },
     "bottom": {

@@ -51,6 +51,12 @@
         "title": "Oops...",
         "content": "È necessario consentire l'accesso alla videocamera per eseguire la scansione del codice QR",
         "confirmText": "Ok"
+      },
+      "optimize": {
+        "label": "Ottimizzazione",
+        "subtitle": "Il tuo portafoglio ha bisogno di essere ottimizzato",
+        "button": "Ottimizza ora",
+        "loadingText": "Ottimizzazione in corso, attendere..."
       }
     },
     "bottom": {
@@ -112,7 +118,7 @@
         "waitSync": "Si prega di attendere la fine della sincronizzazione",
         "beReallyPatient": "La prima sincronizzazione potrebbe richiedere alcuni minuti ...",
         "getCoinAddress": "Ricevi CCX",
-        "loadMoreBtn": "Load more"        
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "Dettagli transazione",

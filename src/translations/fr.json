@@ -52,7 +52,13 @@
 		"title":"Oups...",
 		"content":"Il est nécessaire de donner l'accès à la caméra afin de pouvoir scanner le QR Code",
 		"confirmText":"OK"
-	  }
+		},
+		"optimize": {
+			"label": "Optimisation",
+			"subtitle": "Votre portefeuille doit être optimisé",
+			"button": "Optimiser maintenant",
+			"loadingText": "Optimisation en cours, veuillez patienter..."
+		}
 	},
 	"bottom": {
 	  "termsOfUse": "Conditions générales d'utilisation",
