@@ -590,4 +590,18 @@ export class Wallet extends Observable {
       });
     });
   }
+
+  clearTransactions = () => {
+    this.txsMem = [];
+    this.transactions = [];
+    this.txLookupMap.clear();
+    this.recalculateKeyImages;
+    this.notify();
+  }
+
+  resetScanHeight = () => {
+    this.lastHeight = this.creationHeight;
+    this.signalChanged();
+    this.notify();
+  }
 }

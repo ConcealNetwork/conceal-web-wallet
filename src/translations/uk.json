@@ -371,6 +371,7 @@
       },
       "changePasswordButton": "Змінити пароль мого гаманця",
       "deleteWalletButton": "Видалити мій гаманець (локальну копію)",
+      "resetWalletButton": "Reset and rescan wallet",
       "walletSettings": {
         "creationHeight": {
           "label": "Висота створення гаманця"
@@ -385,6 +386,12 @@
         "content": "Ви ДІЙСНО впевнені що хочете видалити свій гаманець?",
         "confirmText": "Так, я знаю що роблю",
         "cancelText": "Скасувати"
+      },
+      "resetWalletModal": {
+        "title": "Reset My Wallet (local copy)",
+        "content": "Are you sure you really want to reset your wallet?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
       }
     },
     "importBasePage": {

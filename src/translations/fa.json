@@ -358,6 +358,7 @@
       },
       "changePasswordButton": "تغییر رمز عبور کیف پول",
       "deleteWalletButton": "حذف کیف پول از روی سیستم شما",
+      "resetWalletButton": "Reset and rescan wallet",
       "walletSettings": {
         "creationHeight": {
           "label": "ارتفاع زنجیره بلاکی هنگام ساخت کیف پول"
@@ -372,6 +373,12 @@
         "content": "آیا مطمین هستید که میخواهید کیف پول خود را حذف نمایید؟",
         "confirmText": "بله مطمینم",
         "cancelButtonText": "لغو"
+      },
+      "resetWalletModal": {
+        "title": "Reset My Wallet (local copy)",
+        "content": "Are you sure you really want to reset your wallet?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
       }
     },
     "importBasePage": {

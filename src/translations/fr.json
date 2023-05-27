@@ -368,6 +368,7 @@
 	  },
 	  "changePasswordButton":"Changer le mot de passe de mon portefeuille",
 	  "deleteWalletButton":"Supprimer mon portefeuille (copie locale)",
+    "resetWalletButton": "Reset and rescan wallet",
 	  "walletSettings":{
 		"creationHeight":{
 		  "label":"Hauteur à laquelle le portefeuille a été créé"
@@ -378,11 +379,17 @@
 		"updateButton":"Mettre à jour"
 	  },
 	  "deleteWalletModal":{
-		"title":"Supprimer mon portefeuille (copie locale)",
-		"content":"Etes vous VRAIMENT sûr de vouloir supprimer votre portefeuille ?",
-		"confirmText":"Oui je suis sûr",
-		"cancelText":"Annuler"
-	  }
+      "title":"Supprimer mon portefeuille (copie locale)",
+      "content":"Etes vous VRAIMENT sûr de vouloir supprimer votre portefeuille ?",
+      "confirmText":"Oui je suis sûr",
+      "cancelText":"Annuler"
+	  },
+    "resetWalletModal": {
+      "title": "Reset My Wallet (local copy)",
+      "content": "Are you sure you really want to reset your wallet?",
+      "confirmText": "Yes I'm sure",
+      "cancelText": "Cancel"
+    }
 	},
 	"importBasePage":{
 	  "parametersBlock":{

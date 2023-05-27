@@ -371,6 +371,7 @@
       },
       "changePasswordButton": "Изменть пароль моего кошелька",
       "deleteWalletButton": "Удалить мой кошелек (локальную копию)",
+      "resetWalletButton": "Reset and rescan wallet",
       "walletSettings": {
         "creationHeight": {
           "label": "Высота создания кошелька"
@@ -385,6 +386,12 @@
         "content": "Вы ДЕЙСТВИТЕЛЬНО уверены что хотите удалить свой кошелек?",
         "confirmText": "Да, я знаю что делаю",
         "cancelText": "Отменить"
+      },
+      "resetWalletModal": {
+        "title": "Reset My Wallet (local copy)",
+        "content": "Are you sure you really want to reset your wallet?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
       }
     },
     "importBasePage": {

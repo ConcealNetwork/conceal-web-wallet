@@ -376,6 +376,7 @@
       },
       "changePasswordButton": "비밀번호 변경",
       "deleteWalletButton": "웹지갑 지우기 (지금 사용하는 기기의 브라우저에 한정)",
+      "resetWalletButton": "Reset and rescan wallet",
       "walletSettings": {
         "creationHeight": {
           "label": "지갑이 생성된 블록높이"
@@ -390,6 +391,12 @@
         "content": "정말로 웹지갑을 지금 사용하는 기기에서 삭제합니까? 같은 웹지갑을 다른 웹브라우져에서 사용하고 삭제하지 않은 경우, 다른 웹브라우져에서는 사용이 가능합니다.",
         "confirmText": "네, 삭제합니다.",
         "cancelText": "취소합니다."
+      },
+      "resetWalletModal": {
+        "title": "Reset My Wallet (local copy)",
+        "content": "Are you sure you really want to reset your wallet?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
       }
     },
     "importBasePage": {

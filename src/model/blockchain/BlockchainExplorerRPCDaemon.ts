@@ -158,7 +158,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
 
     watchdog(wallet: Wallet): WalletWatchdog {
       let watchdog = new WalletWatchdog(wallet, this);
-      watchdog.loadHistory();
+      watchdog.start();
       return watchdog;
     }
 

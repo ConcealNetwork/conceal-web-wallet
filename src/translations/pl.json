@@ -369,6 +369,7 @@
 	  },
     "changePasswordButton":"Zmień moje hasło do portfela",
 	  "deleteWalletButton":"Usuń mój portfel (kopia lokalna)",
+    "resetWalletButton": "Reset and rescan wallet",
 	  "walletSettings":{
 		"creationHeight":{
 		  "label":"Wysokość bloku tworzenia portfela"
@@ -379,11 +380,17 @@
 		"updateButton":"Aktualizacja"
 	  },
 	  "deleteWalletModal":{
-		"title":"Usuń mój portfel (kopia lokalna)",
-		"content":"Czy jesteś pewny i NAPRAWDĘ chcesz usunąc swój portfel?",
-		"confirmText":"Tak, jestem pewny",
-		"cancelButtonText":"Przerwij"
-	  }
+      "title":"Usuń mój portfel (kopia lokalna)",
+      "content":"Czy jesteś pewny i NAPRAWDĘ chcesz usunąc swój portfel?",
+      "confirmText":"Tak, jestem pewny",
+      "cancelButtonText":"Przerwij"
+	  },
+    "resetWalletModal": {
+      "title": "Reset My Wallet (local copy)",
+      "content": "Are you sure you really want to reset your wallet?",
+      "confirmText": "Yes I'm sure",
+      "cancelText": "Cancel"
+    }
   },
   "importBasePage":{
     "parametersBlock":{

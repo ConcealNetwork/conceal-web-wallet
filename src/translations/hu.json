@@ -370,6 +370,7 @@
       },
       "changePasswordButton": "Jelszómódosítás",
       "deleteWalletButton": "Tárca törlése (helyi másolat)",
+      "resetWalletButton": "Reset and rescan wallet",
       "walletSettings": {
         "creationHeight": {
           "label": "Tárcalétrehozási blokklánchossz"
@@ -384,6 +385,12 @@
         "content": "Biztosan törölni szeretnéd a tárcádat?",
         "confirmText": "Igen, biztosan",
         "cancelText": "Mégsem"
+      },
+      "resetWalletModal": {
+        "title": "Reset My Wallet (local copy)",
+        "content": "Are you sure you really want to reset your wallet?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
       }
     },
     "importBasePage": {

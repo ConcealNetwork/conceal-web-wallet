@@ -376,6 +376,7 @@
       },
       "changePasswordButton": "更改我的钱包密码",
       "deleteWalletButton": "删除我的钱包（本地副本）",
+      "resetWalletButton": "Reset and rescan wallet",
       "walletSettings": {
         "creationHeight": {
           "label": "钱包创建的区块高度"
@@ -390,6 +391,12 @@
         "content": "确定要删除您的钱包吗？",
         "confirmText": "是的，我确定",
         "cancelText": "取消"
+      },
+      "resetWalletModal": {
+        "title": "Reset My Wallet (local copy)",
+        "content": "Are you sure you really want to reset your wallet?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
       }
     },
     "importBasePage": {

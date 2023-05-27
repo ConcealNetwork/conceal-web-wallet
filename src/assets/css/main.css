@@ -376,9 +376,6 @@ body.transparent #copyright {
 
 #accountTransactions {
 	padding: 0px 40px;
-}
-
-.transactions table {
 	overflow-y: scroll;
 	height: 500px;
 	display: block;

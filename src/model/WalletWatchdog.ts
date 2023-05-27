@@ -45,11 +45,11 @@ interface IBlockRange {
 type ProcessingCallback = (blockNumber: number) => void;
 
 class TxQueue {
-  wallet: Wallet;
-  isRunning: boolean;
-  maxBlockNum: number;
-  transactions: RawDaemon_Transaction[];
-  processingCallback: ProcessingCallback;
+  private wallet: Wallet;
+  private isRunning: boolean;
+  private maxBlockNum: number;
+  private transactions: RawDaemon_Transaction[];
+  private processingCallback: ProcessingCallback;
 
   constructor(wallet: Wallet, processingCallback: ProcessingCallback) {
     this.wallet = wallet;
@@ -113,14 +113,20 @@ class TxQueue {
   getSize = (): number => {
     return this.transactions.length;
   }
+
+  reset = () => {
+    this.stopProcessLoop();
+    this.transactions = [];
+    this.maxBlockNum = 0;
+  }
 }
 
 class BlockList {
-  blocks: IBlockRange[];
-  wallet: Wallet;
-  txQueue: TxQueue;
-  chainHeight: number;
-  watchdog: WalletWatchdog;
+  private blocks: IBlockRange[];
+  private wallet: Wallet;
+  private txQueue: TxQueue;
+  private chainHeight: number;
+  private watchdog: WalletWatchdog;
 
   constructor(wallet: Wallet, watchdog: WalletWatchdog) {
     this.blocks = [];
@@ -210,16 +216,20 @@ class BlockList {
   getSize = (): number => {
     return this.blocks.length;
   }
+
+  reset = () => {
+    this.blocks = [];
+  }
 }
 
 class ParseWorker {
-  wallet: Wallet;
-  isReady: boolean;
-  watchdog: WalletWatchdog;
-  isWorking: boolean;
-  blockList: BlockList;
-  workerProcess: Worker;
-  countProcessed: number;
+  private wallet: Wallet;
+  private isReady: boolean;
+  private watchdog: WalletWatchdog;
+  private isWorking: boolean;
+  private blockList: BlockList;
+  private workerProcess: Worker;
+  private countProcessed: number;
 
   constructor(wallet: Wallet, watchdog: WalletWatchdog, blockList: BlockList) {
     this.blockList = blockList;
@@ -298,11 +308,11 @@ class ParseWorker {
 }
 
 class SyncWorker {
-  url: string;
-  errors: number;
-  isWorking: boolean;
-  explorer: BlockchainExplorer;
-  errorInterval: NodeJS.Timer;
+  private url: string;
+  private errors: number;
+  private isWorking: boolean;
+  private explorer: BlockchainExplorer;
+  private errorInterval: NodeJS.Timer;
 
   constructor(url: string, explorer: BlockchainExplorer) {
     this.url = url;
@@ -353,17 +363,17 @@ class SyncWorker {
 }
 
 export class WalletWatchdog {
-  wallet: Wallet;
-  stopped: boolean = false;
-  blockList: BlockList;
-  explorer: BlockchainExplorer;
-  syncWorkers: SyncWorker[] = [];
-  parseWorkers: ParseWorker[] = [];
-  intervalMempool: any = 0;
-  lastBlockLoading: number = -1;
-  lastMaximumHeight: number = 0;
-  intervalTransactionsProcess: any = 0;
-  transactionsToProcess: RawDaemon_Transaction[][] = [];
+  private wallet: Wallet;
+  private stopped: boolean = false;
+  private blockList: BlockList;
+  private explorer: BlockchainExplorer;
+  private syncWorkers: SyncWorker[] = [];
+  private parseWorkers: ParseWorker[] = [];
+  private intervalMempool: any = 0;
+  private lastBlockLoading: number = -1;
+  private lastMaximumHeight: number = 0;
+  private intervalTransactionsProcess: any = 0;
+  private transactionsToProcess: RawDaemon_Transaction[][] = [];
 
   constructor(wallet: Wallet, explorer: BlockchainExplorer) {
     let cpuCores = Math.min(window.navigator.hardwareConcurrency ? (Math.max(window.navigator.hardwareConcurrency - 1, 1)) : 1, config.maxWorkerCores);
@@ -391,15 +401,6 @@ export class WalletWatchdog {
     for (let i = 0; i < randomNodes.length; ++i) {
       this.syncWorkers.push(new SyncWorker(randomNodes[i], explorer));
     }
-
-    // init the mempool
-    this.initMempool();
-
-    // set the interval for checking the new transactions
-    this.intervalTransactionsProcess = setInterval(() => {
-      this.checkTransactionsInterval();
-    }, this.wallet.options.readSpeed);
-
   }
 
   signalWalletUpdate = () => {
@@ -436,7 +437,25 @@ export class WalletWatchdog {
     clearInterval(this.intervalTransactionsProcess);
     this.transactionsToProcess = [];
     clearInterval(this.intervalMempool);
+    this.blockList.getTxQueue().reset();
+    this.blockList.reset();
     this.stopped = true;
+  }
+
+  start = () => {
+    // init the mempool
+    this.initMempool();
+
+    // set the interval for checking the new transactions
+    this.intervalTransactionsProcess = setInterval(() => {
+      this.checkTransactionsInterval();
+    }, this.wallet.options.readSpeed);
+
+    // run main loop
+    this.stopped = false;
+    this.lastBlockLoading = -1;
+    this.lastMaximumHeight = -1;    
+    this.startSyncLoop();
   }
 
   checkMempool = (): boolean => {
@@ -567,7 +586,7 @@ export class WalletWatchdog {
     });
   }
 
-  loadHistory = async () => {
+  startSyncLoop = async () => {
     (async function(self) {
       while (!self.stopped) {
         try {

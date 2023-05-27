@@ -370,6 +370,7 @@
       },
       "changePasswordButton": "Άλλαξε τον κωδικό του πορτοφολιού μου",
       "deleteWalletButton": "Διέγραψε το πορτοφόλι μου (τοπικό αντίγραφο)",
+      "resetWalletButton": "Reset and rescan wallet",
       "walletSettings": {
         "creationHeight": {
           "label": "Ύψος δημιουργίας του πορτοφολιού"
@@ -384,6 +385,12 @@
         "content": "Είστε βέβαιοι ότι θέλετε ΠΡΑΓΜΑΤΙΚΑ να διαγράψετε το πορτοφόλι σας;",
         "confirmText": "Ναι είμαι βέβαιος",
         "cancelText": "Ακύρωση"
+      },
+      "resetWalletModal": {
+        "title": "Reset My Wallet (local copy)",
+        "content": "Are you sure you really want to reset your wallet?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
       }
     },
     "importBasePage": {
