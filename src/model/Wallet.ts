@@ -520,7 +520,7 @@ export class Wallet extends Observable {
         unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
         let processedOuts = 0;
 
-        while (stillData && ((iteration * config.optimizeOutputs) < unspentOuts.length)) {
+        while ((stillData && ((iteration * config.optimizeOutputs) < unspentOuts.length)) && (iteration < 5)) {
           let dsts: { address: string, amount: number }[] = [];
           let totalAmountWithoutFee = new JSBigInt(0);
           let counter = 0;
@@ -535,47 +535,49 @@ export class Wallet extends Observable {
             }
           }
 
-          let usingOuts: RawOutForTx[] = [];
-          let usingOuts_amount = new JSBigInt(0);
-          let unusedOuts = unspentOuts.slice(iteration * config.optimizeOutputs, (iteration * config.optimizeOutputs) + counter);
+          if (stillData) {
+            let usingOuts: RawOutForTx[] = [];
+            let usingOuts_amount = new JSBigInt(0);
+            let unusedOuts = unspentOuts.slice(iteration * config.optimizeOutputs, (iteration * config.optimizeOutputs) + counter);
 
-          for (let i = 0; i < unusedOuts.length; i++) {
-            totalAmountWithoutFee = totalAmountWithoutFee.add(unusedOuts[i].amount);
-          }  
-      
-          if (totalAmountWithoutFee < this.unlockedAmount(blockchainHeight)) {
-            // substract fee from the amount we have available              
-            let totalAmount = totalAmountWithoutFee.subtract(neededFee);
+            for (let i = 0; i < unusedOuts.length; i++) {
+              totalAmountWithoutFee = totalAmountWithoutFee.add(unusedOuts[i].amount);
+            }  
+        
+            if (totalAmountWithoutFee < this.unlockedAmount(blockchainHeight)) {
+              // substract fee from the amount we have available              
+              let totalAmount = totalAmountWithoutFee.subtract(neededFee);
 
-            if (totalAmount > 0) {
-              dsts.push({
-                address: this.getPublicAddress(),
-                amount: new JSBigInt(totalAmount)
-              });
+              if (totalAmount > 0) {
+                dsts.push({
+                  address: this.getPublicAddress(),
+                  amount: new JSBigInt(totalAmount)
+                });
 
-              while ((usingOuts_amount.compare(totalAmount) < 0) && (unusedOuts.length > 0)) {
-                let out = pop_random_value(unusedOuts);
-                usingOuts.push(out);
-                usingOuts_amount = usingOuts_amount.add(out.amount);
+                while ((usingOuts_amount.compare(totalAmount) < 0) && (unusedOuts.length > 0)) {
+                  let out = pop_random_value(unusedOuts);
+                  usingOuts.push(out);
+                  usingOuts_amount = usingOuts_amount.add(out.amount);
+                }
+                                
+                let amounts: number[] = [];
+                for (let l = 0; l < usingOuts.length; l++) {
+                  amounts.push(usingOuts[l].amount);
+                }      
+
+                let nbOutsNeeded: number = config.defaultMixin + 1;
+                let lotsMixOuts: any[] = await obtainMixOutsCallback(amounts, nbOutsNeeded);
+
+                let data = await TransactionsExplorer.createRawTx(dsts, this, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '');
+                await blockchainExplorer.sendRawTx(data.raw.raw);
+                this.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
+                logDebugMsg('optimization done', processedOuts);
+                iteration++;
               }
-                              
-              let amounts: number[] = [];
-              for (let l = 0; l < usingOuts.length; l++) {
-                amounts.push(usingOuts[l].amount);
-              }      
-
-              let nbOutsNeeded: number = config.defaultMixin + 1;
-              let lotsMixOuts: any[] = await obtainMixOutsCallback(amounts, nbOutsNeeded);
-
-              let data = await TransactionsExplorer.createRawTx(dsts, this, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '');
-              await blockchainExplorer.sendRawTx(data.raw.raw);
-              this.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
-              logDebugMsg('optimization done', processedOuts);
-              iteration++;
+            } else {
+              stillData = false;
             }
-          } else {
-            stillData = false;
-          }            
+          }
         }
 
         // we modifed the wallet, mark it
