@@ -168,14 +168,7 @@ class AccountView extends DestructableView{
     this.processingTxNum = walletWatchdog.getBlockList().getTxQueue().getSize();
     this.processingQueue = walletWatchdog.getBlockList().getSize();
     this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
-    this.currentScanBlock = wallet.lastHeight;
-
-    
-    const key = CnUtils.buffer_alloc(32); // 32 bytes key
-    const nonce = CnUtils.buffer_alloc(12); // 12 bytes nonce
-    const message = CnUtils.buffer_alloc(64); // some data as bytes array
-    console.log(CnUtils.chacha8_ecnrypt(key, nonce, message));
-    
+    this.currentScanBlock = wallet.lastHeight;    
 
     this.isWalletSyncing = (wallet.lastHeight + 2) < this.blockchainHeight;
     this.isWalletProcessing = this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().getSize() > 0);

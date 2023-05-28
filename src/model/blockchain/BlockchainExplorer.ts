@@ -39,7 +39,7 @@ export type RawDaemon_Transaction = {
 };
 
 export type NetworkInfo = {
-    node: string,
+    nodes: string[],
     major_version: number,
     hash: string,
     reward: number,
@@ -65,13 +65,13 @@ export interface BlockchainExplorer {
 
     getScannedHeight(): number;
 
-    watchdog(wallet: Wallet): void;
+    stop(): void;
+
+    start(wallet: Wallet): void;
 
     getTransactionPool(): Promise<RawDaemon_Transaction[]>;
 
     getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTx: boolean): Promise<RawDaemon_Transaction[]>;
-
-    getTransactionsForBlocksEx(startBlock: number, endBlock: number, url: string, includeMinerTxs: boolean): Promise<RawDaemon_Transaction[]>;
 
     sendRawTx(rawTx: string): Promise<any>;
 

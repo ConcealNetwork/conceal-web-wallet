@@ -35,7 +35,7 @@ class NetworkView extends DestructableView {
 	@VueVar(0) networkDifficulty !: number;
 	@VueVar(0) lastReward !: number;
 	@VueVar(0) lastBlockFound !: number;
-	@VueVar(0) connectedNode !: string;
+  @VueVar([]) nodeList !: string[];
 	@VueVar(0) ticker !: string;
 
 	private intervalRefreshStat = 0;
@@ -57,8 +57,7 @@ class NetworkView extends DestructableView {
 
 	refreshStats() {
 		blockchainExplorer.getNetworkInfo().then((info: NetworkInfo) => {
-			//console.log(info);
-			this.connectedNode = info.node;
+			this.nodeList = [...info.nodes];
 			this.networkDifficulty = info.difficulty;
 			this.networkHashrate = VueFilterHashrate(info.difficulty / config.avgBlockTime);
 			this.blockchainHeight = info.height;

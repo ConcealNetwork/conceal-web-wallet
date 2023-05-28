@@ -38,7 +38,7 @@ class SettingsView extends DestructableView{
 	@VueVar(false) checkMinerTx !: boolean;
 
 	@VueVar(false) customNode !: boolean;
-	@VueVar('https://node.conceal.network:16000/') nodeUrl !: string;
+	@VueVar('https://node.conceal.network/') nodeUrl !: string;
 
 	@VueVar(0) creationHeight !: number;
 	@VueVar(0) scanHeight !: number;
@@ -194,9 +194,8 @@ class SettingsView extends DestructableView{
 		let options = wallet.options;
 		options.customNode = this.customNode;
 		options.nodeUrl = this.nodeUrl;
-		config.nodeUrl = this.nodeUrl;
 		wallet.options = options;
-		walletWatchdog.signalWalletUpdate();
+    window.location.href = '#!disconnect';
 	}
 }
 

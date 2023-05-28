@@ -1538,3 +1538,20 @@ body {
   text-align: center;
   padding: 1em;
 }
+
+.remoteNodesContainer {
+  border-bottom: 1px solid;
+  margin-bottom: 2em;
+}
+
+.remoteNodes {
+  padding-left: 1.5em;
+}
+
+.contentTitle {
+  font-weight: bold;
+  text-decoration: underline;
+  font-size: 1.1em;
+  margin-bottom: 1em;
+  color: orange;
+}

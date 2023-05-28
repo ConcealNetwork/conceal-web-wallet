@@ -56,22 +56,26 @@ export class AppState {
 		let walletWorker = new WalletWorker(wallet, password);
 
 		DependencyInjectorInstance().register(Wallet.name, wallet);
-		let watchdog = BlockchainExplorerProvider.getInstance().watchdog(wallet);
+		let watchdog = BlockchainExplorerProvider.getInstance().start(wallet);
 		DependencyInjectorInstance().register(WalletWatchdog.name, watchdog);
 		DependencyInjectorInstance().register(WalletWorker.name, walletWorker);
 
 		$('body').addClass('connected');
-		if (wallet.isViewOnly())
+		if (wallet.isViewOnly()) {
 			$('body').addClass('viewOnlyWallet');
+    }
 	}
 
 	static disconnect() {
 		let wallet: Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
 		let walletWorker: WalletWorker = DependencyInjectorInstance().getInstance(WalletWorker.name, 'default', false);
 		let walletWatchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name, 'default', false);
-		if (walletWatchdog !== null)
+		
+    if (walletWatchdog !== null) {
 			walletWatchdog.stop();
+    }
 
+    BlockchainExplorerProvider.getInstance().stop();
 		DependencyInjectorInstance().register(Wallet.name, undefined, 'default');
 		DependencyInjectorInstance().register(WalletWorker.name, undefined, 'default');
 		DependencyInjectorInstance().register(WalletWatchdog.name, undefined, 'default');

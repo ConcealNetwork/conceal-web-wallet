@@ -10,8 +10,16 @@
 	<div class="body-content" >
 		<div class="panel">
 			<div class="body" >
-				<div class="content" >
-					<div>{{ $t("networkPage.statsBlock.connectNode")}}: {{connectedNode}}</div>
+        <div class="content remoteNodesContainer">
+          <div class="contentTitle">Available Nodes</div>
+          <ul class="remoteNodes">
+            <template v-for="node of nodeList">
+              <li>{{node}}</li>
+            </template>
+          </ul>
+        </div>
+				<div class="content">
+          <div class="contentTitle">Network Info</div>
 					<div>{{ $t("networkPage.statsBlock.hashrate") }}: {{networkHashrate}}</div>
 					<div>{{ $t("networkPage.statsBlock.height") }}: {{blockchainHeight}}</div>
 					<div>{{ $t("networkPage.statsBlock.difficulty") }}: {{networkDifficulty}}</div>

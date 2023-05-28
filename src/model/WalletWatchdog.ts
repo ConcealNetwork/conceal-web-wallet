@@ -46,14 +46,12 @@ type ProcessingCallback = (blockNumber: number) => void;
 
 class TxQueue {
   private wallet: Wallet;
-  private isRunning: boolean;
   private maxBlockNum: number;
   private transactions: RawDaemon_Transaction[];
   private processingCallback: ProcessingCallback;
 
   constructor(wallet: Wallet, processingCallback: ProcessingCallback) {
     this.wallet = wallet;
-    this.isRunning = false;
     this.maxBlockNum = 0;
     this.transactions = [];
     this.processingCallback = processingCallback;
@@ -79,29 +77,20 @@ class TxQueue {
   }
 
   runProcessLoop = () => {
-    if (!this.isRunning) {
-      this.isRunning = true;
-
-      (async function loop(self) {
-        if (self.isRunning) {
-          try {
-            self.isRunning = await self.processTransaction();
-            await new Promise(r => setTimeout(r, 10));
-            await loop(self);
-          } catch(err) {
-            console.error('Error on single processTransaction iteration', err);
-            self.isRunning = true;
-            await loop(self);
-          }
-        } else {
-          self.processingCallback(self.maxBlockNum);
+    (async function loop(self) {
+      if (self.transactions.length > 0) {
+        try {
+          await new Promise(r => setTimeout(r, 10));
+          await self.processTransaction();
+          await loop(self);
+        } catch(err) {
+          console.error('Error on single processTransaction iteration', err);
+          await loop(self);
         }
-      }(this));
-    }
-  }
-
-  stopProcessLoop = () => {
-    this.isRunning = false;
+      } else {
+        self.processingCallback(self.maxBlockNum);
+      }
+    }(this));
   }
 
   addTransactions = (transactions: RawDaemon_Transaction[], maxBlockNum: number) => {
@@ -115,7 +104,6 @@ class TxQueue {
   }
 
   reset = () => {
-    this.stopProcessLoop();
     this.transactions = [];
     this.maxBlockNum = 0;
   }
@@ -192,6 +180,17 @@ class BlockList {
     }
   }
 
+  markIdleBlockRange = (lastBlock: number): boolean => {
+    for (let i = 0; i < this.blocks.length; ++i) {
+      if (this.blocks[i].endBlock == lastBlock) {
+        this.blocks[i].timestamp = new Date(0);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   getFirstIdleRange = (reset: boolean): IBlockRange | null => {
     for (let i = 0; i < this.blocks.length; ++i) {
       if (!this.blocks[i].finished) {
@@ -211,6 +210,10 @@ class BlockList {
 
   getTxQueue = (): TxQueue => {
     return this.txQueue;
+  }
+
+  getBlocks = (): IBlockRange[] => {
+    return this.blocks;
   }
 
   getSize = (): number => {
@@ -308,41 +311,28 @@ class ParseWorker {
 }
 
 class SyncWorker {
-  private url: string;
-  private errors: number;
   private isWorking: boolean;
   private explorer: BlockchainExplorer;
-  private errorInterval: NodeJS.Timer;
 
-  constructor(url: string, explorer: BlockchainExplorer) {
-    this.url = url;
-    this.errors = 0;
+  constructor(explorer: BlockchainExplorer) {
     this.isWorking = false;
     this.explorer = explorer;
-
-    this.errorInterval = setInterval(() => {
-      this.errors = Math.max(this.errors - 1, 0);
-    }, 60 * 1000);
   }
 
-  fetchBlocks = (startBlock: number, endBlock: number): Promise<any> => {
+  fetchBlocks = (startBlock: number, endBlock: number): Promise<{transactions: RawDaemon_Transaction[], lastBlock: number}> => {
     this.isWorking = true;
 
 		return new Promise<any>((resolve, reject) => {
-      this.explorer.getTransactionsForBlocksEx(startBlock, endBlock, this.url, false).then((transactions: RawDaemon_Transaction[]) => {
-        if (transactions.length > 0) {
-          let lastTx = transactions[transactions.length - 1];
-
-          if (typeof lastTx.height == 'undefined') {
-            throw "Invalid last block!";
-          }
-        }
-
-        // report the transactions
-        resolve(transactions);
+      this.explorer.getTransactionsForBlocks(startBlock, endBlock, false).then((transactions: RawDaemon_Transaction[]) => {
+        resolve({
+          transactions: transactions,
+          lastBlock: endBlock
+        });
       }).catch((err) => {
-        ++this.errors;
-        reject(startBlock);
+        reject({
+          transactions: [],
+          lastBlock: endBlock
+        });
       }).finally(() => {
         this.isWorking = false;
       });
@@ -351,14 +341,6 @@ class SyncWorker {
 
   getIsWorking = (): boolean => {
     return this.isWorking;
-  }
-
-  getHasToManyErrors = (): boolean => {
-    return this.errors > 5;
-  }
-
-  getNodeUrl = (): string => {
-    return this.url;
   }
 }
 
@@ -383,14 +365,6 @@ export class WalletWatchdog {
     this.explorer = explorer;
     this.blockList = new BlockList(wallet, this);
 
-    // set the default node for session
-    if (this.wallet.options.customNode) {
-      config.nodeUrl = this.wallet.options.nodeUrl;
-    } else {
-      let randNodeInt:number = Math.floor(Math.random() * Math.floor(config.nodeList.length));
-      config.nodeUrl = config.nodeList[randNodeInt];
-    }
-
     // create parse workers
     for (let i = 0; i < cpuCores; ++i) {
       let parseWorker: ParseWorker = new ParseWorker(wallet, this, this.blockList);
@@ -399,7 +373,7 @@ export class WalletWatchdog {
 
     // create a worker for each random node
     for (let i = 0; i < randomNodes.length; ++i) {
-      this.syncWorkers.push(new SyncWorker(randomNodes[i], explorer));
+      this.syncWorkers.push(new SyncWorker(explorer));
     }
   }
 
@@ -408,15 +382,6 @@ export class WalletWatchdog {
 
     // reset the last block loading
     this.lastBlockLoading = -1;//reset scanning
-
-    // set the default node for session
-    if (this.wallet.options.customNode) {
-      config.nodeUrl = this.wallet.options.nodeUrl;
-    } else {
-      let randNodeInt:number = Math.floor(Math.random() * Math.floor(config.nodeList.length));
-      config.nodeUrl = config.nodeList[randNodeInt];
-    }
-
     this.checkMempool();
   }
 
@@ -538,7 +503,7 @@ export class WalletWatchdog {
 
   getFreeWorker = (): SyncWorker | null => {
     for (let i = 0; i < this.syncWorkers.length; ++i) {
-      if (!this.syncWorkers[i].getIsWorking() && !this.syncWorkers[i].getHasToManyErrors()) {
+      if (!this.syncWorkers[i].getIsWorking()) {
         return this.syncWorkers[i];
       }
     }
@@ -551,39 +516,6 @@ export class WalletWatchdog {
 
   getLastBlockLoading = (): number => {
     return this.lastBlockLoading;
-  }
-
-  fetchBlocks = (worker: SyncWorker, startBlock: number, endBlock: number): Promise<{transactions: RawDaemon_Transaction[], lastBlock: number}> => {
-    return new Promise<{transactions: RawDaemon_Transaction[], lastBlock: number}>((resolve, reject) => {
-      (async function(self) {
-        let currWorker: SyncWorker | null = worker;
-        let failed: boolean = false;
-
-        while (currWorker) {
-          try {
-            let txResult = await currWorker.fetchBlocks(startBlock, endBlock);
-            currWorker = null;
-            failed = false;
-
-            resolve({
-              transactions: txResult,
-              lastBlock: endBlock
-            });
-          } catch {
-            currWorker = self.getFreeWorker();
-            failed = true;
-          }
-        }
-
-        // if we are here we failed
-        if (!currWorker && failed) {
-          reject({
-            transactions: [],
-            lastBlock: startBlock
-          });
-        }
-      })(this);
-    });
   }
 
   startSyncLoop = async () => {
@@ -625,44 +557,49 @@ export class WalletWatchdog {
             }
           }
 
-          if (self.lastBlockLoading < height) {
-            let startBlock: number = Number(self.lastBlockLoading);
-            let endBlock: number = startBlock + config.syncBlockCount;
-            let freeWorker: SyncWorker | null = self.getFreeWorker();
-            // make sure endBlock is not over current height
-            endBlock = Math.min(endBlock, height + 1);
+          // get a free worker and check if we have idle blocks first
+          let freeWorker: SyncWorker | null = self.getFreeWorker();
 
-            if (startBlock > self.lastMaximumHeight) {
-              startBlock = self.lastMaximumHeight;
-            }
+          if (freeWorker) {
+            // first check if we have any stale ranges available
+            let idleRange = self.blockList.getFirstIdleRange(true);
+            let startBlock: number = 0;
+            let endBlock: number = 0;
+            
 
-            if (freeWorker) {
-              // first check if we have any stale ranges available
-              let idleRange = self.blockList.getFirstIdleRange(true);
-
-              if (idleRange) {
-                logDebugMsg('Found idle block range', idleRange);
-                startBlock = idleRange.startBlock;
-                endBlock = idleRange.endBlock;
-              } else {
-                // add the blocks to be processed to the block list
-                self.blockList.addBlockRange(startBlock, endBlock, height);
-                self.lastBlockLoading = Math.max(self.lastBlockLoading, endBlock);
+            if (idleRange) {
+              startBlock = idleRange.startBlock;
+              endBlock = idleRange.endBlock;
+            }  else if (self.lastBlockLoading < height) {
+              startBlock = Number(self.lastBlockLoading);
+              endBlock = startBlock + config.syncBlockCount;
+              // make sure endBlock is not over current height
+              endBlock = Math.min(endBlock, height + 1);
+  
+              if (startBlock > self.lastMaximumHeight) {
+                startBlock = self.lastMaximumHeight;
               }
 
-              // try to fetch the block range with a currently selected sync worker
-              self.fetchBlocks(freeWorker, startBlock, endBlock).then(function(blockData: {transactions: RawDaemon_Transaction[], lastBlock: number}) {
-                if (blockData.transactions.length > 0) {
-                  self.processTransactions(blockData.transactions, function() {});
-                } else {
-                  self.blockList.finishBlockRange(blockData.lastBlock, []);
-                }
-              });
+              // add the blocks to be processed to the block list
+              self.blockList.addBlockRange(startBlock, endBlock, height);
+              self.lastBlockLoading = Math.max(self.lastBlockLoading, endBlock);
             } else {
-              await new Promise(r => setTimeout(r, 500));
+              await new Promise(r => setTimeout(r, 30 * 1000));
+              continue;
             }
+            
+            // try to fetch the block range with a currently selected sync worker
+            freeWorker.fetchBlocks(startBlock, endBlock).then((blockData: {transactions: RawDaemon_Transaction[], lastBlock: number}) => {
+              if (blockData.transactions.length > 0) {
+                self.processTransactions(blockData.transactions, function() {});
+              } else {
+                self.blockList.finishBlockRange(blockData.lastBlock, []);
+              }
+            }).catch((blockData: {transactions: RawDaemon_Transaction[], lastBlock: number}) => {
+              self.blockList.markIdleBlockRange(blockData.lastBlock);
+            });
           } else {
-            await new Promise(r => setTimeout(r, 30 * 1000));
+            await new Promise(r => setTimeout(r, 500));
           }
         } catch(err) {
           logDebugMsg(`Error occured in loadHistory...`);
