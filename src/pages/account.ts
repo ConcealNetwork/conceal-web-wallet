@@ -24,6 +24,7 @@ import {AppState} from "../model/AppState";
 import {Transaction, TransactionIn} from "../model/Transaction";
 import {RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {WalletWatchdog} from "../model/WalletWatchdog";
+import {CnUtils} from "../model/Cn";
 
 let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name,'default', false);
 let blockchainExplorer = DependencyInjectorInstance().getInstance(Constants.BLOCKCHAIN_EXPLORER);
@@ -169,9 +170,16 @@ class AccountView extends DestructableView{
     this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
     this.currentScanBlock = wallet.lastHeight;
 
+    
+    const key = CnUtils.buffer_alloc(32); // 32 bytes key
+    const nonce = CnUtils.buffer_alloc(12); // 12 bytes nonce
+    const message = CnUtils.buffer_alloc(64); // some data as bytes array
+    console.log(CnUtils.chacha8_ecnrypt(key, nonce, message));
+    
+
     this.isWalletSyncing = (wallet.lastHeight + 2) < this.blockchainHeight;
     this.isWalletProcessing = this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().getSize() > 0);
-
+    
     if (oldIsWalletSyncing && !this.isWalletSyncing) {
       this.checkOptimization();
     }

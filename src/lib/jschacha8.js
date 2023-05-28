@@ -8,6 +8,10 @@
  *
  * @constructor
  */
+ function getBuffer(size) {
+  return Buffer.alloc(size);
+ }
+ 
 const JSChaCha8 = function (bufKey, bufNonce, counter) {
   if (typeof counter === 'undefined') {
     counter = 0
@@ -198,7 +202,4 @@ JSChaCha8.prototype._update = function (data) {
   return output
 }
 
-// EXPORT //
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = JSChaCha8
-}
+window.JSChaCha8 = JSChaCha8;
