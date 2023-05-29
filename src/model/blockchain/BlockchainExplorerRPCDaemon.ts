@@ -118,7 +118,7 @@ class NodeWorkersList {
   }
 
   private acquireWorker = (): NodeWorker | null => {
-    const shuffledNodes: NodeWorker[] = this.nodes.sort((a, b) => 0.5 - Math.random());
+    const shuffledNodes: NodeWorker[] = [...this.nodes].sort((a, b) => 0.5 - Math.random());
 
     for (let i = 0; i < shuffledNodes.length; i++) {
       if (!shuffledNodes[i].isWorking && !shuffledNodes[i].hasToManyErrors()) {

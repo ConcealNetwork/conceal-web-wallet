@@ -379,6 +379,11 @@
         "content": "Are you sure you really want to reset your wallet?",
         "confirmText": "Yes I'm sure",
         "cancelText": "Cancel"
+      },
+      "optimizeWalletModal": {
+        "title": "Nothing to do...",
+        "content": "Your wallet is already optimized.",
+        "confirmText": "OK"
       }
     },
     "importBasePage": {

@@ -128,8 +128,6 @@ class SettingsView extends DestructableView{
   checkOptimization = () => {
     blockchainExplorer.getHeight().then((blockchainHeight: number) => {
       let optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
-      logDebugMsg("optimizeInfo.numOutputs", optimizeInfo.numOutputs);
-      logDebugMsg('optimizeInfo.isNeeded', optimizeInfo.isNeeded);
       this.optimizeIsNeeded = optimizeInfo.isNeeded;
     });
   }
@@ -137,27 +135,39 @@ class SettingsView extends DestructableView{
   optimizeWallet = () => {
     this.optimizeLoading = true; // set loading state to true
     blockchainExplorer.getHeight().then((blockchainHeight: number) => {
-      wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
-        function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
-          return blockchainExplorer.getRandomOuts(amounts, numberOuts);
-        }).then((processedOuts: number) => {
-          let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
-          logDebugMsg("processedOuts", processedOuts);
-          //force a mempool check so the user is up to date
-          if (watchdog !== null) {
-            watchdog.checkMempool();
-          }
-          this.optimizeLoading = false; // set loading state to false
-          setTimeout(() => {
-            this.checkOptimization(); // check if optimization is still needed
-          }, 1000);  
-        }).catch((err) => {
-          console.log(err);
-          this.optimizeLoading = false; // set loading state to false
-          setTimeout(() => {
-            this.checkOptimization(); // check if optimization is still needed
-          }, 1000);  
-        });
+      let optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
+
+      if (optimizeInfo.isNeeded) {
+        wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
+          function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+            return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+          }).then((processedOuts: number) => {
+            let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+            //force a mempool check so the user is up to date
+            if (watchdog !== null) {
+              watchdog.checkMempool();
+            }
+            this.optimizeLoading = false; // set loading state to false
+            setTimeout(() => {
+              this.checkOptimization(); // check if optimization is still needed
+            }, 1000);  
+          }).catch((err) => {
+            console.log(err);
+            this.optimizeLoading = false; // set loading state to false
+            setTimeout(() => {
+              this.checkOptimization(); // check if optimization is still needed
+            }, 1000);  
+          });
+      } else {
+        swal({
+          title: i18n.t('settingsPage.optimizeWalletModal.title'),
+          html: i18n.t('settingsPage.optimizeWalletModal.content'),
+          confirmButtonText: i18n.t('settingsPage.optimizeWalletModal.confirmText'),
+          showCancelButton: false
+        }).then((result:any) => {
+          this.optimizeLoading = false;
+        });    
+      }
     });
   }
 

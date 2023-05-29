@@ -436,13 +436,10 @@ export class TransactionsExplorer {
 			}
 		}
 
-		//logDebugMsg('outs count before spend:', unspentOuts.length, unspentOuts);
 		for (let tr of wallet.getAll().concat(wallet.txsMem)) {
-			//logDebugMsg(tr.ins);
 			for (let i of tr.ins) {
 				for (let iOut = 0; iOut < unspentOuts.length; ++iOut) {
 					if (unspentOuts[iOut].keyImage === i.keyImage) {
-            //logDebugMsg("splicing......");
 						unspentOuts.splice(iOut, 1);
 						break;
 					}

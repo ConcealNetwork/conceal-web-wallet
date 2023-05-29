@@ -1541,7 +1541,9 @@ body {
 
 .remoteNodesContainer {
   border-bottom: 1px solid;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
+  max-height: 400px;
+  overflow-y: auto;  
 }
 
 .remoteNodes {
