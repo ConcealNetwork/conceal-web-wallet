@@ -65,7 +65,7 @@ export interface BlockchainExplorer {
 
     getScannedHeight(): number;
 
-    stop(): void;
+    resetNodes(): void;
 
     start(wallet: Wallet): void;
 

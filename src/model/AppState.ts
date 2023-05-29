@@ -75,7 +75,6 @@ export class AppState {
 			walletWatchdog.stop();
     }
 
-    BlockchainExplorerProvider.getInstance().stop();
 		DependencyInjectorInstance().register(Wallet.name, undefined, 'default');
 		DependencyInjectorInstance().register(WalletWorker.name, undefined, 'default');
 		DependencyInjectorInstance().register(WalletWatchdog.name, undefined, 'default');

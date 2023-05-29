@@ -17,6 +17,7 @@
 
 import {BlockchainExplorer, NetworkInfo, RawDaemon_Transaction, RawDaemon_Out, RemoteNodeInformation} from "./BlockchainExplorer";
 import {Wallet} from "../Wallet";
+import {Storage} from "../Storage";
 import {MathUtil} from "../MathUtil";
 import {CnTransactions, CnUtils} from "../Cn";
 import {Transaction} from "../Transaction";
@@ -245,6 +246,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
 
   constructor() {
     this.nodeWorkers = new NodeWorkersList();
+    this.resetNodes();
   }
 
   getInfo = (): Promise<DaemonResponseGetInfo> => {
@@ -278,21 +280,24 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     return this.scannedHeight;
   }
 
-  start = (wallet: Wallet): WalletWatchdog => {
-    if (wallet.options.customNode) {
-      this.nodeWorkers.start([wallet.options.nodeUrl]);
-    } else {
-      this.nodeWorkers.start(config.nodeList);
-    }
+  resetNodes = () => {
+    Storage.getItem('customNodeUrl', null).then(customNodeUrl => {
+      this.nodeWorkers.stop();
+      console.log("resetNodes", customNodeUrl);
 
+      if (customNodeUrl) {
+        this.nodeWorkers.start([customNodeUrl]);
+      } else {
+        this.nodeWorkers.start(config.nodeList);
+      }  
+    });
+  }
+
+  start = (wallet: Wallet): WalletWatchdog => {
     let watchdog = new WalletWatchdog(wallet, this);
     watchdog.start();
     return watchdog;    
   }
-
-  stop = () => {
-    this.nodeWorkers.stop();
-  } 
 
   /**
    * Returns an array containing all numbers like [start;end]

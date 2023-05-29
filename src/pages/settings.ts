@@ -205,7 +205,15 @@ class SettingsView extends DestructableView{
 		options.customNode = this.customNode;
 		options.nodeUrl = this.nodeUrl;
 		wallet.options = options;
-    window.location.href = '#!disconnect';
+
+    if (options.customNode) {
+      Storage.setItem('customNodeUrl', options.nodeUrl);
+    } else {
+      Storage.remove('customNodeUrl');
+    }
+
+    // reset the node connection workers with new values
+    BlockchainExplorerProvider.getInstance().resetNodes();
 	}
 }
 
