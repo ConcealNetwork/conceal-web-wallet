@@ -1555,5 +1555,32 @@ body {
   text-decoration: underline;
   font-size: 1.1em;
   margin-bottom: 1em;
-  color: orange;
+  color: orange; 
+}
+
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+.header-filer-wrapper {
+  flex-grow: 1;
+  text-align: right;
+  padding-right: 1em;
+  line-height: 1.4;
+  margin-bottom: -10px !important;
+}
+
+@media only screen and (max-width: 600px) {
+  .header-wrapper {
+    flex-direction: column;
+  }
+  
+  .header-filer-wrapper {
+    width: 100%;
+    padding-left: 2em;
+    padding-right: 2em;
+    margin-bottom: 1em !important;
+  }
 }

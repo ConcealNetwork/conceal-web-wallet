@@ -195,7 +195,6 @@ class NodeWorkersList {
 
 
   start = (nodes: string[]) => {
-    console.log(nodes);
     for (let i = 0; i < nodes.length; i++) {
       this.nodes.push(new NodeWorker(nodes[i]));      
     }

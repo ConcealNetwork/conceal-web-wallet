@@ -53,7 +53,12 @@
 
 		<div class="panel nopadding">
 			<div class="body" >
-				<div class="header-title" >{{ $t("accountPage.historyBlock.title") }} ({{ $n(transactions.length) }} / {{ $n(allTransactionsCount) }})</div>
+        <div class="header-wrapper">
+				  <div class="header-title" >{{ $t("accountPage.historyBlock.title") }} ({{ $n(transactions.length) }} / {{ $n(allTransactionsCount) }})</div>
+          <div class="header-filer-wrapper field">
+            <input class="header-filer" type="text" v-model="txFilter" />
+          </div>
+        </div>
 				<div class="content" >
 					<div class="transactions" id="accountTransactions">
 						<table>
