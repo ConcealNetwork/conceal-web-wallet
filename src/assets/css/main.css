@@ -395,6 +395,7 @@ body.transparent #copyright {
 
 .transactions td.noTransactions {
 	text-align: center;
+  padding-top: 3em;
 }
 
 .transactions .transaction div {

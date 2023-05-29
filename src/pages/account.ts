@@ -207,8 +207,6 @@ class AccountView extends DestructableView{
                     tx.paymentId.toUpperCase().includes(this.txFilter.toUpperCase()) ||
                     tx.getAmount().toString().toUpperCase().includes(this.txFilter.toUpperCase()));
           });
-
-          console.log("this.txFilter", allTransactions);
         }
 
         this.transactions = allTransactions.slice(0, this.pagesCount * this.txPerPage);
