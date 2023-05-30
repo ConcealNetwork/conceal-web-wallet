@@ -609,8 +609,8 @@ export class WalletWatchdog {
             await new Promise(r => setTimeout(r, 500));
           }
         } catch(err) {
-          logDebugMsg(`Error occured in loadHistory...`);
-          await new Promise(r => setTimeout(r, 230 * 1000000)); //retry 30s later if an error occurred
+          console.log(`Error occured in loadHistory...`, err);
+          await new Promise(r => setTimeout(r, 30 * 1000)); //retry 30s later if an error occurred
         }
       }
     })(this);

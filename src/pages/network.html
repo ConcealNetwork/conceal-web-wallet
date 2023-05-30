@@ -17,12 +17,19 @@
                 <th class="nodeUrlHeader">URL</th>
                 <th class="nodeRequestsHeader">Requests</th>
                 <th class="nodeErrorsHeader">Errors</th>
+                <th class="nodeStatusHeader"></th>
               </tr>              
               <template v-for="node of nodeList">
                 <tr class="workerNode">
                   <td class="nodeUrlData">{{node.url}}</td>
                   <td class="nodeRequestsData">{{node.requests}}</td>
-                  <td class="nodeErrorsData">{{node.errors}}</td>
+                  <td class="nodeErrorsData">{{node.errors}} / {{node.allErrors}}</td>
+                  <td class="nodeStatusData">
+                    <div class="dot nodeStatusNoError" v-if="node.status == 0"></div>
+                    <div class="dot nodeStatusTempError" v-if="node.status == 1"></div>
+                    <div class="dot nodeStatusPermError" v-if="node.status == 2"></div>
+                    <div class="dot nodeStatusUndefined" v-if="node.status == 3"></div>
+                  </td>
               </template>
             </table>
           </ul>

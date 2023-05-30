@@ -26,7 +26,9 @@ import {WalletWatchdog} from "../WalletWatchdog";
 export type NodeInfo = {
   "url": string,
   "requests": number,
-  "errors": number
+  "errors": number,
+  "allErrors": number,
+  "status": number
 }
 
 class NodeWorker {
@@ -133,6 +135,18 @@ class NodeWorker {
 
   hasToManyErrors = () => {
     return ((this._errors >= this.maxTempErrors) && (this._allErrors >= this.maxAllErrors));
+  }
+
+  getStatus = (): number => {
+    if ((this._errors < this.maxTempErrors) && (this._allErrors < this.maxAllErrors)) {
+      return 0;
+    } else if ((this._errors >= this.maxTempErrors) && (this._allErrors < this.maxAllErrors)) {
+      return 1;
+    } else if (this._allErrors >= this.maxAllErrors) {
+      return 2;
+    } else {
+      return 3;
+    }
   }
 }
 
@@ -461,7 +475,9 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
           usedNodes.push({
             'url': nodeList[i].url,
             'requests': nodeList[i].requests,
-            'errors': nodeList[i].allErrors
+            'errors': nodeList[i].errors,
+            'allErrors': nodeList[i].allErrors,
+            'status': nodeList[i].getStatus()
           });
         }
 

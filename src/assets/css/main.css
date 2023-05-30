@@ -1595,6 +1595,31 @@ body {
   text-align: left;
 }
 
+.dot {
+  height: 15px;
+  width: 15px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;  
+  vertical-align: middle;
+}
+
+.nodeStatusData {
+  vertical-align: middle;
+}
+
+.nodeStatusNoError {
+  background-color: #009900;
+}
+
+.nodeStatusTempError {
+  background-color: #ff9900;
+}
+
+.nodeStatusPermError {
+  background-color: #ff0000;
+}
+
 @media only screen and (max-width: 600px) {
   .header-wrapper {
     flex-direction: column;
