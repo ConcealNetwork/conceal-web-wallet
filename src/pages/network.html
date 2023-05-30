@@ -12,10 +12,19 @@
 			<div class="body" >
         <div class="content remoteNodesContainer">
           <div class="contentTitle">Available Nodes</div>
-          <ul class="remoteNodes">
-            <template v-for="node of nodeList">
-              <li>{{node}}</li>
-            </template>
+            <table>
+              <tr>
+                <th class="nodeUrlHeader">URL</th>
+                <th class="nodeRequestsHeader">Requests</th>
+                <th class="nodeErrorsHeader">Errors</th>
+              </tr>              
+              <template v-for="node of nodeList">
+                <tr class="workerNode">
+                  <td class="nodeUrlData">{{node.url}}</td>
+                  <td class="nodeRequestsData">{{node.requests}}</td>
+                  <td class="nodeErrorsData">{{node.errors}}</td>
+              </template>
+            </table>
           </ul>
         </div>
 				<div class="content">

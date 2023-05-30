@@ -1572,6 +1572,28 @@ body {
   line-height: 1.4;
   margin-bottom: -10px !important;
 }
+.nodeRequestsHeader,
+.nodeErrorsHeader,
+.nodeRequestsData,
+.nodeErrorsData {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+.nodeRequestsData,
+.nodeErrorsData {
+  text-align: center;
+}
+
+.nodeRequestsHeader,
+.nodeErrorsHeader,
+.nodeUrlHeader {
+  color: orange;
+}
+
+.nodeUrlHeader {
+  text-align: left;
+}
 
 @media only screen and (max-width: 600px) {
   .header-wrapper {

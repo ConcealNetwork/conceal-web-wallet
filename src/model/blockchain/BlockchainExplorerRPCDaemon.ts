@@ -23,27 +23,39 @@ import {CnTransactions, CnUtils} from "../Cn";
 import {Transaction} from "../Transaction";
 import {WalletWatchdog} from "../WalletWatchdog";
 
+export type NodeInfo = {
+  "url": string,
+  "requests": number,
+  "errors": number
+}
+
 class NodeWorker {
-  readonly timeout= 5 * 1000;
-  readonly maxErrors = 3;
+  readonly timeout= 10 * 1000;
+  readonly maxTempErrors = 3;
+  readonly maxAllErrors = 30;
   private _url: string;
   private _errors: number;
+  private _allErrors: number;
+  private _requests: number;
   private _isWorking: boolean;
   private errorInterval: NodeJS.Timer;
 
   constructor(url: string) {
     this._url = url;
     this._errors = 0;
+    this._allErrors = 0;
+    this._requests = 0;
     this._isWorking = false;
 
     // reduce error count each minute
     this.errorInterval = setInterval(() => {
-      this._errors = Math.max(this.errors - 1, 0);
+      this._errors = Math.max(this._errors - 1, 0);
     }, 60 * 1000);
   }
 
   makeRequest = (method: 'GET' | 'POST', path: string, body: any = undefined): Promise<any> => {
     this._isWorking = true;
+    ++this._requests;
 
     return new Promise<any>((resolve, reject) => {
       $.ajax({
@@ -56,7 +68,7 @@ class NodeWorker {
         resolve(raw);
       }).fail((data: any, textStatus: string) => {
         this._isWorking = false;        
-        ++this._errors;
+        this.increaseErrors();
         reject(data);
       });
     });
@@ -64,6 +76,7 @@ class NodeWorker {
 
   makeRpcRequest = (method: string, params: any = {}): Promise<any> => {
     this._isWorking = true;
+    ++this._requests;
 
     return new Promise<any>((resolve, reject) => {
       $.ajax({
@@ -78,17 +91,16 @@ class NodeWorker {
         }),
         contentType: 'application/json'
       }).done((raw: any) => {
-        this._isWorking = true;
+        this._isWorking = false;
         if (typeof raw.id === 'undefined' || typeof raw.jsonrpc === 'undefined' || raw.jsonrpc !== '2.0' || typeof raw.result !== 'object') {
+          this.increaseErrors();
           reject('Daemon response is not properly formatted');
         } else {
-          ++this._errors;
           resolve(raw.result);
         }
       }).fail((data: any) => {
-        console.log("makeRpcRequest failed", this._url);
-        this._isWorking = true;
-        ++this._errors;
+        this._isWorking = false;
+        this.increaseErrors();
         reject(data);
       });
     });
@@ -106,8 +118,21 @@ class NodeWorker {
     return this._errors;
   }
 
+  get allErrors(): number {
+    return this._errors;
+  }
+
+  get requests(): number {
+    return this._requests;
+  }
+
+  increaseErrors = () => {
+    ++this._errors;  
+    ++this._allErrors;  
+  }
+
   hasToManyErrors = () => {
-    return this._errors >= this.maxErrors;
+    return ((this._errors >= this.maxTempErrors) && (this._allErrors >= this.maxAllErrors));
   }
 }
 
@@ -283,7 +308,6 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
   resetNodes = () => {
     Storage.getItem('customNodeUrl', null).then(customNodeUrl => {
       this.nodeWorkers.stop();
-      console.log("resetNodes", customNodeUrl);
 
       if (customNodeUrl) {
         this.nodeWorkers.start([customNodeUrl]);
@@ -431,10 +455,14 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
   getNetworkInfo(): Promise<any> {
       return this.nodeWorkers.makeRpcRequest('getlastblockheader').then((raw: any) => {
         let nodeList: NodeWorker[] = this.nodeWorkers.getNodes();
-        let usedNodes: string[] = [];
+        let usedNodes: NodeInfo[] = [];
 
         for (let i = 0; i < nodeList.length; i++) {
-          usedNodes.push(nodeList[i].url)
+          usedNodes.push({
+            'url': nodeList[i].url,
+            'requests': nodeList[i].requests,
+            'errors': nodeList[i].allErrors
+          });
         }
 
         return {
