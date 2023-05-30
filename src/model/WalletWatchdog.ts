@@ -46,12 +46,14 @@ type ProcessingCallback = (blockNumber: number) => void;
 
 class TxQueue {
   private wallet: Wallet;
+  private isRunning: boolean;
   private maxBlockNum: number;
   private transactions: RawDaemon_Transaction[];
   private processingCallback: ProcessingCallback;
 
   constructor(wallet: Wallet, processingCallback: ProcessingCallback) {
     this.wallet = wallet;
+    this.isRunning = false;
     this.maxBlockNum = 0;
     this.transactions = [];
     this.processingCallback = processingCallback;
@@ -77,20 +79,25 @@ class TxQueue {
   }
 
   runProcessLoop = () => {
-    (async function loop(self) {
-      if (self.transactions.length > 0) {
-        try {
-          await new Promise(r => setTimeout(r, 10));
-          await self.processTransaction();
-          await loop(self);
-        } catch(err) {
-          console.error('Error on single processTransaction iteration', err);
-          await loop(self);
+    if (!this.isRunning) {
+      this.isRunning = true;
+
+      (async function loop(self) {
+        if (self.transactions.length > 0) {
+          try {
+            await new Promise(r => setTimeout(r, 10));
+            await self.processTransaction();
+            await loop(self);
+          } catch(err) {
+            console.error('Error on single processTransaction iteration', err);
+            await loop(self);
+          }
+        } else {
+          self.processingCallback(self.maxBlockNum);
+          self.isRunning = false;
         }
-      } else {
-        self.processingCallback(self.maxBlockNum);
-      }
-    }(this));
+      }(this));
+    }
   }
 
   addTransactions = (transactions: RawDaemon_Transaction[], maxBlockNum: number) => {
@@ -584,7 +591,7 @@ export class WalletWatchdog {
               self.blockList.addBlockRange(startBlock, endBlock, height);
               self.lastBlockLoading = Math.max(self.lastBlockLoading, endBlock);
             } else {
-              await new Promise(r => setTimeout(r, 30 * 1000));
+              await new Promise(r => setTimeout(r, 10 * 1000));
               continue;
             }
             
