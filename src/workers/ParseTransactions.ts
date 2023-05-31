@@ -1,30 +1,24 @@
-import {TransactionsExplorer} from "../model/TransactionsExplorer";
-import {Wallet, WalletOptions} from "../model/Wallet";
-import {Mnemonic} from "../model/Mnemonic";
-import {Transaction} from "../model/Transaction";
 import {Constants} from "../model/Constants";
+import {Transaction} from "../model/Transaction";
+import {Wallet, WalletOptions} from "../model/Wallet";
+import {TransactionsExplorer} from "../model/TransactionsExplorer";
 import {RawDaemon_Transaction} from "../model/blockchain/BlockchainExplorer";
 
-//bridge for cnUtil with the new mnemonic class
-(<any>self).mn_random = Mnemonic.mn_random;
-(<any>self).mn_decode = Mnemonic.mn_decode;
-(<any>self).mn_encode = Mnemonic.mn_encode;
-
-let walletKeys: any = null;
+let currentWallet: Wallet | null = null;
 
 onmessage = function (data: MessageEvent) {
 	// if(data.isTrusted){
 	let event: any = data.data;
   try {
     if (event.type === 'initWallet') {
-      walletKeys = event.keys;
+      currentWallet = Wallet.loadFromRaw(event.wallet);
       postMessage({ type: 'readyWallet'	});
     } else if (event.type === 'process') {
       logDebugMsg(`process new transactions...`);
 
-      if (walletKeys === null) {
-        logDebugMsg(`Wallet keys are missing...`);
-        postMessage('missing_wallet_keys');
+      if (currentWallet === null) {
+        logDebugMsg(`Wallet is missing...`);
+        postMessage('missing_wallet');
         return;
       }
 
@@ -43,10 +37,13 @@ onmessage = function (data: MessageEvent) {
               continue;
             }
 
-            // parse the transaction to see if we need to include it in the wallet
-            if (TransactionsExplorer.ownsTx(rawTransaction, walletKeys)) {              
-              transactions.push(rawTransaction);
+            // parse the raw transaction to include it into the wallet
+            let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
+
+            if (transaction) {              
               logDebugMsg(`pushed tx to transactions[]`);
+              transactions.push(transaction.export());
+              currentWallet.addNew(transaction);
             }
           }
         }

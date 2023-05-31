@@ -45,74 +45,72 @@ interface IBlockRange {
 type ProcessingCallback = (blockNumber: number) => void;
 
 class TxQueue {
+  private alltx: number;
   private wallet: Wallet;
-  private isRunning: boolean;
-  private maxBlockNum: number;
-  private transactions: RawDaemon_Transaction[];
+  private isReady: boolean;
+  private workerProcess: Worker;
   private processingCallback: ProcessingCallback;
 
   constructor(wallet: Wallet, processingCallback: ProcessingCallback) {
+    this.alltx = 0;
     this.wallet = wallet;
-    this.isRunning = false;
-    this.maxBlockNum = 0;
-    this.transactions = [];
+    this.isReady = false;
+    this.workerProcess = this.initWorker();
     this.processingCallback = processingCallback;
   }
 
-  processTransaction = (): Promise<boolean> => {
-    return new Promise<boolean>((resolve, reject) => {
-      if (this.transactions.length > 0) {
-        let transaction = TransactionsExplorer.parse(this.transactions.shift()!, this.wallet);
-
-        if (transaction) {
-          logDebugMsg("Added new transaction", transaction);
-          this.wallet.addNew(transaction);
-          this.processingCallback(transaction.blockHeight);
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      } else {
-        resolve(false);
-      }
-    });
+  setIsReady = (value: boolean) => {
+    this.isReady = value;
   }
 
-  runProcessLoop = () => {
-    if (!this.isRunning) {
-      this.isRunning = true;
-
-      (async function loop(self) {
-        if (self.transactions.length > 0) {
-          try {
-            await new Promise(r => setTimeout(r, 10));
-            await self.processTransaction();
-            await loop(self);
-          } catch(err) {
-            console.error('Error on single processTransaction iteration', err);
-            await loop(self);
+  initWorker = (): Worker => {
+    this.workerProcess = new Worker('./workers/ParseTransactionsEntrypoint.js');
+    this.workerProcess.onmessage = (data: MessageEvent)  => {
+      let message: string | any = data.data;
+      if (message === 'ready') {
+        logDebugMsg('worker ready...');
+        // post the wallet to the worker
+        this.workerProcess.postMessage({
+          type: 'initWallet',
+          wallet: this.wallet.exportToRaw()
+        });
+      } else if (message === "missing_wallet") {
+        logDebugMsg("Wallet is missing for the worker...");
+      } else if (message.type) {
+        if (message.type === 'readyWallet') {
+          this.setIsReady(true);
+        } else if (message.type === 'processed') {
+          if (message.transactions) {
+            for (let tx of message.transactions) {
+              this.wallet.addNew(Transaction.fromRaw(tx));
+              this.alltx = this.alltx - message.transactions.length;
+            }            
           }
-        } else {
-          self.processingCallback(self.maxBlockNum);
-          self.isRunning = false;
+          // signal back to where we came to so far
+          this.processingCallback(message.maxHeight);
         }
-      }(this));
-    }
+      }
+    };
+
+    return this.workerProcess;    
   }
 
   addTransactions = (transactions: RawDaemon_Transaction[], maxBlockNum: number) => {
-    this.transactions = this.transactions.concat(transactions);
-    this.maxBlockNum = Math.max(this.maxBlockNum, maxBlockNum);
-    this.runProcessLoop();
+    this.alltx = this.alltx + transactions.length;
+
+    if (transactions.length > 0) {
+      this.workerProcess.postMessage({
+        transactions: transactions,
+        maxBlock: maxBlockNum,
+        type: 'process'
+      });
+    } else {
+      this.processingCallback(maxBlockNum);
+    }
   }
 
   getSize = (): number => {
-    return this.transactions.length;
-  }
-
-  reset = () => {
-    this.transactions = [];
-    this.maxBlockNum = 0;
+    return this.alltx;
   }
 }
 
@@ -351,6 +349,11 @@ class SyncWorker {
   }
 }
 
+interface ITransacationQueue {
+  transactions: RawDaemon_Transaction[];
+  lastBlock: number;
+}
+
 export class WalletWatchdog {
   private wallet: Wallet;
   private stopped: boolean = false;
@@ -362,7 +365,7 @@ export class WalletWatchdog {
   private lastBlockLoading: number = -1;
   private lastMaximumHeight: number = 0;
   private intervalTransactionsProcess: any = 0;
-  private transactionsToProcess: RawDaemon_Transaction[][] = [];
+  private transactionsToProcess: ITransacationQueue[] = [];
 
   constructor(wallet: Wallet, explorer: BlockchainExplorer) {
     let cpuCores = Math.min(window.navigator.hardwareConcurrency ? (Math.max(window.navigator.hardwareConcurrency - 1, 1)) : 1, config.maxWorkerCores);
@@ -409,7 +412,6 @@ export class WalletWatchdog {
     clearInterval(this.intervalTransactionsProcess);
     this.transactionsToProcess = [];
     clearInterval(this.intervalMempool);
-    this.blockList.getTxQueue().reset();
     this.blockList.reset();
     this.stopped = true;
   }
@@ -472,7 +474,7 @@ export class WalletWatchdog {
           }
 
           // define the transactions we need to process
-          var transactionsToProcess: RawDaemon_Transaction[] = [];
+          let transactionsToProcess: ITransacationQueue | null = null;
 
           if (this.transactionsToProcess.length > 0) {
             transactionsToProcess = this.transactionsToProcess.shift()!;
@@ -481,11 +483,12 @@ export class WalletWatchdog {
           // check if we have anything to process and log it if in debug more
           logDebugMsg('checkTransactionsInterval', 'Transactions to be processed', transactionsToProcess);
 
-          if (transactionsToProcess.length > 0) {
+          if (transactionsToProcess) {
             this.parseWorkers[i].setIsWorking(true);
             this.parseWorkers[i].getWorker().postMessage({
               type: 'process',
-              transactions: transactionsToProcess,
+              maxBlock: transactionsToProcess.lastBlock,
+              transactions: transactionsToProcess.transactions,
               readMinersTx: this.wallet.options.checkMinerTx
             });
             this.parseWorkers[i].incProcessed();
@@ -495,12 +498,15 @@ export class WalletWatchdog {
     }
   }
 
-  processTransactions(transactions: RawDaemon_Transaction[], callback: Function) {
+  processTransactions(transactions: RawDaemon_Transaction[], lastBlock: number) {
+    let txList: ITransacationQueue = {
+      transactions: transactions,
+      lastBlock: lastBlock,
+    }    
+
     logDebugMsg(`processTransactions called...`, transactions);
     // add the raw transaction to the processing FIFO list
-    this.transactionsToProcess.push(transactions);
-    // signal we are finished
-    callback();
+    this.transactionsToProcess.push(txList);
   }
 
   getMultipleRandom = (arr: any[], num: number) => {
@@ -598,7 +604,7 @@ export class WalletWatchdog {
             // try to fetch the block range with a currently selected sync worker
             freeWorker.fetchBlocks(startBlock, endBlock).then((blockData: {transactions: RawDaemon_Transaction[], lastBlock: number}) => {
               if (blockData.transactions.length > 0) {
-                self.processTransactions(blockData.transactions, function() {});
+                self.processTransactions(blockData.transactions, blockData.lastBlock);
               } else {
                 self.blockList.finishBlockRange(blockData.lastBlock, []);
               }

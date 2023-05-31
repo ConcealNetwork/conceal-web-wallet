@@ -23,7 +23,7 @@ export class JSChaCha8 {
   private byteCounter: number;
   private param: any[];
    
-  constructor (bufKey: Uint8Array, bufNonce: Uint8Array, counter: number) {
+  constructor (bufKey: Uint8Array, bufNonce: Uint8Array, counter?: number) {
     if (typeof counter === 'undefined') {
       counter = 0
     }
@@ -89,7 +89,7 @@ export class JSChaCha8 {
    * @return {number}
    * @private
    */
-  private get32 = (data:Uint8Array, index: number) => {
+  private get32 = (data: Uint8Array, index: number) => {
     return data[index++] ^ (data[index++] << 8) ^ (data[index++] << 16) ^ (data[index] << 24);
   }
 
@@ -119,25 +119,25 @@ export class JSChaCha8 {
 
 
   private chacha = () => {
-    const mix = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    let b = 0
+    const mix = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let b = 0;
   
     // copy param array to mix //
     for (let i = 0; i < 16; i++) {
-      mix[i] = this.param[i]
+      mix[i] = this.param[i];
     }
   
     // mix rounds //
     for (let i = 0; i < this.rounds; i += 2) {
-      this.quarterround(mix, 0, 4, 8, 12)
-      this.quarterround(mix, 1, 5, 9, 13)
-      this.quarterround(mix, 2, 6, 10, 14)
-      this.quarterround(mix, 3, 7, 11, 15)
+      this.quarterround(mix, 0, 4, 8, 12);
+      this.quarterround(mix, 1, 5, 9, 13);
+      this.quarterround(mix, 2, 6, 10, 14);
+      this.quarterround(mix, 3, 7, 11, 15);
   
-      this.quarterround(mix, 0, 5, 10, 15)
-      this.quarterround(mix, 1, 6, 11, 12)
-      this.quarterround(mix, 2, 7, 8, 13)
-      this.quarterround(mix, 3, 4, 9, 14)
+      this.quarterround(mix, 0, 5, 10, 15);
+      this.quarterround(mix, 1, 6, 11, 12);
+      this.quarterround(mix, 2, 7, 8, 13);
+      this.quarterround(mix, 3, 4, 9, 14);
     }
   
     for (let i = 0; i < 16; i++) {
@@ -170,7 +170,7 @@ export class JSChaCha8 {
    * @param {Buffer} data
    * @return {Buffer}
    */
-  encrypt = (data: any) => {
+  encrypt = (data: Buffer): Buffer => {
     return Buffer.from(this.update(new Uint8Array(data)))
   }
 
@@ -180,7 +180,7 @@ export class JSChaCha8 {
    * @param {Buffer} data
    * @return {Buffer}
    */
-  decrypt = (data: any) => {
+  decrypt = (data: Buffer): Buffer => {
     return Buffer.from(this.update(new Uint8Array(data)))
   }
 
