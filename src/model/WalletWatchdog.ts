@@ -45,72 +45,74 @@ interface IBlockRange {
 type ProcessingCallback = (blockNumber: number) => void;
 
 class TxQueue {
-  private alltx: number;
   private wallet: Wallet;
-  private isReady: boolean;
-  private workerProcess: Worker;
+  private isRunning: boolean;
+  private maxBlockNum: number;
+  private transactions: RawDaemon_Transaction[];
   private processingCallback: ProcessingCallback;
 
   constructor(wallet: Wallet, processingCallback: ProcessingCallback) {
-    this.alltx = 0;
     this.wallet = wallet;
-    this.isReady = false;
-    this.workerProcess = this.initWorker();
+    this.isRunning = false;
+    this.maxBlockNum = 0;
+    this.transactions = [];
     this.processingCallback = processingCallback;
   }
 
-  setIsReady = (value: boolean) => {
-    this.isReady = value;
-  }
+  processTransaction = (): Promise<boolean> => {
+    return new Promise<boolean>((resolve, reject) => {
+      if (this.transactions.length > 0) {
+        let transaction = TransactionsExplorer.parse(this.transactions.shift()!, this.wallet);
 
-  initWorker = (): Worker => {
-    this.workerProcess = new Worker('./workers/ParseTransactionsEntrypoint.js');
-    this.workerProcess.onmessage = (data: MessageEvent)  => {
-      let message: string | any = data.data;
-      if (message === 'ready') {
-        logDebugMsg('worker ready...');
-        // post the wallet to the worker
-        this.workerProcess.postMessage({
-          type: 'initWallet',
-          wallet: this.wallet.exportToRaw()
-        });
-      } else if (message === "missing_wallet") {
-        logDebugMsg("Wallet is missing for the worker...");
-      } else if (message.type) {
-        if (message.type === 'readyWallet') {
-          this.setIsReady(true);
-        } else if (message.type === 'processed') {
-          if (message.transactions) {
-            for (let tx of message.transactions) {
-              this.wallet.addNew(Transaction.fromRaw(tx));
-              this.alltx = this.alltx - message.transactions.length;
-            }            
-          }
-          // signal back to where we came to so far
-          this.processingCallback(message.maxHeight);
+        if (transaction) {
+          this.wallet.addNew(transaction);
+          this.processingCallback(transaction.blockHeight);
+          logDebugMsg("Added new transaction", transaction);
+          resolve(true);
+        } else {
+          resolve(false);
         }
+      } else {
+        resolve(false);
       }
-    };
-
-    return this.workerProcess;    
+    });
   }
 
-  addTransactions = (transactions: RawDaemon_Transaction[], maxBlockNum: number) => {
-    this.alltx = this.alltx + transactions.length;
+  runProcessLoop = () => {
+    if (!this.isRunning) {
+      this.isRunning = true;
 
-    if (transactions.length > 0) {
-      this.workerProcess.postMessage({
-        transactions: transactions,
-        maxBlock: maxBlockNum,
-        type: 'process'
-      });
-    } else {
-      this.processingCallback(maxBlockNum);
+      (async function loop(self) {
+        if (self.transactions.length > 0) {
+          try {
+            await new Promise(r => setTimeout(r, 10));
+            await self.processTransaction();
+            await loop(self);
+          } catch(err) {
+            console.error('Error on single processTransaction iteration', err);
+            await loop(self);
+          }
+        } else {
+          self.processingCallback(self.maxBlockNum);
+          self.isRunning = false;
+        }
+      }(this));
     }
   }
 
+  addTransactions = (transactions: RawDaemon_Transaction[], maxBlockNum: number) => {
+    this.transactions = this.transactions.concat(transactions);
+    this.maxBlockNum = Math.max(this.maxBlockNum, maxBlockNum);
+    this.runProcessLoop();
+  }
+
   getSize = (): number => {
-    return this.alltx;
+    return this.transactions.length;
+  }
+
+  reset = () => {
+    this.transactions = [];
+    this.maxBlockNum = 0;
   }
 }
 
@@ -412,6 +414,7 @@ export class WalletWatchdog {
     clearInterval(this.intervalTransactionsProcess);
     this.transactionsToProcess = [];
     clearInterval(this.intervalMempool);
+    this.blockList.getTxQueue().reset();
     this.blockList.reset();
     this.stopped = true;
   }
