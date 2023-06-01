@@ -52,32 +52,20 @@ type ProcessingCallback = (blockNumber: number) => void;
 class TxQueue {
   private wallet: Wallet;
   private isRunning: boolean;
-  private currQueueItem: ITxQueueItem | null;
   private processingQueue: ITxQueueItem[];
   private processingCallback: ProcessingCallback;
 
   constructor(wallet: Wallet, processingCallback: ProcessingCallback) {
     this.wallet = wallet;
     this.isRunning = false;
-    this.currQueueItem = null;
     this.processingQueue = [];
     this.processingCallback = processingCallback;
   }
 
-  doRequestIdleCallback = (callbackFunction: any) => {
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(callbackFunction);
-    } else {
-      setTimeout(() => {
-        callbackFunction();
-      }, 50);
-    }
-  }
-
-  processTransaction = (): void => {
-    if (this.currQueueItem) {
-      if (this.currQueueItem.transactions.length > 0) {
-        let transaction = TransactionsExplorer.parse(this.currQueueItem.transactions.shift()!, this.wallet);
+  processTransaction = (currQueueItem: ITxQueueItem | null): void => {
+    if (currQueueItem) {
+      if (currQueueItem.transactions.length > 0) {
+        let transaction = TransactionsExplorer.parse(currQueueItem.transactions.shift()!, this.wallet);
 
         if (transaction) {
           this.wallet.addNew(transaction);
@@ -85,17 +73,16 @@ class TxQueue {
         }
 
         // call another iteration of the processing loop
-        this.doRequestIdleCallback(this.processTransaction);
+        setTimeout(() => { this.processTransaction(currQueueItem) }, 10);
       } else {        
-        this.processingCallback(this.currQueueItem.maxBlockNum);  
-        this.currQueueItem = this.processingQueue.shift()!;
-        this.doRequestIdleCallback(this.processTransaction);
+        this.processingCallback(currQueueItem.maxBlockNum);  
+        setTimeout(() => { this.processTransaction(this.processingQueue.shift()!) }, 10);
       }
     } else {
-      this.currQueueItem = this.processingQueue.shift()!;
+      let newCurrQueueItem = this.processingQueue.shift()!;
       
-      if (this.currQueueItem) {
-        this.doRequestIdleCallback(this.processTransaction);
+      if (newCurrQueueItem) {
+        setTimeout(() => { this.processTransaction(newCurrQueueItem) }, 10);
       } else {
         this.isRunning = false;
       }
@@ -105,8 +92,7 @@ class TxQueue {
   runProcessLoop = (): void => {
     if (!this.isRunning) {
       this.isRunning = true;
-      this.currQueueItem = this.processingQueue.shift()!;
-      this.doRequestIdleCallback(this.processTransaction);
+      this.processTransaction(this.processingQueue.shift()!);
     }
   }
 
