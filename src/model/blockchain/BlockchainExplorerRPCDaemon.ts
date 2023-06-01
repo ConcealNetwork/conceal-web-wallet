@@ -172,58 +172,74 @@ class NodeWorkersList {
   makeRequest = (method: 'GET' | 'POST', path: string, body: any = undefined): Promise<any> => {
     return new Promise<any>((resolve, reject) => {
       (async function(self) {
-        let currWorker: NodeWorker | null = self.acquireWorker();
-        let resultData: any = null;
-        let failed: boolean = false;
-    
-        while (currWorker) {
-          try {
-            let resultData = await currWorker.makeRequest(method, path, body);
-            currWorker = null;
-            failed = false;
-    
-            // return data
-            resolve(resultData);
-          } catch(data) {
-            currWorker = self.acquireWorker();
-            resultData = data;
-            failed = true;
+        let waitCounter: number = 0;
+
+        while ((self.nodes.length === 0) && (waitCounter < 5)) {
+          await new Promise(r => setTimeout(r, 1000));
+          ++waitCounter; 
+        }
+
+        // first check if nodes are available already
+        if (self.nodes.length > 0) {
+          let currWorker: NodeWorker | null = self.acquireWorker();
+          let resultData: any = null;
+      
+          while (currWorker) {
+            try {
+              let resultData = await currWorker.makeRequest(method, path, body);
+              currWorker = null;
+              // return the data
+              resolve(resultData);
+            } catch(data) {
+              currWorker = self.acquireWorker();
+              resultData = data;
+            }
           }
-        }
-    
-        // if we are here we failed
-        if (!currWorker && failed) {
-          reject(resultData);
-        }
-      })(this);    
+      
+          // if we are here we failed
+          if (!currWorker) {
+            reject(resultData);
+          }
+        } else {
+          reject(null);
+        }  
+      })(this);          
     });
   } 
 
   makeRpcRequest = (method: string, params: any = {}): Promise<any> => {
     return new Promise<any>((resolve, reject) => {
       (async function(self) {
-        let currWorker: NodeWorker | null = self.acquireWorker();
-        let resultData: any = null;
-        let failed: boolean = false;
-    
-        while (currWorker) {
-          try {
-            let resultData = await currWorker.makeRpcRequest(method, params);
-            currWorker = null;
-            failed = false;
-    
-            // return data
-            resolve(resultData);
-          } catch(data) {
-            currWorker = self.acquireWorker();
-            resultData = data;
-            failed = true;
-          }
+        let waitCounter: number = 0;
+
+        while ((self.nodes.length === 0) && (waitCounter < 5)) {
+          await new Promise(r => setTimeout(r, 1000));
+          ++waitCounter; 
         }
-    
-        // if we are here we failed
-        if (!currWorker && failed) {
-          reject(resultData);
+
+        // first check if nodes are available already
+        if (self.nodes.length > 0) {
+          let currWorker: NodeWorker | null = self.acquireWorker();
+          let resultData: any = null;
+      
+          while (currWorker) {
+            try {
+              let resultData = await currWorker.makeRpcRequest(method, params);
+              currWorker = null;
+              // return the data
+              resolve(resultData);
+            } catch(data) {
+              currWorker = self.acquireWorker();
+              resultData = data;
+            }
+          }
+      
+          // if we are here we failed
+          if (!currWorker) {
+            reject(resultData);
+          }
+        } else {
+          reject(null);
         }
       })(this);    
     });
@@ -232,7 +248,6 @@ class NodeWorkersList {
   getNodes = () => {
     return this.nodes;      
   }
-
 
   start = (nodes: string[]) => {
     for (let i = 0; i < nodes.length; i++) {
@@ -279,9 +294,12 @@ export type DaemonResponseGetNodeFeeInfo = {
 
 export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
   private nodeWorkers: NodeWorkersList;
+  private lastTimeRetrieveHeight = 0;
   private lastTimeRetrieveInfo = 0;
+  private scannedHeight: number = 0;
   private cacheHeight: number = 0;
   private cacheInfo: any = null;
+
 
   constructor() {
     this.nodeWorkers = new NodeWorkersList();
@@ -289,7 +307,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
   }
 
   getInfo = (): Promise<DaemonResponseGetInfo> => {
-    if (Date.now() - this.lastTimeRetrieveInfo < 20 * 1000 && this.cacheInfo !== null) {
+    if (((Date.now() - this.lastTimeRetrieveInfo) < 20 * 1000) && (this.cacheInfo !== null)) {
       return Promise.resolve(this.cacheInfo);
     }
 
@@ -301,19 +319,17 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
   }
 
   getHeight = (): Promise<number> => {
-    if (Date.now() - this.lastTimeRetrieveInfo < 20 * 1000 && this.cacheHeight !== 0) {
+    if (((Date.now() - this.lastTimeRetrieveHeight) < 20 * 1000) && (this.cacheHeight !== 0)) {
       return Promise.resolve(this.cacheHeight);
     }
 
-    this.lastTimeRetrieveInfo = Date.now();
+    this.lastTimeRetrieveHeight = Date.now();
     return this.nodeWorkers.makeRequest('GET', 'getheight').then((data: any) => {
       let height = parseInt(data.height);
       this.cacheHeight = height;
       return height;
     });
   }
-
-  scannedHeight: number = 0;
 
   getScannedHeight = (): number => {
     return this.scannedHeight;
