@@ -121,7 +121,7 @@ class NodeWorker {
   }
 
   get allErrors(): number {
-    return this._errors;
+    return this._allErrors;
   }
 
   get requests(): number {
@@ -134,7 +134,7 @@ class NodeWorker {
   }
 
   hasToManyErrors = () => {
-    return ((this._errors >= this.maxTempErrors) && (this._allErrors >= this.maxAllErrors));
+    return ((this._errors >= this.maxTempErrors) || (this._allErrors >= this.maxAllErrors));
   }
 
   getStatus = (): number => {

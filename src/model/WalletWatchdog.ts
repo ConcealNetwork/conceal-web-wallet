@@ -42,77 +42,90 @@ interface IBlockRange {
   transactions: RawDaemon_Transaction[];
 }
 
+interface ITxQueueItem {
+  transactions: RawDaemon_Transaction[];
+  maxBlockNum: number;
+}
+
 type ProcessingCallback = (blockNumber: number) => void;
 
 class TxQueue {
   private wallet: Wallet;
   private isRunning: boolean;
-  private maxBlockNum: number;
-  private transactions: RawDaemon_Transaction[];
+  private currQueueItem: ITxQueueItem | null;
+  private processingQueue: ITxQueueItem[];
   private processingCallback: ProcessingCallback;
 
   constructor(wallet: Wallet, processingCallback: ProcessingCallback) {
     this.wallet = wallet;
     this.isRunning = false;
-    this.maxBlockNum = 0;
-    this.transactions = [];
+    this.currQueueItem = null;
+    this.processingQueue = [];
     this.processingCallback = processingCallback;
   }
 
-  processTransaction = (): Promise<boolean> => {
-    return new Promise<boolean>((resolve, reject) => {
-      if (this.transactions.length > 0) {
-        let transaction = TransactionsExplorer.parse(this.transactions.shift()!, this.wallet);
+  doRequestIdleCallback = (callbackFunction: any) => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(callbackFunction);
+    } else {
+      setTimeout(() => {
+        callbackFunction();
+      }, 50);
+    }
+  }
+
+  processTransaction = (): void => {
+    if (this.currQueueItem) {
+      if (this.currQueueItem.transactions.length > 0) {
+        let transaction = TransactionsExplorer.parse(this.currQueueItem.transactions.shift()!, this.wallet);
 
         if (transaction) {
           this.wallet.addNew(transaction);
-          this.processingCallback(transaction.blockHeight);
           logDebugMsg("Added new transaction", transaction);
-          resolve(true);
-        } else {
-          resolve(false);
         }
-      } else {
-        resolve(false);
+
+        // call another iteration of the processing loop
+        this.doRequestIdleCallback(this.processTransaction);
+      } else {        
+        this.processingCallback(this.currQueueItem.maxBlockNum);  
+        this.currQueueItem = this.processingQueue.shift()!;
+        this.doRequestIdleCallback(this.processTransaction);
       }
-    });
+    } else {
+      this.currQueueItem = this.processingQueue.shift()!;
+      
+      if (this.currQueueItem) {
+        this.doRequestIdleCallback(this.processTransaction);
+      } else {
+        this.isRunning = false;
+      }
+    }
   }
 
-  runProcessLoop = () => {
+  runProcessLoop = (): void => {
     if (!this.isRunning) {
       this.isRunning = true;
-
-      (async function loop(self) {
-        if (self.transactions.length > 0) {
-          try {
-            await new Promise(r => setTimeout(r, 10));
-            await self.processTransaction();
-            await loop(self);
-          } catch(err) {
-            console.error('Error on single processTransaction iteration', err);
-            await loop(self);
-          }
-        } else {
-          self.processingCallback(self.maxBlockNum);
-          self.isRunning = false;
-        }
-      }(this));
+      this.currQueueItem = this.processingQueue.shift()!;
+      this.doRequestIdleCallback(this.processTransaction);
     }
   }
 
   addTransactions = (transactions: RawDaemon_Transaction[], maxBlockNum: number) => {
-    this.transactions = this.transactions.concat(transactions);
-    this.maxBlockNum = Math.max(this.maxBlockNum, maxBlockNum);
+    let txQueueItem: ITxQueueItem = {
+      transactions: transactions.slice(),
+      maxBlockNum: maxBlockNum
+    }
+
+    this.processingQueue.push(txQueueItem);
     this.runProcessLoop();
   }
 
-  getSize = (): number => {
-    return this.transactions.length;
+  getIsRunning = () => {
+    return this.isRunning;
   }
 
   reset = () => {
-    this.transactions = [];
-    this.maxBlockNum = 0;
+    this.processingQueue = [];
   }
 }
 

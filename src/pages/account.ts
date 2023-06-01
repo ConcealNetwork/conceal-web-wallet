@@ -35,7 +35,6 @@ class AccountView extends DestructableView{
   @VueVar('') txFilter !: string;
 	@VueVar(0) lastBlockLoading !: number;
 	@VueVar(0) processingQueue !: number;
-	@VueVar(0) processingTxNum !: number;
 	@VueVar(0) walletAmount !: number;
 	@VueVar(0) unlockedWalletAmount !: number;
 	@VueVar(0) allTransactionsCount !: number;
@@ -173,13 +172,12 @@ class AccountView extends DestructableView{
     let filterChanged = false;
     let oldIsWalletSyncing = this.isWalletSyncing;
     let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
-    this.processingTxNum = walletWatchdog.getBlockList().getTxQueue().getSize();
     this.processingQueue = walletWatchdog.getBlockList().getSize();
     this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
     this.currentScanBlock = wallet.lastHeight;    
 
     this.isWalletSyncing = (wallet.lastHeight + 2) < this.blockchainHeight;
-    this.isWalletProcessing = this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().getSize() > 0);
+    this.isWalletProcessing = this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().getIsRunning());
     
     if (oldIsWalletSyncing && !this.isWalletSyncing) {
       this.checkOptimization();
