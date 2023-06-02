@@ -51,54 +51,87 @@ type ProcessingCallback = (blockNumber: number) => void;
 
 class TxQueue {
   private wallet: Wallet;
+  private isReady: boolean;
   private isRunning: boolean;
+  private workerProcess: Worker;
+  private countProcessed: number;
   private processingQueue: ITxQueueItem[];
   private processingCallback: ProcessingCallback;
 
   constructor(wallet: Wallet, processingCallback: ProcessingCallback) {
     this.wallet = wallet;
+    this.isReady = false;
     this.isRunning = false;
+    this.countProcessed = 0;
     this.processingQueue = [];
+    this.workerProcess = this.initWorker();
     this.processingCallback = processingCallback;
   }
 
-  processTransaction = (currQueueItem: ITxQueueItem | null): void => {
-    if (currQueueItem) {
-      if (currQueueItem.transactions.length > 0) {
-        let transaction = TransactionsExplorer.parse(currQueueItem.transactions.shift()!, this.wallet);
+  initWorker = (): Worker => {
+    this.workerProcess = new Worker('./workers/ParseTransactionsEntrypoint.js');
+    this.workerProcess.onmessage = (data: MessageEvent)  => {
+      let message: string | any = data.data;
+      if (message === 'ready') {
+        logDebugMsg('worker ready...');
+        // post the wallet to the worker
+        this.workerProcess.postMessage({
+          type: 'initWallet',
+          wallet: this.wallet.exportToRaw()
+        });
+      } else if (message === "missing_wallet") {
+        logDebugMsg("Wallet is missing for the worker...");
+      } else if (message.type) {
+        if (message.type === 'readyWallet') {
+          this.setIsReady(true);
+        } else if (message.type === 'processed') {
+          this.isRunning = false;
 
-        if (transaction) {
-          this.wallet.addNew(transaction);
-          logDebugMsg("Added new transaction", transaction);
+          if (message.transactions.length > 0) {
+            for (let tx of message.transactions) {
+              this.wallet.addNew(Transaction.fromRaw(tx));
+            }
+          }
+
+          // signall progress and start next loop now
+          this.processingCallback(message.maxHeight);
+          this.runProcessLoop();
         }
+      }
+    };
 
-        // call another iteration of the processing loop
-        setTimeout(() => { this.processTransaction(currQueueItem) }, 10);
-      } else {        
-        this.processingCallback(currQueueItem.maxBlockNum);  
-        setTimeout(() => { this.processTransaction(this.processingQueue.shift()!) }, 10);
-      }
-    } else {
-      let newCurrQueueItem = this.processingQueue.shift()!;
-      
-      if (newCurrQueueItem) {
-        setTimeout(() => { this.processTransaction(newCurrQueueItem) }, 10);
-      } else {
-        this.isRunning = false;
-      }
-    }
-  }
+    return this.workerProcess;    
+  }      
 
   runProcessLoop = (): void => {
-    if (!this.isRunning) {
-      this.isRunning = true;
-      this.processTransaction(this.processingQueue.shift()!);
+    if (!this.isRunning) {      
+      let txQueueItem: ITxQueueItem | null = this.processingQueue.shift()!;
+
+      if (txQueueItem) {
+        //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
+        //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
+        if (this.countProcessed >= 5 * 1000) {
+          logDebugMsg('Recreated parseWorker..');
+          this.restartWorker();
+        }
+                
+        this.isRunning = true;
+        // increase the number of transactions we actually processed
+        this.countProcessed = this.countProcessed + txQueueItem.transactions.length;
+
+        this.workerProcess.postMessage({
+          wallet: txQueueItem.transactions.length > 0 ? this.wallet.exportToRaw() : null,
+          transactions: txQueueItem.transactions,
+          maxBlock: txQueueItem.maxBlockNum,
+          type: 'process'
+        });
+      }
     }
   }
 
   addTransactions = (transactions: RawDaemon_Transaction[], maxBlockNum: number) => {
     let txQueueItem: ITxQueueItem = {
-      transactions: transactions.slice(),
+      transactions: [...transactions],
       maxBlockNum: maxBlockNum
     }
 
@@ -106,12 +139,31 @@ class TxQueue {
     this.runProcessLoop();
   }
 
-  getIsRunning = () => {
-    return this.isRunning;
+  restartWorker = () => {
+    this.isReady = false;
+    this.isRunning = false;
+    this.countProcessed = 0;
+    this.workerProcess.terminate();
+    this.workerProcess = this.initWorker();
+  }
+
+  setIsReady = (value: boolean) => {
+    this.isReady = value;
+  }
+
+  hasData = (): boolean => {
+    return this.processingQueue.length > 0;
+  }
+
+  getSize = (): number => {
+    return this.processingQueue.length;
   }
 
   reset = () => {
+    this.isReady = false;
+    this.isRunning = false;
     this.processingQueue = [];
+    this.workerProcess = this.initWorker();
   }
 }
 
@@ -167,7 +219,7 @@ class BlockList {
     if (lastBlock > -1) {
       for (let i = 0; i < this.blocks.length; ++i) {
         if (lastBlock <= this.blocks[i].endBlock) {
-          this.blocks[i].transactions = transactions.slice();
+          this.blocks[i].transactions = [...transactions];
           this.blocks[i].finished = true;
           break;
         }
@@ -178,7 +230,7 @@ class BlockList {
         if (this.blocks[0].finished) {
           let block = this.blocks.shift()!;
           // add any transactions to the wallet
-          this.txQueue.addTransactions(block.transactions.slice(), block.endBlock);
+          this.txQueue.addTransactions([...block.transactions], block.endBlock);
         } else {
           break;
         }
@@ -231,6 +283,8 @@ class BlockList {
   }
 }
 
+type ParseTxCallback = () => void;
+
 class ParseWorker {
   private wallet: Wallet;
   private isReady: boolean;
@@ -239,8 +293,10 @@ class ParseWorker {
   private blockList: BlockList;
   private workerProcess: Worker;
   private countProcessed: number;
+  private parseTxCallback: ParseTxCallback;
 
-  constructor(wallet: Wallet, watchdog: WalletWatchdog, blockList: BlockList) {
+  constructor(wallet: Wallet, watchdog: WalletWatchdog, blockList: BlockList, parseTxCallback: ParseTxCallback) {
+    this.parseTxCallback = parseTxCallback;
     this.blockList = blockList;
     this.watchdog = watchdog;
     this.wallet = wallet;
@@ -273,6 +329,7 @@ class ParseWorker {
           // we are done processing now
           this.blockList.finishBlockRange(message.maxHeight, message.transactions);
           this.setIsWorking(false);
+          this.parseTxCallback();
         }
       }
     };
@@ -280,11 +337,12 @@ class ParseWorker {
     return this.workerProcess;
   }
 
-  terminateWorker = () => {
-    this.workerProcess.terminate();
-    this.countProcessed = 0;
-    this.isWorking = false;
+  restartWorker = () => {
     this.isReady = false;
+    this.isWorking = false;
+    this.countProcessed = 0;
+    this.workerProcess.terminate();
+    this.workerProcess = this.initWorker();
   }
 
   getWorker = (): Worker => {
@@ -311,8 +369,8 @@ class ParseWorker {
     return this.countProcessed;
   }
 
-  incProcessed = () => {
-    ++this.countProcessed;
+  incProcessed = (value: number) => {
+    this.countProcessed = this.countProcessed + value;
   }
 }
 
@@ -365,7 +423,6 @@ export class WalletWatchdog {
   private intervalMempool: any = 0;
   private lastBlockLoading: number = -1;
   private lastMaximumHeight: number = 0;
-  private intervalTransactionsProcess: any = 0;
   private transactionsToProcess: ITransacationQueue[] = [];
 
   constructor(wallet: Wallet, explorer: BlockchainExplorer) {
@@ -378,7 +435,7 @@ export class WalletWatchdog {
 
     // create parse workers
     for (let i = 0; i < cpuCores; ++i) {
-      let parseWorker: ParseWorker = new ParseWorker(wallet, this, this.blockList);
+      let parseWorker: ParseWorker = new ParseWorker(wallet, this, this.blockList, this.processParseTransaction);
       this.parseWorkers.push(parseWorker);
     }
 
@@ -409,8 +466,17 @@ export class WalletWatchdog {
     this.checkMempool();
   }
 
+  acquireWorker = (): ParseWorker | null => {
+    for (let i = 0; i < this.parseWorkers.length; ++i) {      
+      if (!(this.parseWorkers[i].getIsWorking() && this.parseWorkers[i].getIsReady())) {
+        return this.parseWorkers[i];
+      }
+    }
+
+    return null;
+  }
+
   stop = () => {
-    clearInterval(this.intervalTransactionsProcess);
     this.transactionsToProcess = [];
     clearInterval(this.intervalMempool);
     this.blockList.getTxQueue().reset();
@@ -421,11 +487,6 @@ export class WalletWatchdog {
   start = () => {
     // init the mempool
     this.initMempool();
-
-    // set the interval for checking the new transactions
-    this.intervalTransactionsProcess = setInterval(() => {
-      this.checkTransactionsInterval();
-    }, this.wallet.options.readSpeed);
 
     // run main loop
     this.stopped = false;
@@ -458,43 +519,36 @@ export class WalletWatchdog {
     return true;
   }
 
-  checkTransactionsInterval = () => {
-    //somehow we're repeating and regressing back to re-process Tx's
-    //loadHistory getting into a stack overflow ?
-    //need to work out timings and ensure process does not reload when it's already running...
-
+  processParseTransaction = () => {
     if (this.transactionsToProcess.length > 0) {
-      for (let i = 0; i < this.parseWorkers.length; ++i) {
-        if (!(this.parseWorkers[i].getIsWorking() || !this.parseWorkers[i].getIsReady())) {
-          //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
-          //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
-          if (this.parseWorkers[i].getProcessed() >= 5 * 1000) {
-            this.parseWorkers[i].terminateWorker();
-            this.parseWorkers[i].initWorker();
-            logDebugMsg('Recreated worker..');
-            return;
-          }
+      let parseWorker = this.acquireWorker();
 
-          // define the transactions we need to process
-          let transactionsToProcess: ITransacationQueue | null = null;
+      if (parseWorker) {
+        //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
+        //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
+        if (parseWorker.getProcessed() >= 5 * 1000) {
+          logDebugMsg('Recreated parseWorker..');
+          parseWorker.restartWorker();
+        }
 
-          if (this.transactionsToProcess.length > 0) {
-            transactionsToProcess = this.transactionsToProcess.shift()!;
-          }
+        // define the transactions we need to process
+        let transactionsToProcess: ITransacationQueue | null = null;
 
-          // check if we have anything to process and log it if in debug more
-          logDebugMsg('checkTransactionsInterval', 'Transactions to be processed', transactionsToProcess);
+        if (this.transactionsToProcess.length > 0) {
+          transactionsToProcess = this.transactionsToProcess.shift()!;
+        }
 
-          if (transactionsToProcess) {
-            this.parseWorkers[i].setIsWorking(true);
-            this.parseWorkers[i].getWorker().postMessage({
-              type: 'process',
-              maxBlock: transactionsToProcess.lastBlock,
-              transactions: transactionsToProcess.transactions,
-              readMinersTx: this.wallet.options.checkMinerTx
-            });
-            this.parseWorkers[i].incProcessed();
-          }
+        if (transactionsToProcess) {
+          parseWorker.setIsWorking(true);
+          // increase the number of transactions we actually processed
+          parseWorker.incProcessed(transactionsToProcess.transactions.length);
+
+          parseWorker.getWorker().postMessage({
+            type: 'process',
+            maxBlock: transactionsToProcess.lastBlock,
+            transactions: transactionsToProcess.transactions,
+            readMinersTx: this.wallet.options.checkMinerTx
+          });
         }
       }
     }
@@ -509,6 +563,8 @@ export class WalletWatchdog {
     logDebugMsg(`processTransactions called...`, transactions);
     // add the raw transaction to the processing FIFO list
     this.transactionsToProcess.push(txList);
+    // parse the transactions immediately
+    this.processParseTransaction();
   }
 
   getMultipleRandom = (arr: any[], num: number) => {
@@ -617,7 +673,7 @@ export class WalletWatchdog {
             await new Promise(r => setTimeout(r, 500));
           }
         } catch(err) {
-          console.log(`Error occured in loadHistory...`, err);
+          console.log(`Error occured in startSyncLoop...`, err);
           await new Promise(r => setTimeout(r, 30 * 1000)); //retry 30s later if an error occurred
         }
       }
