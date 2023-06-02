@@ -34,7 +34,7 @@ export type NodeInfo = {
 class NodeWorker {
   readonly timeout= 10 * 1000;
   readonly maxTempErrors = 3;
-  readonly maxAllErrors = 30;
+  readonly maxAllErrors = 100;
   private _url: string;
   private _errors: number;
   private _allErrors: number;
