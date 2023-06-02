@@ -104,27 +104,40 @@ class TxQueue {
   }      
 
   runProcessLoop = (): void => {
-    if (!this.isRunning) {      
-      let txQueueItem: ITxQueueItem | null = this.processingQueue.shift()!;
+    if (this.isReady) {
+      if (!this.isRunning) {      
+        let txQueueItem: ITxQueueItem | null = this.processingQueue.shift()!;
 
-      if (txQueueItem) {
-        //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
-        //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
-        //if (this.countProcessed >= 5 * 1000) {
-        //  logDebugMsg('Recreated parseWorker..');
-        //  this.restartWorker();
-        //}
-                
-        this.isRunning = true;
-        // increase the number of transactions we actually processed
-        this.countProcessed = this.countProcessed + txQueueItem.transactions.length;
+        if (txQueueItem) {
+          //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
+          //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
+          if (this.countProcessed >= 5 * 1000) {
+            console.log('Recreated parseWorker..');
+            this.restartWorker();
+            setTimeout(() => {
+              this.runProcessLoop();
+            }, 1000); 
+            return;
+          }
+                  
+          this.isRunning = true;
+          // increase the number of transactions we actually processed
+          this.countProcessed = this.countProcessed + txQueueItem.transactions.length;
 
-        this.workerProcess.postMessage({
-          wallet: txQueueItem.transactions.length > 0 ? this.wallet.exportToRaw() : null,
-          transactions: txQueueItem.transactions,
-          maxBlock: txQueueItem.maxBlockNum,
-          type: 'process'
-        });
+          this.workerProcess.postMessage({
+            wallet: txQueueItem.transactions.length > 0 ? this.wallet.exportToRaw() : null,
+            transactions: txQueueItem.transactions,
+            maxBlock: txQueueItem.maxBlockNum,
+            type: 'process'
+          });
+        }
+      }
+    } else {
+      console.log("worker is not ready");
+      if (!this.isReady) {
+        setTimeout(() => {
+          this.runProcessLoop();
+        }, 1000); 
       }
     }
   }
@@ -468,7 +481,7 @@ export class WalletWatchdog {
 
   acquireWorker = (): ParseWorker | null => {
     for (let i = 0; i < this.parseWorkers.length; ++i) {      
-      if (!(this.parseWorkers[i].getIsWorking() && this.parseWorkers[i].getIsReady())) {
+      if (!this.parseWorkers[i].getIsWorking() && this.parseWorkers[i].getIsReady()) {
         return this.parseWorkers[i];
       }
     }
@@ -524,25 +537,13 @@ export class WalletWatchdog {
       let parseWorker = this.acquireWorker();
 
       if (parseWorker) {
-        //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
-        //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
-        //if (parseWorker.getProcessed() >= 5 * 1000) {
-        //  logDebugMsg('Recreated parseWorker..');
-        //  parseWorker.restartWorker();
-        //}
-
         // define the transactions we need to process
-        let transactionsToProcess: ITransacationQueue | null = null;
+        let transactionsToProcess: ITransacationQueue | null = this.transactionsToProcess.shift()!;
 
-        if (this.transactionsToProcess.length > 0) {
-          transactionsToProcess = this.transactionsToProcess.shift()!;
-        }
-
-        if (transactionsToProcess) {
+        if (transactionsToProcess) {          
           parseWorker.setIsWorking(true);
           // increase the number of transactions we actually processed
           parseWorker.incProcessed(transactionsToProcess.transactions.length);
-
           parseWorker.getWorker().postMessage({
             type: 'process',
             maxBlock: transactionsToProcess.lastBlock,

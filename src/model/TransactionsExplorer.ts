@@ -40,6 +40,7 @@ import {MathUtil} from "./MathUtil";
 import {Cn, CnNativeBride, CnRandom, CnTransactions, CnUtils} from "./Cn";
 import {RawDaemon_Transaction, RawDaemon_Out} from "./blockchain/BlockchainExplorer";
 import hextobin = CnUtils.hextobin;
+import { decode } from "./Varint";
 
 export const TX_EXTRA_PADDING_MAX_COUNT = 255;
 export const TX_EXTRA_NONCE_MAX_COUNT = 255;
@@ -48,7 +49,7 @@ export const TX_EXTRA_TAG_PADDING = 0x00;
 export const TX_EXTRA_TAG_PUBKEY = 0x01;
 export const TX_EXTRA_NONCE = 0x02;
 export const TX_EXTRA_MERGE_MINING_TAG = 0x03;
-export const TX_EXTRA_TAG_ADDITIONAL_PUBKEYS = 0x04;
+export const TX_EXTRA_TAG_MESSAGE = 0x04;
 export const TX_EXTRA_MYSTERIOUS_MINERGATE_TAG = 0xDE;
 
 
@@ -90,8 +91,12 @@ export class TransactionsExplorer {
 				extraSize = 32;
 				startOffset = 1;
 				hasFoundPubKey = true;
-			} else if (extra[0] === TX_EXTRA_TAG_ADDITIONAL_PUBKEYS) {
+			} else if (extra[0] === TX_EXTRA_TAG_MESSAGE) {
 				extraSize = extra[1] * 32;
+        //console.log(extra);
+        //let myArray = new Uint8Array(extra.slice(1));
+        //let myLen = decode(myArray);
+        //console.log(myLen);
 				startOffset = 2;
 			} else if (extra[0] === TX_EXTRA_TAG_PADDING) {
         // this tag has to be the last in extra
