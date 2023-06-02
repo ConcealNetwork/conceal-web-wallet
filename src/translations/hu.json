@@ -224,6 +224,9 @@
     },
     "sendPage": {
       "title": "CCX küldése",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+      },
       "sendBlock": {
         "address": {
           "label": "Kedvezményezett címe",

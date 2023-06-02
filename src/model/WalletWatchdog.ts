@@ -112,7 +112,7 @@ class TxQueue {
           //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
           //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
           if (this.countProcessed >= 5 * 1000) {
-            console.log('Recreated parseWorker..');
+            logDebugMsg('Recreated parseWorker..');
             this.restartWorker();
             setTimeout(() => {
               this.runProcessLoop();
@@ -133,7 +133,6 @@ class TxQueue {
         }
       }
     } else {
-      console.log("worker is not ready");
       if (!this.isReady) {
         setTimeout(() => {
           this.runProcessLoop();

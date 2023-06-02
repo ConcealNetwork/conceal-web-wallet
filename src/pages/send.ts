@@ -60,12 +60,17 @@ class SendView extends DestructableView {
 
   @VueVar(false) optimizeIsNeeded !: boolean;
   @VueVar(false) optimizeLoading !: boolean;
+	@VueVar(false) isWalletSyncing !: boolean;
 	@VueVar(0) optimizeOutputs !: number;
 
   @Autowire(Nfc.name) nfc !: Nfc;
 
-  qrReader: QRReader | null = null;
-  redirectUrlAfterSend: string | null = null;
+  private oldIsWalletSyncing: boolean;
+  private qrReader: QRReader | null = null;
+	private intervalRefresh : NodeJS.Timer;
+  private timeoutResolveAlias = 0;
+  private blockchainHeight: number;
+  private redirectUrlAfterSend: string | null = null;
 
   ndefListener : ((data: NdefMessage)=>void)|null = null;
 
@@ -81,10 +86,31 @@ class SendView extends DestructableView {
     if (destinationName !== null) this.txDestinationName = destinationName.substr(0, 256);
     if (description !== null) this.txDescription = description.substr(0, 256);
     if (redirect !== null) this.redirectUrlAfterSend = decodeURIComponent(redirect);
+    this.oldIsWalletSyncing = true;
+    this.isWalletSyncing = true;
+    this.blockchainHeight = -1;
     this.checkOptimization();
 
     this.nfcAvailable = this.nfc.has;
+		this.intervalRefresh = setInterval(() => {
+			this.refresh();
+		}, 1 * 1000);
+
+		this.refresh();
   }
+
+	refresh = () => {
+		blockchainExplorer.getHeight().then((height : number) => {
+			this.blockchainHeight = height;
+      this.isWalletSyncing = (wallet.lastHeight + 2) < this.blockchainHeight;
+
+      if ((this.oldIsWalletSyncing !== this.isWalletSyncing) && !this.isWalletSyncing) {
+        this.checkOptimization();
+      }
+      
+      this.oldIsWalletSyncing = this.isWalletSyncing;
+		});
+	}
 
   reset() {
     this.lockedForm = false;
@@ -222,6 +248,7 @@ class SendView extends DestructableView {
   }
 
   destruct = (): Promise<void> => {
+    clearInterval(this.intervalRefresh);
     this.stopScan();
     this.stopNfcScan();
     swal.close();
@@ -420,8 +447,6 @@ class SendView extends DestructableView {
         });
     });
   }
-
-  timeoutResolveAlias = 0;
 
   @VueWatched()
   destinationAddressUserWatch() {

@@ -14,7 +14,13 @@
     </div>
     <div class="body-content" >
 
-      <div class="panel" :hidden="!optimizeIsNeeded">
+      <div class="panel inline" v-if="isWalletSyncing" >
+        <div class="syncProgressContainer">
+          <label class="syncProgressLabel">{{ $t("sendPage.syncing.label") }}</label>
+        </div>
+      </div>
+  
+      <div class="panel" :hidden="!optimizeIsNeeded || isWalletSyncing">
         <div class="body">
           <div class="header-title">{{ $t("global.optimize.label") }}</div>
           <div class="subtitle">{{ $t("global.optimize.subtitle") }} ({{optimizeOutputs}})</div>
@@ -31,7 +37,7 @@
           <div class="field action">
             <label>{{ $t("sendPage.sendBlock.address.label") }}</label>
             <div class="subfield" >
-              <input aria-label="destinationAddressUser" type="text" v-model="destinationAddressUser" v-bind:placeholder="$t('sendPage.sendBlock.address.placeholder')" :readonly="lockedForm" :class="{ twoActions: nfcAvailable}"/>
+              <input aria-label="destinationAddressUser" type="text" v-model="destinationAddressUser" v-bind:placeholder="$t('sendPage.sendBlock.address.placeholder')" :readonly="lockedForm" :class="{ twoActions: nfcAvailable}" :disabled="optimizeLoading || isWalletSyncing"/>
               <span class="action" @click="startScan()"><i class="scanButton fa fa-camera" aria-hidden="true"></i></span>
               <span class="action" @click="startNfcScan()" v-if="nfcAvailable"><i class="scanButton fa fa-rss" aria-hidden="true"></i></span>
             </div>
@@ -51,7 +57,7 @@
 
           <div class="field" >
             <label>{{ $t("sendPage.sendBlock.amount.label") }}</label>
-            <input class="amountInput" type="text" v-model="amountToSend" placeholder="0" :readonly="lockedForm"/>
+            <input class="amountInput" type="text" v-model="amountToSend" placeholder="0" :readonly="lockedForm" :disabled="optimizeLoading || isWalletSyncing"/>
             <div v-if="!amountToSendValid && amountToSend != ''" class="message error">
               {{ $t("sendPage.sendBlock.amount.invalid") }}
             </div>
@@ -59,14 +65,14 @@
 
           <div class="field" >
             <label>{{ $t("sendPage.sendBlock.paymentId.label") }}</label>
-            <input aria-label="amountInput" class="amountInput" type="text" v-model="paymentId" placeholder="" :readonly="lockedForm"/>
+            <input aria-label="amountInput" class="amountInput" type="text" v-model="paymentId" placeholder="" :readonly="lockedForm" :disabled="optimizeLoading || isWalletSyncing"/>
             <div v-if="!paymentIdValid && paymentId != ''" class="message error">
               {{ $t("sendPage.sendBlock.paymentId.invalid") }}
             </div>
           </div>
 
           <div class="actions tc">
-            <button type="button" class="btn primary" @click="send()" :disabled="!destinationAddressValid || !amountToSendValid || optimizeLoading" >{{ $t("sendPage.sendBlock.sendButton") }}</button>
+            <button type="button" class="btn primary" @click="send()" :disabled="!destinationAddressValid || !amountToSendValid || optimizeLoading || isWalletSyncing" >{{ $t("sendPage.sendBlock.sendButton") }}</button>
           </div>
           <div class="actions tc" v-if="lockedForm" >
             <button type="button" class="btn small" @click="reset()" >{{ $t("sendPage.sendBlock.cancelButton") }}</button>

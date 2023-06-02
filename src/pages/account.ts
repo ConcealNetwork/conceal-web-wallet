@@ -88,9 +88,8 @@ class AccountView extends DestructableView{
 	refresh = () => {
 		blockchainExplorer.getHeight().then((height : number) => {
 			this.blockchainHeight = height;
+      this.refreshWallet();
 		});
-
-		this.refreshWallet();
 	}
 
   onFilterChanged = () => {

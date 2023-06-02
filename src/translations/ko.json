@@ -227,6 +227,9 @@
     },
     "sendPage": {
       "title": "카르보 코인 보내기",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+      },
       "sendBlock": {
         "address": {
           "label": "주소",

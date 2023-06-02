@@ -1621,6 +1621,16 @@ body {
   background-color: #ff0000;
 }
 
+.syncProgressLabel {
+  color: orange;
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.syncProgressContainer {
+  text-align: center;
+}
+
 @media only screen and (max-width: 600px) {
   .header-wrapper {
     flex-direction: column;

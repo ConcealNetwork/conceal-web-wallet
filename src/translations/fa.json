@@ -223,6 +223,9 @@
     },
     "sendPage": {
       "title": "ارسال کربو",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+      },
       "sendBlock": {
         "address": {
           "label": "ارسال به آدرس",

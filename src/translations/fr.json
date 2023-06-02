@@ -222,6 +222,9 @@
 	},
 	"sendPage":{
 	  "title":"Envoyer des CCX",
+    "syncing": {
+      "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+    },
 	  "sendBlock":{
 		"address":{
 		  "label":"Adresse de destination",
