@@ -110,10 +110,10 @@ class TxQueue {
       if (txQueueItem) {
         //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
         //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
-        if (this.countProcessed >= 5 * 1000) {
-          logDebugMsg('Recreated parseWorker..');
-          this.restartWorker();
-        }
+        //if (this.countProcessed >= 5 * 1000) {
+        //  logDebugMsg('Recreated parseWorker..');
+        //  this.restartWorker();
+        //}
                 
         this.isRunning = true;
         // increase the number of transactions we actually processed
@@ -526,10 +526,10 @@ export class WalletWatchdog {
       if (parseWorker) {
         //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
         //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
-        if (parseWorker.getProcessed() >= 5 * 1000) {
-          logDebugMsg('Recreated parseWorker..');
-          parseWorker.restartWorker();
-        }
+        //if (parseWorker.getProcessed() >= 5 * 1000) {
+        //  logDebugMsg('Recreated parseWorker..');
+        //  parseWorker.restartWorker();
+        //}
 
         // define the transactions we need to process
         let transactionsToProcess: ITransacationQueue | null = null;
