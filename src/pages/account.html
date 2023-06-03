@@ -9,7 +9,7 @@
 	</div>
 	<div class="body-content" >
 
-		<div class="panel inline" v-if="isWalletProcessing" >
+		<div class="panel inline progressWrapper" v-if="isWalletProcessing" >
 			<div class="progress">
 				<div class="bar" :style="'width:'+((currentScanBlock+1)/blockchainHeight*100 | 0)+'%'" >{{(((currentScanBlock+1)/blockchainHeight*1000 | 0) / 10)}}%</div>
 				<label class="barLabel">
