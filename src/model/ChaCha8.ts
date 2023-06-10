@@ -38,8 +38,9 @@ export class JSChaCha8 {
   
     const key = new Uint8Array(bufKey)
     const nonce = new Uint8Array(bufNonce)
+    const dummyArray = new Uint8Array([0,0,0,0,0,0,0,0]);
   
-    this.rounds = 8;
+    this.rounds = 8;    
     this.sigma = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574]; // expand 32-byte k
   
     // param construction
@@ -57,12 +58,11 @@ export class JSChaCha8 {
       this.get32(key, 20),
       this.get32(key, 24),
       this.get32(key, 28),
-      // counter
-      counter,
+      this.get32(dummyArray, 0),
+      this.get32(dummyArray, 4),
       // nonce
       this.get32(nonce, 0),
       this.get32(nonce, 4),
-      this.get32(nonce, 8)
     ]
   
     // init 64 byte keystream block //
@@ -89,7 +89,7 @@ export class JSChaCha8 {
    * @return {number}
    * @private
    */
-  private get32 = (data: Uint8Array, index: number) => {
+  private get32 = (data: Uint8Array, index: number): number => {
     return data[index++] ^ (data[index++] << 8) ^ (data[index++] << 16) ^ (data[index] << 24);
   }
 
@@ -170,8 +170,8 @@ export class JSChaCha8 {
    * @param {Buffer} data
    * @return {Buffer}
    */
-  encrypt = (data: Buffer): Buffer => {
-    return Buffer.from(this.update(new Uint8Array(data)))
+  encrypt = (data: Uint8Array): Uint8Array => {
+    return this.update(data);
   }
 
   /**
@@ -180,8 +180,8 @@ export class JSChaCha8 {
    * @param {Buffer} data
    * @return {Buffer}
    */
-  decrypt = (data: Buffer): Buffer => {
-    return Buffer.from(this.update(new Uint8Array(data)))
+  decrypt = (data: Uint8Array): Uint8Array => {
+    return this.update(data);
   }
 
   /**
@@ -191,7 +191,7 @@ export class JSChaCha8 {
    * @return {Uint8Array}
    * @private
    */
-  private update = (data: Uint8Array) =>  {
+  private update = (data: Uint8Array): Uint8Array =>  {
     if (!(data instanceof Uint8Array) || data.length === 0) {
       throw new Error('Data should be type of bytes (Uint8Array) and not empty!')
     }
