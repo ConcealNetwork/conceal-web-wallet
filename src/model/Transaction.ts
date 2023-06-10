@@ -132,6 +132,7 @@ export class Transaction {
         if (typeof raw.paymentId !== 'undefined') transac.paymentId = raw.paymentId;
         if (typeof raw.fees !== 'undefined') transac.fees = raw.fee;
         if (typeof raw.hash !== 'undefined') transac.hash = raw.hash;
+        if (typeof raw.message !== 'undefined') transac.message = raw.message;
         return transac;
     }
 
@@ -157,6 +158,7 @@ export class Transaction {
             data.outs = routs;
         }
         if (this.paymentId !== '') data.paymentId = this.paymentId;
+        if (this.message !== '') data.message = this.message;
         if (this.fees !== 0) data.fees = this.fees;
         return data;
     }
