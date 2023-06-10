@@ -39,7 +39,7 @@
  import {MathUtil} from "./MathUtil";
  import {Cn, CnNativeBride, CnRandom, CnTransactions, CnUtils} from "./Cn";
  import {RawDaemon_Transaction, RawDaemon_Out} from "./blockchain/BlockchainExplorer";
- import hextobin = CnUtils.hextobin;
+ import {JSChaCha8} from './ChaCha8';
  
  export const TX_EXTRA_PADDING_MAX_COUNT = 255;
  export const TX_EXTRA_NONCE_MAX_COUNT = 255;
@@ -48,12 +48,16 @@
  export const TX_EXTRA_TAG_PUBKEY = 0x01;
  export const TX_EXTRA_NONCE = 0x02;
  export const TX_EXTRA_MERGE_MINING_TAG = 0x03;
- export const TX_EXTRA_TAG_ADDITIONAL_PUBKEYS = 0x04;
+ export const TX_EXTRA_MESSAGE_TAG = 0x04;
  export const TX_EXTRA_MYSTERIOUS_MINERGATE_TAG = 0xDE;
  
  
  export const TX_EXTRA_NONCE_PAYMENT_ID = 0x00;
  export const TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID = 0x01;
+ 
+ export const TX_EXTRA_TTL = 0x05;
+ 
+ export const TX_EXTRA_MESSAGE_CHECKSUM_SIZE = 4;
  
  type RawOutForTx = {
    keyImage: string,
@@ -90,9 +94,12 @@
          extraSize = 32;
          startOffset = 1;
          hasFoundPubKey = true;
-       } else if (extra[0] === TX_EXTRA_TAG_ADDITIONAL_PUBKEYS) {
-         extraSize = extra[1] * 32;
+       } else if (extra[0] === TX_EXTRA_MESSAGE_TAG) {
+         extraSize = extra[1];
          startOffset = 2;
+       } else if (extra[0] === TX_EXTRA_TTL) {
+         //extraSize = extra[1];
+         //startOffset = 2;
        } else if (extra[0] === TX_EXTRA_TAG_PADDING) {
          // this tag has to be the last in extra
          // we do nothing with it
@@ -100,7 +107,7 @@
  
        if (extraSize === 0) {
          if (!hasFoundPubKey) {
-           throw 'Invalid extra size' + extra[0];
+           throw 'Invalid extra size ' + extra[0];
          }
          break;
        }
@@ -139,7 +146,7 @@
      let txExtras = [];
      try {
        let hexExtra: number[] = [];
-       let uint8Array = hextobin(rawTransaction.extra);
+       let uint8Array = CnUtils.hextobin(rawTransaction.extra);
  
        for (let i = 0; i < uint8Array.byteLength; i++) {
          hexExtra[i] =  uint8Array[i];
@@ -192,16 +199,63 @@
      return false;
    }
  
+   static decryptMessage(index: number, txPubKey: string, recepientSecretSpendKey: string, rawMessage: string): string | any {
+     let decryptedMessage: string = '';
+     let mlen: number = rawMessage.length / 2;
+ 
+     if (mlen < TX_EXTRA_MESSAGE_CHECKSUM_SIZE)
+       return null;
+ 
+     let derivation: string;
+     try {
+       derivation = CnNativeBride.generate_key_derivation(txPubKey, recepientSecretSpendKey);
+     } catch (e) {
+       logDebugMsg('UNABLE TO CREATE DERIVATION', e);
+       return null;
+     }
+
+     let magick1: string = "80";
+     let magick2: string = "00";
+     let keyData: string = derivation + magick1 + magick2;
+ 
+     let hash: string = CnUtils.cn_fast_hash(keyData);
+     let hashBuf: Uint8Array = CnUtils.hextobin(hash);
+      
+     let nonceBuf = new Uint8Array(12);
+     for(let i = 0; i < 12; i++) {
+       nonceBuf.set([index/0x100**i], 11-i);
+     }
+            
+     let rawMessArr = CnUtils.hextobin(rawMessage);
+ 
+     // typescripted chacha
+     const cha = new JSChaCha8(hashBuf, nonceBuf);
+     let _buf = cha.decrypt(rawMessArr);
+ 
+     // decode the buffer from chacha8 with text decoder
+     decryptedMessage = new TextDecoder().decode(_buf);
+  
+     mlen -= TX_EXTRA_MESSAGE_CHECKSUM_SIZE;
+     for (let i = 0; i < TX_EXTRA_MESSAGE_CHECKSUM_SIZE; i++) {
+       if (_buf[mlen + i] != 0) {
+         return null;
+       }
+     }
+ 
+     return decryptedMessage.slice(0, -TX_EXTRA_MESSAGE_CHECKSUM_SIZE);
+   }
+ 
    static parse(rawTransaction: RawDaemon_Transaction, wallet: Wallet): Transaction | null {
      let transaction: Transaction | null = null;
  
      let tx_pub_key = '';
      let paymentId: string | null = null;
+     let rawMessage: string = '';
  
      let txExtras = [];
      try {
        let hexExtra: number[] = [];
-       let uint8Array = hextobin(rawTransaction.extra);
+       let uint8Array = CnUtils.hextobin(rawTransaction.extra);
  
        for (let i = 0; i < uint8Array.byteLength; i++) {
          hexExtra[i] =  uint8Array[i];
@@ -231,6 +285,7 @@
  
      tx_pub_key = CnUtils.bintohex(tx_pub_key);
      let encryptedPaymentId: string | null = null;
+     let extraIndex: number = 0;
  
      for (let extra of txExtras) {
        if (extra.type === TX_EXTRA_NONCE) {
@@ -240,16 +295,29 @@
              paymentId += String.fromCharCode(extra.data[i]);
            }
            paymentId = CnUtils.bintohex(paymentId);
-           break;
+           //break;
          } else if (extra.data[0] === TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID) {
            encryptedPaymentId = '';
            for (let i = 1; i < extra.data.length; ++i) {
              encryptedPaymentId += String.fromCharCode(extra.data[i]);
            }
            encryptedPaymentId = CnUtils.bintohex(encryptedPaymentId);
-           break;
+           //break;
          }
        }
+       else if (extra.type === TX_EXTRA_MESSAGE_TAG) {
+         for (let i = 0; i < extra.data.length; ++i) {
+           rawMessage += String.fromCharCode(extra.data[i]);
+         }
+         rawMessage = CnUtils.bintohex(rawMessage);
+       }
+       else if (extra.type === TX_EXTRA_TTL) {
+         let rawTTL: string = '';
+         for (let i = 1; i < extra.data.length; ++i) {
+           rawTTL += String.fromCharCode(extra.data[i]);
+         }
+        }
+       extraIndex++;
      }
  
      let derivation = null;
@@ -394,11 +462,20 @@
  
        transaction.outs = outs;
        transaction.ins = ins;
+ 
+       if (rawMessage !== '') {
+         // decode message
+         try {
+           let message: string = this.decryptMessage(extraIndex, tx_pub_key, wallet.keys.priv.spend, rawMessage);
+           transaction.message = message;
+         } catch (e) {
+           console.error('ERROR IN DECRYPTING MESSAGE: ', e);
+         }
+       }
      }
  
      return transaction;
    }
- 
  
    static formatWalletOutsForTx(wallet: Wallet, blockchainHeight: number): RawOutForTx[] {
      let unspentOuts = [];

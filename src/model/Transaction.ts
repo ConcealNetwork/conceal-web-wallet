@@ -108,6 +108,8 @@ export class Transaction {
     paymentId: string = '';
     fees: number = 0;
 
+    message: string = '';
+    
     static fromRaw(raw: any) {
         let transac = new Transaction();
         transac.blockHeight = raw.blockHeight;

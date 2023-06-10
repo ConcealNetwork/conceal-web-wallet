@@ -673,7 +673,7 @@ export class WalletWatchdog {
             await new Promise(r => setTimeout(r, 500));
           }
         } catch(err) {
-          console.log(`Error occured in startSyncLoop...`, err);
+          console.error(`Error occured in startSyncLoop...`, err);
           await new Promise(r => setTimeout(r, 30 * 1000)); //retry 30s later if an error occurred
         }
       }
