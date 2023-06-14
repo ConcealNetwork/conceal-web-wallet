@@ -83,6 +83,7 @@ let STRUCT_SIZES = {
 	GE_DSMP: 160 * 8, // ge_cached * 8
 	SIGNATURE: 64 // ec_scalar * 2
 };
+let TX_EXTRA_MESSAGE_CHECKSUM_SIZE = 4;
 
 export namespace CnVars{
 	export enum RCT_TYPE{
@@ -2118,7 +2119,7 @@ export namespace CnTransactions{
 			for(let i = 0; i < 12; i++)
 				nonceBuf.set([index/0x100**i], 11-i);
 			let rawMessArr = new TextEncoder().encode(message);
-      let rawMessArrFull = new Uint8Array(rawMessArr.length + 4);  
+      let rawMessArrFull = new Uint8Array(rawMessArr.length + TX_EXTRA_MESSAGE_CHECKSUM_SIZE);  
       rawMessArrFull.set(rawMessArr);
       rawMessArrFull.set([0,0,0,0], rawMessArr.length);
 			const cha = new JSChaCha8(hashBuf, nonceBuf, 0);
@@ -2130,7 +2131,7 @@ export namespace CnTransactions{
 			// Add message tag
 			tx.extra += TX_EXTRA_TAGS.MESSAGE_TAG;
 			// Encode length of message
-			tx.extra += ('0' + (rawMessArr.length + 4).toString(16)).slice(-2);
+			tx.extra += ('0' + (rawMessArr.length + TX_EXTRA_MESSAGE_CHECKSUM_SIZE).toString(16)).slice(-2);
 			// Write message
 			tx.extra += encryptedMessStr;
 		}
