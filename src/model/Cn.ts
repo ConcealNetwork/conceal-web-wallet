@@ -36,6 +36,7 @@
 
 import {Mnemonic} from "./Mnemonic";
 import {Constants} from "./Constants";
+import {JSChaCha8} from './ChaCha8';
 
 declare let Module : any;
 
@@ -62,7 +63,9 @@ let TX_EXTRA_TAGS = {
 	PUBKEY: '01',
 	NONCE: '02',
 	MERGE_MINING: '03',
-	ADDITIONAL_PUBKEY: '04'
+	ADDITIONAL_PUBKEY: '04',
+	MESSAGE_TAG: '04',
+  TTL_TAG: '05'
 };
 let TX_EXTRA_NONCE_TAGS = {
 	PAYMENT_ID: '00',
@@ -330,22 +333,6 @@ export namespace CnUtils{
 		//return state.substr(0, HASH_SIZE * 2);
 		return keccak_256(CnUtils.hextobin(input));
 	}
-
-  export function chacha8_ecnrypt(key: any, nonce: any, message: any): any {
-    return new (<any>window).JSChaCha8(key, nonce).encrypt(message);   
-  }
-
-  export function chacha8_decrypt(key: any, nonce: any, message: any): any {
-    return new (<any>window).JSChaCha8(key, nonce).decrypt(message);   
-  }
-
-  export function buffer_alloc(size: number, fill?: any, encoding?: string): any {
-    return new (<any>window).Buffer().alloc(size, fill, encoding);   
-  }
-
-  export function buffer_write(data: string, offset?: number, length?: number, encoding?: string): any {
-    return new (<any>window).Buffer().write(data, offset, length, encoding);   
-  }
 
   export function hex_xor(hex1 : string, hex2 : string) {
 		if (!hex1 || !hex2 || hex1.length !== hex2.length || hex1.length % 2 !== 0 || hex2.length % 2 !== 0){throw "Hex string(s) is/are invalid!";}
@@ -1920,8 +1907,10 @@ export namespace CnTransactions{
 		payment_id : string,
 		pid_encrypt : boolean,
 		realDestViewKey : string|undefined,
-		unlock_time : number = 0,
-		rct:boolean
+		unlock_time : number = 0,    
+		rct:boolean,
+    message: string = '',
+    ttl: number = 0
 	){
 		//we move payment ID stuff here, because we need txkey to encrypt
 		let txkey = Cn.random_keypair();
@@ -2114,7 +2103,44 @@ export namespace CnTransactions{
 		tx.extra = CnTransactions.add_pub_key_to_extra(tx.extra, txkey.pub);
 		tx.extra = CnTransactions.add_additionnal_pub_keys_to_extra(tx.extra, additional_tx_public_keys);
 
-		if (outputs_money.add(fee_amount).compare(inputs_money) > 0) {
+    // Encrypt message and add it to the extra
+		// CCX has only 1 destination for messages anyways
+		if (message) {
+			let destKeys = Cn.decode_address(dsts[0].address);
+			let derivation: string = Cn.generate_key_derivation(destKeys.spend, txkey.sec);
+			let magick1: string = "80";
+			let magick2: string = "00";
+			let keyData: string = derivation + magick1 + magick2;
+			let hash: string = CnUtils.cn_fast_hash(keyData);
+			let hashBuf: Uint8Array = CnUtils.hextobin(hash);
+			let nonceBuf = new Uint8Array(12);
+			let index: number = 0; // Because we only have one message
+			for(let i = 0; i < 12; i++)
+				nonceBuf.set([index/0x100**i], 11-i);
+			let rawMessArr = new TextEncoder().encode(message);
+      let rawMessArrFull = new Uint8Array(rawMessArr.length + 4);  
+      rawMessArrFull.set(rawMessArr);
+      rawMessArrFull.set([0,0,0,0], rawMessArr.length);
+			const cha = new JSChaCha8(hashBuf, nonceBuf, 0);
+			let _buf = cha.encrypt(rawMessArrFull);    
+
+			let encryptedMessStr = CnUtils.bintohex(_buf);
+
+      // Append to extra:
+			// Add message tag
+			tx.extra += TX_EXTRA_TAGS.MESSAGE_TAG;
+			// Encode length of message
+			tx.extra += ('0' + (rawMessArr.length + 4).toString(16)).slice(-2);
+			// Write message
+			tx.extra += encryptedMessStr;
+		}
+		if (ttl !== 0) {
+			let ttlStr = CnUtils.encode_varint(ttl);
+			let ttlSize = CnUtils.encode_varint(ttlStr.length / 2);
+			tx.extra = tx.extra + TX_EXTRA_TAGS.TTL_TAG + ttlSize + ttlStr;
+		}
+    
+    if (outputs_money.add(fee_amount).compare(inputs_money) > 0) {
 			throw "outputs money (" + Cn.formatMoneyFull(outputs_money) + ") + fee (" + Cn.formatMoneyFull(fee_amount) + ") > inputs money (" + Cn.formatMoneyFull(inputs_money) + ")";
 		}
 		if (!rct) {
@@ -2170,29 +2196,31 @@ export namespace CnTransactions{
 	}
 
 	export function create_transaction(pub_keys:{spend:string,view:string},
-									   sec_keys:{spend:string,view:string},
-									   dsts : CnTransactions.Destination[],
-									   outputs : {
-										   amount:number,
-										   public_key:string,
-										   index:number,
-										   global_index:number,
-										   tx_pub_key:string,
-									   }[],
-									   mix_outs:{
-										   outs:{
-											   public_key:string,
-											   global_index:number
-										   }[],
-										   amount:0
-									   }[] = [],
-									   fake_outputs_count:number,
-									   fee_amount : any/*JSBigInt*/,
-									   payment_id : string,
-									   pid_encrypt : boolean,
-									   realDestViewKey : string|undefined,
-									   unlock_time : number = 0,
-									   rct:boolean
+    sec_keys:{spend:string,view:string},
+    dsts : CnTransactions.Destination[],
+    outputs : {
+      amount:number,
+      public_key:string,
+      index:number,
+      global_index:number,
+      tx_pub_key:string,
+    }[],
+    mix_outs:{
+      outs:{
+        public_key:string,
+        global_index:number
+      }[],
+      amount:0
+    }[] = [],
+    fake_outputs_count:number,
+    fee_amount : any/*JSBigInt*/,
+    payment_id : string,
+    pid_encrypt : boolean,
+    realDestViewKey : string|undefined,
+    unlock_time : number = 0,
+    rct:boolean,
+    message: string = '',
+    ttl: number = 0
 	) : CnTransactions.Transaction{
 		let i, j;
 		if (dsts.length === 0) {
@@ -2351,6 +2379,6 @@ export namespace CnTransactions{
 		} else if (cmp > 0) {
 			throw "Need more money than found! (have: " + Cn.formatMoney(found_money) + " need: " + Cn.formatMoney(needed_money) + ")";
 		}
-		return CnTransactions.construct_tx(keys, sources, dsts, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct);
+		return CnTransactions.construct_tx(keys, sources, dsts, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl);
 	}
 }
