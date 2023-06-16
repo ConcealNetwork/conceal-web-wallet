@@ -1,7 +1,7 @@
 //export {};
 let myGlobal : any = typeof window !== 'undefined' ? window : self;
 myGlobal.config = {
-  debug: false,
+  debug: true,
 	apiUrl: [
     "https://ccxapi.conceal.network/api/"
   ],

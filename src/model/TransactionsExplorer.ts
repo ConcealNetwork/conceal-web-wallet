@@ -94,12 +94,18 @@
          extraSize = 32;
          startOffset = 1;
          hasFoundPubKey = true;
-       } else if (extra[0] === TX_EXTRA_MESSAGE_TAG) {
+       } else if (extra[0] === TX_EXTRA_MESSAGE_TAG) {        
+         let tempRawMsg: string = '';
+         for (let i = 0; i < extra.length; ++i) {
+          tempRawMsg += String.fromCharCode(extra[i]);
+         }
+         tempRawMsg = CnUtils.bintohex(tempRawMsg);
+
          extraSize = extra[1];
          startOffset = 2;
        } else if (extra[0] === TX_EXTRA_TTL) {
-         //extraSize = extra[1];
-         //startOffset = 2;
+         extraSize = extra[1];
+				 startOffset = 2;
        } else if (extra[0] === TX_EXTRA_TAG_PADDING) {
          // this tag has to be the last in extra
          // we do nothing with it
@@ -209,7 +215,7 @@
      let derivation: string;
      try {
        derivation = CnNativeBride.generate_key_derivation(txPubKey, recepientSecretSpendKey);
-     } catch (e) {
+      } catch (e) {
        logDebugMsg('UNABLE TO CREATE DERIVATION', e);
        return null;
      }
@@ -234,10 +240,11 @@
  
      // decode the buffer from chacha8 with text decoder
      decryptedMessage = new TextDecoder().decode(_buf);
-  
+
      mlen -= TX_EXTRA_MESSAGE_CHECKSUM_SIZE;
      for (let i = 0; i < TX_EXTRA_MESSAGE_CHECKSUM_SIZE; i++) {
        if (_buf[mlen + i] != 0) {
+         console.log("wrong TX_EXTRA_MESSAGE_CHECKSUM_SIZE");
          return null;
        }
      }
@@ -312,11 +319,14 @@
          rawMessage = CnUtils.bintohex(rawMessage);
        }
        else if (extra.type === TX_EXTRA_TTL) {
-         let rawTTL: string = '';
-         for (let i = 1; i < extra.data.length; ++i) {
-           rawTTL += String.fromCharCode(extra.data[i]);
-         }
-        }
+ 				 let rawTTL: string = '';
+				 for (let i = 0; i < extra.data.length; ++i) {
+				   rawTTL += String.fromCharCode(extra.data[i]);
+			   }
+				 let ttlStr = CnUtils.bintohex(rawTTL);
+				 let uint8Array = CnUtils.hextobin(ttlStr);
+				 let ttl = Varint.decode(uint8Array);
+			 }
        extraIndex++;
      }
  
@@ -536,7 +546,9 @@
      mix_outs: any[] = [],
      mixin: number,
      neededFee: number,
-     payment_id: string
+     payment_id: string,
+     message: string = '',
+     ttl: number = 0
    ): Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
      return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>(function (resolve, reject) {
        let signed;
@@ -560,7 +572,8 @@
            splittedDsts, usingOuts,
            mix_outs, mixin, neededFee,
            payment_id, pid_encrypt,
-           realDestViewKey, 0, rct);
+           realDestViewKey, 0, rct,
+           message, ttl);
  
          logDebugMsg("signed tx: ", signed);
          let raw_tx_and_hash = CnTransactions.serialize_tx_with_hash(signed);
@@ -580,8 +593,10 @@
      blockchainHeight: number,
      obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>,
      confirmCallback: (amount: number, feesAmount: number) => Promise<void>,
-     mixin: number = config.defaultMixin):
-     Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
+     mixin: number = config.defaultMixin,
+     message: string = '',
+     ttl: number = 0
+    ): Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
      return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>(function (resolve, reject) {
  
        let neededFee = new JSBigInt((<any>window).config.coinFee);
@@ -718,7 +733,7 @@
            logDebugMsg('amounts', amounts);
            logDebugMsg('lots_mix_outs', lotsMixOuts);
  
-           TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+           TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId, message, ttl).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
              resolve(data);
            }).catch(function (e) {
              reject(e);
