@@ -347,21 +347,6 @@ class ParseWorker {
     return this.workerProcess;
   }
 
-  restartWorker = () => {
-    this.isReady = false;
-    this.isWorking = false;
-    this.countProcessed = 0;
-    this.workerProcess.terminate();
-    this.workerProcess = this.initWorker();
-  }
-
-  stopWorker = () => {
-    this.isReady = false;
-    this.isWorking = false;
-    this.countProcessed = 0;
-    this.workerProcess.terminate();
-  }
-
   getWorker = (): Worker => {
     return this.workerProcess;
   }
@@ -434,6 +419,9 @@ export class WalletWatchdog {
   private wallet: Wallet;
   private stopped: boolean = false;
   private blockList: BlockList;
+  private cpuCores: number = 0;
+  private maxCpuCores: number = 0;
+  private remoteNodes: number = 0;
   private explorer: BlockchainExplorer;
   private syncWorkers: SyncWorker[] = [];
   private parseWorkers: ParseWorker[] = [];
@@ -443,51 +431,46 @@ export class WalletWatchdog {
   private transactionsToProcess: ITransacationQueue[] = [];
 
   constructor(wallet: Wallet, explorer: BlockchainExplorer) {
+    // by default we use all cores but limited up to config.maxWorkerCores
+    this.maxCpuCores = Math.min(window.navigator.hardwareConcurrency ? (Math.max(window.navigator.hardwareConcurrency - 1, 1)) : 1, config.maxWorkerCores);
+
     this.wallet = wallet;
     this.explorer = explorer;
     this.blockList = new BlockList(wallet, this);
 
-    this.setupWorkers();
-  }
-
-  resetSyncingSpeedSettings = () => {
-    this.stop();
-    this.setupWorkers();
-    this.start();
-  }
-
-  setupWorkers = () => {
-    // by default we use all cores but limited up to config.maxWorkerCores
-    let cpuCores = Math.min(window.navigator.hardwareConcurrency ? (Math.max(window.navigator.hardwareConcurrency - 1, 1)) : 1, config.maxWorkerCores);
-
-    if (this.wallet.options.readSpeed == 10) {
-      // use 3/4 of the cores for fast syncing
-      cpuCores = Math.min(Math.max(1, Math.floor(3 * (cpuCores / 4))), config.maxWorkerCores);
-    } else if (this.wallet.options.readSpeed == 50) {
-      // use half of the cores for medim syncing
-      cpuCores = Math.min(Math.max(1, Math.floor(cpuCores / 2)), config.maxWorkerCores);
-    } else if (this.wallet.options.readSpeed == 100) {
-      // slowest, use only one core
-      cpuCores = 1;
-    }
-
-    console.log("cpuCores", cpuCores);
-
-    // random nodes are dependent both on max nodes available as well as on number of cores we have available and perfomance settings
-    let randomNodes = this.getMultipleRandom(config.nodeList, Math.min(config.maxRemoteNodes, config.nodeList.length, cpuCores + 1));
-    
-    console.log("randomNodes", randomNodes);
-
     // create parse workers
-    for (let i = 0; i < cpuCores; ++i) {
+    for (let i = 0; i < this.maxCpuCores; ++i) {
       let parseWorker: ParseWorker = new ParseWorker(this.wallet, this, this.blockList, this.processParseTransaction);
       this.parseWorkers.push(parseWorker);
     }
 
     // create a worker for each random node
-    for (let i = 0; i < randomNodes.length; ++i) {
+    for (let i = 0; i < config.nodeList.length; ++i) {
       this.syncWorkers.push(new SyncWorker(this.explorer));
     }
+
+    this.setupWorkers();
+  }
+
+  setupWorkers = () => {
+    this.cpuCores = this.maxCpuCores;
+
+    if (this.wallet.options.readSpeed == 10) {
+      // use 3/4 of the cores for fast syncing
+      this.cpuCores = Math.min(Math.max(1, Math.floor(3 * (this.maxCpuCores / 4))), config.maxWorkerCores);
+    } else if (this.wallet.options.readSpeed == 50) {
+      // use half of the cores for medim syncing
+      this.cpuCores = Math.min(Math.max(1, Math.floor(this.maxCpuCores / 2)), config.maxWorkerCores);
+    } else if (this.wallet.options.readSpeed == 100) {
+      // slowest, use only one core
+      this.cpuCores = 1;
+    }
+
+    // random nodes are dependent both on max nodes available as well as on number of cores we have available and perfomance settings
+    this.remoteNodes = Math.min(config.maxRemoteNodes, config.nodeList.length, this.cpuCores);
+
+    console.log("cpuCores", this.cpuCores);
+    console.log("randomNodes", this.remoteNodes);
   }
 
   signalWalletUpdate = () => {
@@ -512,9 +495,21 @@ export class WalletWatchdog {
   }
 
   acquireWorker = (): ParseWorker | null => {
-    for (let i = 0; i < this.parseWorkers.length; ++i) {      
-      if (!this.parseWorkers[i].getIsWorking() && this.parseWorkers[i].getIsReady()) {
-        return this.parseWorkers[i];
+    let workingCount = 0;
+
+    // first check if max worker usage is reached
+    for (let i = 0; i < this.parseWorkers.length; ++i) {
+      if (this.parseWorkers[i].getIsWorking()) {
+        workingCount = workingCount + 1;
+      }
+    }
+
+
+    if (workingCount < this.cpuCores) {
+      for (let i = 0; i < this.parseWorkers.length; ++i) {      
+        if (!this.parseWorkers[i].getIsWorking() && this.parseWorkers[i].getIsReady()) {
+          return this.parseWorkers[i];
+        }
       }
     }
 
@@ -557,8 +552,10 @@ export class WalletWatchdog {
           }
         }
       }
-    }).catch((err) => {
-      console.error("checkMempool error:", err);
+    }).catch(err => {
+      if (err) {
+        console.error("checkMempool error:", err);
+      }
     });
 
     return true;
@@ -607,11 +604,23 @@ export class WalletWatchdog {
   }
 
   getFreeWorker = (): SyncWorker | null => {
+    let workingCount = 0;
+
+    // first check if max worker usage is reached
     for (let i = 0; i < this.syncWorkers.length; ++i) {
-      if (!this.syncWorkers[i].getIsWorking()) {
-        return this.syncWorkers[i];
+      if (this.syncWorkers[i].getIsWorking()) {
+        workingCount = workingCount + 1;
       }
     }
+
+    if (workingCount < this.remoteNodes) {
+      for (let i = 0; i < this.syncWorkers.length; ++i) {
+        if (!this.syncWorkers[i].getIsWorking()) {
+          return this.syncWorkers[i];
+        }
+      }
+    }
+
     return null;
   }
 

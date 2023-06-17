@@ -43,8 +43,8 @@ let browserUserLang = ''+(navigator.language || (<any>navigator).userLanguage);
 browserUserLang = browserUserLang.toLowerCase().split('-')[0];
 
 Storage.getItem('user-lang', browserUserLang).then(function(userLang : string) {
-	Translations.loadLangTranslation(userLang).catch(function (err) {
-		Translations.loadLangTranslation('en').catch(function (err) {
+	Translations.loadLangTranslation(userLang).catch(err => {
+		Translations.loadLangTranslation('en').catch(err => {
       console.error("Failed to load 'en' language", err);
     });
 	});
@@ -171,7 +171,7 @@ class CopyrightView extends Vue{
 	@VueWatched()
 	languageWatch(){
 		Translations.setBrowserLang(this.language);
-		Translations.loadLangTranslation(this.language).catch(function (err) {
+		Translations.loadLangTranslation(this.language).catch(err => {
       console.error(`Failed to load "${this.language}" language`, err);
     });
 	}
