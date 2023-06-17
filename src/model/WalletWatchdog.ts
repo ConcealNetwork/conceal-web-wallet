@@ -685,7 +685,7 @@ export class WalletWatchdog {
               startBlock = idleRange.startBlock;
               endBlock = idleRange.endBlock;
             }  else if (self.lastBlockLoading < height) {
-              startBlock = Number(self.lastBlockLoading);
+              startBlock = Math.max(0, Number(self.lastBlockLoading));
               endBlock = startBlock + config.syncBlockCount;
               // make sure endBlock is not over current height
               endBlock = Math.min(endBlock, height + 1);
