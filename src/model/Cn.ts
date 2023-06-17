@@ -43,6 +43,7 @@ declare let Module : any;
 let HASH_STATE_BYTES = 200;
 let HASH_SIZE = 32;
 let ADDRESS_CHECKSUM_SIZE = 4;
+let TX_EXTRA_MESSAGE_CHECKSUM_SIZE = 4;
 let INTEGRATED_ID_SIZE = 8;
 let ENCRYPTED_PAYMENT_ID_TAIL = 141;
 let CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = config.addressPrefix;
@@ -83,7 +84,6 @@ let STRUCT_SIZES = {
 	GE_DSMP: 160 * 8, // ge_cached * 8
 	SIGNATURE: 64 // ec_scalar * 2
 };
-let TX_EXTRA_MESSAGE_CHECKSUM_SIZE = 4;
 
 export namespace CnVars{
 	export enum RCT_TYPE{
@@ -1910,8 +1910,8 @@ export namespace CnTransactions{
 		realDestViewKey : string|undefined,
 		unlock_time : number = 0,    
 		rct:boolean,
-    message: string = '',
-    ttl: number = 0
+    message: string,
+    ttl: number
 	){
 		//we move payment ID stuff here, because we need txkey to encrypt
 		let txkey = Cn.random_keypair();
@@ -2219,8 +2219,8 @@ export namespace CnTransactions{
     realDestViewKey : string|undefined,
     unlock_time : number = 0,
     rct:boolean,
-    message: string = '',
-    ttl: number = 0
+    message: string,
+    ttl: number
 	) : CnTransactions.Transaction{
 		let i, j;
 		if (dsts.length === 0) {

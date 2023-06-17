@@ -42,9 +42,11 @@ const i18n = new VueI18n({
 let browserUserLang = ''+(navigator.language || (<any>navigator).userLanguage);
 browserUserLang = browserUserLang.toLowerCase().split('-')[0];
 
-Storage.getItem('user-lang', browserUserLang).then(function(userLang : string){
-	Translations.loadLangTranslation(userLang).catch(function () {
-		Translations.loadLangTranslation('en');
+Storage.getItem('user-lang', browserUserLang).then(function(userLang : string) {
+	Translations.loadLangTranslation(userLang).catch(function (err) {
+		Translations.loadLangTranslation('en').catch(function (err) {
+      console.error("Failed to load 'en' language", err);
+    });
 	});
 });
 
@@ -169,7 +171,9 @@ class CopyrightView extends Vue{
 	@VueWatched()
 	languageWatch(){
 		Translations.setBrowserLang(this.language);
-		Translations.loadLangTranslation(this.language);
+		Translations.loadLangTranslation(this.language).catch(function (err) {
+      console.error(`Failed to load "${this.language}" language`, err);
+    });
 	}
 }
 let copyrightView = new CopyrightView('#copyright');

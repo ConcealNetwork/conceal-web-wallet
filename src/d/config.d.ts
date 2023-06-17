@@ -31,6 +31,7 @@ declare var config : {
 	idleTimeout: number,
 	idleWarningDuration: number,
 	syncBlockCount: number,
+  maxBlockQueue: number,
   maxRemoteNodes: number
   maxWorkerCores: number,
 	maxBlockNumber: number,

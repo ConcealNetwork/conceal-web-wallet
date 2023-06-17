@@ -10,31 +10,30 @@ import {RawDaemon_Transaction} from "../model/blockchain/BlockchainExplorer";
 (<any>self).mn_decode = Mnemonic.mn_decode;
 (<any>self).mn_encode = Mnemonic.mn_encode;
 
-let walletKeys: any = null;
-
 onmessage = function (data: MessageEvent) {
 	// if(data.isTrusted){
 	let event: any = data.data;
   try {
     if (event.type === 'initWallet') {
-      walletKeys = event.keys;
       postMessage({ type: 'readyWallet'	});
     } else if (event.type === 'process') {
       logDebugMsg(`process new transactions...`);
+
+      let readMinersTx = typeof event.readMinersTx !== 'undefined' && event.readMinersTx;
+      let rawTransactions: RawDaemon_Transaction[] = event.transactions;
+      let maxBlockNumber: number = event.maxBlock; 
+      let transactions: any[] = [];
+      let walletKeys: any = null;
+      walletKeys = event.keys;
+
+      // log any raw transactions that need to be processed
+      logDebugMsg(`rawTransactions`, rawTransactions);
 
       if (walletKeys === null) {
         logDebugMsg(`Wallet keys are missing...`);
         postMessage('missing_wallet_keys');
         return;
       }
-
-      let readMinersTx = typeof event.readMinersTx !== 'undefined' && event.readMinersTx;
-      let rawTransactions: RawDaemon_Transaction[] = event.transactions;
-      let maxBlockNumber: number = event.maxBlock; 
-      let transactions: any[] = [];
-
-      // log any raw transactions that need to be processed
-      logDebugMsg(`rawTransactions`, rawTransactions);
 
       for (let rawTransaction of rawTransactions) {
         if (rawTransaction) {

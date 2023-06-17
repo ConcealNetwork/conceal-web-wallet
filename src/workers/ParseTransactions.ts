@@ -4,19 +4,17 @@ import {Wallet, WalletOptions} from "../model/Wallet";
 import {TransactionsExplorer} from "../model/TransactionsExplorer";
 import {RawDaemon_Transaction} from "../model/blockchain/BlockchainExplorer";
 
-let currentWallet: Wallet | null = null;
-
 onmessage = function (data: MessageEvent) {
 	// if(data.isTrusted){
 	let event: any = data.data;
   try {
     if (event.type === 'initWallet') {
-      currentWallet = Wallet.loadFromRaw(event.wallet);
       postMessage({ type: 'readyWallet'	});
     } else if (event.type === 'process') {
       let readMinersTx = typeof event.readMinersTx !== 'undefined' && event.readMinersTx;
       let rawTransactions: RawDaemon_Transaction[] = event.transactions;
       let maxBlockNumber: number = event.maxBlock; 
+      let currentWallet: Wallet | null = null;
       let transactions = [];
 
       if (rawTransactions.length > 0) {

@@ -568,7 +568,7 @@ export class Wallet extends Observable {
                 let nbOutsNeeded: number = config.defaultMixin + 1;
                 let lotsMixOuts: any[] = await obtainMixOutsCallback(amounts, nbOutsNeeded);
 
-                let data = await TransactionsExplorer.createRawTx(dsts, this, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '');
+                let data = await TransactionsExplorer.createRawTx(dsts, this, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '', '', 0);
                 await blockchainExplorer.sendRawTx(data.raw.raw);
                 this.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
                 logDebugMsg('optimization done', processedOuts);

@@ -76,8 +76,7 @@ class TxQueue {
         logDebugMsg('worker ready...');
         // post the wallet to the worker
         this.workerProcess.postMessage({
-          type: 'initWallet',
-          wallet: this.wallet.exportToRaw()
+          type: 'initWallet'
         });
       } else if (message === "missing_wallet") {
         logDebugMsg("Wallet is missing for the worker...");
@@ -143,7 +142,7 @@ class TxQueue {
 
   addTransactions = (transactions: RawDaemon_Transaction[], maxBlockNum: number) => {
     let txQueueItem: ITxQueueItem = {
-      transactions: [...transactions],
+      transactions: transactions,
       maxBlockNum: maxBlockNum
     }
 
@@ -231,7 +230,7 @@ class BlockList {
     if (lastBlock > -1) {
       for (let i = 0; i < this.blocks.length; ++i) {
         if (lastBlock <= this.blocks[i].endBlock) {
-          this.blocks[i].transactions = [...transactions];
+          this.blocks[i].transactions = transactions;
           this.blocks[i].finished = true;
           break;
         }
@@ -242,7 +241,7 @@ class BlockList {
         if (this.blocks[0].finished) {
           let block = this.blocks.shift()!;
           // add any transactions to the wallet
-          this.txQueue.addTransactions([...block.transactions], block.endBlock);
+          this.txQueue.addTransactions(block.transactions, block.endBlock);
         } else {
           break;
         }
@@ -329,8 +328,7 @@ class ParseWorker {
         this.watchdog.checkMempool();
         // post the wallet to the worker
         this.workerProcess.postMessage({
-          type: 'initWallet',
-          keys: this.wallet.keys
+          type: 'initWallet'
         });
       } else if (message === "missing_wallet_keys") {
         logDebugMsg("Wallet keys are missing for the worker...");
@@ -355,6 +353,13 @@ class ParseWorker {
     this.countProcessed = 0;
     this.workerProcess.terminate();
     this.workerProcess = this.initWorker();
+  }
+
+  stopWorker = () => {
+    this.isReady = false;
+    this.isWorking = false;
+    this.countProcessed = 0;
+    this.workerProcess.terminate();
   }
 
   getWorker = (): Worker => {
@@ -438,22 +443,50 @@ export class WalletWatchdog {
   private transactionsToProcess: ITransacationQueue[] = [];
 
   constructor(wallet: Wallet, explorer: BlockchainExplorer) {
-    let cpuCores = Math.min(window.navigator.hardwareConcurrency ? (Math.max(window.navigator.hardwareConcurrency - 1, 1)) : 1, config.maxWorkerCores);
-    let randomNodes = this.getMultipleRandom(config.nodeList, Math.min(config.maxRemoteNodes, config.nodeList.length, cpuCores + 1));
-
     this.wallet = wallet;
     this.explorer = explorer;
     this.blockList = new BlockList(wallet, this);
 
+    this.setupWorkers();
+  }
+
+  resetSyncingSpeedSettings = () => {
+    this.stop();
+    this.setupWorkers();
+    this.start();
+  }
+
+  setupWorkers = () => {
+    // by default we use all cores but limited up to config.maxWorkerCores
+    let cpuCores = Math.min(window.navigator.hardwareConcurrency ? (Math.max(window.navigator.hardwareConcurrency - 1, 1)) : 1, config.maxWorkerCores);
+
+    if (this.wallet.options.readSpeed == 10) {
+      // use 3/4 of the cores for fast syncing
+      cpuCores = Math.min(Math.max(1, Math.floor(3 * (cpuCores / 4))), config.maxWorkerCores);
+    } else if (this.wallet.options.readSpeed == 50) {
+      // use half of the cores for medim syncing
+      cpuCores = Math.min(Math.max(1, Math.floor(cpuCores / 2)), config.maxWorkerCores);
+    } else if (this.wallet.options.readSpeed == 100) {
+      // slowest, use only one core
+      cpuCores = 1;
+    }
+
+    console.log("cpuCores", cpuCores);
+
+    // random nodes are dependent both on max nodes available as well as on number of cores we have available and perfomance settings
+    let randomNodes = this.getMultipleRandom(config.nodeList, Math.min(config.maxRemoteNodes, config.nodeList.length, cpuCores + 1));
+    
+    console.log("randomNodes", randomNodes);
+
     // create parse workers
     for (let i = 0; i < cpuCores; ++i) {
-      let parseWorker: ParseWorker = new ParseWorker(wallet, this, this.blockList, this.processParseTransaction);
+      let parseWorker: ParseWorker = new ParseWorker(this.wallet, this, this.blockList, this.processParseTransaction);
       this.parseWorkers.push(parseWorker);
     }
 
     // create a worker for each random node
     for (let i = 0; i < randomNodes.length; ++i) {
-      this.syncWorkers.push(new SyncWorker(explorer));
+      this.syncWorkers.push(new SyncWorker(this.explorer));
     }
   }
 
@@ -547,7 +580,8 @@ export class WalletWatchdog {
             type: 'process',
             maxBlock: transactionsToProcess.lastBlock,
             transactions: transactionsToProcess.transactions,
-            readMinersTx: this.wallet.options.checkMinerTx
+            readMinersTx: this.wallet.options.checkMinerTx,
+            keys: this.wallet.keys
           });
         }
       }
@@ -605,9 +639,9 @@ export class WalletWatchdog {
           }
 
           // check if block range list is to big
-          if (self.blockList.getSize() > 50) {
+          if (self.blockList.getSize() > config.maxBlockQueue) {
             logDebugMsg('Block range list is to big', self.blockList.getSize());
-            await new Promise(r => setTimeout(r, 5000));
+            await new Promise(r => setTimeout(r, 500));
             continue;
           }
 

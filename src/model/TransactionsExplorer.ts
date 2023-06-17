@@ -87,7 +87,6 @@
        if (extra[0] === TX_EXTRA_NONCE ||
          extra[0] === TX_EXTRA_MERGE_MINING_TAG ||
          extra[0] === TX_EXTRA_MYSTERIOUS_MINERGATE_TAG) {
- 
          extraSize = extra[1];
          startOffset = 2;
        } else if (extra[0] === TX_EXTRA_TAG_PUBKEY) {
@@ -95,12 +94,6 @@
          startOffset = 1;
          hasFoundPubKey = true;
        } else if (extra[0] === TX_EXTRA_MESSAGE_TAG) {        
-         let tempRawMsg: string = '';
-         for (let i = 0; i < extra.length; ++i) {
-          tempRawMsg += String.fromCharCode(extra[i]);
-         }
-         tempRawMsg = CnUtils.bintohex(tempRawMsg);
-
          extraSize = extra[1];
          startOffset = 2;
        } else if (extra[0] === TX_EXTRA_TTL) {
@@ -547,8 +540,8 @@
      mixin: number,
      neededFee: number,
      payment_id: string,
-     message: string = '',
-     ttl: number = 0
+     message: string,
+     ttl: number
    ): Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
      return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>(function (resolve, reject) {
        let signed;

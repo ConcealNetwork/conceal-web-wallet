@@ -191,6 +191,7 @@ class SettingsView extends DestructableView{
 		options.customNode = this.customNode;
 		options.nodeUrl = this.nodeUrl;
 		wallet.options = options;
+    walletWatchdog.resetSyncingSpeedSettings();
 		walletWatchdog.signalWalletUpdate();
 	}
 
