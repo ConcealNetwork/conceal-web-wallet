@@ -101,7 +101,7 @@
            extraSize = extra[1];
            startOffset = 2;
          } else if (extra[0] === TX_EXTRA_TAG_PADDING) {
-           extra = extra.slice(0 + extra.length);
+           // do nothing
          }
   
          if (extraSize === 0) {
@@ -120,12 +120,15 @@
            extra = extra.slice(startOffset + extraSize);
           } else if (!extraSize) {
             console.log("Corruput extra skipping it...");
-            extra = extra.slice(0 + extra.length);
+            break;
           }
         } catch(err) {
           console.log("Error in parsing extra", err);
+          break;
         }
      }
+
+     // extras array
      return extras;
    }
  
