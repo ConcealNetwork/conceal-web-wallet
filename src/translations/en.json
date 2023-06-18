@@ -9,6 +9,7 @@
       "account": "Account",
       "send": "Send",
       "receive": "Receive",
+      "message": "Messages",
       "export": "Export",
       "donate": "Donate",
       "settings": "Settings",
@@ -298,6 +299,9 @@
         "content": "Bring closer to the other device"
       }
     },
+    "messagePage": {
+      "title": "Messages"
+    },
     "receivePage": {
       "title": "Receive CCX",
       "receiveBlock": {
@@ -400,7 +404,7 @@
         "title": "Nothing to do...",
         "content": "Your wallet is already optimized.",
         "confirmText": "OK"
-      }      
+      }
     },
     "importBasePage": {
       "parametersBlock": {
