@@ -126,7 +126,8 @@
         "feesOnTx": "Commissione sulla Tx",
         "blockHeight": "Altezza sulla blockchain",
         "paymentId": "Payment ID",
-        "txPrivKey": "Chiave privata della transazione"
+        "txPrivKey": "Chiave privata della transazione",
+        "message": "Message"        
       }
     },
     "changeWalletPasswordPage": {
@@ -242,6 +243,10 @@
         "paymentId": {
           "label": "Payment ID (opzionale)",
           "invalid": "Il Payment ID è invalido. La lunghezza deve essere di 16 o 64 caratteri"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "Riservatezza",

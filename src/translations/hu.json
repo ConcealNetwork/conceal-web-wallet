@@ -127,7 +127,8 @@
         "feesOnTx": "Tranzakció díjai",
         "blockHeight": "Blokk",
         "paymentId": "Fizetési azonosító",
-        "txPrivKey": "Tranzakció magánkulcs"
+        "txPrivKey": "Tranzakció magánkulcs",
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -243,6 +244,10 @@
         "paymentId": {
           "label": "Fizetési azonosító (opcionális)",
           "invalid": "Érvénytelen fizetési azonosító. Hosszának 16 vagy 64 karakternek kell lennie"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "Magánélet",

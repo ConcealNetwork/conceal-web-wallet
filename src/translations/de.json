@@ -127,7 +127,8 @@
         "feesOnTx": "Gebühren der tx",
         "blockHeight": "Blockhöhe",
         "paymentId": "Payment ID",
-        "txPrivKey": "Privater Schlüssel für die Transaktion"
+        "txPrivKey": "Privater Schlüssel für die Transaktion",
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -243,6 +244,10 @@
         "paymentId": {
           "label": "Payment ID (optional)",
           "invalid": "Die payment ID ist ungültig. Sie muss aus 16 oder 64 Zeichen bestehen"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "Geheimhaltung",

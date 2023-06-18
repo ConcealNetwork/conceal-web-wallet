@@ -125,7 +125,8 @@
         "txHash": "هش تراکنش",
         "feesOnTx": "کارمزد تراکنش",
         "blockHeight": "شماره بلوک",
-        "paymentId": "شناسه پرداخت"
+        "paymentId": "شناسه پرداخت",
+        "message": "Message"        
       }
     },
     "changeWalletPasswordPage": {
@@ -241,6 +242,10 @@
         "paymentId": {
           "label": "شناسه واریز",
           "invalid": "شناسه ی واریز اشتباه است مقداری را بین شانزده تا شصت و چهار کاراکتر وارد نمایید"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "حریم خصوصی",

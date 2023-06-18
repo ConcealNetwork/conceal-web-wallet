@@ -129,7 +129,8 @@
         "feesOnTx": "Tarifa de transacción",
         "blockHeight": "Altura del bloque",
         "paymentId": "ID de pago",
-        "txPrivKey": "Clave privada de la transacción"
+        "txPrivKey": "Clave privada de la transacción",
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -245,6 +246,10 @@
         "paymentId": {
           "label": "Identificación de pago (opcional)",
           "invalid": "El ID de pago no es válido. La longitud debe ser de 16 o 64 caracteres."
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "Intimidad",

@@ -126,7 +126,8 @@
         "feesOnTx":"Tx fees",
         "blockHeight":"Wysokość bloku",
         "paymentId":"ID płatności",
-        "txPrivKey":"Prywatny klucz transakcji"
+        "txPrivKey":"Prywatny klucz transakcji",
+        "message": "Message"        
       }
     },
     "changeWalletPasswordPage":{
@@ -242,6 +243,10 @@
       "paymentId":{
         "label":"Identyfikator płatności (opcjonalnie)",
         "invalid":"Identyfikator płatności jest nieprawidłowy. Długość musi wynosić 64 znaki"
+      },
+      "message": {
+        "label": "Message (optional)",
+        "invalid": "The message is to long. Max length is 255 characters"
       },
       "mixin":{
         "label":"Poufność",

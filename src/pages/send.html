@@ -71,6 +71,14 @@
             </div>
           </div>
 
+          <div class="field" >
+            <label>{{ $t("sendPage.sendBlock.message.label") }}</label>
+            <input aria-label="amountInput" class="amountInput" type="text" v-model="message" placeholder="" :readonly="lockedForm" :disabled="optimizeLoading || isWalletSyncing"/>
+            <div v-if="!messageValid" class="message error">
+              {{ $t("sendPage.sendBlock.message.invalid") }}
+            </div>
+          </div>
+
           <div class="actions tc">
             <button type="button" class="btn primary" @click="send()" :disabled="!destinationAddressValid || !amountToSendValid || optimizeLoading || isWalletSyncing" >{{ $t("sendPage.sendBlock.sendButton") }}</button>
           </div>

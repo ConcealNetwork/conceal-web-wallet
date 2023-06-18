@@ -127,7 +127,8 @@
         "feesOnTx": "Fees on the tx",
         "blockHeight": "Block height",
         "paymentId": "Payment ID",
-        "txPrivKey": "Transaction Private Key"
+        "txPrivKey": "Transaction Private Key",
+        "message": "Message"        
       }
     },
     "changeWalletPasswordPage": {
@@ -244,6 +245,10 @@
         "paymentId": {
           "label": "ID уплате (произвољан корак)",
           "invalid": "ID уплате неисправан. Дужина мора бити између 16 и 64 карактера"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "Приватност",

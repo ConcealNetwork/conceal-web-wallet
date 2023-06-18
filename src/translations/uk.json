@@ -127,7 +127,8 @@
         "feesOnTx": "Комісія",
         "blockHeight": "Висота блоку",
         "paymentId": "Ідентифікатор платежу",
-        "txPrivKey": "Секретний ключ транзакції"
+        "txPrivKey": "Секретний ключ транзакції",
+        "message": "Message"        
       }
     },
     "changeWalletPasswordPage": {
@@ -244,6 +245,10 @@
         "paymentId": {
           "label": "Payment ID (не обов'язково)",
           "invalid": "Ідентифікатор платежу невірний. Довжина повинна бути 16 або 64 символи"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "Конфіденційність",

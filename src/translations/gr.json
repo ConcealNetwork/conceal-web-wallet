@@ -127,7 +127,8 @@
         "feesOnTx": "Τέλη συναλλαγής",
         "blockHeight": "Block height",
         "paymentId": "Payment ID",
-        "txPrivKey": "Ιδιωτικό κλειδί συναλλαγής"
+        "txPrivKey": "Ιδιωτικό κλειδί συναλλαγής",
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -243,6 +244,10 @@
         "paymentId": {
           "label": "Payment ID (προαιρετικό)",
           "invalid": "Το payment ID είναι άκυρο. Πρέπει να αποτελείται από 16 ή 64 χαρακτήρες"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "Μυστικότητα",

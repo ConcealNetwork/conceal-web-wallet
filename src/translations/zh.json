@@ -129,7 +129,8 @@
         "paymentId": "付款ID",
         "unlockStatus": "状态",
         "unlockConfirm": "确认数",
-        "txPrivKey": "交易私钥"
+        "txPrivKey": "交易私钥",
+        "message": "Message"        
       }
     },
     "changeWalletPasswordPage": {
@@ -246,6 +247,10 @@
         "paymentId": {
           "label": "付款ID（可选）",
           "invalid": "非法的付款ID. 长度必须是64位。"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "隐私",

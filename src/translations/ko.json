@@ -129,7 +129,8 @@
         "paymentId": "페이먼트 ID",
         "unlockStatus": "현황",
         "unlockConfirm": "확인",
-        "txPrivKey": "트랜젝션 비공개 키"
+        "txPrivKey": "트랜젝션 비공개 키",
+        "message": "Message"        
       }
     },
     "changeWalletPasswordPage": {
@@ -246,6 +247,10 @@
         "paymentId": {
           "label": "페이먼트 ID (옵션)",
           "invalid": "페이먼트 ID가 올바르지 않습니다. 올바른 ID의 문자길이는 16 또는 64 문자입니다."
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "은둔",
