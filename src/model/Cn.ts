@@ -1904,6 +1904,7 @@ export namespace CnTransactions{
 		},
 		sources : CnTransactions.Source[],
 		dsts : CnTransactions.Destination[],
+    senderAddress: string,
 		fee_amount : any/*JSBigInt*/,
 		payment_id : string,
 		pid_encrypt : boolean,
@@ -2107,32 +2108,42 @@ export namespace CnTransactions{
     // Encrypt message and add it to the extra
 		// CCX has only 1 destination for messages anyways
 		if (message) {
-			let destKeys = Cn.decode_address(dsts[0].address);
-			let derivation: string = Cn.generate_key_derivation(destKeys.spend, txkey.sec)
-			let magick1: string = "80";
-			let magick2: string = "00";
-			let keyData: string = derivation + magick1 + magick2;
-			let hash: string = CnUtils.cn_fast_hash(keyData);
-			let hashBuf: Uint8Array = CnUtils.hextobin(hash);
-			let nonceBuf = new Uint8Array(12);
-			let index: number = 0; // Because we only have one message
-			for(let i = 0; i < 12; i++)
-				nonceBuf.set([index/0x100**i], 11-i);
-			let rawMessArr = new TextEncoder().encode(message);
-			let rawMessArrFull = new Uint8Array(rawMessArr.length + 4);
-			rawMessArrFull.set(rawMessArr);
-			rawMessArrFull.set([0,0,0,0], rawMessArr.length);
-			const cha = new JSChaCha8(hashBuf, nonceBuf, 0);
-			let _buf = cha.encrypt(rawMessArrFull);
-			let encryptedMessStr = CnUtils.bintohex(_buf);
+      let messageAddress: string | null = null;
+      for (let i = 0; i < dsts.length; i++) {
+        if (dsts[i].address !== senderAddress) {
+          messageAddress = dsts[i].address;
+        }
+      }
 
-			// Append to extra:
-			// Add message tag
-			tx.extra += TX_EXTRA_TAGS.MESSAGE_TAG;
-			// Encode length of message
-			tx.extra += ('0' + (rawMessArrFull.length).toString(16)).slice(-2);
-			// Write message
-			tx.extra += encryptedMessStr;
+      if (messageAddress) {
+        let destKeys = Cn.decode_address(messageAddress);
+        let derivation: string = CnNativeBride.generate_key_derivation(destKeys.spend, txkey.sec);
+        let magick1: string = "80";
+        let magick2: string = "00";
+        let keyData: string = derivation + magick1 + magick2;
+        let hash: string = CnUtils.cn_fast_hash(keyData);
+        let hashBuf: Uint8Array = CnUtils.hextobin(hash);
+        let nonceBuf = new Uint8Array(12);
+        let index: number = 0; // Because we only have one message
+        for(let i = 0; i < 12; i++) {
+          nonceBuf.set([index/0x100**i], 11-i);
+        }
+        let rawMessArr = new TextEncoder().encode(message);
+        let rawMessArrFull = new Uint8Array(rawMessArr.length + 4);
+        rawMessArrFull.set(rawMessArr);
+        rawMessArrFull.set([0,0,0,0], rawMessArr.length);
+        const cha = new JSChaCha8(hashBuf, nonceBuf);
+        let _buf = cha.encrypt(rawMessArrFull);
+        let encryptedMessStr = CnUtils.bintohex(_buf);
+
+        // Append to extra:
+        // Add message tag
+        tx.extra += TX_EXTRA_TAGS.MESSAGE_TAG;
+        // Encode length of message
+        tx.extra += ('0' + (rawMessArrFull.length).toString(16)).slice(-2);
+        // Write message
+        tx.extra += encryptedMessStr;
+      }
 		}
 		if (ttl !== 0) {
 			let ttlStr = CnUtils.encode_varint(ttl);
@@ -2198,6 +2209,7 @@ export namespace CnTransactions{
 	export function create_transaction(pub_keys:{spend:string,view:string},
     sec_keys:{spend:string,view:string},
     dsts : CnTransactions.Destination[],
+    senderAddress: string,
     outputs : {
       amount:number,
       public_key:string,
@@ -2379,6 +2391,6 @@ export namespace CnTransactions{
 		} else if (cmp > 0) {
 			throw "Need more money than found! (have: " + Cn.formatMoney(found_money) + " need: " + Cn.formatMoney(needed_money) + ")";
 		}
-		return CnTransactions.construct_tx(keys, sources, dsts, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl);
+		return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl);
 	}
 }

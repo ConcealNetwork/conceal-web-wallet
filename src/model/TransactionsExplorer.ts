@@ -119,7 +119,7 @@
            });
            extra = extra.slice(startOffset + extraSize);
           } else if (!extraSize) {
-            console.log("Corruput extra skipping it...");
+            console.log("Corrupt extra skipping it...");
             break;
           }
         } catch(err) {
@@ -213,8 +213,9 @@
      let decryptedMessage: string = '';
      let mlen: number = rawMessage.length / 2;
 
-     if (mlen < TX_EXTRA_MESSAGE_CHECKSUM_SIZE)
+     if (mlen < TX_EXTRA_MESSAGE_CHECKSUM_SIZE) {    
        return null;
+     }    
 
      let derivation: string;
      try {
@@ -236,6 +237,7 @@
        nonceBuf.set([index/0x100**i], 11-i);
      }
 
+     // make a binary array out of raw message
      let rawMessArr = CnUtils.hextobin(rawMessage);
 
      // typescripted chacha
@@ -574,7 +576,9 @@
              spend: wallet.keys.priv.spend,
              view: wallet.keys.priv.view
            },
-           splittedDsts, usingOuts,
+           splittedDsts, 
+           wallet.getPublicAddress(),
+           usingOuts,
            mix_outs, mixin, neededFee,
            payment_id, pid_encrypt,
            realDestViewKey, 0, rct,
