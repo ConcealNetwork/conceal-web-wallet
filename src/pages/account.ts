@@ -164,6 +164,7 @@ class AccountView extends DestructableView{
           `+feesHtml+`
           `+txPrivKeyMessage+`
           <div>`+i18n.t('accountPage.txDetails.blockHeight')+`: <a href="`+explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)+`" target="_blank">`+transaction.blockHeight+`</a></div>
+          <div>`+i18n.t('accountPage.txDetails.message')+`:` + transaction.message + `
         </div>`
 		});
 	}

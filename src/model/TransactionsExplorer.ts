@@ -81,42 +81,50 @@
      let hasFoundPubKey = false;
  
      while (extra.length > 0) {
-       let extraSize = 0;
-       let startOffset = 0;
- 
-       if (extra[0] === TX_EXTRA_NONCE ||
-         extra[0] === TX_EXTRA_MERGE_MINING_TAG ||
-         extra[0] === TX_EXTRA_MYSTERIOUS_MINERGATE_TAG) {
-         extraSize = extra[1];
-         startOffset = 2;
-       } else if (extra[0] === TX_EXTRA_TAG_PUBKEY) {
-         extraSize = 32;
-         startOffset = 1;
-         hasFoundPubKey = true;
-       } else if (extra[0] === TX_EXTRA_MESSAGE_TAG) {        
-         extraSize = extra[1];
-         startOffset = 2;
-       } else if (extra[0] === TX_EXTRA_TTL) {
-         extraSize = extra[1];
-				 startOffset = 2;
-       } else if (extra[0] === TX_EXTRA_TAG_PADDING) {
-         // this tag has to be the last in extra
-         // we do nothing with it
-       }
- 
-       if (extraSize === 0) {
-         if (!hasFoundPubKey) {
-           throw 'Invalid extra size ' + extra[0];
+       try {
+         let extraSize = 0;
+         let startOffset = 0;
+  
+         if (extra[0] === TX_EXTRA_NONCE ||
+           extra[0] === TX_EXTRA_MERGE_MINING_TAG ||
+           extra[0] === TX_EXTRA_MYSTERIOUS_MINERGATE_TAG) {
+           extraSize = extra[1];
+           startOffset = 2;
+         } else if (extra[0] === TX_EXTRA_TAG_PUBKEY) {
+           extraSize = 32;
+           startOffset = 1;
+           hasFoundPubKey = true;
+         } else if (extra[0] === TX_EXTRA_MESSAGE_TAG) {        
+           extraSize = extra[1];
+           startOffset = 2;
+         } else if (extra[0] === TX_EXTRA_TTL) {
+           extraSize = extra[1];
+           startOffset = 2;
+         } else if (extra[0] === TX_EXTRA_TAG_PADDING) {
+           extra = extra.slice(0 + extra.length);
          }
-         break;
-       }
- 
-       let data = extra.slice(startOffset, startOffset + extraSize);
-       extras.push({
-         type: extra[0],
-         data: data
-       });
-       extra = extra.slice(startOffset + extraSize);
+  
+         if (extraSize === 0) {
+           if (!hasFoundPubKey) {
+             throw 'Invalid extra size ' + extra[0];
+           }
+           break;
+         }
+  
+         if ((startOffset > 0) && (extraSize > 0)) {
+          let data = extra.slice(startOffset, startOffset + extraSize);
+          extras.push({
+             type: extra[0],
+             data: data
+           });
+           extra = extra.slice(startOffset + extraSize);
+          } else if (!extraSize) {
+            console.log("Corruput extra skipping it...");
+            extra = extra.slice(0 + extra.length);
+          }
+        } catch(err) {
+          console.log("Error in parsing extra", err);
+        }
      }
      return extras;
    }

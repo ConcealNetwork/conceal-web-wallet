@@ -264,7 +264,7 @@ class BlockList {
     for (let i = 0; i < this.blocks.length; ++i) {
       if (!this.blocks[i].finished) {
         let timeDiff: number = new Date().getTime() - this.blocks[i].timestamp.getTime();
-        if ((timeDiff / 1000) > 60) {
+        if ((timeDiff / 1000) > 30) {
           if (reset) { this.blocks[i].timestamp = new Date(); }
           return this.blocks[i];
         }
@@ -468,9 +468,6 @@ export class WalletWatchdog {
 
     // random nodes are dependent both on max nodes available as well as on number of cores we have available and perfomance settings
     this.remoteNodes = Math.min(config.maxRemoteNodes, config.nodeList.length, this.cpuCores);
-
-    console.log("cpuCores", this.cpuCores);
-    console.log("randomNodes", this.remoteNodes);
   }
 
   signalWalletUpdate = () => {
@@ -647,13 +644,6 @@ export class WalletWatchdog {
             continue;
           }
 
-          // check if block range list is to big
-          if (self.blockList.getSize() > config.maxBlockQueue) {
-            logDebugMsg('Block range list is to big', self.blockList.getSize());
-            await new Promise(r => setTimeout(r, 500));
-            continue;
-          }
-
           // get the current height of the chain
           let height = await self.explorer.getHeight();
 
@@ -685,6 +675,13 @@ export class WalletWatchdog {
               startBlock = idleRange.startBlock;
               endBlock = idleRange.endBlock;
             }  else if (self.lastBlockLoading < height) {
+              // check if block range list is to big
+              if (self.blockList.getSize() > config.maxBlockQueue) {
+                logDebugMsg('Block range list is to big', self.blockList.getSize());
+                await new Promise(r => setTimeout(r, 500));
+                continue;
+              }
+
               startBlock = Math.max(0, Number(self.lastBlockLoading));
               endBlock = startBlock + config.syncBlockCount;
               // make sure endBlock is not over current height
