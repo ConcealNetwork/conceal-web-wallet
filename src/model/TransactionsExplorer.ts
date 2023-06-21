@@ -250,7 +250,6 @@
      mlen -= TX_EXTRA_MESSAGE_CHECKSUM_SIZE;
      for (let i = 0; i < TX_EXTRA_MESSAGE_CHECKSUM_SIZE; i++) {
        if (_buf[mlen + i] != 0) {
-         console.log("wrong TX_EXTRA_MESSAGE_CHECKSUM_SIZE");
          return null;
        }
      }
