@@ -39,6 +39,8 @@ myGlobal.config = {
 	defaultMixin: 5, // default value mixin
   optimizeOutputs: 100, // how many outputs we put into a fusion tx
   optimizeThreshold: 1, // what is the optimization threshold in CCX
+  messageTxAmount: new JSBigInt('1000'), // the amount sent to the receiver of the message needed so we have at least one output for them
+  maxMessageSize: 260, // maximum lenght of the message
 
 	idleTimeout: 30,
 	idleWarningDuration: 20,

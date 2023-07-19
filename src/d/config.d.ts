@@ -12,6 +12,8 @@ declare var config : {
 	coinUnitPlaces: number,
   optimizeOutputs: number,
   optimizeThreshold: number,
+  messageTxAmount: any,
+  maxMessageSize: number,
 	txMinConfirms: number,         // corresponds to CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE in Monero
 	txCoinbaseMinConfirms: number, // corresponds to CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW in Monero
 	coinSymbol: string,

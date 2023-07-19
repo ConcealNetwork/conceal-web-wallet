@@ -4,6 +4,7 @@ declare function swal(params : {
 	text?:string,
 	input?:'text'|'password'|'email'|'select',
 	html?:string,
+  customClass?:string,
 	showCancelButton?:boolean,
 	confirmButtonText?:string,
 	focusConfirm?:boolean,

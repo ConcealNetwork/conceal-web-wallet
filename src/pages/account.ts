@@ -143,28 +143,29 @@ class AccountView extends DestructableView{
 		let explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
 		let feesHtml = '';
 		if(transaction.getAmount() < 0)
-			feesHtml = `<div>`+i18n.t('accountPage.txDetails.feesOnTx')+`: `+(transaction.fees / Math.pow(10, config.coinUnitPlaces))+`</a></div>`;
+			feesHtml = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.feesOnTx')+`</span>:<span class="txDetailsValue">`+(transaction.fees / Math.pow(10, config.coinUnitPlaces))+`</a></span></div>`;
 		let paymentId = '';
 		if(transaction.paymentId !== ''){
-			paymentId = `<div>`+i18n.t('accountPage.txDetails.paymentId')+`: `+transaction.paymentId+`</a></div>`;
+			paymentId = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.paymentId')+`</span>:<span class="txDetailsValue">`+transaction.paymentId+`</a></span></div>`;
 		}
 
 		let txPrivKeyMessage = '';
 		let txPrivKey = wallet.findTxPrivateKeyWithHash(transaction.hash);
 		if(txPrivKey !== null){
-			txPrivKeyMessage = `<div>`+i18n.t('accountPage.txDetails.txPrivKey')+`: `+txPrivKey+`</a></div>`;
+			txPrivKeyMessage = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.txPrivKey')+`</span>:<span class="txDetailsValue">`+txPrivKey+`</a></span></div>`;
 		}
 
 		swal({
 			title:i18n.t('accountPage.txDetails.title'),
+      customClass:'swal-wide',
 			html:`
         <div class="tl" >
-          <div>`+i18n.t('accountPage.txDetails.txHash')+`: <a href="`+explorerUrlHash.replace('{ID}', transaction.hash)+`" target="_blank">`+transaction.hash+`</a></div>
+          <div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.txHash')+`</span>:<span class="txDetailsValue"><a href="`+explorerUrlHash.replace('{ID}', transaction.hash)+`" target="_blank">`+transaction.hash+`</a></span></div>
           `+paymentId+`
           `+feesHtml+`
           `+txPrivKeyMessage+`
-          <div>`+i18n.t('accountPage.txDetails.blockHeight')+`: <a href="`+explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)+`" target="_blank">`+transaction.blockHeight+`</a></div>
-          <div>`+i18n.t('accountPage.txDetails.message')+`:` + transaction.message + `
+          <div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.blockHeight')+`</span>:<span class="txDetailsValue"><a href="`+explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)+`" target="_blank">`+transaction.blockHeight+`</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.message')+`</span>:<span class="txDetailsValue">` + transaction.message + `</span>
         </div>`
 		});
 	}

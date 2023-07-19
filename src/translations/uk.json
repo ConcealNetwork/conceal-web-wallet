@@ -303,6 +303,80 @@
         "content": "Піднесіть ближче до іншого пристрою"
       }
     },
+    "messagesPage": {
+      "title": "Messages",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+      },
+      "tabs": {
+        "inbox": "Inbox",
+        "send": "Send"
+      },
+      "inboxBlock": {
+        "title": "Messages Inbox"
+      },
+      "sendBlock": {
+        "address": {
+          "label": "Destination address",
+          "placeholder": "Write the address where you want to send the message",
+          "invalid": "The destination address is invalid",
+          "fundsTo": "The message will be sent to",
+          "receiver": "Receiver",
+          "description": "Description"
+        },
+        "message": {
+          "label": "Message",
+          "invalid": "The message is to long. Max length is 260 characters"
+        },
+        "sendButton": "Send",
+        "cancelButton": "Cancel"
+      },
+      "qrCodeScanning": {
+        "explication": "Present the QR code"
+      },
+      "notEnoughMoneyModal": {
+        "title": "Oops...",
+        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "confirmText": "OK"
+      },
+      "thankYouDonationModal": {
+        "title": "Thank you for your donation!",
+        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "confirmText": "OK"
+      },
+      "transferSentModal": {
+        "title": "Message sent successfully!",
+        "confirmText": "OK"
+      },
+      "transferExceptionModal": {
+        "title": "Oops...",
+        "content": "An error occurred. Please report this error: {details}",
+        "confirmText": "OK"
+      },
+      "invalidAmountModal": {
+        "title": "Oops...",
+        "content": "Invalid amount",
+        "confirmText": "OK"
+      },
+      "creatingTransferModal": {
+        "title": "Creating transfer ...",
+        "content": "Please wait..."
+      },
+      "finalizingTransferModal": {
+        "title": "Finalizing transfer ...",
+        "content": "Please wait..."
+      },
+      "confirmTransactionModal": {
+        "title": "Confirm transfer?",
+        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
+        "confirmText": "Confirm",
+        "cancelText": "Cancel"
+      },
+      "waitingNfcModal": {
+        "title": "Waiting Nfc",
+        "content": "Bring closer to the other device"
+      }
+    },
     "receivePage": {
       "title": "Отримати CCX",
       "receiveBlock": {

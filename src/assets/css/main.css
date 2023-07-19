@@ -413,6 +413,22 @@ body.transparent #copyright {
 	font-size: 18px;
 }
 
+.messageHistory .transactions .trnsaction .timestamp {
+	width: 20%;
+	font-size: 18px;
+}
+
+.messageHistory .transactions .transaction .messageText {
+	width: 60%;
+	font-size: 18px;
+}
+
+.messageHistory .transactions .transaction .blockHeight {
+	width: 15%;
+	font-size: 18px;
+  padding-right: 1em;
+}
+
 .transactions .transaction .amount {
 	font-size: 20px;
 	width: 42%;
@@ -478,7 +494,7 @@ body.transparent #copyright {
 
 .tab {
 	display: block;
-	padding: 20px 5px;
+	padding: 10px 5px;
 }
 
 .tab .button {
@@ -1244,7 +1260,7 @@ body {
 }
 
 .field .subfield input {
-	width: calc(100% - 41px);
+  width: calc(100% - 41px);
 	border: none;
 	padding: 5px;
 	display: inline-block;
@@ -1648,4 +1664,66 @@ body {
     padding-right: 2em;
     margin-bottom: 1em !important;
   }
+}
+
+/* Style the tab */
+.tab {
+  margin-top: 2em;
+  overflow: hidden;
+  border: 1px solid #424242ea;
+  background-color: #333;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ccc;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: orange;  
+  color: white;
+}
+
+.sendMessage {
+  display: none;
+  color: white;
+}
+
+#messageTextArea {
+  height: 10em;
+  width: calc(100% - 10px);
+	border: none;
+	padding: 5px;
+	display: inline-block;
+}
+
+.txDetailsValue {
+  padding-left: 0.2em;
+}
+
+.txDetailsLabel {
+  font-weight: bold;
+}
+
+.swal-wide{
+  max-width: 950px !important;
+  width: 90% !important;
+}
+
+.tablinks span {
+  padding-left: 0.3em;
 }

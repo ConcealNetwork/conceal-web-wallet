@@ -51,6 +51,7 @@ class SendView extends DestructableView {
   @VueVar(true) messageValid !: boolean;
   @VueVar('5') mixIn !: string;
   @VueVar(true) mixinIsValid !: boolean;
+  @VueVar(0) maxMessageSize !: number;
 
   @VueVar(null) domainAliasAddress !: string | null;
   @VueVar(null) txDestinationName !: string | null;
@@ -88,6 +89,7 @@ class SendView extends DestructableView {
     if (destinationName !== null) this.txDestinationName = destinationName.substr(0, 256);
     if (description !== null) this.txDescription = description.substr(0, 256);
     if (redirect !== null) this.redirectUrlAfterSend = decodeURIComponent(redirect);
+    this.maxMessageSize = config.maxMessageSize;
     this.oldIsWalletSyncing = true;
     this.isWalletSyncing = true;
     this.blockchainHeight = -1;
@@ -513,7 +515,7 @@ class SendView extends DestructableView {
   @VueWatched()
   messageWatch() {
     try {
-      this.messageValid = (this.message.length === 0) || (this.message.length < 256);
+      this.messageValid = (this.message.length === 0) || (this.message.length <= config.maxMessageSize);
     } catch (e) {
       this.messageValid = false;
     }
