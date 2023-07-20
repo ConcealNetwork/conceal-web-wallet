@@ -142,8 +142,9 @@ class AccountView extends DestructableView{
 		let explorerUrlHash = config.testnet ? config.testnetExplorerUrlHash : config.mainnetExplorerUrlHash;
 		let explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
 		let feesHtml = '';
-		if(transaction.getAmount() < 0)
+		if ((transaction.getAmount() < 0) && (transaction.fees > 0)) {
 			feesHtml = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.feesOnTx')+`</span>:<span class="txDetailsValue">`+(transaction.fees / Math.pow(10, config.coinUnitPlaces))+`</a></span></div>`;
+    }
 		let paymentId = '';
 		if(transaction.paymentId !== ''){
 			paymentId = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.paymentId')+`</span>:<span class="txDetailsValue">`+transaction.paymentId+`</a></span></div>`;
@@ -151,9 +152,13 @@ class AccountView extends DestructableView{
 
 		let txPrivKeyMessage = '';
 		let txPrivKey = wallet.findTxPrivateKeyWithHash(transaction.hash);
-		if(txPrivKey !== null){
+		if(txPrivKey !== null) {
 			txPrivKeyMessage = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.txPrivKey')+`</span>:<span class="txDetailsValue">`+txPrivKey+`</a></span></div>`;
 		}
+    let messageText = '';
+    if(transaction.message !== null) {
+      messageText = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.message')+`</span>:<span class="txDetailsValue">` + transaction.message + `</span>`;
+    }
 
 		swal({
 			title:i18n.t('accountPage.txDetails.title'),
@@ -165,7 +170,7 @@ class AccountView extends DestructableView{
           `+feesHtml+`
           `+txPrivKeyMessage+`
           <div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.blockHeight')+`</span>:<span class="txDetailsValue"><a href="`+explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)+`" target="_blank">`+transaction.blockHeight+`</a></span></div>
-          <div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.message')+`</span>:<span class="txDetailsValue">` + transaction.message + `</span>
+          `+messageText+`          
         </div>`
 		});
 	}
