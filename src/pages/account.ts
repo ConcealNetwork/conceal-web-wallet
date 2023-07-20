@@ -142,7 +142,7 @@ class AccountView extends DestructableView{
 		let explorerUrlHash = config.testnet ? config.testnetExplorerUrlHash : config.mainnetExplorerUrlHash;
 		let explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
 		let feesHtml = '';
-		if ((transaction.getAmount() < 0) && (transaction.fees > 0)) {
+		if (transaction.fees > 0) {
 			feesHtml = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.feesOnTx')+`</span>:<span class="txDetailsValue">`+(transaction.fees / Math.pow(10, config.coinUnitPlaces))+`</a></span></div>`;
     }
 		let paymentId = '';
