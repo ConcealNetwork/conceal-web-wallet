@@ -146,17 +146,17 @@ class AccountView extends DestructableView{
 			feesHtml = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.feesOnTx')+`</span>:<span class="txDetailsValue">`+(transaction.fees / Math.pow(10, config.coinUnitPlaces))+`</a></span></div>`;
     }
 		let paymentId = '';
-		if(transaction.paymentId !== ''){
+		if (transaction.paymentId) {
 			paymentId = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.paymentId')+`</span>:<span class="txDetailsValue">`+transaction.paymentId+`</a></span></div>`;
 		}
 
 		let txPrivKeyMessage = '';
 		let txPrivKey = wallet.findTxPrivateKeyWithHash(transaction.hash);
-		if(txPrivKey !== null) {
+		if (txPrivKey) {
 			txPrivKeyMessage = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.txPrivKey')+`</span>:<span class="txDetailsValue">`+txPrivKey+`</a></span></div>`;
 		}
     let messageText = '';
-    if(transaction.message !== null) {
+    if (transaction.message) {
       messageText = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.message')+`</span>:<span class="txDetailsValue">` + transaction.message + `</span>`;
     }
 
