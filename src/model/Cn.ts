@@ -787,6 +787,19 @@ export namespace Cn{
 		return CnUtils.bintohex(nacl.ll.ge_add(CnUtils.hextobin(pub), CnUtils.hextobin(CnUtils.ge_scalarmult_base(s))));
 	}
 
+	/**
+	 * @param derivation
+	 * @param out_index
+	 * @param pub
+	 */
+	export function underive_public_key(derivation : string, out_index : number, pub : string) {
+		if (derivation.length !== 64 || pub.length !== 64) {
+			throw "Invalid input length!";
+		}
+		let s = CnUtils.derivation_to_scalar(derivation, out_index);
+		return CnUtils.ge_sub(pub, CnUtils.ge_scalarmult_base(s));
+	}
+
 	export function generate_keys(seed : string) : {sec:string, pub:string}{
 		if (seed.length !== 64) throw "Invalid input length!";
 		let sec = CnNativeBride.sc_reduce32(seed);

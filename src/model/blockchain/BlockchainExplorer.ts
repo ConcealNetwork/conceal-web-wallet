@@ -20,7 +20,19 @@ import {CnTransactions} from "../Cn";
 
 export type RawDaemon_Transaction = {
     extra: string,
-    vout: CnTransactions.Vout[],
+    //vout: CnTransactions.Vout[],
+    vout: {
+        amount: number,
+		target:{
+			type: string,
+			data: {
+				key?: string,
+                keys?: string[],
+                required_signatures?: number,
+                term?: number
+			}
+		}
+    }[],
     vin: {
         type: string,
         value?: CnTransactions.Vin,
