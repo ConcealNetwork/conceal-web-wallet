@@ -198,7 +198,7 @@
        let txout_k = out.target.data;
        if (out.target.type == "02" && typeof txout_k.key !== 'undefined') {
         let publicEphemeral = CnNativeBride.derive_public_key(derivation, keyIndex, keys.pub.spend);
-         if (txout_k.key === publicEphemeral) {
+         if (txout_k.key == publicEphemeral) {
             console.log("Found our tx...");
            return true;
          }
@@ -207,8 +207,8 @@
        else if (out.target.type == "03" && (typeof txout_k.keys !== 'undefined')) {
          for (let iKey = 0; iKey < txout_k.keys.length; iKey++) {
            let key = txout_k.keys[iKey];
-           let publicEphemeral = Cn.underive_public_key(derivation, iOut, key);
-           if (keys.pub.spend === publicEphemeral) {
+           let publicEphemeral = CnNativeBride.derive_public_key(derivation, iOut, keys.pub.spend);
+           if (key == publicEphemeral) {
              console.log("Found our deposit tx...");
              return true;
            }
