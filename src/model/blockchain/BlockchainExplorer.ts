@@ -23,15 +23,15 @@ export type RawDaemon_Transaction = {
     //vout: CnTransactions.Vout[],
     vout: {
         amount: number,
-		target:{
-			type: string,
-			data: {
-				key?: string,
+        target:{
+            type: string,
+            data: {
+	            key?: string,
                 keys?: string[],
                 required_signatures?: number,
                 term?: number
-			}
-		}
+            }
+        }
     }[],
     vin: {
         type: string,
