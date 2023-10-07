@@ -37,13 +37,17 @@ onmessage = function (data: MessageEvent) {
                 continue;
               }
 
-              // parse the raw transaction to include it into the wallet
-              let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
+              try {
+                // parse the raw transaction to include it into the wallet
+                let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
 
-              if (transaction) {              
-                currentWallet.addNew(transaction);
-                transactions.push(transaction.export());
-                logDebugMsg(`pushed tx to transactions[]`);
+                if (transaction) {              
+                  currentWallet.addNew(transaction);
+                  transactions.push(transaction.export());
+                  logDebugMsg(`pushed tx to transactions[]`);
+                }
+              } catch(err) {
+                console.error('Failed to parse tx:', rawTransaction);  
               }
             }
           }

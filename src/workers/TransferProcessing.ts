@@ -42,10 +42,14 @@ onmessage = function (data: MessageEvent) {
               continue;
             }
 
-            // parse the transaction to see if we need to include it in the wallet
-            if (TransactionsExplorer.ownsTx(rawTransaction, walletKeys)) {              
-              transactions.push(rawTransaction);
-              logDebugMsg(`pushed tx to transactions[]`);
+            try {
+              // parse the transaction to see if we need to include it in the wallet
+              if (TransactionsExplorer.ownsTx(rawTransaction, walletKeys)) {              
+                transactions.push(rawTransaction);
+                logDebugMsg(`pushed tx to transactions[]`);
+              }
+            } catch(err) {
+              console.error('Failed to process ownsTx for tx:', rawTransaction);
             }
           }
         }
