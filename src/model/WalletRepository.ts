@@ -108,9 +108,9 @@ export class WalletRepository {
 
 	static getLocalWalletWithPassword(password : string) : Promise<Wallet|null>{
 		return Storage.getItem('wallet', null).then((existingWallet : any) => {
-			if(existingWallet !== null){
+			if (existingWallet !== null) {
 				return this.decodeWithPassword(JSON.parse(existingWallet), password);
-			}else{
+			} else {
 				return null;
 			}
 		});

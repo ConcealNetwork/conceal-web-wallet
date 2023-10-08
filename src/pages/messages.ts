@@ -87,7 +87,7 @@ class MessagesView extends DestructableView {
 			this.blockchainHeight = height;
       this.refreshWallet();
     }).catch((err: any) => {
-      // do nothing
+      this.refreshWallet();
     });
 	}
 

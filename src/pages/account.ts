@@ -90,7 +90,7 @@ class AccountView extends DestructableView{
 			this.blockchainHeight = height;
       this.refreshWallet();
 		}).catch((err: any) => {
-      // in case of error do nothing
+      this.refreshWallet();
     });
 	}
 

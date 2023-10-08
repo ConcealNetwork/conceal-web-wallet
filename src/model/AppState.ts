@@ -160,6 +160,8 @@ export class AppState {
                             }
                           }
                         }
+                      }).catch(err => {
+                        console.error(err);
                       });
                     }
                     swal.close();
@@ -180,9 +182,11 @@ export class AppState {
                     });
                     reject();
                   }
+                }).catch(err => {
+                  console.error("Error in getLocalWalletWithPassword", err);
                 });
               }).catch(err => {
-                console.error(err);
+                console.error("Error in getLocmigrateWalletalWalletWithPassword", err);
               });
 						} else {
 							swal.close();
