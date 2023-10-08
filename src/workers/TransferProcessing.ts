@@ -22,16 +22,17 @@ onmessage = function (data: MessageEvent) {
       let readMinersTx = typeof event.readMinersTx !== 'undefined' && event.readMinersTx;
       let rawTransactions: RawDaemon_Transaction[] = event.transactions;
       let maxBlockNumber: number = event.maxBlock; 
+      let currentWallet: Wallet | null = null;
       let transactions: any[] = [];
-      let walletKeys: any = null;
-      walletKeys = event.keys;
 
+      // get the current wallet from even parameters
+      currentWallet = Wallet.loadFromRaw(event.wallet);
       // log any raw transactions that need to be processed
       logDebugMsg(`rawTransactions`, rawTransactions);
 
-      if (walletKeys === null) {
-        logDebugMsg(`Wallet keys are missing...`);
-        postMessage('missing_wallet_keys');
+      if (!currentWallet) {
+        logDebugMsg(`Wallet is missing...`);
+        postMessage('missing_wallet');
         return;
       }
 
@@ -44,7 +45,7 @@ onmessage = function (data: MessageEvent) {
 
             try {
               // parse the transaction to see if we need to include it in the wallet
-              if (TransactionsExplorer.ownsTx(rawTransaction, walletKeys)) {              
+              if (TransactionsExplorer.ownsTx(rawTransaction, currentWallet)) {              
                 transactions.push(rawTransaction);
                 logDebugMsg(`pushed tx to transactions[]`);
               }

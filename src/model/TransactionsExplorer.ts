@@ -119,11 +119,11 @@
            });
            extra = extra.slice(startOffset + extraSize);
           } else if (!extraSize) {
-            console.log("Corrupt extra skipping it...");
+            logDebugMsg("Corrupt extra skipping it...");
             break;
           }
         } catch(err) {
-          console.log("Error in parsing extra", err);
+          logDebugMsg("Error in parsing extra", err);
           break;
         }
      }
@@ -149,7 +149,7 @@
      }
    }
 
-   static ownsTx(rawTransaction: RawDaemon_Transaction, keys: any): Boolean {
+   static ownsTx(rawTransaction: RawDaemon_Transaction, wallet: Wallet): Boolean {
      let transaction: Transaction | null = null;
      let tx_pub_key = '';
 
@@ -178,7 +178,7 @@
      }
 
      if (tx_pub_key === '') {
-       console.error(`tx_pub_key === null`);
+       console.error(`tx_pub_key === null`, rawTransaction.height, rawTransaction.hash);
        return false;
      }
 
@@ -186,24 +186,74 @@
 
      let derivation = null;
      try {
-       derivation = CnNativeBride.generate_key_derivation(tx_pub_key, keys.priv.view);
+       derivation = CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
      } catch (e) {
        console.error('UNABLE TO CREATE DERIVATION', e);
        return false;
      }
 
+     if (!derivation) {
+      console.error('UNABLE TO CREATE DERIVATION');
+      return false;
+     }
 
      for (let iOut = 0; iOut < rawTransaction.vout.length; iOut++) {
        let out = rawTransaction.vout[iOut];
        let txout_k = out.target.data;
 
        let output_idx_in_tx = iOut;
-       let generated_tx_pubkey = CnNativeBride.derive_public_key(derivation, output_idx_in_tx, keys.pub.spend);
+       let generated_tx_pubkey = CnNativeBride.derive_public_key(derivation, output_idx_in_tx, wallet.keys.pub.spend);
 
        if (txout_k.key == generated_tx_pubkey) {
          return true;
        }
      }
+
+     //check if no read only wallet
+    if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
+      let keyImages = wallet.getTransactionKeyImages();
+      for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
+        let vin = rawTransaction.vin[iIn];
+        if (vin.value && keyImages.indexOf(vin.value.k_image) !== -1) {
+          let walletOuts = wallet.getAllOuts();
+          for (let ut of walletOuts) {
+            if (ut.keyImage == vin.value.k_image) {
+              return true;
+            }
+          }
+        }
+      }
+    } else {
+      let txOutIndexes = wallet.getTransactionOutIndexes();
+      for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
+        let vin = rawTransaction.vin[iIn];
+
+        if (!vin.value) {
+          continue;
+        }
+
+        let absoluteOffets = vin.value.key_offsets.slice();
+        for (let i = 1; i < absoluteOffets.length; ++i) {
+          absoluteOffets[i] += absoluteOffets[i - 1];
+        }
+
+        let ownTx = -1;
+        for (let index of absoluteOffets) {
+          if (txOutIndexes.indexOf(index) !== -1) {
+            ownTx = index;
+            break;
+          }
+        }
+
+        if (ownTx !== -1) {
+          let txOut = wallet.getOutWithGlobalIndex(ownTx);
+
+          if (txOut !== null) {
+            return true;
+          }
+        }
+      }
+    }     
 
      return false;
    }
@@ -288,7 +338,7 @@
      }
 
      if (tx_pub_key === '') {
-       console.error(`tx_pub_key === null`);
+      console.error(`tx_pub_key === null`, rawTransaction.height, rawTransaction.hash);
        return null;
      }
 
@@ -337,7 +387,7 @@
      try {
        derivation = CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
      } catch (e) {
-      console.error('UNABLE TO CREATE DERIVATION', e);
+       console.error('UNABLE TO CREATE DERIVATION', e);
        return null;
      }
 

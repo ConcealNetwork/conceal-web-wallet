@@ -330,8 +330,8 @@ class ParseWorker {
         this.workerProcess.postMessage({
           type: 'initWallet'
         });
-      } else if (message === "missing_wallet_keys") {
-        logDebugMsg("Wallet keys are missing for the worker...");
+      } else if (message === "missing_wallet") {
+        logDebugMsg("Wallet is are missing for the worker...");
       } else if (message.type) {
         if (message.type === 'readyWallet') {
           this.setIsReady(true);
@@ -573,11 +573,11 @@ export class WalletWatchdog {
           // increase the number of transactions we actually processed
           parseWorker.incProcessed(transactionsToProcess.transactions.length);
           parseWorker.getWorker().postMessage({
-            type: 'process',
-            maxBlock: transactionsToProcess.lastBlock,
             transactions: transactionsToProcess.transactions,
             readMinersTx: this.wallet.options.checkMinerTx,
-            keys: this.wallet.keys
+            maxBlock: transactionsToProcess.lastBlock,
+            wallet: this.wallet.exportToRaw(),
+            type: 'process',
           });
         }
       }
