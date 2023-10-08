@@ -89,7 +89,9 @@ class AccountView extends DestructableView{
 		blockchainExplorer.getHeight().then((height : number) => {
 			this.blockchainHeight = height;
       this.refreshWallet();
-		});
+		}).catch((err: any) => {
+      // in case of error do nothing
+    });
 	}
 
   onFilterChanged = () => {
@@ -103,6 +105,8 @@ class AccountView extends DestructableView{
       if(optimizeInfo.isNeeded) {
         this.optimizeOutputs = optimizeInfo.numOutputs;
       }
+    }).catch((err: any) => {
+      console.error("Error in checkOptimization", err);
     });
   }
 
@@ -128,8 +132,10 @@ class AccountView extends DestructableView{
           this.optimizeLoading = false; // set loading state to false
           setTimeout(() => {
             this.checkOptimization(); // check if optimization is still needed
-          }, 1000);
-        });
+          }, 1000);  
+        });      
+    }).catch((err: any) => {
+      console.error("Error in optimizeWallet, trying to call getHeight", err);
     });
   }
 

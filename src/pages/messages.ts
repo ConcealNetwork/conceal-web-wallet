@@ -86,7 +86,9 @@ class MessagesView extends DestructableView {
       this.isWalletSyncing = (wallet.lastHeight + 2) < height;
 			this.blockchainHeight = height;
       this.refreshWallet();
-		});
+    }).catch((err: any) => {
+      // do nothing
+    });
 	}
 
 	refreshWallet = (forceRedraw: boolean = false) => {
@@ -130,6 +132,7 @@ class MessagesView extends DestructableView {
           this.stopNfcScan();
         }
       }).then((result : any) => {
+        // do nothing
       });
     }
   }
@@ -352,6 +355,8 @@ class MessagesView extends DestructableView {
           confirmButtonText: i18n.t('sendPage.invalidAmountModal.confirmText'),
         });
       }
+    }).catch((err: any) => {
+      console.error("Error trying to send funds", err);
     });
   }
 
