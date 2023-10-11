@@ -191,24 +191,28 @@
        return false;
      }
 
+     if (!derivation) {
+      console.error('UNABLE TO CREATE DERIVATION');
+      return false;
+     }     
+
      let keyIndex: number = 0;
      for (let iOut = 0; iOut < rawTransaction.vout.length; iOut++) {
        let out = rawTransaction.vout[iOut];
        let txout_k = out.target.data;
        if (out.target.type == "02" && typeof txout_k.key !== 'undefined') {
-        let publicEphemeral = CnNativeBride.derive_public_key(derivation, keyIndex, keys.pub.spend);
+        let publicEphemeral = CnNativeBride.derive_public_key(derivation, keyIndex, wallet.keys.pub.spend);
          if (txout_k.key == publicEphemeral) {
-            console.log("Found our tx...");
+          logDebugMsg("Found our tx...");
            return true;
          }
          ++keyIndex;
-       }
-       else if (out.target.type == "03" && (typeof txout_k.keys !== 'undefined')) {
+       } else if (out.target.type == "03" && (typeof txout_k.keys !== 'undefined')) {
          for (let iKey = 0; iKey < txout_k.keys.length; iKey++) {
            let key = txout_k.keys[iKey];
-           let publicEphemeral = CnNativeBride.derive_public_key(derivation, iOut, keys.pub.spend);
+           let publicEphemeral = CnNativeBride.derive_public_key(derivation, iOut, wallet.keys.pub.spend);
            if (key == publicEphemeral) {
-             console.log("Found our deposit tx...");
+             logDebugMsg("Found our deposit tx...");
              return true;
            }
            ++keyIndex;
@@ -216,7 +220,7 @@
        }
      }
 
-     //check if no read only wallet
+    //check if no read only wallet
     if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
       let keyImages = wallet.getTransactionKeyImages();
       for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
@@ -813,4 +817,3 @@
      });
    }
  }
-
