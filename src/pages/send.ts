@@ -113,7 +113,9 @@ class SendView extends DestructableView {
       }
       
       this.oldIsWalletSyncing = this.isWalletSyncing;
-		});
+		}).catch((err: any) => {
+      // in case of error do nothing
+    });
 	}
 
   reset() {
@@ -151,6 +153,7 @@ class SendView extends DestructableView {
           this.stopNfcScan();
         }
       }).then((result : any) => {
+        // do nothing
       });
     }
   }
@@ -411,6 +414,8 @@ class SendView extends DestructableView {
           confirmButtonText: i18n.t('sendPage.invalidAmountModal.confirmText'),
         });
       }
+		}).catch((err: any) => {
+      console.error("Error trying to send funds", err);
     });
   }
 
@@ -423,7 +428,9 @@ class SendView extends DestructableView {
       if(optimizeInfo.isNeeded) {
         this.optimizeOutputs = optimizeInfo.numOutputs;
       }
-      });
+		}).catch((err: any) => {
+      console.error("Error in checkOptimization, calling getHeight", err);
+    });
   }
 
   optimizeWallet = () => {
@@ -450,6 +457,8 @@ class SendView extends DestructableView {
             this.checkOptimization(); // check if optimization is still needed
           }, 1000);  
         });
+    }).catch((err: any) => {
+      console.error("Error in optimizeWallet, calling getHeight", err);
     });
   }
 

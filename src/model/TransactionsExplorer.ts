@@ -119,11 +119,11 @@
            });
            extra = extra.slice(startOffset + extraSize);
           } else if (!extraSize) {
-            console.log("Corrupt extra skipping it...");
+            logDebugMsg("Corrupt extra skipping it...");
             break;
           }
         } catch(err) {
-          console.log("Error in parsing extra", err);
+          logDebugMsg("Error in parsing extra", err);
           break;
         }
      }
@@ -149,7 +149,7 @@
      }
    }
 
-   static ownsTx(rawTransaction: RawDaemon_Transaction, keys: any): Boolean {
+   static ownsTx(rawTransaction: RawDaemon_Transaction, wallet: Wallet): Boolean {
      let tx_pub_key = '';
 
      let txExtras = [];
@@ -163,8 +163,7 @@
 
        txExtras = this.parseExtra(hexExtra);
      } catch (e) {
-       console.error(e);
-       logDebugMsg('Error when scanning transaction on block ' + rawTransaction.height, rawTransaction);
+       console.error('Error when scanning transaction on block ' + rawTransaction.height, e);
        return false;
      }
 
@@ -178,7 +177,7 @@
      }
 
      if (tx_pub_key === '') {
-       logDebugMsg(`tx_pub_key === null`);
+       console.error(`tx_pub_key === null`, rawTransaction.height, rawTransaction.hash);
        return false;
      }
 
@@ -186,9 +185,9 @@
 
      let derivation = null;
      try {
-       derivation = CnNativeBride.generate_key_derivation(tx_pub_key, keys.priv.view);
+       derivation = CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
      } catch (e) {
-       logDebugMsg('UNABLE TO CREATE DERIVATION', e);
+       console.error('UNABLE TO CREATE DERIVATION', e);
        return false;
      }
 
@@ -217,6 +216,52 @@
        }
      }
 
+     //check if no read only wallet
+    if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
+      let keyImages = wallet.getTransactionKeyImages();
+      for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
+        let vin = rawTransaction.vin[iIn];
+        if (vin.value && keyImages.indexOf(vin.value.k_image) !== -1) {
+          let walletOuts = wallet.getAllOuts();
+          for (let ut of walletOuts) {
+            if (ut.keyImage == vin.value.k_image) {
+              return true;
+            }
+          }
+        }
+      }
+    } else {
+      let txOutIndexes = wallet.getTransactionOutIndexes();
+      for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
+        let vin = rawTransaction.vin[iIn];
+
+        if (!vin.value) {
+          continue;
+        }
+
+        let absoluteOffets = vin.value.key_offsets.slice();
+        for (let i = 1; i < absoluteOffets.length; ++i) {
+          absoluteOffets[i] += absoluteOffets[i - 1];
+        }
+
+        let ownTx = -1;
+        for (let index of absoluteOffets) {
+          if (txOutIndexes.indexOf(index) !== -1) {
+            ownTx = index;
+            break;
+          }
+        }
+
+        if (ownTx !== -1) {
+          let txOut = wallet.getOutWithGlobalIndex(ownTx);
+
+          if (txOut !== null) {
+            return true;
+          }
+        }
+      }
+    }     
+
      return false;
    }
 
@@ -225,15 +270,15 @@
      let mlen: number = rawMessage.length / 2;
 
      if (mlen < TX_EXTRA_MESSAGE_CHECKSUM_SIZE) {    
-       return null;
+        return null;
      }    
 
      let derivation: string;
      try {
-       derivation = CnNativeBride.generate_key_derivation(txPubKey, recepientSecretSpendKey);
+        derivation = CnNativeBride.generate_key_derivation(txPubKey, recepientSecretSpendKey);
       } catch (e) {
-       logDebugMsg('UNABLE TO CREATE DERIVATION', e);
-       return null;
+        console.error('UNABLE TO CREATE DERIVATION', e);
+        return null;
      }
 
      let magick1: string = "80";
@@ -245,7 +290,7 @@
 
      let nonceBuf = new Uint8Array(12);
      for(let i = 0; i < 12; i++) {
-       nonceBuf.set([index/0x100**i], 11-i);
+        nonceBuf.set([index/0x100**i], 11-i);
      }
 
      // make a binary array out of raw message
@@ -286,9 +331,7 @@
 
        txExtras = this.parseExtra(hexExtra);
      } catch (e) {
-       console.error(e);
-       logDebugMsg('Error when scanning transaction on block ' + rawTransaction.height, rawTransaction);
-
+       console.error('Error when scanning transaction on block ' + rawTransaction.height, e);
        return null;
      }
 
@@ -302,7 +345,7 @@
      }
 
      if (tx_pub_key === '') {
-       logDebugMsg(`tx_pub_key === null`);
+      console.error(`tx_pub_key === null`, rawTransaction.height, rawTransaction.hash);
        return null;
      }
 
@@ -351,7 +394,7 @@
      try {
        derivation = CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
      } catch (e) {
-       logDebugMsg('UNABLE TO CREATE DERIVATION', e);
+       console.error('UNABLE TO CREATE DERIVATION', e);
        return null;
      }
 
@@ -431,7 +474,6 @@
        for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
          let vin = rawTransaction.vin[iIn];
          if (vin.value && keyImages.indexOf(vin.value.k_image) !== -1) {
-           //logDebugMsg('found in', vin);
            let walletOuts = wallet.getAllOuts();
            for (let ut of walletOuts) {
              if (ut.keyImage == vin.value.k_image) {
@@ -442,7 +484,6 @@
                transactionIn.amount = ut.amount;
                transactionIn.keyImage = ut.keyImage;
                ins.push(transactionIn);
-               // logDebugMsg(ut);
                break;
              }
            }
@@ -584,7 +625,6 @@
      return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>(function (resolve, reject) {
        let signed;
        try {
-         //logDebugMsg('Destinations: ');
          //need to get viewkey for encrypting here, because of splitting and sorting
          let realDestViewKey = undefined;
          if (pid_encrypt) {
@@ -692,8 +732,6 @@
 
        let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(wallet, blockchainHeight);
 
-       //logDebugMsg('outs available:', unspentOuts.length, unspentOuts);
-
        let usingOuts: RawOutForTx[] = [];
        let usingOuts_amount = new JSBigInt(0);
        let unusedOuts = unspentOuts.slice(0);
@@ -712,7 +750,6 @@
          let out = pop_random_value(unusedOuts);
          usingOuts.push(out);
          usingOuts_amount = usingOuts_amount.add(out.amount);
-         //logDebugMsg("Using output: " + out.amount + " - " + JSON.stringify(out));
        }
 
        logDebugMsg("Selected outs:", usingOuts);

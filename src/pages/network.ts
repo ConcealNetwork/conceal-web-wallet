@@ -64,7 +64,9 @@ class NetworkView extends DestructableView {
 			this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
 			this.ticker = config.coinSymbol;
 			this.lastBlockFound = info.timestamp;
-		});
+    }).catch((err: any) => {
+      // do nothing
+    });
 	}
 }
 

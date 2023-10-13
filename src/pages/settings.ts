@@ -68,11 +68,15 @@ class SettingsView extends DestructableView{
 
 		blockchainExplorer.getHeight().then(function (height: number) {
 			self.maxHeight = height;
-		});
+    }).catch((err: any) => {
+      // do nothing
+    });
 
 		Translations.getLang().then((userLang : string) => {
 			this.language = userLang;
-		});
+    }).catch((err: any) => {
+      console.error("Error trying to get user language", err);
+    });
 
 		if(typeof (<any>window).cordova !== 'undefined' && typeof (<any>window).cordova.getAppVersion !== 'undefined') {
 			(<any>window).cordova.getAppVersion.getVersionNumber().then((version : string) => {
@@ -129,6 +133,8 @@ class SettingsView extends DestructableView{
     blockchainExplorer.getHeight().then((blockchainHeight: number) => {
       let optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
       this.optimizeIsNeeded = optimizeInfo.isNeeded;
+    }).catch((err: any) => {
+      console.error("Error in checkOptimization, calling getHeight", err);
     });
   }
 
@@ -168,6 +174,8 @@ class SettingsView extends DestructableView{
           this.optimizeLoading = false;
         });    
       }
+    }).catch((err: any) => {
+      console.error("Error in optimizeWallet, calling getHeight", err);
     });
   }
 
