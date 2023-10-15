@@ -9,13 +9,14 @@
 	</div>
 	<div class="body-content" >
 
-		<div class="panel inline" v-if="currentScanBlock+2 < blockchainHeight" >
-			<div class="progress" >
+		<div class="panel inline progressWrapper" v-if="isWalletProcessing" >
+			<div class="progress">
 				<div class="bar" :style="'width:'+((currentScanBlock+1)/blockchainHeight*100 | 0)+'%'" >{{(((currentScanBlock+1)/blockchainHeight*1000 | 0) / 10)}}%</div>
-				<label>
+				<label class="barLabel">
 					{{ $t("accountPage.synchronizingBlock.text") }} <span class="currentScanBlock" >{{currentScanBlock+1}}</span>/<span class="blockchainHeight" >{{blockchainHeight}}</span>
 				</label>
 			</div>
+      <div class="detInfo" >{{ $t("accountPage.synchronizingBlock.lastBlock") }}: {{lastBlockLoading}} / {{ $t("accountPage.synchronizingBlock.Queue") }}: {{processingQueue}}</div>
 		</div>
 
 		<div class="panel">
@@ -38,11 +39,27 @@
 			</div>
 		</div>
 
+		<div class="panel" :hidden="!optimizeIsNeeded || isWalletProcessing">
+			<div class="body">
+				<div class="header-title">{{ $t("global.optimize.label") }}</div>
+				<div class="subtitle">{{ $t("global.optimize.subtitle") }} ({{optimizeOutputs}})</div>
+				<div class="actions tc">
+					<button type="button" class="btn primary" @click="optimizeWallet()" :disabled="optimizeLoading || isWalletProcessing">
+						{{ optimizeLoading ? $t('global.optimize.loadingText') : $t('global.optimize.button') }}
+					</button>
+				</div>
+			</div>
+		</div>
+
 		<div class="panel nopadding">
 			<div class="body" >
-				<div class="header-title" >{{ $t("accountPage.historyBlock.title") }}</div>
+        <div class="header-wrapper">
+				  <div class="header-title" >{{ $t("accountPage.historyBlock.title") }} ({{ $n(transactions.length) }} / {{ $n(allTransactionsCount) }})</div>
+          <div class="header-filer-wrapper field">
+            <input class="header-filer" type="text" v-model="txFilter" />
+          </div>
+        </div>
 				<div class="content" >
-
 					<div class="transactions" id="accountTransactions">
 						<table>
 							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked()">
@@ -62,7 +79,7 @@
 									<td colspan="4" class="paymentId" >{{transaction.paymentId}}</td><!--UNDER-->
 								</tr>
 							</template>
-							<tr v-if="transactions.length == 0" >
+							<tr v-if="transactions.length == 0">
 								<td colspan="4" class="noTransactions">
 									{{ $t("accountPage.historyBlock.emptyWallet") }}<br/>
 									<span v-if="currentScanBlock+1 !== blockchainHeight" >
@@ -78,7 +95,11 @@
 							</tr>
 						</table>
 					</div>
-
+          <div class="txLoadMore" v-if="allTransactionsCount > transactions.length">
+            <button type="button" class="btn primary" @click="increasePageCount()" :disabled="optimizeLoading || isWalletProcessing || (transactions.length >= allTransactionsCount)">
+              {{ $t("accountPage.historyBlock.loadMoreBtn") }}...
+            </button>
+          </div>
 				</div>
 			</div>
 		</div>

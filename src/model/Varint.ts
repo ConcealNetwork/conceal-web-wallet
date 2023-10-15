@@ -15,69 +15,52 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {Wallet} from "../Wallet";
-import {CnTransactions} from "../Cn";
+const MSB = 0x80;
+const REST = 0x7f;
+const MSBALL = ~REST;
+const INT = Math.pow(2, 31);
+const TWO_POWER_SEVEN = Math.pow(2, 7);
 
-export type RawDaemon_Transaction = {
-    extra: string,
-    vout: CnTransactions.Vout[],
-    vin: {
-        type: string,
-        value?: CnTransactions.Vin,
-        gen?: { height: number },
-    }[],
-    rct_signatures: CnTransactions.RctSignature,
-    unlock_time: number,
-    version: number,
-    ctsig_prunable: any,
-    global_index_start?: number,
-    output_indexes: number[],
-    height?: number,
-    ts?: number,//timestamp
-    hash?: string,
-    fee: number
-};
+export const encode = function (num: number, out: number[] | Uint8Array = [], offset = 0): number[] | Uint8Array {
+  if (Number.MAX_SAFE_INTEGER && num > Number.MAX_SAFE_INTEGER) {
+    encode.bytes = 0
+    throw new RangeError('Could not encode varint')
+  }
+  const oldOffset = offset
 
-export type NetworkInfo = {
-    nodes: string[],
-    major_version: number,
-    hash: string,
-    reward: number,
-    height: number,
-    timestamp: number,
-    difficulty: number,
-};
+  while (num >= INT) {
+    out[offset++] = (num & 0xff) | MSB
+    num /= 128
+  }
+  while (num & MSBALL) {
+    out[offset++] = (num & 0xff) | MSB
+    num >>>= 7
+  }
+  out[offset] = num | 0
 
-export type RemoteNodeInformation = {
-    fee_address: string,
-    status: string
-};
+  encode.bytes = offset - oldOffset + 1
 
-export type RawDaemon_Out = {
-    global_index: number, 
-    public_key: string
-}
+  return out
+} as ((num: number, out?: number[] | Uint8Array, offset?: number) => number[] | Uint8Array) & { bytes: number }
 
-export interface BlockchainExplorer {
-    resolveOpenAlias(str: string): Promise<{ address: string, name: string | null }>;
+export const decode = function (buf: ArrayLike<number>, offset = 0): number {
+  let res = 0,
+    shift = 1,
+    counter = offset,
+    b
+  const l = Math.pow(TWO_POWER_SEVEN, buf.length - offset < 8 ? (buf.length - offset) * 7 : 49)
 
-    getHeight(): Promise<number>;
+  do {
+    if (shift > l) {
+      decode.bytes = 0
+      throw new RangeError('Could not decode varint')
+    }
+    b = buf[counter++]
+    res += (b & REST) * shift
+    shift = shift * TWO_POWER_SEVEN
+  } while (b >= MSB)
 
-    getScannedHeight(): number;
+  decode.bytes = counter - offset
 
-    resetNodes(): void;
-
-    start(wallet: Wallet): void;
-
-    getTransactionPool(): Promise<RawDaemon_Transaction[]>;
-
-    getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTx: boolean): Promise<RawDaemon_Transaction[]>;
-
-    sendRawTx(rawTx: string): Promise<any>;
-
-    getRandomOuts(amounts: number[], nbOutsNeeded: number): Promise<RawDaemon_Out[]>;
-
-    getNetworkInfo(): Promise<NetworkInfo>;
-
-    getRemoteNodeInformation(): Promise<RemoteNodeInformation>;
-}
+  return res
+} as ((buf: ArrayLike<number>, offset?: number) => number) & { bytes: number }

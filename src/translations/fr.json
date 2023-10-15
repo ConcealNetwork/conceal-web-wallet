@@ -52,7 +52,13 @@
 		"title":"Oups...",
 		"content":"Il est nécessaire de donner l'accès à la caméra afin de pouvoir scanner le QR Code",
 		"confirmText":"OK"
-	  }
+		},
+		"optimize": {
+			"label": "Optimisation",
+			"subtitle": "Votre portefeuille doit être optimisé",
+			"button": "Optimiser maintenant",
+			"loadingText": "Optimisation en cours, veuillez patienter..."
+		}
 	},
 	"bottom": {
 	  "termsOfUse": "Conditions générales d'utilisation",
@@ -95,45 +101,50 @@
 	  "title": "Mon compte",
 	  "subtitle": "Apperçu de votre compte et de l'historique des transactions",
 	  "synchronizingBlock": {
-		"text": "Synchronisation en cours "
+      "text": "Synchronisation en cours ",
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
 	  },
 	  "balanceBlock": {
-		"title": "Votre solde",
-		"unlocked": "Disponible"
+      "title": "Votre solde",
+      "unlocked": "Disponible"
 	  },
 	  "historyBlock": {
-		"title": "Historique des transactions",
-		"pendingTxStatus": "En attente",
-		"emptyWallet": "Vous n'avez aucun fond sur ce portefeuille",
-		"waitSync": "Veuillez attendre la fin de la synchronisation",
-		"beReallyPatient": "La première synchronisation peut prendre quelques minutes...",
-		"getCoinAddress": "Obtenir mon adresse pour recevoir des CCX"
+      "title": "Historique des transactions",
+      "pendingTxStatus": "En attente",
+      "emptyWallet": "Vous n'avez aucun fond sur ce portefeuille",
+      "waitSync": "Veuillez attendre la fin de la synchronisation",
+      "beReallyPatient": "La première synchronisation peut prendre quelques minutes...",
+      "getCoinAddress": "Obtenir mon adresse pour recevoir des CCX",
+      "loadMoreBtn": "Load more"
 	  },
 	  "txDetails":{
-		"title":"Détails de la transaction",
-		"txHash":"Tx hash",
-		"feesOnTx":"Frais sur la tx",
-		"blockHeight":"Hauteur sur la blockchain",
-		"paymentId":"ID du paiement",
-        "txPrivKey":"Clé privée de transaction"
+      "title":"Détails de la transaction",
+      "txHash":"Tx hash",
+      "feesOnTx":"Frais sur la tx",
+      "blockHeight":"Hauteur sur la blockchain",
+      "paymentId":"ID du paiement",
+      "txPrivKey":"Clé privée de transaction",
+      "message": "Message"     
 	  }
 	},
 	"changeWalletPasswordPage":{
 	  "title":"Changer mon mot de passe",
 	  "oldPassword":{
-		"label":"Ancien",
-		"invalid":"Mot de passe invalide"
+      "label":"Ancien",
+      "invalid":"Mot de passe invalide"
 	  },
-	  "newPassword":{
-		"label":"Nouveau mot de passe pour sécuriser"
+    "newPassword":{
+      "label":"Nouveau mot de passe pour sécuriser"
 	  },
 	  "newPasswordConfirm":{
-		"label":"Confirmer mon nouveau mot de passe"
+      "label":"Confirmer mon nouveau mot de passe"
 	  },
 	  "confirm":"Changer",
-	  "modalSuccess":{
-		"title":"Mot de passe changé !",
-		"confirmText":"OK"
+    "modalSuccess":{
+      "title":"Mot de passe changé !",
+      "confirmText":"OK"
 	  }
 	},
 	"createWalletPage":{
@@ -212,6 +223,9 @@
 	},
 	"sendPage":{
 	  "title":"Envoyer des CCX",
+    "syncing": {
+      "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+    },
 	  "sendBlock":{
 		"address":{
 		  "label":"Adresse de destination",
@@ -229,6 +243,10 @@
 		  "label":"Identifiant du payment (optionnel)",
 		  "invalid":"L'identifiant du paiement est invalide. La longeur doit être de 16 ou 64 caractères"
 		},
+    "message": {
+      "label": "Message (optional)",
+      "invalid": "The message is to long. Max length is 255 characters"
+    },
 		"mixin":{
 		  "label":"Confidentialité",
 		  "invalid":"Le mixin est invalide, doit être compris entre 3 et 10 ou zéro"
@@ -282,6 +300,80 @@
 		"content":"Veuillez rapprocher votre téléphone de l'autre appareil"
 	  }
 	},
+    "messagesPage": {
+      "title": "Messages",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+      },
+      "tabs": {
+        "inbox": "Inbox",
+        "send": "Send"
+      },
+      "inboxBlock": {
+        "title": "Messages Inbox"
+      },
+      "sendBlock": {
+        "address": {
+          "label": "Destination address",
+          "placeholder": "Write the address where you want to send the message",
+          "invalid": "The destination address is invalid",
+          "fundsTo": "The message will be sent to",
+          "receiver": "Receiver",
+          "description": "Description"
+        },
+        "message": {
+          "label": "Message",
+          "invalid": "The message is to long. Max length is 260 characters"
+        },
+        "sendButton": "Send",
+        "cancelButton": "Cancel"
+      },
+      "qrCodeScanning": {
+        "explication": "Present the QR code"
+      },
+      "notEnoughMoneyModal": {
+        "title": "Oops...",
+        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "confirmText": "OK"
+      },
+      "thankYouDonationModal": {
+        "title": "Thank you for your donation!",
+        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "confirmText": "OK"
+      },
+      "transferSentModal": {
+        "title": "Message sent successfully!",
+        "confirmText": "OK"
+      },
+      "transferExceptionModal": {
+        "title": "Oops...",
+        "content": "An error occurred. Please report this error: {details}",
+        "confirmText": "OK"
+      },
+      "invalidAmountModal": {
+        "title": "Oops...",
+        "content": "Invalid amount",
+        "confirmText": "OK"
+      },
+      "creatingTransferModal": {
+        "title": "Creating transfer ...",
+        "content": "Please wait..."
+      },
+      "finalizingTransferModal": {
+        "title": "Finalizing transfer ...",
+        "content": "Please wait..."
+      },
+      "confirmTransactionModal": {
+        "title": "Confirm transfer?",
+        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
+        "confirmText": "Confirm",
+        "cancelText": "Cancel"
+      },
+      "waitingNfcModal": {
+        "title": "Waiting Nfc",
+        "content": "Bring closer to the other device"
+      }
+    },
 	"receivePage":{
 	  "title":"Recevoir des CCX",
 	  "receiveBlock":{
@@ -358,6 +450,7 @@
 	  },
 	  "changePasswordButton":"Changer le mot de passe de mon portefeuille",
 	  "deleteWalletButton":"Supprimer mon portefeuille (copie locale)",
+    "resetWalletButton": "Reset and rescan wallet",
 	  "walletSettings":{
 		"creationHeight":{
 		  "label":"Hauteur à laquelle le portefeuille a été créé"
@@ -368,11 +461,22 @@
 		"updateButton":"Mettre à jour"
 	  },
 	  "deleteWalletModal":{
-		"title":"Supprimer mon portefeuille (copie locale)",
-		"content":"Etes vous VRAIMENT sûr de vouloir supprimer votre portefeuille ?",
-		"confirmText":"Oui je suis sûr",
-		"cancelText":"Annuler"
-	  }
+      "title":"Supprimer mon portefeuille (copie locale)",
+      "content":"Etes vous VRAIMENT sûr de vouloir supprimer votre portefeuille ?",
+      "confirmText":"Oui je suis sûr",
+      "cancelText":"Annuler"
+	  },
+    "resetWalletModal": {
+      "title": "Reset My Wallet (local copy)",
+      "content": "Are you sure you really want to reset your wallet?",
+      "confirmText": "Yes I'm sure",
+      "cancelText": "Cancel"
+    },
+    "optimizeWalletModal": {
+      "title": "Nothing to do...",
+      "content": "Your wallet is already optimized.",
+      "confirmText": "OK"
+    }
 	},
 	"importBasePage":{
 	  "parametersBlock":{

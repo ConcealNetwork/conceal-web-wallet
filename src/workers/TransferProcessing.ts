@@ -10,62 +10,61 @@ import {RawDaemon_Transaction} from "../model/blockchain/BlockchainExplorer";
 (<any>self).mn_decode = Mnemonic.mn_decode;
 (<any>self).mn_encode = Mnemonic.mn_encode;
 
-let currentWallet: Wallet | null = null;
-
 onmessage = function (data: MessageEvent) {
 	// if(data.isTrusted){
 	let event: any = data.data;
-	if (event.type === 'initWallet') {
-		currentWallet = Wallet.loadFromRaw(event.wallet);
-		postMessage('readyWallet');
-	} else if (event.type === 'process') {
-    logDebugMsg(`process new transactions...`);
+  try {
+    if (event.type === 'initWallet') {
+      postMessage({ type: 'readyWallet'	});
+    } else if (event.type === 'process') {
+      logDebugMsg(`process new transactions...`);
 
-		if (typeof event.wallet !== 'undefined') {
-      logDebugMsg(`loading wallet for the first time...`);
-			currentWallet = Wallet.loadFromRaw(event.wallet);
-		}
+      let readMinersTx = typeof event.readMinersTx !== 'undefined' && event.readMinersTx;
+      let rawTransactions: RawDaemon_Transaction[] = event.transactions;
+      let maxBlockNumber: number = event.maxBlock; 
+      let currentWallet: Wallet | null = null;
+      let transactions: any[] = [];
 
-		if (currentWallet === null) {
-      logDebugMsg(`Wallet is missing...`);
-			postMessage('missing_wallet');
-			return;
-		}
+      // get the current wallet from even parameters
+      currentWallet = Wallet.loadFromRaw(event.wallet);
+      // log any raw transactions that need to be processed
+      logDebugMsg(`rawTransactions`, rawTransactions);
 
-		let readMinersTx = typeof currentWallet.options.checkMinerTx !== 'undefined' && currentWallet.options.checkMinerTx;
+      if (!currentWallet) {
+        logDebugMsg(`Wallet is missing...`);
+        postMessage('missing_wallet');
+        return;
+      }
 
-		let rawTransactions: RawDaemon_Transaction[] = event.transactions;
-		let transactions: any[] = [];
+      for (let rawTransaction of rawTransactions) {
+        if (rawTransaction) {
+          if (rawTransaction.height) {
+            if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
+              continue;
+            }
 
-    // log any raw transactions that need to be processed
-    logDebugMsg(`rawTransactions`, rawTransactions);
+            try {
+              // parse the transaction to see if we need to include it in the wallet
+              if (TransactionsExplorer.ownsTx(rawTransaction, currentWallet)) {              
+                transactions.push(rawTransaction);
+                logDebugMsg(`pushed tx to transactions[]`);
+              }
+            } catch(err) {
+              console.error('Failed to process ownsTx for tx:', rawTransaction);
+            }
+          }
+        }
+      }
 
-		for (let rawTransaction of rawTransactions) {
-			if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
-				continue;
-			}
-
-			let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
-			if (transaction !== null) {
-				logDebugMsg(`parsed tx ${transaction['hash']} from rawTransaction`);
-			}
-			if (transaction !== null) {
-				currentWallet.addNew(transaction);
-        logDebugMsg(`Added tx ${transaction.hash} to currentWallet`);
-
-				transactions.push(transaction.export());
-        logDebugMsg(`pushed tx ${transaction.hash} to transactions[]`);
-			}
-		}
-		postMessage({
-			type: 'processed',
-			transactions: transactions
-		});
-	}
-	// let transaction = TransactionsExplorer.parse(rawTransaction, height, this.wallet);
-	// }else {
-	// 	console.warn('Non trusted data', data.data, JSON.stringify(data.data));
-	// }
+      postMessage({
+        type: 'processed',
+        maxHeight: maxBlockNumber,
+        transactions: transactions
+      });
+	  }
+  } catch(err: any) {
+    reportError(err);
+  } 
 };
 
 postMessage('ready');

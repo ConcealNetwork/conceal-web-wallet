@@ -16,18 +16,44 @@
  */
 
 import {RawFullyEncryptedWallet, RawWallet, Wallet} from "./Wallet";
-import {CoinUri} from "./CoinUri";
+import {StorageOld} from "./StorageOld";
 import {Storage} from "./Storage";
+import {CoinUri} from "./CoinUri";
 
-export class WalletRepository{
+export class WalletRepository {
 
-	static hasOneStored() : Promise<boolean>{
-		return Storage.getItem('wallet', null).then(function (wallet : any) {
-			return wallet !== null;
-		});
-	}
+  static migrateWallet(): Promise<Boolean> { 
+		return new Promise<boolean>((resolve, reject) => {
+      StorageOld.getItem('wallet', null).then(walletAsString => {
+        if (walletAsString !== null) {
+          Storage.setItem('wallet', walletAsString).then(() => {
+            StorageOld.remove('wallet');
+            resolve(true);
+          }).catch(err =>  {
+            reject(err);
+          });
+        } else {
+          resolve(false);
+        }
+      }).catch(err => {
+        reject(err);
+      });
+    });
+  }
+
+	static hasOneStored() : Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
+      this.migrateWallet().then(isSuccess => {
+        Storage.getItem('wallet', null).then(function (wallet : any) {
+          resolve(wallet !== null);
+        });
+      }).catch(err => {
+        resolve(false);
+      })
+    });
+  }
 	
-	static decodeWithPassword(rawWallet : RawWallet|RawFullyEncryptedWallet, password : string) : Wallet|null{
+	static decodeWithPassword(rawWallet : RawWallet|RawFullyEncryptedWallet, password : string) : Wallet|null {
 		if(password.length > 32)
 			password = password.substr(0 , 32);
 		if(password.length < 32){
@@ -56,7 +82,7 @@ export class WalletRepository{
 
 			try {
 				decodedRawWallet = JSON.parse(new TextDecoder("utf8").decode(decrypted));
-			}catch (e) {
+			} catch (e) {
 				decodedRawWallet = null;
 			}
 		}else{//RawWallet
@@ -82,10 +108,9 @@ export class WalletRepository{
 
 	static getLocalWalletWithPassword(password : string) : Promise<Wallet|null>{
 		return Storage.getItem('wallet', null).then((existingWallet : any) => {
-			//console.log(existingWallet);
-			if(existingWallet !== null){
+			if (existingWallet !== null) {
 				return this.decodeWithPassword(JSON.parse(existingWallet), password);
-			}else{
+			} else {
 				return null;
 			}
 		});
@@ -225,7 +250,5 @@ export class WalletRepository{
 		}
 
 	}
-
-
 
 }

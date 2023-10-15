@@ -52,6 +52,12 @@
         "title": "糟糕！",
         "content": "扫描二维码需要访问您相机的权限",
         "confirmText": "确认"
+      },
+      "optimize": {
+        "label": "优化",
+        "subtitle": "您的钱包需要优化",
+        "button": "立即优化",
+        "loadingText": "正在优化，请稍候..."
       }
     },
     "bottom": {
@@ -95,7 +101,10 @@
       "title": "帐户",
       "subtitle": "您的帐户概览和交易记录",
       "synchronizingBlock": {
-        "text": "同步中..."
+        "text": "同步中...",
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
       },
       "balanceBlock": {
         "title": "您的余额",
@@ -109,7 +118,8 @@
         "emptyWallet": "您的钱包目前没有资金。",
         "waitSync": "请等待钱包更新完毕",
         "beReallyPatient": "初始化设置可能比较耗时......",
-        "getCoinAddress": "收到CCX"
+        "getCoinAddress": "收到CCX",
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "交易明细",
@@ -119,7 +129,8 @@
         "paymentId": "付款ID",
         "unlockStatus": "状态",
         "unlockConfirm": "确认数",
-        "txPrivKey": "交易私钥"
+        "txPrivKey": "交易私钥",
+        "message": "Message"        
       }
     },
     "changeWalletPasswordPage": {
@@ -217,6 +228,9 @@
     },
     "sendPage": {
       "title": "发送CCX",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+      },
       "sendBlock": {
         "address": {
           "label": "目标地址",
@@ -233,6 +247,10 @@
         "paymentId": {
           "label": "付款ID（可选）",
           "invalid": "非法的付款ID. 长度必须是64位。"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "隐私",
@@ -285,6 +303,80 @@
       "waitingNfcModal": {
         "title": "等待Nfc",
         "content": "靠近其他设备一些"
+      }
+    },
+    "messagesPage": {
+      "title": "Messages",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+      },
+      "tabs": {
+        "inbox": "Inbox",
+        "send": "Send"
+      },
+      "inboxBlock": {
+        "title": "Messages Inbox"
+      },
+      "sendBlock": {
+        "address": {
+          "label": "Destination address",
+          "placeholder": "Write the address where you want to send the message",
+          "invalid": "The destination address is invalid",
+          "fundsTo": "The message will be sent to",
+          "receiver": "Receiver",
+          "description": "Description"
+        },
+        "message": {
+          "label": "Message",
+          "invalid": "The message is to long. Max length is 260 characters"
+        },
+        "sendButton": "Send",
+        "cancelButton": "Cancel"
+      },
+      "qrCodeScanning": {
+        "explication": "Present the QR code"
+      },
+      "notEnoughMoneyModal": {
+        "title": "Oops...",
+        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "confirmText": "OK"
+      },
+      "thankYouDonationModal": {
+        "title": "Thank you for your donation!",
+        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "confirmText": "OK"
+      },
+      "transferSentModal": {
+        "title": "Message sent successfully!",
+        "confirmText": "OK"
+      },
+      "transferExceptionModal": {
+        "title": "Oops...",
+        "content": "An error occurred. Please report this error: {details}",
+        "confirmText": "OK"
+      },
+      "invalidAmountModal": {
+        "title": "Oops...",
+        "content": "Invalid amount",
+        "confirmText": "OK"
+      },
+      "creatingTransferModal": {
+        "title": "Creating transfer ...",
+        "content": "Please wait..."
+      },
+      "finalizingTransferModal": {
+        "title": "Finalizing transfer ...",
+        "content": "Please wait..."
+      },
+      "confirmTransactionModal": {
+        "title": "Confirm transfer?",
+        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
+        "confirmText": "Confirm",
+        "cancelText": "Cancel"
+      },
+      "waitingNfcModal": {
+        "title": "Waiting Nfc",
+        "content": "Bring closer to the other device"
       }
     },
     "receivePage": {
@@ -366,6 +458,7 @@
       },
       "changePasswordButton": "更改我的钱包密码",
       "deleteWalletButton": "删除我的钱包（本地副本）",
+      "resetWalletButton": "Reset and rescan wallet",
       "walletSettings": {
         "creationHeight": {
           "label": "钱包创建的区块高度"
@@ -380,6 +473,17 @@
         "content": "确定要删除您的钱包吗？",
         "confirmText": "是的，我确定",
         "cancelText": "取消"
+      },
+      "resetWalletModal": {
+        "title": "Reset My Wallet (local copy)",
+        "content": "Are you sure you really want to reset your wallet?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
+      },
+      "optimizeWalletModal": {
+        "title": "Nothing to do...",
+        "content": "Your wallet is already optimized.",
+        "confirmText": "OK"
       }
     },
     "importBasePage": {

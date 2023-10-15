@@ -52,6 +52,12 @@
         "title": "Ой...",
         "content": "Требуется разрешение на доступ к камере для сканирования QR кода",
         "confirmText": "OK"
+      },
+      "optimize": {
+        "label": "Оптимизация",
+        "subtitle": "Ваш кошелек нуждается в оптимизации",
+        "button": "Оптимизировать сейчас",
+        "loadingText": "Оптимизация, пожалуйста, подождите..."
       }
     },
     "bottom": {
@@ -95,7 +101,10 @@
       "title": "Аккаунт",
       "subtitle": "Обзор вашей учетной записи и истории транзакций",
       "synchronizingBlock": {
-        "text": "Синхронизация..."
+        "text": "Синхронизация...",
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
       },
       "balanceBlock": {
         "title": "Ваш баланс",
@@ -109,7 +118,8 @@
         "emptyWallet": "В этом кошельке пока нет средств.",
         "waitSync": "Пожалуйста подождите пока кошелек обновляется",
         "beReallyPatient": "Начальная установка может занять некоторое время...",
-        "getCoinAddress": "Получить CCX"
+        "getCoinAddress": "Получить CCX",
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "Детали транзакции",
@@ -117,7 +127,8 @@
         "feesOnTx": "Комиссия",
         "blockHeight": "Высота блока",
         "paymentId": "Идентификатор платежа",
-        "txPrivKey": "Секретный ключ транзакции"
+        "txPrivKey": "Секретный ключ транзакции",
+        "message": "Message"        
       }
     },
     "changeWalletPasswordPage": {
@@ -215,6 +226,9 @@
     },
     "sendPage": {
       "title": "Отправить CCX",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+      },
       "sendBlock": {
         "address": {
           "label": "Адрес получателя",
@@ -231,6 +245,10 @@
         "paymentId": {
           "label": "Payment ID (необязательно)",
           "invalid": "Идентификатор платежа неверный. Длина должна быть 16 или 64 символа"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "Конфиденциальность",
@@ -283,6 +301,80 @@
       "waitingNfcModal": {
         "title": "Ожидание Nfc",
         "content": "Поднесите ближе к другому устройству"
+      }
+    },
+    "messagesPage": {
+      "title": "Messages",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+      },
+      "tabs": {
+        "inbox": "Inbox",
+        "send": "Send"
+      },
+      "inboxBlock": {
+        "title": "Messages Inbox"
+      },
+      "sendBlock": {
+        "address": {
+          "label": "Destination address",
+          "placeholder": "Write the address where you want to send the message",
+          "invalid": "The destination address is invalid",
+          "fundsTo": "The message will be sent to",
+          "receiver": "Receiver",
+          "description": "Description"
+        },
+        "message": {
+          "label": "Message",
+          "invalid": "The message is to long. Max length is 260 characters"
+        },
+        "sendButton": "Send",
+        "cancelButton": "Cancel"
+      },
+      "qrCodeScanning": {
+        "explication": "Present the QR code"
+      },
+      "notEnoughMoneyModal": {
+        "title": "Oops...",
+        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "confirmText": "OK"
+      },
+      "thankYouDonationModal": {
+        "title": "Thank you for your donation!",
+        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "confirmText": "OK"
+      },
+      "transferSentModal": {
+        "title": "Message sent successfully!",
+        "confirmText": "OK"
+      },
+      "transferExceptionModal": {
+        "title": "Oops...",
+        "content": "An error occurred. Please report this error: {details}",
+        "confirmText": "OK"
+      },
+      "invalidAmountModal": {
+        "title": "Oops...",
+        "content": "Invalid amount",
+        "confirmText": "OK"
+      },
+      "creatingTransferModal": {
+        "title": "Creating transfer ...",
+        "content": "Please wait..."
+      },
+      "finalizingTransferModal": {
+        "title": "Finalizing transfer ...",
+        "content": "Please wait..."
+      },
+      "confirmTransactionModal": {
+        "title": "Confirm transfer?",
+        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
+        "confirmText": "Confirm",
+        "cancelText": "Cancel"
+      },
+      "waitingNfcModal": {
+        "title": "Waiting Nfc",
+        "content": "Bring closer to the other device"
       }
     },
     "receivePage": {
@@ -361,6 +453,7 @@
       },
       "changePasswordButton": "Изменть пароль моего кошелька",
       "deleteWalletButton": "Удалить мой кошелек (локальную копию)",
+      "resetWalletButton": "Reset and rescan wallet",
       "walletSettings": {
         "creationHeight": {
           "label": "Высота создания кошелька"
@@ -375,6 +468,17 @@
         "content": "Вы ДЕЙСТВИТЕЛЬНО уверены что хотите удалить свой кошелек?",
         "confirmText": "Да, я знаю что делаю",
         "cancelText": "Отменить"
+      },
+      "resetWalletModal": {
+        "title": "Reset My Wallet (local copy)",
+        "content": "Are you sure you really want to reset your wallet?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
+      },
+      "optimizeWalletModal": {
+        "title": "Nothing to do...",
+        "content": "Your wallet is already optimized.",
+        "confirmText": "OK"
       }
     },
     "importBasePage": {

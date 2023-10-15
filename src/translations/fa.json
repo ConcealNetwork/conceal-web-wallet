@@ -52,6 +52,12 @@
         "title": "توجه",
         "content": "برای دسترسی به دوربین شما نیاز به مجوز میباشد",
         "confirmText": "تایید"
+      },
+      "optimize": {
+        "label": "بهینه سازی",
+        "subtitle": "کیف پول شما باید بهینه سازی شود",
+        "button": "هم اکنون بهینه سازی کنید",
+        "loadingText": "در حال بهینه سازی، لطفاً صبر کنید..."
       }
     },
     "bottom": {
@@ -94,7 +100,10 @@
       "title": "حساب کاربری",
       "subtitle": "صفحه ی اصلی کیف پول کربو",
       "synchronizingBlock": {
-        "text": "در حال همگام سازی با شبکه"
+        "text": "در حال همگام سازی با شبکه",
+        "lastBlock": "Block",
+        "Queue": "Queue",
+        "Transactions": "Tx"
       },
       "balanceBlock": {
         "title": "کل حساب",
@@ -108,14 +117,16 @@
         "emptyWallet": "کیف پول شما در حال حاضر خالی میباشد",
         "waitSync": "لطفا برای بارگذاری مجدد کیف پول صبر کنید",
         "beReallyPatient": "این پروسه ممکن است مقداری به طول بیانجامد",
-        "getCoinAddress": "آدرس کیف پول شما"
+        "getCoinAddress": "آدرس کیف پول شما",
+        "loadMoreBtn": "Load more"
       },
       "txDetails": {
         "title": "جزییات تراکنش ها",
         "txHash": "هش تراکنش",
         "feesOnTx": "کارمزد تراکنش",
         "blockHeight": "شماره بلوک",
-        "paymentId": "شناسه پرداخت"
+        "paymentId": "شناسه پرداخت",
+        "message": "Message"        
       }
     },
     "changeWalletPasswordPage": {
@@ -213,6 +224,9 @@
     },
     "sendPage": {
       "title": "ارسال کربو",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+      },
       "sendBlock": {
         "address": {
           "label": "ارسال به آدرس",
@@ -228,6 +242,10 @@
         "paymentId": {
           "label": "شناسه واریز",
           "invalid": "شناسه ی واریز اشتباه است مقداری را بین شانزده تا شصت و چهار کاراکتر وارد نمایید"
+        },
+        "message": {
+          "label": "Message (optional)",
+          "invalid": "The message is to long. Max length is 255 characters"
         },
         "mixin": {
           "label": "حریم خصوصی",
@@ -280,6 +298,80 @@
       "waitingNfcModal": {
         "title": "در انتظار ان اف سی",
         "content": "لطفا به دستگاه دیگر نزدیک شوید"
+      }
+    },
+    "messagesPage": {
+      "title": "Messages",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+      },
+      "tabs": {
+        "inbox": "Inbox",
+        "send": "Send"
+      },
+      "inboxBlock": {
+        "title": "Messages Inbox"
+      },
+      "sendBlock": {
+        "address": {
+          "label": "Destination address",
+          "placeholder": "Write the address where you want to send the message",
+          "invalid": "The destination address is invalid",
+          "fundsTo": "The message will be sent to",
+          "receiver": "Receiver",
+          "description": "Description"
+        },
+        "message": {
+          "label": "Message",
+          "invalid": "The message is to long. Max length is 260 characters"
+        },
+        "sendButton": "Send",
+        "cancelButton": "Cancel"
+      },
+      "qrCodeScanning": {
+        "explication": "Present the QR code"
+      },
+      "notEnoughMoneyModal": {
+        "title": "Oops...",
+        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "confirmText": "OK"
+      },
+      "thankYouDonationModal": {
+        "title": "Thank you for your donation!",
+        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "confirmText": "OK"
+      },
+      "transferSentModal": {
+        "title": "Message sent successfully!",
+        "confirmText": "OK"
+      },
+      "transferExceptionModal": {
+        "title": "Oops...",
+        "content": "An error occurred. Please report this error: {details}",
+        "confirmText": "OK"
+      },
+      "invalidAmountModal": {
+        "title": "Oops...",
+        "content": "Invalid amount",
+        "confirmText": "OK"
+      },
+      "creatingTransferModal": {
+        "title": "Creating transfer ...",
+        "content": "Please wait..."
+      },
+      "finalizingTransferModal": {
+        "title": "Finalizing transfer ...",
+        "content": "Please wait..."
+      },
+      "confirmTransactionModal": {
+        "title": "Confirm transfer?",
+        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
+        "confirmText": "Confirm",
+        "cancelText": "Cancel"
+      },
+      "waitingNfcModal": {
+        "title": "Waiting Nfc",
+        "content": "Bring closer to the other device"
       }
     },
     "receivePage": {
@@ -348,6 +440,7 @@
       },
       "changePasswordButton": "تغییر رمز عبور کیف پول",
       "deleteWalletButton": "حذف کیف پول از روی سیستم شما",
+      "resetWalletButton": "Reset and rescan wallet",
       "walletSettings": {
         "creationHeight": {
           "label": "ارتفاع زنجیره بلاکی هنگام ساخت کیف پول"
@@ -362,6 +455,17 @@
         "content": "آیا مطمین هستید که میخواهید کیف پول خود را حذف نمایید؟",
         "confirmText": "بله مطمینم",
         "cancelButtonText": "لغو"
+      },
+      "resetWalletModal": {
+        "title": "Reset My Wallet (local copy)",
+        "content": "Are you sure you really want to reset your wallet?",
+        "confirmText": "Yes I'm sure",
+        "cancelText": "Cancel"
+      },
+      "optimizeWalletModal": {
+        "title": "Nothing to do...",
+        "content": "Your wallet is already optimized.",
+        "confirmText": "OK"
       }
     },
     "importBasePage": {

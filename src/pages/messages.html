@@ -1,0 +1,115 @@
+<div id="app" class="body-root messageTab" v-cloak="">
+
+  <div id="appContent">
+
+    <div class="body-header">
+      <div class="header-title">
+        <i class="fa fa-comments" aria-hidden="true"></i> {{ $t("messagesPage.title") }}
+      </div>
+    </div>
+
+    <div class="body-content">
+
+      <div class="panel inline" v-if="isWalletSyncing" >
+        <div class="syncProgressContainer">
+          <label class="syncProgressLabel">{{ $t("messagesPage.syncing.label") }}</label>
+        </div>
+      </div>
+
+      <div class="messages">        
+
+        <div class="tab">
+          <button class="tablinks active" onclick="openMessagesTab(event, 'messageHistory')"><i aria-hidden="true" class="fa fa-inbox"><span>{{ $t("messagesPage.tabs.inbox") }}</span></i></button>
+          <button class="tablinks" onclick="openMessagesTab(event, 'sendMessage')"><i aria-hidden="true" class="fa fa-paper-plane"></i><span>{{ $t("messagesPage.tabs.send") }}</span></button>
+        </div>
+
+        <!-- message history -->
+        <div id="messageHistory" class="panel nopadding messageHistory tabcontent">
+          <div class="body" >
+            <div class="header-wrapper">
+              <div class="header-title">{{ $t("messagesPage.inboxBlock.title") }}</div>
+            </div>
+            <div class="content" >
+              <div class="transactions" id="accountTransactions">              
+                <table>
+                  <template v-for="transaction of transactions">
+                    <tr class="transaction" :class="(transaction.blockHeight === 0 ? 'pending' : '')">
+                      <td class="direction" >
+                        <i v-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
+                        <i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
+                      </td><!--LEfT-->
+                      <td class="timestamp" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp * 1000), 'short')}}</td>
+                      <td class="timestamp" v-else="">...</td>
+                      <td class="blockHeight">{{transaction.blockHeight}}</td>
+                      <td class="messageText">{{transaction.message}}</td>
+                    </tr>
+                    <tr v-if="transaction.paymentId !== ''">
+                      <td colspan="4" class="paymentId" >{{transaction.paymentId}}</td><!--UNDER-->
+                    </tr>
+                  </template>
+                </table>
+              </div>
+            </div>  
+          </div>
+        </div>
+
+        <!-- Send a new message -->
+        <div id="sendMessage" class="panel sendMessage tabcontent">
+          <div class="body">
+            <div class="field action">
+              <label>{{ $t("messagesPage.sendBlock.address.label") }}</label>
+              <div class="subfield" >
+                <input aria-label="destinationAddressUser" type="text" v-model="destinationAddressUser" v-bind:placeholder="$t('messagesPage.sendBlock.address.placeholder')" :readonly="lockedForm" :disabled="isWalletSyncing" :class="{ twoActions: nfcAvailable}"/>
+                <span class="action" @click="startScan()"><i class="scanButton fa fa-camera" aria-hidden="true"></i></span>
+                <span class="action" @click="startNfcScan()" v-if="nfcAvailable"><i class="scanButton fa fa-rss" aria-hidden="true"></i></span>
+              </div>
+              <div v-if="!destinationAddressValid && destinationAddressUser != ''" class="message error">
+                {{ $t("messagesPage.sendBlock.address.invalid") }}
+              </div>
+              <div v-if="domainAliasAddress !== null" class="message">
+                <b>{{ $t("messagesPage.sendBlock.address.fundsTo") }}: </b> {{destinationAddress}}
+              </div>
+              <div v-if="txDestinationName !== null"  class="message">
+                <b>{{ $t("messagesPage.sendBlock.address.fundsTo") }}: </b>{{txDestinationName}}
+              </div>
+              <div v-if="txDescription !== null" class="message">
+                <b>{{ $t("messagesPage.sendBlock.address.description") }}: </b>{{txDescription}}
+              </div>
+            </div>
+    
+            <div class="field" >
+              <label>{{ $t("messagesPage.sendBlock.message.label") }}</label>
+              <textarea aria-label="messageInput" class="messageInput" id="messageTextArea" type="text" :maxlength="maxMessageSize" v-model="message" placeholder="" :readonly="lockedForm" :disabled="isWalletSyncing"></textarea>
+              <div v-if="!messageValid" class="message error">
+                {{ $t("messagesPage.sendBlock.message.invalid") }}
+              </div>
+            </div>
+  
+            <div class="actions tc">
+              <button type="button" class="btn primary" @click="send()" :disabled="!destinationAddressValid || !messageValid || isWalletSyncing">{{ $t("messagesPage.sendBlock.sendButton") }}</button>
+            </div>
+            <div class="actions tc" v-if="lockedForm" >
+              <button type="button" class="btn small" @click="reset()" >{{ $t("messagesPage.sendBlock.cancelButton") }}</button>
+            </div>
+          </div>  
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openMessagesTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+</script>
