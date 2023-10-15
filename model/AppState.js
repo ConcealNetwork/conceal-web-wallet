@@ -39,28 +39,30 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
         return WalletWorker;
     }());
     exports.WalletWorker = WalletWorker;
-    var AppState = /** @class */ (function () {
+    var AppState = exports.AppState = /** @class */ (function () {
         function AppState() {
         }
         AppState.openWallet = function (wallet, password) {
             var walletWorker = new WalletWorker(wallet, password);
-            DependencyInjector_1.DependencyInjectorInstance().register(Wallet_1.Wallet.name, wallet);
-            var watchdog = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance().watchdog(wallet);
-            DependencyInjector_1.DependencyInjectorInstance().register(WalletWatchdog_1.WalletWatchdog.name, watchdog);
-            DependencyInjector_1.DependencyInjectorInstance().register(WalletWorker.name, walletWorker);
+            (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, wallet);
+            var watchdog = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance().start(wallet);
+            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, watchdog);
+            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, walletWorker);
             $('body').addClass('connected');
-            if (wallet.isViewOnly())
+            if (wallet.isViewOnly()) {
                 $('body').addClass('viewOnlyWallet');
+            }
         };
         AppState.disconnect = function () {
-            var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
-            var walletWorker = DependencyInjector_1.DependencyInjectorInstance().getInstance(WalletWorker.name, 'default', false);
-            var walletWatchdog = DependencyInjector_1.DependencyInjectorInstance().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
-            if (walletWatchdog !== null)
+            var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+            var walletWorker = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWorker.name, 'default', false);
+            var walletWatchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
+            if (walletWatchdog !== null) {
                 walletWatchdog.stop();
-            DependencyInjector_1.DependencyInjectorInstance().register(Wallet_1.Wallet.name, undefined, 'default');
-            DependencyInjector_1.DependencyInjectorInstance().register(WalletWorker.name, undefined, 'default');
-            DependencyInjector_1.DependencyInjectorInstance().register(WalletWatchdog_1.WalletWatchdog.name, undefined, 'default');
+            }
+            (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, undefined, 'default');
+            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, undefined, 'default');
+            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, undefined, 'default');
             $('body').removeClass('connected');
             $('body').removeClass('viewOnlyWallet');
         };
@@ -98,63 +100,72 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
                             });
                             var savePassword_1 = result.value;
                             // let password = prompt();
-                            var memoryWallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+                            var memoryWallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
                             if (memoryWallet === null) {
-                                WalletRepository_1.WalletRepository.getLocalWalletWithPassword(savePassword_1).then(function (wallet) {
-                                    //console.log(wallet);
-                                    if (wallet !== null) {
-                                        wallet.recalculateIfNotViewOnly();
-                                        //checking the wallet to find integrity/problems and try to update it before loading
-                                        var blockchainHeightToRescanObj = {};
-                                        for (var _i = 0, _a = wallet.getTransactionsCopy(); _i < _a.length; _i++) {
-                                            var tx = _a[_i];
-                                            if (tx.hash === '') {
-                                                blockchainHeightToRescanObj[tx.blockHeight] = true;
+                                // if needed migrate from old to new storage
+                                WalletRepository_1.WalletRepository.migrateWallet().then(function (isSuccess) {
+                                    WalletRepository_1.WalletRepository.getLocalWalletWithPassword(savePassword_1).then(function (wallet) {
+                                        //console.log(wallet);
+                                        if (wallet !== null) {
+                                            wallet.recalculateIfNotViewOnly();
+                                            //checking the wallet to find integrity/problems and try to update it before loading
+                                            var blockchainHeightToRescanObj = {};
+                                            for (var _i = 0, _a = wallet.getTransactionsCopy(); _i < _a.length; _i++) {
+                                                var tx = _a[_i];
+                                                if (tx.hash === '') {
+                                                    blockchainHeightToRescanObj[tx.blockHeight] = true;
+                                                }
                                             }
-                                        }
-                                        var blockchainHeightToRescan = Object.keys(blockchainHeightToRescanObj);
-                                        if (blockchainHeightToRescan.length > 0) {
-                                            var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
-                                            var promisesBlocks = [];
-                                            for (var _b = 0, blockchainHeightToRescan_1 = blockchainHeightToRescan; _b < blockchainHeightToRescan_1.length; _b++) {
-                                                var height = blockchainHeightToRescan_1[_b];
-                                                promisesBlocks.push(blockchainExplorer.getTransactionsForBlocks(parseInt(height), parseInt(height), wallet.options.checkMinerTx));
-                                                //console.log(`promisesBlocks.length: ${promisesBlocks.length}`);
-                                            }
-                                            Promise.all(promisesBlocks).then(function (arrayOfTxs) {
-                                                for (var _i = 0, arrayOfTxs_1 = arrayOfTxs; _i < arrayOfTxs_1.length; _i++) {
-                                                    var txs = arrayOfTxs_1[_i];
-                                                    for (var _a = 0, txs_1 = txs; _a < txs_1.length; _a++) {
-                                                        var rawTx = txs_1[_a];
-                                                        if (wallet !== null) {
-                                                            var tx = TransactionsExplorer_1.TransactionsExplorer.parse(rawTx, wallet);
-                                                            if (tx !== null) {
-                                                                console.log("Added new Tx " + tx.hash + " to wallet");
-                                                                wallet.addNew(tx);
+                                            var blockchainHeightToRescan = Object.keys(blockchainHeightToRescanObj);
+                                            if (blockchainHeightToRescan.length > 0) {
+                                                var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
+                                                var promisesBlocks = [];
+                                                for (var _b = 0, blockchainHeightToRescan_1 = blockchainHeightToRescan; _b < blockchainHeightToRescan_1.length; _b++) {
+                                                    var height = blockchainHeightToRescan_1[_b];
+                                                    promisesBlocks.push(blockchainExplorer.getTransactionsForBlocks(parseInt(height), parseInt(height), wallet.options.checkMinerTx));
+                                                    //console.log(`promisesBlocks.length: ${promisesBlocks.length}`);
+                                                }
+                                                Promise.all(promisesBlocks).then(function (arrayOfTxs) {
+                                                    for (var _i = 0, arrayOfTxs_1 = arrayOfTxs; _i < arrayOfTxs_1.length; _i++) {
+                                                        var txs = arrayOfTxs_1[_i];
+                                                        for (var _a = 0, txs_1 = txs; _a < txs_1.length; _a++) {
+                                                            var rawTx = txs_1[_a];
+                                                            if (wallet !== null) {
+                                                                var tx = TransactionsExplorer_1.TransactionsExplorer.parse(rawTx, wallet);
+                                                                if (tx !== null) {
+                                                                    console.log("Added new Tx ".concat(tx.hash, " to wallet"));
+                                                                    wallet.addNew(tx);
+                                                                }
                                                             }
                                                         }
                                                     }
+                                                }).catch(function (err) {
+                                                    console.error(err);
+                                                });
+                                            }
+                                            swal.close();
+                                            resolve();
+                                            AppState.openWallet(wallet, savePassword_1);
+                                            if (redirectToHome)
+                                                window.location.href = '#account';
+                                        }
+                                        else {
+                                            swal({
+                                                type: 'error',
+                                                title: i18n.t('global.invalidPasswordModal.title'),
+                                                text: i18n.t('global.invalidPasswordModal.content'),
+                                                confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
+                                                onOpen: function () {
+                                                    swal.hideLoading();
                                                 }
                                             });
+                                            reject();
                                         }
-                                        swal.close();
-                                        resolve();
-                                        AppState.openWallet(wallet, savePassword_1);
-                                        if (redirectToHome)
-                                            window.location.href = '#account';
-                                    }
-                                    else {
-                                        swal({
-                                            type: 'error',
-                                            title: i18n.t('global.invalidPasswordModal.title'),
-                                            text: i18n.t('global.invalidPasswordModal.content'),
-                                            confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
-                                            onOpen: function () {
-                                                swal.hideLoading();
-                                            }
-                                        });
-                                        reject();
-                                    }
+                                    }).catch(function (err) {
+                                        console.error("Error in getLocalWalletWithPassword", err);
+                                    });
+                                }).catch(function (err) {
+                                    console.error("Error in getLocmigrateWalletalWalletWithPassword", err);
                                 });
                             }
                             else {
@@ -171,5 +182,4 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
         AppState.leftMenuEnabled = false;
         return AppState;
     }());
-    exports.AppState = AppState;
 });

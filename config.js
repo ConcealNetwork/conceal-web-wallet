@@ -1,15 +1,18 @@
 "use strict";
 //export {};
-var global = typeof window !== 'undefined' ? window : self;
-global.config = {
+var myGlobal = typeof window !== 'undefined' ? window : self;
+myGlobal.config = {
     debug: false,
     apiUrl: [
         "https://ccxapi.conceal.network/api/"
     ],
     nodeList: [
-        "https://ccxapi.conceal.network/daemon/"
+        "https://seed1.conceal.network/daemon/",
+        "https://seed2.conceal.network/daemon/",
+        "https://seed3.conceal.network/daemon/",
+        "https://ccxapi.conceal.network/daemon/",
+        "https://explorer.conceal.network/daemon/"
     ],
-    nodeUrl: "",
     mainnetExplorerUrl: "https://explorer.conceal.network/",
     mainnetExplorerUrlHash: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_transaction",
     mainnetExplorerUrlBlock: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_block",
@@ -31,9 +34,16 @@ global.config = {
     feePerKB: new JSBigInt('1000'),
     dustThreshold: new JSBigInt('10'),
     defaultMixin: 5,
+    optimizeOutputs: 100,
+    optimizeThreshold: 1,
+    messageTxAmount: new JSBigInt('1000'),
+    maxMessageSize: 260,
     idleTimeout: 30,
     idleWarningDuration: 20,
-    syncBlockCount: 1000,
+    syncBlockCount: 300,
+    maxBlockQueue: 25,
+    maxRemoteNodes: 8,
+    maxWorkerCores: 8,
     coinSymbol: 'CCX',
     openAliasPrefix: "ccx",
     coinName: 'Conceal',
@@ -41,8 +51,6 @@ global.config = {
     avgBlockTime: 120,
     maxBlockNumber: 500000000,
 };
-var randInt = Math.floor(Math.random() * Math.floor(config.nodeList.length));
-config.nodeUrl = config.nodeList[randInt];
 function logDebugMsg() {
     var data = [];
     for (var _i = 0; _i < arguments.length; _i++) {
@@ -58,4 +66,4 @@ function logDebugMsg() {
     }
 }
 // log debug messages if debug is set to true
-global.logDebugMsg = logDebugMsg;
+myGlobal.logDebugMsg = logDebugMsg;

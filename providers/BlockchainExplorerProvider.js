@@ -22,10 +22,10 @@ define(["require", "exports", "../model/Constants", "../lib/numbersLab/Dependenc
         function BlockchainExplorerProvider() {
         }
         BlockchainExplorerProvider.getInstance = function () {
-            var blockchainExplorer = DependencyInjector_1.DependencyInjectorInstance().getInstance(Constants_1.Constants.BLOCKCHAIN_EXPLORER);
+            var blockchainExplorer = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Constants_1.Constants.BLOCKCHAIN_EXPLORER);
             if (blockchainExplorer === null) {
                 blockchainExplorer = new BlockchainExplorerRPCDaemon_1.BlockchainExplorerRpcDaemon();
-                DependencyInjector_1.DependencyInjectorInstance().register(Constants_1.Constants.BLOCKCHAIN_EXPLORER, blockchainExplorer);
+                (0, DependencyInjector_1.DependencyInjectorInstance)().register(Constants_1.Constants.BLOCKCHAIN_EXPLORER, blockchainExplorer);
             }
             return blockchainExplorer;
         };

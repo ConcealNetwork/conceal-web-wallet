@@ -21,10 +21,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -39,7 +41,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numbersLab/VueAnnotate", "../model/TransactionsExplorer", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../utils/Url", "../model/CoinUri", "../model/QRReader", "../model/AppState", "../providers/BlockchainExplorerProvider", "../model/Nfc", "../model/Cn", "../model/WalletWatchdog"], function (require, exports, DestructableView_1, VueAnnotate_1, TransactionsExplorer_1, DependencyInjector_1, Wallet_1, Url_1, CoinUri_1, QRReader_1, AppState_1, BlockchainExplorerProvider_1, Nfc_1, Cn_1, WalletWatchdog_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
     var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
     AppState_1.AppState.enableLeftMenu();
     var SendView = /** @class */ (function (_super) {
@@ -47,9 +49,215 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         function SendView(container) {
             var _this = _super.call(this, container) || this;
             _this.qrReader = null;
+            _this.timeoutResolveAlias = 0;
             _this.redirectUrlAfterSend = null;
             _this.ndefListener = null;
-            _this.timeoutResolveAlias = 0;
+            _this.refresh = function () {
+                blockchainExplorer.getHeight().then(function (height) {
+                    _this.blockchainHeight = height;
+                    _this.isWalletSyncing = (wallet.lastHeight + 2) < _this.blockchainHeight;
+                    if ((_this.oldIsWalletSyncing !== _this.isWalletSyncing) && !_this.isWalletSyncing) {
+                        _this.checkOptimization();
+                    }
+                    _this.oldIsWalletSyncing = _this.isWalletSyncing;
+                }).catch(function (err) {
+                    // in case of error do nothing
+                });
+            };
+            _this.destruct = function () {
+                clearInterval(_this.intervalRefresh);
+                _this.stopScan();
+                _this.stopNfcScan();
+                swal.close();
+                return _super.prototype.destruct.call(_this);
+            };
+            _this.send = function () {
+                var self = _this;
+                blockchainExplorer.getHeight().then(function (blockchainHeight) {
+                    var amount = parseFloat(self.amountToSend);
+                    if (self.destinationAddress !== null) {
+                        //todo use BigInteger
+                        if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.unlockedAmount(blockchainHeight)) {
+                            swal({
+                                type: 'error',
+                                title: i18n.t('sendPage.notEnoughMoneyModal.title'),
+                                text: i18n.t('sendPage.notEnoughMoneyModal.content'),
+                                confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
+                            });
+                            return;
+                        }
+                        //TODO use biginteger
+                        var amountToSend = amount * Math.pow(10, config.coinUnitPlaces);
+                        var destinationAddress_1 = self.destinationAddress;
+                        swal({
+                            title: i18n.t('sendPage.creatingTransferModal.title'),
+                            html: i18n.t('sendPage.creatingTransferModal.content'),
+                            onOpen: function () {
+                                swal.showLoading();
+                            }
+                        });
+                        var mixinToSendWith = config.defaultMixin;
+                        TransactionsExplorer_1.TransactionsExplorer.createTx([{ address: destinationAddress_1, amount: amountToSend }], self.paymentId, wallet, blockchainHeight, function (amounts, numberOuts) {
+                            return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+                        }, function (amount, feesAmount) {
+                            if (amount + feesAmount > wallet.unlockedAmount(blockchainHeight)) {
+                                swal({
+                                    type: 'error',
+                                    title: i18n.t('sendPage.notEnoughMoneyModal.title'),
+                                    text: i18n.t('sendPage.notEnoughMoneyModal.content'),
+                                    confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
+                                    onOpen: function () {
+                                        swal.hideLoading();
+                                    }
+                                });
+                                throw '';
+                            }
+                            return new Promise(function (resolve, reject) {
+                                setTimeout(function () {
+                                    swal({
+                                        title: i18n.t('sendPage.confirmTransactionModal.title'),
+                                        html: i18n.t('sendPage.confirmTransactionModal.content', {
+                                            amount: amount / Math.pow(10, config.coinUnitPlaces),
+                                            fees: feesAmount / Math.pow(10, config.coinUnitPlaces),
+                                            total: (amount + feesAmount) / Math.pow(10, config.coinUnitPlaces),
+                                        }),
+                                        showCancelButton: true,
+                                        confirmButtonText: i18n.t('sendPage.confirmTransactionModal.confirmText'),
+                                        cancelButtonText: i18n.t('sendPage.confirmTransactionModal.cancelText'),
+                                    }).then(function (result) {
+                                        if (result.dismiss) {
+                                            reject('');
+                                        }
+                                        else {
+                                            swal({
+                                                title: i18n.t('sendPage.finalizingTransferModal.title'),
+                                                html: i18n.t('sendPage.finalizingTransferModal.content'),
+                                                onOpen: function () {
+                                                    swal.showLoading();
+                                                }
+                                            });
+                                            resolve();
+                                        }
+                                    }).catch(reject);
+                                }, 1);
+                            });
+                        }, mixinToSendWith, self.message, 0).then(function (rawTxData) {
+                            blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
+                                //save the tx private key
+                                wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
+                                //force a mempool check so the user is up to date
+                                var watchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name);
+                                if (watchdog !== null)
+                                    watchdog.checkMempool();
+                                var promise = Promise.resolve();
+                                if (destinationAddress_1 === 'ccx7NzuofXxcypov8Yqm2A118xT17HereBFjp3RScjzM7wncf8BRcnHZbACy63sWD71L7NmkJRgQKXFE3weCfAh31RAVFHgttf' ||
+                                    destinationAddress_1 === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj' ||
+                                    destinationAddress_1 === 'ccx7YZ4RC97fqMh1bmzrFtDoSSiEgvEYzhaLE53SR9bh4QrDBUhGUH3TCmXqv8MTLjJDtnCeeaT5bLC2ZSzp3ZmQ19DoiPLLXS') {
+                                    promise = swal({
+                                        type: 'success',
+                                        title: i18n.t('sendPage.thankYouDonationModal.title'),
+                                        text: i18n.t('sendPage.thankYouDonationModal.content'),
+                                        confirmButtonText: i18n.t('sendPage.thankYouDonationModal.confirmText'),
+                                        onClose: function () {
+                                            window.location.href = '#!account';
+                                        }
+                                    });
+                                }
+                                else
+                                    promise = swal({
+                                        type: 'success',
+                                        title: i18n.t('sendPage.transferSentModal.title'),
+                                        confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
+                                        onClose: function () {
+                                            window.location.href = '#!account';
+                                        }
+                                    });
+                                promise.then(function () {
+                                    if (self.redirectUrlAfterSend !== null) {
+                                        window.location.href = self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash);
+                                    }
+                                });
+                            }).catch(function (data) {
+                                swal({
+                                    type: 'error',
+                                    title: i18n.t('sendPage.transferExceptionModal.title'),
+                                    html: i18n.t('sendPage.transferExceptionModal.content', { details: JSON.stringify(data) }),
+                                    confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                });
+                            });
+                            swal.close();
+                        }).catch(function (error) {
+                            //console.log(error);
+                            if (error && error !== '') {
+                                if (typeof error === 'string')
+                                    swal({
+                                        type: 'error',
+                                        title: i18n.t('sendPage.transferExceptionModal.title'),
+                                        html: i18n.t('sendPage.transferExceptionModal.content', { details: error }),
+                                        confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                    });
+                                else
+                                    swal({
+                                        type: 'error',
+                                        title: i18n.t('sendPage.transferExceptionModal.title'),
+                                        html: i18n.t('sendPage.transferExceptionModal.content', { details: JSON.stringify(error) }),
+                                        confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                    });
+                            }
+                        });
+                    }
+                    else {
+                        swal({
+                            type: 'error',
+                            title: i18n.t('sendPage.invalidAmountModal.title'),
+                            html: i18n.t('sendPage.invalidAmountModal.content'),
+                            confirmButtonText: i18n.t('sendPage.invalidAmountModal.confirmText'),
+                        });
+                    }
+                }).catch(function (err) {
+                    console.error("Error trying to send funds", err);
+                });
+            };
+            _this.checkOptimization = function () {
+                blockchainExplorer.getHeight().then(function (blockchainHeight) {
+                    var optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
+                    logDebugMsg("optimizeInfo.numOutputs", optimizeInfo.numOutputs);
+                    logDebugMsg('optimizeInfo.isNeeded', optimizeInfo.isNeeded);
+                    _this.optimizeIsNeeded = optimizeInfo.isNeeded;
+                    if (optimizeInfo.isNeeded) {
+                        _this.optimizeOutputs = optimizeInfo.numOutputs;
+                    }
+                }).catch(function (err) {
+                    console.error("Error in checkOptimization, calling getHeight", err);
+                });
+            };
+            _this.optimizeWallet = function () {
+                _this.optimizeLoading = true; // set loading state to true
+                blockchainExplorer.getHeight().then(function (blockchainHeight) {
+                    wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer, function (amounts, numberOuts) {
+                        return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+                    }).then(function (processedOuts) {
+                        var watchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name);
+                        console.log("processedOuts", processedOuts);
+                        //force a mempool check so the user is up to date
+                        if (watchdog !== null) {
+                            watchdog.checkMempool();
+                        }
+                        _this.optimizeLoading = false; // set loading state to false
+                        setTimeout(function () {
+                            _this.checkOptimization(); // check if optimization is still needed
+                        }, 1000);
+                    }).catch(function (err) {
+                        console.log(err);
+                        _this.optimizeLoading = false; // set loading state to false
+                        setTimeout(function () {
+                            _this.checkOptimization(); // check if optimization is still needed
+                        }, 1000);
+                    });
+                }).catch(function (err) {
+                    console.error("Error in optimizeWallet, calling getHeight", err);
+                });
+            };
             var sendAddress = Url_1.Url.getHashSearchParameter('address');
             var amount = Url_1.Url.getHashSearchParameter('amount');
             var destinationName = Url_1.Url.getHashSearchParameter('destName');
@@ -65,7 +273,16 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 _this.txDescription = description.substr(0, 256);
             if (redirect !== null)
                 _this.redirectUrlAfterSend = decodeURIComponent(redirect);
+            _this.maxMessageSize = config.maxMessageSize;
+            _this.oldIsWalletSyncing = true;
+            _this.isWalletSyncing = true;
+            _this.blockchainHeight = -1;
+            _this.checkOptimization();
             _this.nfcAvailable = _this.nfc.has;
+            _this.intervalRefresh = setInterval(function () {
+                _this.refresh();
+            }, 1 * 1000);
+            _this.refresh();
             return _this;
         }
         SendView.prototype.reset = function () {
@@ -102,6 +319,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                         _this.stopNfcScan();
                     }
                 }).then(function (result) {
+                    // do nothing
                 });
             }
         };
@@ -200,157 +418,6 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 }
             }
         };
-        SendView.prototype.destruct = function () {
-            this.stopScan();
-            this.stopNfcScan();
-            swal.close();
-            return _super.prototype.destruct.call(this);
-        };
-        SendView.prototype.send = function () {
-            var self = this;
-            blockchainExplorer.getHeight().then(function (blockchainHeight) {
-                var amount = parseFloat(self.amountToSend);
-                if (self.destinationAddress !== null) {
-                    //todo use BigInteger
-                    if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.unlockedAmount(blockchainHeight)) {
-                        swal({
-                            type: 'error',
-                            title: i18n.t('sendPage.notEnoughMoneyModal.title'),
-                            text: i18n.t('sendPage.notEnoughMoneyModal.content'),
-                            confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
-                        });
-                        return;
-                    }
-                    //TODO use biginteger
-                    var amountToSend = amount * Math.pow(10, config.coinUnitPlaces);
-                    var destinationAddress_1 = self.destinationAddress;
-                    swal({
-                        title: i18n.t('sendPage.creatingTransferModal.title'),
-                        html: i18n.t('sendPage.creatingTransferModal.content'),
-                        onOpen: function () {
-                            swal.showLoading();
-                        }
-                    });
-                    var mixinToSendWith = config.defaultMixin;
-                    TransactionsExplorer_1.TransactionsExplorer.createTx([{ address: destinationAddress_1, amount: amountToSend }], self.paymentId, wallet, blockchainHeight, function (amounts, numberOuts) {
-                        return blockchainExplorer.getRandomOuts(amounts, numberOuts);
-                    }, function (amount, feesAmount) {
-                        if (amount + feesAmount > wallet.unlockedAmount(blockchainHeight)) {
-                            swal({
-                                type: 'error',
-                                title: i18n.t('sendPage.notEnoughMoneyModal.title'),
-                                text: i18n.t('sendPage.notEnoughMoneyModal.content'),
-                                confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
-                                onOpen: function () {
-                                    swal.hideLoading();
-                                }
-                            });
-                            throw '';
-                        }
-                        return new Promise(function (resolve, reject) {
-                            setTimeout(function () {
-                                swal({
-                                    title: i18n.t('sendPage.confirmTransactionModal.title'),
-                                    html: i18n.t('sendPage.confirmTransactionModal.content', {
-                                        amount: amount / Math.pow(10, config.coinUnitPlaces),
-                                        fees: feesAmount / Math.pow(10, config.coinUnitPlaces),
-                                        total: (amount + feesAmount) / Math.pow(10, config.coinUnitPlaces),
-                                    }),
-                                    showCancelButton: true,
-                                    confirmButtonText: i18n.t('sendPage.confirmTransactionModal.confirmText'),
-                                    cancelButtonText: i18n.t('sendPage.confirmTransactionModal.cancelText'),
-                                }).then(function (result) {
-                                    if (result.dismiss) {
-                                        reject('');
-                                    }
-                                    else {
-                                        swal({
-                                            title: i18n.t('sendPage.finalizingTransferModal.title'),
-                                            html: i18n.t('sendPage.finalizingTransferModal.content'),
-                                            onOpen: function () {
-                                                swal.showLoading();
-                                            }
-                                        });
-                                        resolve();
-                                    }
-                                }).catch(reject);
-                            }, 1);
-                        });
-                    }, mixinToSendWith).then(function (rawTxData) {
-                        blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
-                            //save the tx private key
-                            wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
-                            //force a mempool check so the user is up to date
-                            var watchdog = DependencyInjector_1.DependencyInjectorInstance().getInstance(WalletWatchdog_1.WalletWatchdog.name);
-                            if (watchdog !== null)
-                                watchdog.checkMempool();
-                            var promise = Promise.resolve();
-                            if (destinationAddress_1 === 'ccx7NzuofXxcypov8Yqm2A118xT17HereBFjp3RScjzM7wncf8BRcnHZbACy63sWD71L7NmkJRgQKXFE3weCfAh31RAVFHgttf' ||
-                                destinationAddress_1 === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj' ||
-                                destinationAddress_1 === 'ccx7YZ4RC97fqMh1bmzrFtDoSSiEgvEYzhaLE53SR9bh4QrDBUhGUH3TCmXqv8MTLjJDtnCeeaT5bLC2ZSzp3ZmQ19DoiPLLXS') {
-                                promise = swal({
-                                    type: 'success',
-                                    title: i18n.t('sendPage.thankYouDonationModal.title'),
-                                    text: i18n.t('sendPage.thankYouDonationModal.content'),
-                                    confirmButtonText: i18n.t('sendPage.thankYouDonationModal.confirmText'),
-                                    onClose: function () {
-                                        window.location.href = '#!account';
-                                    }
-                                });
-                            }
-                            else
-                                promise = swal({
-                                    type: 'success',
-                                    title: i18n.t('sendPage.transferSentModal.title'),
-                                    confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
-                                    onClose: function () {
-                                        window.location.href = '#!account';
-                                    }
-                                });
-                            promise.then(function () {
-                                if (self.redirectUrlAfterSend !== null) {
-                                    window.location.href = self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash);
-                                }
-                            });
-                        }).catch(function (data) {
-                            swal({
-                                type: 'error',
-                                title: i18n.t('sendPage.transferExceptionModal.title'),
-                                html: i18n.t('sendPage.transferExceptionModal.content', { details: JSON.stringify(data) }),
-                                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-                            });
-                        });
-                        swal.close();
-                    }).catch(function (error) {
-                        //console.log(error);
-                        if (error && error !== '') {
-                            if (typeof error === 'string')
-                                swal({
-                                    type: 'error',
-                                    title: i18n.t('sendPage.transferExceptionModal.title'),
-                                    html: i18n.t('sendPage.transferExceptionModal.content', { details: error }),
-                                    confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-                                });
-                            else
-                                swal({
-                                    type: 'error',
-                                    title: i18n.t('sendPage.transferExceptionModal.title'),
-                                    html: i18n.t('sendPage.transferExceptionModal.content', { details: JSON.stringify(error) }),
-                                    confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-                                });
-                        }
-                    });
-                }
-                else {
-                    swal({
-                        type: 'error',
-                        title: i18n.t('sendPage.invalidAmountModal.title'),
-                        html: i18n.t('sendPage.invalidAmountModal.content'),
-                        confirmButtonText: i18n.t('sendPage.invalidAmountModal.confirmText'),
-                    });
-                }
-            });
-        };
         SendView.prototype.destinationAddressUserWatch = function () {
             if (this.destinationAddressUser.indexOf('.') !== -1) {
                 var self_1 = this;
@@ -407,6 +474,14 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 this.paymentIdValid = false;
             }
         };
+        SendView.prototype.messageWatch = function () {
+            try {
+                this.messageValid = (this.message.length === 0) || (this.message.length <= config.maxMessageSize);
+            }
+            catch (e) {
+                this.messageValid = false;
+            }
+        };
         SendView.prototype.mixinWatch = function () {
             try {
                 this.mixinIsValid = !isNaN(parseFloat(this.mixIn));
@@ -419,67 +494,91 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             }
         };
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], SendView.prototype, "destinationAddressUser", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], SendView.prototype, "destinationAddress", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], SendView.prototype, "destinationAddressValid", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('0')
+            (0, VueAnnotate_1.VueVar)('0')
         ], SendView.prototype, "amountToSend", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], SendView.prototype, "lockedForm", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(true)
+            (0, VueAnnotate_1.VueVar)(true)
         ], SendView.prototype, "amountToSendValid", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('')
+            (0, VueAnnotate_1.VueVar)('')
         ], SendView.prototype, "paymentId", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(true)
+            (0, VueAnnotate_1.VueVar)('')
+        ], SendView.prototype, "message", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(true)
         ], SendView.prototype, "paymentIdValid", void 0);
         __decorate([
-            VueAnnotate_1.VueVar('5')
+            (0, VueAnnotate_1.VueVar)(true)
+        ], SendView.prototype, "messageValid", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)('5')
         ], SendView.prototype, "mixIn", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(true)
+            (0, VueAnnotate_1.VueVar)(true)
         ], SendView.prototype, "mixinIsValid", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(null)
+            (0, VueAnnotate_1.VueVar)(0)
+        ], SendView.prototype, "maxMessageSize", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(null)
         ], SendView.prototype, "domainAliasAddress", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(null)
+            (0, VueAnnotate_1.VueVar)(null)
         ], SendView.prototype, "txDestinationName", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(null)
+            (0, VueAnnotate_1.VueVar)(null)
         ], SendView.prototype, "txDescription", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(true)
+            (0, VueAnnotate_1.VueVar)(true)
         ], SendView.prototype, "openAliasValid", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], SendView.prototype, "qrScanning", void 0);
         __decorate([
-            VueAnnotate_1.VueVar(false)
+            (0, VueAnnotate_1.VueVar)(false)
         ], SendView.prototype, "nfcAvailable", void 0);
         __decorate([
-            DependencyInjector_1.Autowire(Nfc_1.Nfc.name)
+            (0, VueAnnotate_1.VueVar)(false)
+        ], SendView.prototype, "optimizeIsNeeded", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(false)
+        ], SendView.prototype, "optimizeLoading", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(false)
+        ], SendView.prototype, "isWalletSyncing", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(0)
+        ], SendView.prototype, "optimizeOutputs", void 0);
+        __decorate([
+            (0, DependencyInjector_1.Autowire)(Nfc_1.Nfc.name)
         ], SendView.prototype, "nfc", void 0);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], SendView.prototype, "destinationAddressUserWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], SendView.prototype, "amountToSendWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], SendView.prototype, "paymentIdWatch", null);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
+        ], SendView.prototype, "messageWatch", null);
+        __decorate([
+            (0, VueAnnotate_1.VueWatched)()
         ], SendView.prototype, "mixinWatch", null);
         return SendView;
     }(DestructableView_1.DestructableView));
@@ -487,7 +586,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         new SendView('#app');
     else {
         AppState_1.AppState.askUserOpenWallet(false).then(function () {
-            wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+            wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
             if (wallet === null)
                 throw 'e';
             new SendView('#app');

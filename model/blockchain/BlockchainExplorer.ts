@@ -39,7 +39,7 @@ export type RawDaemon_Transaction = {
 };
 
 export type NetworkInfo = {
-    node: string,
+    nodes: string[],
     major_version: number,
     hash: string,
     reward: number,
@@ -65,7 +65,9 @@ export interface BlockchainExplorer {
 
     getScannedHeight(): number;
 
-    watchdog(wallet: Wallet): void;
+    resetNodes(): void;
+
+    start(wallet: Wallet): void;
 
     getTransactionPool(): Promise<RawDaemon_Transaction[]>;
 

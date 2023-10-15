@@ -139,7 +139,7 @@ define(["require", "exports", "../model/KeysRepository", "../model/Wallet", "../
         //	send(wallet: Wallet, amountToSend: string, destinationAddress: string, paymentId: string) {
         Api.prototype.send = function (amountToSend, destinationAddress, paymentId) {
             var self = this;
-            var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+            var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
             blockchainExplorer.getHeight().then(function (blockchainHeight) {
                 var amount = parseFloat(amountToSend);
                 if (destinationAddress !== null) {
@@ -165,7 +165,7 @@ define(["require", "exports", "../model/KeysRepository", "../model/Wallet", "../
                             //save the tx private key
                             wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
                             //force a mempool check so the user is up to date
-                            var watchdog = DependencyInjector_1.DependencyInjectorInstance().getInstance(WalletWatchdog_1.WalletWatchdog.name);
+                            var watchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name);
                             if (watchdog !== null)
                                 watchdog.checkMempool();
                         }).catch(function (data) {
@@ -193,7 +193,7 @@ define(["require", "exports", "../model/KeysRepository", "../model/Wallet", "../
             });
         };
         Api.prototype.getTxDetails = function (transaction) {
-            var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+            var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
             var explorerUrlHash = config.testnet ? config.testnetExplorerUrlHash : config.mainnetExplorerUrlHash;
             var explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
             var fees = 0;
@@ -217,7 +217,7 @@ define(["require", "exports", "../model/KeysRepository", "../model/Wallet", "../
             };
         };
         Api.prototype.getTransactions = function () {
-            var wallet = DependencyInjector_1.DependencyInjectorInstance().getInstance(Wallet_1.Wallet.name, 'default', false);
+            var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
             return wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
         };
         Api.prototype.importHeightValidator = function () {

@@ -108,55 +108,59 @@ export class Transaction {
     paymentId: string = '';
     fees: number = 0;
 
+    message: string = '';
+    
     static fromRaw(raw: any) {
-        let transac = new Transaction();
-        transac.blockHeight = raw.blockHeight;
-        transac.txPubKey = raw.txPubKey;
-        transac.timestamp = raw.timestamp;
-        if (typeof raw.ins !== 'undefined') {
-            let ins: TransactionIn[] = [];
-            for (let rin of raw.ins) {
-                ins.push(TransactionIn.fromRaw(rin));
-            }
-            transac.ins = ins;
+      let transac = new Transaction();
+      transac.blockHeight = raw.blockHeight;
+      transac.txPubKey = raw.txPubKey;
+      transac.timestamp = raw.timestamp;
+      if (typeof raw.ins !== 'undefined') {
+        let ins: TransactionIn[] = [];
+        for (let rin of raw.ins) {
+          ins.push(TransactionIn.fromRaw(rin));
         }
-        if (typeof raw.outs !== 'undefined') {
-            let outs: TransactionOut[] = [];
-            for (let rout of raw.outs) {
-                outs.push(TransactionOut.fromRaw(rout));
-            }
-            transac.outs = outs;
+        transac.ins = ins;
+      }
+      if (typeof raw.outs !== 'undefined') {
+        let outs: TransactionOut[] = [];
+        for (let rout of raw.outs) {
+          outs.push(TransactionOut.fromRaw(rout));
         }
-        if (typeof raw.paymentId !== 'undefined') transac.paymentId = raw.paymentId;
-        if (typeof raw.fees !== 'undefined') transac.fees = raw.fee;
-        if (typeof raw.hash !== 'undefined') transac.hash = raw.hash;
-        return transac;
+        transac.outs = outs;
+      }
+      if (typeof raw.paymentId !== 'undefined') transac.paymentId = raw.paymentId;
+      if (typeof raw.fees !== 'undefined') transac.fees = raw.fees;
+      if (typeof raw.hash !== 'undefined') transac.hash = raw.hash;
+      if (typeof raw.message !== 'undefined') transac.message = raw.message;
+      return transac;
     }
 
     export() {
-        let data: any = {
-            blockHeight: this.blockHeight,
-            txPubKey: this.txPubKey,
-            timestamp: this.timestamp,
-            hash: this.hash,
-        };
-        if (this.ins.length > 0) {
-            let rins: any[] = [];
-            for (let nin of this.ins) {
-                rins.push(nin.export());
-            }
-            data.ins = rins;
-        }
-        if (this.outs.length > 0) {
-            let routs: any[] = [];
-            for (let nout of this.outs) {
-                routs.push(nout.export());
-            }
-            data.outs = routs;
-        }
-        if (this.paymentId !== '') data.paymentId = this.paymentId;
-        if (this.fees !== 0) data.fees = this.fees;
-        return data;
+      let data: any = {
+          blockHeight: this.blockHeight,
+          txPubKey: this.txPubKey,
+          timestamp: this.timestamp,
+          hash: this.hash,
+      };
+      if (this.ins.length > 0) {
+          let rins: any[] = [];
+          for (let nin of this.ins) {
+              rins.push(nin.export());
+          }
+          data.ins = rins;
+      }
+      if (this.outs.length > 0) {
+          let routs: any[] = [];
+          for (let nout of this.outs) {
+              routs.push(nout.export());
+          }
+          data.outs = routs;
+      }
+      if (this.paymentId !== '') data.paymentId = this.paymentId;
+      if (this.message !== '') data.message = this.message;
+      if (this.fees !== 0) data.fees = this.fees;
+      return data;
     }
 
     getAmount() {
@@ -175,12 +179,15 @@ export class Transaction {
     }
 
     isConfirmed(blockchainHeight: number) {
-        if (this.isCoinbase() && this.blockHeight + config.txCoinbaseMinConfirms < blockchainHeight) {
-            return true;
-        } else if (!this.isCoinbase() && this.blockHeight + config.txMinConfirms < blockchainHeight) {
-            return true;
-        }
+      if (this.blockHeight === 0) {
         return false;
+      } else if (this.isCoinbase() && this.blockHeight + config.txCoinbaseMinConfirms < blockchainHeight) {
+        return true;
+      } else if (!this.isCoinbase() && this.blockHeight + config.txMinConfirms < blockchainHeight) {
+        return true;
+      }
+      
+      return false;
     }
 
     isFullyChecked() {

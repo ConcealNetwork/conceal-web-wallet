@@ -117,6 +117,7 @@ define(["require", "exports"], function (require, exports) {
             this.timestamp = 0;
             this.paymentId = '';
             this.fees = 0;
+            this.message = '';
         }
         Transaction.fromRaw = function (raw) {
             var transac = new Transaction();
@@ -142,9 +143,11 @@ define(["require", "exports"], function (require, exports) {
             if (typeof raw.paymentId !== 'undefined')
                 transac.paymentId = raw.paymentId;
             if (typeof raw.fees !== 'undefined')
-                transac.fees = raw.fee;
+                transac.fees = raw.fees;
             if (typeof raw.hash !== 'undefined')
                 transac.hash = raw.hash;
+            if (typeof raw.message !== 'undefined')
+                transac.message = raw.message;
             return transac;
         };
         Transaction.prototype.export = function () {
@@ -172,6 +175,8 @@ define(["require", "exports"], function (require, exports) {
             }
             if (this.paymentId !== '')
                 data.paymentId = this.paymentId;
+            if (this.message !== '')
+                data.message = this.message;
             if (this.fees !== 0)
                 data.fees = this.fees;
             return data;
@@ -192,7 +197,10 @@ define(["require", "exports"], function (require, exports) {
             return this.outs.length == 1 && this.outs[0].rtcAmount === '';
         };
         Transaction.prototype.isConfirmed = function (blockchainHeight) {
-            if (this.isCoinbase() && this.blockHeight + config.txCoinbaseMinConfirms < blockchainHeight) {
+            if (this.blockHeight === 0) {
+                return false;
+            }
+            else if (this.isCoinbase() && this.blockHeight + config.txCoinbaseMinConfirms < blockchainHeight) {
                 return true;
             }
             else if (!this.isCoinbase() && this.blockHeight + config.txMinConfirms < blockchainHeight) {

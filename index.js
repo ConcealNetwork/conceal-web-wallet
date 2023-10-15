@@ -18,10 +18,12 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
@@ -53,8 +55,10 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
     var browserUserLang = '' + (navigator.language || navigator.userLanguage);
     browserUserLang = browserUserLang.toLowerCase().split('-')[0];
     Storage_1.Storage.getItem('user-lang', browserUserLang).then(function (userLang) {
-        Translations_1.Translations.loadLangTranslation(userLang).catch(function () {
-            Translations_1.Translations.loadLangTranslation('en');
+        Translations_1.Translations.loadLangTranslation(userLang).catch(function (err) {
+            Translations_1.Translations.loadLangTranslation('en').catch(function (err) {
+                console.error("Failed to load 'en' language", err);
+            });
         });
     });
     //========================================================
@@ -86,7 +90,7 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
                 $('body').removeClass('menuHidden');
         };
         MenuView = __decorate([
-            VueAnnotate_1.VueClass()
+            (0, VueAnnotate_1.VueClass)()
         ], MenuView);
         return MenuView;
     }(Vue));
@@ -166,17 +170,20 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
             return _this;
         }
         CopyrightView.prototype.languageWatch = function () {
+            var _this = this;
             Translations_1.Translations.setBrowserLang(this.language);
-            Translations_1.Translations.loadLangTranslation(this.language);
+            Translations_1.Translations.loadLangTranslation(this.language).catch(function (err) {
+                console.error("Failed to load \"".concat(_this.language, "\" language"), err);
+            });
         };
         __decorate([
-            VueAnnotate_1.VueVar('en')
+            (0, VueAnnotate_1.VueVar)('en')
         ], CopyrightView.prototype, "language", void 0);
         __decorate([
-            VueAnnotate_1.VueWatched()
+            (0, VueAnnotate_1.VueWatched)()
         ], CopyrightView.prototype, "languageWatch", null);
         CopyrightView = __decorate([
-            VueAnnotate_1.VueClass()
+            (0, VueAnnotate_1.VueClass)()
         ], CopyrightView);
         return CopyrightView;
     }(Vue));

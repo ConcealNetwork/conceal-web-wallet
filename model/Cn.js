@@ -33,13 +33,14 @@
  *     NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemonic_1) {
+define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exports, Mnemonic_1, ChaCha8_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CnTransactions = exports.Cn = exports.CnNativeBride = exports.CnUtils = exports.CnRandom = exports.CnVars = void 0;
     var HASH_STATE_BYTES = 200;
     var HASH_SIZE = 32;
     var ADDRESS_CHECKSUM_SIZE = 4;
+    var TX_EXTRA_MESSAGE_CHECKSUM_SIZE = 4;
     var INTEGRATED_ID_SIZE = 8;
     var ENCRYPTED_PAYMENT_ID_TAIL = 141;
     var CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX = config.addressPrefix;
@@ -59,7 +60,9 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
         PUBKEY: '01',
         NONCE: '02',
         MERGE_MINING: '03',
-        ADDITIONAL_PUBKEY: '04'
+        ADDITIONAL_PUBKEY: '04',
+        MESSAGE_TAG: '04',
+        TTL_TAG: '05'
     };
     var TX_EXTRA_NONCE_TAGS = {
         PAYMENT_ID: '00',
@@ -229,12 +232,12 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             return vali;*/
             // return JSBigInt.parse(test,16);
             // let bytes = Crypto.hextobin(test);
-            // console.log('bytes',bytes, test,swapEndianC(test));
-            // console.log(JSBigInt.parse(swapEndianC(test),16).valueOf());
-            // console.log(JSBigInt.parse(test.substr(0,12),16).valueOf());
+            // logDebugMsg('bytes',bytes, test,swapEndianC(test));
+            // logDebugMsg(JSBigInt.parse(swapEndianC(test),16).valueOf());
+            // logDebugMsg(JSBigInt.parse(test.substr(0,12),16).valueOf());
             var vali = 0;
             for (var j = 7; j >= 0; j--) {
-                // console.log(vali,vali*256,bytes[j]);
+                // logDebugMsg(vali,vali*256,bytes[j]);
                 vali = (vali * 256 + parseInt(hex.slice(j * 2, j * 2 + 2), 16));
             }
             return vali;
@@ -774,6 +777,19 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             return CnUtils.bintohex(nacl.ll.ge_add(CnUtils.hextobin(pub), CnUtils.hextobin(CnUtils.ge_scalarmult_base(s))));
         }
         Cn.derive_public_key = derive_public_key;
+        /**
+         * @param derivation
+         * @param out_index
+         * @param pub
+         */
+        function underive_public_key(derivation, out_index, pub) {
+            if (derivation.length !== 64 || pub.length !== 64) {
+                throw "Invalid input length!";
+            }
+            var s = CnUtils.derivation_to_scalar(derivation, out_index);
+            return CnUtils.ge_sub(pub, CnUtils.ge_scalarmult_base(s));
+        }
+        Cn.underive_public_key = underive_public_key;
         function generate_keys(seed) {
             if (seed.length !== 64)
                 throw "Invalid input length!";
@@ -824,12 +840,12 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
         Cn.create_address = create_address;
         function decode_address(address) {
             var dec = cnBase58.decode(address);
-            console.log(dec, CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX, CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX);
+            logDebugMsg(dec, CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX, CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX);
             var expectedPrefix = CnUtils.encode_varint(CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX);
             var expectedPrefixInt = CnUtils.encode_varint(CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX);
             var expectedPrefixSub = CnUtils.encode_varint(CRYPTONOTE_PUBLIC_SUBADDRESS_BASE58_PREFIX);
             var prefix = dec.slice(0, expectedPrefix.length);
-            console.log(prefix, expectedPrefixInt, expectedPrefix);
+            logDebugMsg(prefix, expectedPrefixInt, expectedPrefix);
             if (prefix !== expectedPrefix && prefix !== expectedPrefixInt && prefix !== expectedPrefixSub) {
                 throw "Invalid address prefix";
             }
@@ -943,18 +959,18 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             // CHECK_AND_ASSERT_MES(rv.type == RCTTypeSimple || rv.type == RCTTypeSimpleBulletproof, false, "decodeRct called on non simple rctSig");
             // CHECK_AND_ASSERT_THROW_MES(i < rv.ecdhInfo.size(), "Bad index");
             // CHECK_AND_ASSERT_THROW_MES(rv.outPk.size() == rv.ecdhInfo.size(), "Mismatched sizes of rv.outPk and rv.ecdhInfo");
-            // console.log(i < rv.ecdhInfo.length ? undefined : 'Bad index');
-            // console.log(rv.outPk.length == rv.ecdhInfo.length ? undefined : 'Mismatched sizes of rv.outPk and rv.ecdhInfo');
+            // logDebugMsg(i < rv.ecdhInfo.length ? undefined : 'Bad index');
+            // logDebugMsg(rv.outPk.length == rv.ecdhInfo.length ? undefined : 'Mismatched sizes of rv.outPk and rv.ecdhInfo');
             if (hwdev === void 0) { hwdev = null; }
             //mask amount and mask
-            // console.log('decode',rv.ecdhInfo[i], sk, h2d(rv.ecdhInfo[i].amount));
+            // logDebugMsg('decode',rv.ecdhInfo[i], sk, h2d(rv.ecdhInfo[i].amount));
             var ecdh_info = CnUtils.decode_rct_ecdh(rv.ecdhInfo[i], sk);
-            // console.log('ecdh_info',ecdh_info);
+            // logDebugMsg('ecdh_info',ecdh_info);
             // mask = ecdh_info.mask;
             var amount = ecdh_info.amount;
             var C = rv.outPk[i].mask;
-            // console.log('amount', amount);
-            // console.log('C', C);
+            // logDebugMsg('amount', amount);
+            // logDebugMsg('C', C);
             // DP("C");
             // DP(C);
             // key Ctmp;
@@ -972,7 +988,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                 derivation = CnNativeBride.generate_key_derivation(pub, sec); //[10;11]ms
             var scalar1 = CnUtils.derivation_to_scalar(derivation, i); //[0.2ms;1ms]
             try {
-                // console.log(rv.type,'RCTTypeSimple='+RCTTypeSimple,'RCTTypeFull='+RCTTypeFull);
+                // logDebugMsg(rv.type,'RCTTypeSimple='+RCTTypeSimple,'RCTTypeFull='+RCTTypeFull);
                 switch (rv.type) {
                     case CnVars.RCT_TYPE.Simple:
                         amount = CnTransactions.decodeRctSimple(rv, scalar1, i, mask); //[5;10]ms
@@ -987,14 +1003,14 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                         amount = CnTransactions.decodeRctSimple(rv, scalar1, i, mask);
                         break;
                     default:
-                        console.log('Unsupported rc type', rv.type);
+                        logDebugMsg('Unsupported rc type', rv.type);
                         // cerr << "Unsupported rct type: " << rv.type << endl;
                         return false;
                 }
             }
             catch (e) {
                 console.error(e);
-                console.log("Failed to decode input " + i);
+                logDebugMsg("Failed to decode input " + i);
                 return false;
             }
             return amount;
@@ -1004,22 +1020,22 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             if (recv_derivation === null)
                 recv_derivation = CnNativeBride.generate_key_derivation(tx_public_key, ack.view_secret_key);
             // recv_derivation = CnUtilNative.generate_key_derivation(tx_public_key, ack.view_secret_key);
-            // console.log('recv_derivation', recv_derivation);
+            // logDebugMsg('recv_derivation', recv_derivation);
             // CHECK_AND_ASSERT_MES(r, false, "key image helper: failed to generate_key_derivation(" << tx_public_key << ", " << ack.m_view_secret_key << ")");
             //
             // let start = Date.now();
             var in_ephemeral_pub = CnNativeBride.derive_public_key(recv_derivation, real_output_index, ack.public_spend_key);
             // let in_ephemeral_pub = CnUtilNative.derive_public_key(recv_derivation, real_output_index, ack.public_spend_key);
-            // console.log('in_ephemeral_pub',in_ephemeral_pub);
+            // logDebugMsg('in_ephemeral_pub',in_ephemeral_pub);
             // CHECK_AND_ASSERT_MES(r, false, "key image helper: failed to derive_public_key(" << recv_derivation << ", " << real_output_index <<  ", " << ack.m_account_address.m_spend_public_key << ")");
             //
             var in_ephemeral_sec = CnNativeBride.derive_secret_key(recv_derivation, real_output_index, ack.spend_secret_key);
             // let in_ephemeral_sec = CnNativeBride.derive_secret_key(recv_derivation, real_output_index, ack.spend_secret_key);
-            // console.log('in_ephemeral_sec',in_ephemeral_sec);
+            // logDebugMsg('in_ephemeral_sec',in_ephemeral_sec);
             // let ki = CnNativeBride.generate_key_image_2(in_ephemeral_pub, in_ephemeral_sec);
             var ki = CnNativeBride.generate_key_image_2(in_ephemeral_pub, in_ephemeral_sec);
             // let end = Date.now();
-            // console.log(end-start);
+            // logDebugMsg(end-start);
             return {
                 ephemeral_pub: in_ephemeral_pub,
                 ephemeral_sec: in_ephemeral_sec,
@@ -1131,7 +1147,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
         //TODO merge
         function add_additionnal_pub_keys_to_extra(extra, keys) {
             //do not add if there is no additional keys
-            console.log('Add additionnal keys to extra', keys);
+            logDebugMsg('Add additionnal keys to extra', keys);
             if (keys.length === 0)
                 return extra;
             extra += TX_EXTRA_TAGS.ADDITIONAL_PUBKEY;
@@ -1174,7 +1190,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             //  vout: [{amount: uint64, target: {key: hex}},...],
             //  signatures: [[s,s,...],...]
             //}
-            console.log('serialize tx ', JSON.parse(JSON.stringify(tx)));
+            logDebugMsg('serialize tx ', JSON.parse(JSON.stringify(tx)));
             var buf = "";
             buf += CnUtils.encode_varint(tx.version);
             buf += CnUtils.encode_varint(tx.unlock_time);
@@ -1182,15 +1198,15 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             var i, j;
             for (i = 0; i < tx.vin.length; i++) {
                 var vin = tx.vin[i];
-                console.log('start vin', vin);
+                logDebugMsg('start vin', vin);
                 switch (vin.type) {
                     case "input_to_key":
                         buf += "02";
                         buf += CnUtils.encode_varint(vin.amount);
                         buf += CnUtils.encode_varint(vin.key_offsets.length);
-                        console.log(vin.key_offsets, vin.key_offsets.length);
+                        logDebugMsg(vin.key_offsets, vin.key_offsets.length);
                         for (j = 0; j < vin.key_offsets.length; j++) {
-                            console.log(j, vin.key_offsets[j]);
+                            logDebugMsg(j, vin.key_offsets[j]);
                             buf += CnUtils.encode_varint(vin.key_offsets[j]);
                         }
                         buf += vin.k_image;
@@ -1198,9 +1214,9 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                     default:
                         throw "Unhandled vin type: " + vin.type;
                 }
-                console.log('end vin', vin);
+                logDebugMsg('end vin', vin);
             }
-            console.log('serialize tx ', tx);
+            logDebugMsg('serialize tx ', tx);
             buf += CnUtils.encode_varint(tx.vout.length);
             for (i = 0; i < tx.vout.length; i++) {
                 var vout = tx.vout[i];
@@ -1214,11 +1230,11 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                         throw "Unhandled txout target type: " + vout.target.type;
                 }
             }
-            console.log('serialize tx ', tx);
+            logDebugMsg('serialize tx ', tx);
             if (!CnUtils.valid_hex(tx.extra)) {
                 throw "Tx extra has invalid hex";
             }
-            console.log('serialize tx ', tx);
+            logDebugMsg('serialize tx ', tx);
             buf += CnUtils.encode_varint(tx.extra.length / 2);
             buf += tx.extra;
             if (!headeronly) {
@@ -1231,7 +1247,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                     }
                 }
             }
-            console.log('serialize tx ', buf);
+            logDebugMsg('serialize tx ', buf);
             return buf;
         }
         CnTransactions.serialize_tx = serialize_tx;
@@ -1617,7 +1633,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
         function genRct(message, inSk, kimg, 
         /*destinations, */ inAmounts, outAmounts, mixRing, amountKeys, indices, txnFee, bulletproof) {
             if (bulletproof === void 0) { bulletproof = false; }
-            console.log('MIXIN:', mixRing);
+            logDebugMsg('MIXIN:', mixRing);
             if (outAmounts.length !== amountKeys.length) {
                 throw "different number of amounts/amount_keys";
             }
@@ -1635,7 +1651,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             if (indices.length !== inSk.length) {
                 throw "mismatched indices/inSk";
             }
-            console.log('======t');
+            logDebugMsg('======t');
             var rv = {
                 type: inSk.length === 1 ? CnVars.RCT_TYPE.Full : CnVars.RCT_TYPE.Simple,
                 message: message,
@@ -1654,7 +1670,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                 C: '',
                 mask: ''
             };
-            console.log('====a');
+            logDebugMsg('====a');
             var p = rv.p;
             if (p) {
                 var nrings = 64; //for base 2/current
@@ -1666,14 +1682,14 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                     // else
                     // 	p.bulletproofs[i] = CnTransactions.proveRangeBulletproof(cmObj, outAmounts[i], nrings, 0, 0);
                     var testfinish = new Date().getTime() - teststart;
-                    console.log("Time take for range proof " + i + ": " + testfinish);
+                    logDebugMsg("Time take for range proof " + i + ": " + testfinish);
                     rv.outPk[i] = cmObj.C;
                     sumout = CnNativeBride.sc_add(sumout, cmObj.mask);
                     rv.ecdhInfo[i] = CnUtils.encode_rct_ecdh({ mask: cmObj.mask, amount: CnUtils.d2s(outAmounts[i]) }, amountKeys[i]);
                 }
-                console.log('====a');
+                logDebugMsg('====a');
                 //simple
-                console.log('-----------rv type', rv.type);
+                logDebugMsg('-----------rv type', rv.type);
                 if (rv.type === CnVars.RCT_TYPE.Simple) {
                     var ai = [];
                     var sumpouts = CnVars.Z;
@@ -1705,24 +1721,24 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             return rv;
         }
         CnTransactions.genRct = genRct;
-        function construct_tx(keys, sources, dsts, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct) {
+        function construct_tx(keys, sources, dsts, senderAddress, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl) {
             if (unlock_time === void 0) { unlock_time = 0; }
             //we move payment ID stuff here, because we need txkey to encrypt
             var txkey = Cn.random_keypair();
-            console.log(txkey);
+            logDebugMsg(txkey);
             var extra = '';
             if (payment_id) {
                 if (pid_encrypt && payment_id.length !== INTEGRATED_ID_SIZE * 2) {
                     throw "payment ID must be " + INTEGRATED_ID_SIZE + " bytes to be encrypted!";
                 }
-                console.log("Adding payment id: " + payment_id);
+                logDebugMsg("Adding payment id: " + payment_id);
                 if (pid_encrypt && realDestViewKey) { //get the derivation from our passed viewkey, then hash that + tail to get encryption key
                     var pid_key = CnUtils.cn_fast_hash(Cn.generate_key_derivation(realDestViewKey, txkey.sec) + ENCRYPTED_PAYMENT_ID_TAIL.toString(16)).slice(0, INTEGRATED_ID_SIZE * 2);
-                    console.log("Txkeys:", txkey, "Payment ID key:", pid_key);
+                    logDebugMsg("Txkeys:", txkey, "Payment ID key:", pid_key);
                     payment_id = CnUtils.hex_xor(payment_id, pid_key);
                 }
                 var nonce = CnTransactions.get_payment_id_nonce(payment_id, pid_encrypt);
-                console.log("Extra nonce: " + nonce);
+                logDebugMsg("Extra nonce: " + nonce);
                 extra = CnTransactions.add_nonce_to_extra(extra, nonce);
             }
             var tx = {
@@ -1751,11 +1767,11 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             var in_contexts = [];
             var inputs_money = JSBigInt.ZERO;
             var i, j;
-            console.log('Sources: ');
+            logDebugMsg('Sources: ');
             //run the for loop twice to sort ins by key image
             //first generate key image and other construction data to sort it all in one go
             for (i = 0; i < sources.length; i++) {
-                console.log(i + ': ' + Cn.formatMoneyFull(sources[i].amount));
+                logDebugMsg(i + ': ' + Cn.formatMoneyFull(sources[i].amount));
                 if (sources[i].real_out >= sources[i].outputs.length) {
                     throw "real index >= outputs.length";
                 }
@@ -1769,7 +1785,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                 // this only works if beckend will produce masks in get_unspent_outs for
                 // coinbaser ringct txs.
                 //is_rct_coinbases.push((sources[i].mask ? sources[i].mask === I : 0));
-                console.log('res.in_ephemeral.pub', res, res.in_ephemeral.pub, sources, i);
+                logDebugMsg('res.in_ephemeral.pub', res, res.in_ephemeral.pub, sources, i);
                 if (res.in_ephemeral.pub !== sources[i].outputs[sources[i].real_out].key) {
                     throw "in_ephemeral.pub != source.real_out.key";
                 }
@@ -1791,12 +1807,12 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                     key_offsets: [],
                 };
                 for (j = 0; j < sources[i].outputs.length; ++j) {
-                    console.log('add to key offsets', sources[i].outputs[j].index, j, sources[i].outputs);
+                    logDebugMsg('add to key offsets', sources[i].outputs[j].index, j, sources[i].outputs);
                     input_to_key.key_offsets.push(sources[i].outputs[j].index);
                 }
-                console.log('key offsets before abs', input_to_key.key_offsets);
+                logDebugMsg('key offsets before abs', input_to_key.key_offsets);
                 input_to_key.key_offsets = CnTransactions.abs_to_rel_offsets(input_to_key.key_offsets);
-                console.log('key offsets after abs', input_to_key.key_offsets);
+                logDebugMsg('key offsets after abs', input_to_key.key_offsets);
                 tx.vin.push(input_to_key);
             }
             var outputs_money = JSBigInt.ZERO;
@@ -1824,7 +1840,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                     }
                 }
             }
-            console.log('Destinations resume:', unique_dst_addresses, num_stdaddresses, num_subaddresses);
+            logDebugMsg('Destinations resume:', unique_dst_addresses, num_stdaddresses, num_subaddresses);
             if (num_stdaddresses == 0 && num_subaddresses == 1) {
                 var uniqueSubaddressDecoded = Cn.decode_address(single_dest_subaddress);
                 txkey.pub = CnUtils.ge_scalarmult(uniqueSubaddressDecoded.spend, txkey.sec);
@@ -1879,6 +1895,49 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             // add pub key to extra after we know whether to use R = rG or R = rD
             tx.extra = CnTransactions.add_pub_key_to_extra(tx.extra, txkey.pub);
             tx.extra = CnTransactions.add_additionnal_pub_keys_to_extra(tx.extra, additional_tx_public_keys);
+            // Encrypt message and add it to the extra
+            // CCX has only 1 destination for messages anyways
+            if (message) {
+                var messageAddress = null;
+                for (var i_4 = 0; i_4 < dsts.length; i_4++) {
+                    if (dsts[i_4].address !== senderAddress) {
+                        messageAddress = dsts[i_4].address;
+                    }
+                }
+                if (messageAddress) {
+                    var destKeys = Cn.decode_address(messageAddress);
+                    var derivation = CnNativeBride.generate_key_derivation(destKeys.spend, txkey.sec);
+                    var magick1 = "80";
+                    var magick2 = "00";
+                    var keyData = derivation + magick1 + magick2;
+                    var hash = CnUtils.cn_fast_hash(keyData);
+                    var hashBuf = CnUtils.hextobin(hash);
+                    var nonceBuf = new Uint8Array(12);
+                    var index = 0; // Because we only have one message
+                    for (var i_5 = 0; i_5 < 12; i_5++) {
+                        nonceBuf.set([index / Math.pow(0x100, i_5)], 11 - i_5);
+                    }
+                    var rawMessArr = new TextEncoder().encode(message);
+                    var rawMessArrFull = new Uint8Array(rawMessArr.length + 4);
+                    rawMessArrFull.set(rawMessArr);
+                    rawMessArrFull.set([0, 0, 0, 0], rawMessArr.length);
+                    var cha = new ChaCha8_1.JSChaCha8(hashBuf, nonceBuf);
+                    var _buf = cha.encrypt(rawMessArrFull);
+                    var encryptedMessStr = CnUtils.bintohex(_buf);
+                    // Append to extra:
+                    // Add message tag
+                    tx.extra += TX_EXTRA_TAGS.MESSAGE_TAG;
+                    // Encode length of message
+                    tx.extra += ('0' + (rawMessArrFull.length).toString(16)).slice(-2);
+                    // Write message
+                    tx.extra += encryptedMessStr;
+                }
+            }
+            if (ttl !== 0) {
+                var ttlStr = CnUtils.encode_varint(ttl);
+                var ttlSize = CnUtils.encode_varint(ttlStr.length / 2);
+                tx.extra = tx.extra + TX_EXTRA_TAGS.TTL_TAG + ttlSize + ttlStr;
+            }
             if (outputs_money.add(fee_amount).compare(inputs_money) > 0) {
                 throw "outputs money (" + Cn.formatMoneyFull(outputs_money) + ") + fee (" + Cn.formatMoneyFull(fee_amount) + ") > inputs money (" + Cn.formatMoneyFull(inputs_money) + ")";
             }
@@ -1924,16 +1983,16 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                     outAmounts.push(tx.vout[i].amount);
                     tx.vout[i].amount = 0; //zero out all rct outputs
                 }
-                console.log('rc signature----');
+                logDebugMsg('rc signature----');
                 var tx_prefix_hash = CnTransactions.get_tx_prefix_hash(tx);
-                console.log('rc signature----');
+                logDebugMsg('rc signature----');
                 tx.rct_signatures = CnTransactions.genRct(tx_prefix_hash, inSk, keyimages, /*destinations, */ inAmounts, outAmounts, mixRing, amountKeys, indices, txnFee);
             }
-            console.log(tx);
+            logDebugMsg(tx);
             return tx;
         }
         CnTransactions.construct_tx = construct_tx;
-        function create_transaction(pub_keys, sec_keys, dsts, outputs, mix_outs, fake_outputs_count, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct) {
+        function create_transaction(pub_keys, sec_keys, dsts, senderAddress, outputs, mix_outs, fake_outputs_count, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl) {
             if (mix_outs === void 0) { mix_outs = []; }
             if (unlock_time === void 0) { unlock_time = 0; }
             var i, j;
@@ -1970,7 +2029,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             }
             var found_money = JSBigInt.ZERO;
             var sources = [];
-            console.log('Selected transfers: ', outputs);
+            logDebugMsg('Selected transfers: ', outputs);
             for (i = 0; i < outputs.length; ++i) {
                 found_money = found_money.add(outputs[i].amount);
                 if (found_money.compare(UINT64_MAX) !== -1) {
@@ -1993,19 +2052,19 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                 src.amount = new JSBigInt(outputs[i].amount).toString();
                 if (mix_outs.length !== 0) { //if mixin
                     // Sort fake outputs by global index
-                    console.log('mix outs before sort', mix_outs[i].outs);
+                    logDebugMsg('mix outs before sort', mix_outs[i].outs);
                     mix_outs[i].outs.sort(function (a, b) {
                         return new JSBigInt(a.global_index).compare(b.global_index);
                     });
                     j = 0;
-                    console.log('mix outs sorted', mix_outs[i].outs);
+                    logDebugMsg('mix outs sorted', mix_outs[i].outs);
                     while ((src.outputs.length < fake_outputs_count) && (j < mix_outs[i].outs.length)) {
                         var out = mix_outs[i].outs[j];
-                        console.log('chekcing mixin');
-                        console.log("out: ", out);
-                        console.log("output ", i, ": ", outputs[i]);
+                        logDebugMsg('chekcing mixin');
+                        logDebugMsg("out: ", out);
+                        logDebugMsg("output ", i, ": ", outputs[i]);
                         if (out.global_index === outputs[i].global_index) {
-                            console.log('got mixin the same as output, skipping');
+                            logDebugMsg('got mixin the same as output, skipping');
                             j++;
                             continue;
                         }
@@ -2034,13 +2093,13 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                     key: outputs[i].public_key,
                     commit: '',
                 };
-                console.log('OUT FOR REAL:', outputs[i].global_index);
+                logDebugMsg('OUT FOR REAL:', outputs[i].global_index);
                 /*
                 if (rct){
                     if (outputs[i].rct) {
                         real_oe.commit = outputs[i].rct.slice(0,64); //add commitment for real input
                     } else {
-                        console.log('ZERO COMMIT');
+                        logDebugMsg('ZERO COMMIT');
                         real_oe.commit = zeroCommit(CnUtils.d2s(src.amount)); //create identity-masked commitment for non-rct input
                     }
                 }
@@ -2054,19 +2113,19 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                     }
                 }
                 // Add real_oe to outputs
-                console.log('inserting real ouput at index', real_index, real_oe, outputs[i], i);
+                logDebugMsg('inserting real ouput at index', real_index, real_oe, outputs[i], i);
                 src.outputs.splice(real_index, 0, real_oe);
                 src.real_out_tx_key = outputs[i].tx_pub_key;
                 // Real output entry index
                 src.real_out = real_index;
                 src.real_out_in_tx = outputs[i].index;
-                console.log('check mask', outputs, rct, i);
+                logDebugMsg('check mask', outputs, rct, i);
                 /*
                 if (rct){
                     if (outputs[i].rct) {
                         src.mask = outputs[i].rct.slice(64,128); //encrypted or idenity mask for coinbase txs.
                     } else {
-                        console.log('NULL MASK');
+                        logDebugMsg('NULL MASK');
                         src.mask = null; //will be set by generate_key_image_helper_rct
                     }
                 }
@@ -2074,7 +2133,9 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
                  */
                 sources.push(src);
             }
-            console.log('sources: ', sources);
+            logDebugMsg('found_money: ', found_money);
+            logDebugMsg('needed_money: ', needed_money);
+            logDebugMsg('sources: ', sources);
             var change = {
                 amount: JSBigInt.ZERO
             };
@@ -2088,7 +2149,7 @@ define(["require", "exports", "./Mnemonic"], function (require, exports, Mnemoni
             else if (cmp > 0) {
                 throw "Need more money than found! (have: " + Cn.formatMoney(found_money) + " need: " + Cn.formatMoney(needed_money) + ")";
             }
-            return CnTransactions.construct_tx(keys, sources, dsts, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct);
+            return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl);
         }
         CnTransactions.create_transaction = create_transaction;
     })(CnTransactions = exports.CnTransactions || (exports.CnTransactions = {}));

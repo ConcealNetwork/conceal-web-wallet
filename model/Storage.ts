@@ -18,129 +18,90 @@
 interface StorageInterface {
 	setItem(key: string, value: string): Promise<void>;
 	getItem(key: string, defaultValue: any): Promise<any>;
-
 	keys(): Promise<string[]>;
 	remove(key: string): Promise<void>;
 	clear(): Promise<void>;
 }
 
-class LocalStorage implements StorageInterface{
-	setItem(key: string, value: string): Promise<void> {
-		window.localStorage.setItem(key, value);
-		return Promise.resolve();
+class IndexedDBStorage implements StorageInterface {
+	private db: any;
+	private readonly dbName = 'mydb';
+	private readonly storeName = 'storage';
+	private ready: Promise<void>;
+
+	constructor() {
+		this.ready = new Promise<void>((resolve, reject) => {
+			const request = indexedDB.open(this.dbName);
+			request.onupgradeneeded = (event) => {
+				this.db = (event.target as IDBOpenDBRequest).result;
+				this.db.createObjectStore(this.storeName, { keyPath: 'key' });
+			};
+			request.onsuccess = (event) => {
+				this.db = (event.target as IDBOpenDBRequest).result;
+				resolve();
+			};
+			request.onerror = (event) => {
+				reject((event.target as IDBOpenDBRequest).error);
+			};
+		});
 	}
 
-	getItem(key: string, defaultValue: any = null): Promise<string|any> {
-		let value = window.localStorage.getItem(key);
-		if (value === null)
-			return Promise.resolve(defaultValue);
-		return Promise.resolve(value);
+	async setItem(key: string, value: string): Promise<void> {
+		await this.ready;
+		const transaction = this.db.transaction(this.storeName, 'readwrite');
+		const store = transaction.objectStore(this.storeName);
+		await store.put({ key, value });
 	}
 
-	keys(): Promise<string[]> {
-		let keys: string[] = [];
-		for (let i = 0; i < window.localStorage.length; ++i) {
-			let k = window.localStorage.key(i);
-			if (k !== null)
-				keys.push(k);
-		}
+	async getItem(key: string, defaultValue: any = null): Promise<string | any> {
+		await this.ready;
+		return new Promise((resolve, reject) => {
+			const transaction = this.db.transaction(this.storeName, 'readonly');
+			const store = transaction.objectStore(this.storeName);
+			const request = store.get(key);
 
-		return Promise.resolve(keys);
+			request.onsuccess = () => {
+				const result = request.result ? request.result.value : defaultValue;
+				resolve(result);
+			};
+			request.onerror = (event:any) => {
+				reject((event.target as IDBRequest).error);
+			};
+		});
 	}
 
-	remove(key: string): Promise<void> {
-		window.localStorage.removeItem(key);
-		return Promise.resolve();
+	async keys(): Promise<string[]> {
+		await this.ready;
+		const transaction = this.db.transaction(this.storeName, 'readonly');
+		const store = transaction.objectStore(this.storeName);
+		const keys = await store.getAllKeys();
+		return keys;
 	}
 
-	clear(): Promise<void> {
-		window.localStorage.clear();
-		return Promise.resolve();
+	async remove(key: string): Promise<void> {
+		await this.ready;
+		const transaction = this.db.transaction(this.storeName, 'readwrite');
+		const store = transaction.objectStore(this.storeName);
+		await store.delete(key);
+	}
+
+	async clear(): Promise<void> {
+		await this.ready;
+		const transaction = this.db.transaction(this.storeName, 'readwrite');
+		const store = transaction.objectStore(this.storeName);
+		await store.clear();
 	}
 }
 
-
-class NativeStorageWrap implements StorageInterface{
-	setItem(key: string, value: any): Promise<void> {
-		return new Promise<void>(function (resolve, reject) {
-			if(window.NativeStorage)
-				window.NativeStorage.setItem(key,value,function(){
-					resolve();
-				}, function(error : NativeNativeStorageError){
-					reject();
-				});
-			else
-				reject();
-		});
-	}
-
-	getItem(key: string, defaultValue: any = null): Promise<any> {
-		return new Promise<any>(function (resolve, reject) {
-			if(window.NativeStorage)
-				window.NativeStorage.getItem(key,function(){
-					resolve(true);
-				}, function(error : NativeNativeStorageError){
-					if(error.code === 2)
-						resolve(defaultValue);
-					reject();
-				});
-			else
-				reject();
-		});
-	}
-
-	keys(): Promise<string[]> {
-		return new Promise<string[]>(function (resolve, reject) {
-			if(window.NativeStorage)
-				window.NativeStorage.keys(function(keys : string[]){
-					resolve(keys);
-				}, function(error : NativeNativeStorageError){
-					reject();
-				});
-			else
-				reject();
-		});
-	}
-
-	remove(key: string): Promise<void> {
-		return new Promise<void>(function (resolve, reject) {
-			if(window.NativeStorage)
-				window.NativeStorage.remove(key,function(){
-					resolve();
-				}, function(error : NativeNativeStorageError){
-					if(error.code === 2 || error.code === 3 || error.code === 4)
-						resolve();
-					reject();
-				});
-			else
-				reject();
-		});
-	}
-
-	clear(): Promise<void> {
-		return new Promise<void>(function (resolve, reject) {
-			if(window.NativeStorage)
-				window.NativeStorage.clear(function(){
-					resolve();
-				}, function(error : NativeNativeStorageError){
-					reject();
-				});
-			else
-				reject();
-		});
-	}
-}
-
-
-export class Storage{
-	static _storage : StorageInterface = new LocalStorage();
+export class Storage {
+	static _storage: StorageInterface = new IndexedDBStorage();
 
 	static clear(): Promise<void> {
 		return Storage._storage.clear();
 	}
 
 	static getItem(key: string, defaultValue: any = null): Promise<any> {
-		return Storage._storage.getItem(key,defaultValue);
+		return Storage._storage.getItem(key, defaultValue);
 	}
 
 	static keys(): Promise<string[]> {
@@ -156,11 +117,6 @@ export class Storage{
 	}
 
 	static setItem(key: string, value: any): Promise<void> {
-		return Storage._storage.setItem(key,value);
+		return Storage._storage.setItem(key, value);
 	}
-
-}
-
-if(window.NativeStorage){
-	Storage._storage = new NativeStorageWrap();
 }

@@ -44,6 +44,17 @@
 		</div>
 
 		<div class="panel">
+			<div class="body">
+				<div class="header-title">{{ $t("global.optimize.label") }}</div>
+				<div class="actions tc">
+					<button type="button" class="btn primary" @click="optimizeWallet()" :disabled="optimizeLoading">
+						{{ optimizeLoading ? $t('global.optimize.loadingText') : $t('global.optimize.button') }}
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
 			<div class="body" >
 				<div class="content" >
 					<div class="field checkbox toggle">
@@ -108,6 +119,14 @@
 		</div>
 
 		<div class="panel">
+			<div class="body" >
+				<div class="content tc" >
+					<button class="btn" @click="resetWallet()" >{{ $t("settingsPage.resetWalletButton") }}</button>
+				</div>
+			</div>
+		</div>
+
+    <div class="panel">
 			<div class="body" >
 				<div class="content tc" >
 					<button class="btn" @click="deleteWallet()" >{{ $t("settingsPage.deleteWalletButton") }}</button>

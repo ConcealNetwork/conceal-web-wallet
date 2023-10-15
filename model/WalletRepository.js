@@ -14,16 +14,42 @@
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-define(["require", "exports", "./Wallet", "./CoinUri", "./Storage"], function (require, exports, Wallet_1, CoinUri_1, Storage_1) {
+define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUri"], function (require, exports, Wallet_1, StorageOld_1, Storage_1, CoinUri_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WalletRepository = void 0;
     var WalletRepository = /** @class */ (function () {
         function WalletRepository() {
         }
+        WalletRepository.migrateWallet = function () {
+            return new Promise(function (resolve, reject) {
+                StorageOld_1.StorageOld.getItem('wallet', null).then(function (walletAsString) {
+                    if (walletAsString !== null) {
+                        Storage_1.Storage.setItem('wallet', walletAsString).then(function () {
+                            StorageOld_1.StorageOld.remove('wallet');
+                            resolve(true);
+                        }).catch(function (err) {
+                            reject(err);
+                        });
+                    }
+                    else {
+                        resolve(false);
+                    }
+                }).catch(function (err) {
+                    reject(err);
+                });
+            });
+        };
         WalletRepository.hasOneStored = function () {
-            return Storage_1.Storage.getItem('wallet', null).then(function (wallet) {
-                return wallet !== null;
+            var _this = this;
+            return new Promise(function (resolve, reject) {
+                _this.migrateWallet().then(function (isSuccess) {
+                    Storage_1.Storage.getItem('wallet', null).then(function (wallet) {
+                        resolve(wallet !== null);
+                    });
+                }).catch(function (err) {
+                    resolve(false);
+                });
             });
         };
         WalletRepository.decodeWithPassword = function (rawWallet, password) {
@@ -76,7 +102,6 @@ define(["require", "exports", "./Wallet", "./CoinUri", "./Storage"], function (r
         WalletRepository.getLocalWalletWithPassword = function (password) {
             var _this = this;
             return Storage_1.Storage.getItem('wallet', null).then(function (existingWallet) {
-                //console.log(existingWallet);
                 if (existingWallet !== null) {
                     return _this.decodeWithPassword(JSON.parse(existingWallet), password);
                 }

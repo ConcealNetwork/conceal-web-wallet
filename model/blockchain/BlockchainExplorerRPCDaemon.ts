@@ -17,300 +17,506 @@
 
 import {BlockchainExplorer, NetworkInfo, RawDaemon_Transaction, RawDaemon_Out, RemoteNodeInformation} from "./BlockchainExplorer";
 import {Wallet} from "../Wallet";
+import {Storage} from "../Storage";
 import {MathUtil} from "../MathUtil";
 import {CnTransactions, CnUtils} from "../Cn";
 import {Transaction} from "../Transaction";
 import {WalletWatchdog} from "../WalletWatchdog";
 
+export type NodeInfo = {
+  "url": string,
+  "requests": number,
+  "errors": number,
+  "allErrors": number,
+  "status": number
+}
+
+class NodeWorker {
+  readonly timeout= 10 * 1000;
+  readonly maxTempErrors = 3;
+  readonly maxAllErrors = 100;
+  private _url: string;
+  private _errors: number;
+  private _allErrors: number;
+  private _requests: number;
+  private _isWorking: boolean;
+  private errorInterval: NodeJS.Timer;
+
+  constructor(url: string) {
+    this._url = url;
+    this._errors = 0;
+    this._allErrors = 0;
+    this._requests = 0;
+    this._isWorking = false;
+
+    // reduce error count each minute
+    this.errorInterval = setInterval(() => {
+      this._errors = Math.max(this._errors - 1, 0);
+    }, 60 * 1000);
+  }
+
+  makeRequest = (method: 'GET' | 'POST', path: string, body: any = undefined): Promise<any> => {
+    this._isWorking = true;
+    ++this._requests;
+
+    return new Promise<any>((resolve, reject) => {
+      $.ajax({
+        url: this._url + path,
+        method: method,
+        timeout: this.timeout,
+        data: typeof body === 'string' ? body : JSON.stringify(body)
+      }).done((raw: any) => {
+        this._isWorking = false;        
+        resolve(raw);
+      }).fail((data: any, textStatus: string) => {
+        this._isWorking = false;        
+        this.increaseErrors();
+        reject(data);
+      });
+    });
+  }
+
+  makeRpcRequest = (method: string, params: any = {}): Promise<any> => {
+    this._isWorking = true;
+    ++this._requests;
+
+    return new Promise<any>((resolve, reject) => {
+      $.ajax({
+        url: this._url + 'json_rpc',
+        method: 'POST',
+        timeout: this.timeout,
+        data: JSON.stringify({
+          jsonrpc: '2.0',
+          method: method,
+          params: params,
+          id: 0
+        }),
+        contentType: 'application/json'
+      }).done((raw: any) => {
+        this._isWorking = false;
+        if (typeof raw.id === 'undefined' || typeof raw.jsonrpc === 'undefined' || raw.jsonrpc !== '2.0' || typeof raw.result !== 'object') {
+          this.increaseErrors();
+          reject('Daemon response is not properly formatted');
+        } else {
+          resolve(raw.result);
+        }
+      }).fail((data: any) => {
+        this._isWorking = false;
+        this.increaseErrors();
+        reject(data);
+      });
+    });
+  }
+
+  get isWorking(): boolean {
+    return this._isWorking;
+  }
+
+  get url(): string {
+    return this._url;
+  }
+
+  get errors(): number {
+    return this._errors;
+  }
+
+  get allErrors(): number {
+    return this._allErrors;
+  }
+
+  get requests(): number {
+    return this._requests;
+  }
+
+  increaseErrors = () => {
+    ++this._errors;  
+    ++this._allErrors;  
+  }
+
+  hasToManyErrors = () => {
+    return ((this._errors >= this.maxTempErrors) || (this._allErrors >= this.maxAllErrors));
+  }
+
+  getStatus = (): number => {
+    if ((this._errors < this.maxTempErrors) && (this._allErrors < this.maxAllErrors)) {
+      return 0;
+    } else if ((this._errors >= this.maxTempErrors) && (this._allErrors < this.maxAllErrors)) {
+      return 1;
+    } else if (this._allErrors >= this.maxAllErrors) {
+      return 2;
+    } else {
+      return 3;
+    }
+  }
+}
+
+class NodeWorkersList {
+  private nodes: NodeWorker[];
+
+  constructor() {
+    this.nodes = [];
+  }
+
+  private acquireWorker = (): NodeWorker | null => {
+    const shuffledNodes: NodeWorker[] = [...this.nodes].sort((a, b) => 0.5 - Math.random());
+
+    for (let i = 0; i < shuffledNodes.length; i++) {
+      if (!shuffledNodes[i].isWorking && !shuffledNodes[i].hasToManyErrors()) {
+        return shuffledNodes[i];
+      }
+    }
+
+    return null;
+  }
+
+  makeRequest = (method: 'GET' | 'POST', path: string, body: any = undefined): Promise<any> => {
+    return new Promise<any>((resolve, reject) => {
+      (async function(self) {
+        let waitCounter: number = 0;
+
+        while ((self.nodes.length === 0) && (waitCounter < 5)) {
+          await new Promise(r => setTimeout(r, 1000));
+          ++waitCounter; 
+        }
+
+        // first check if nodes are available already
+        if (self.nodes.length > 0) {
+          let currWorker: NodeWorker | null = self.acquireWorker();
+          let resultData: any = null;
+      
+          while (currWorker) {
+            try {
+              let resultData = await currWorker.makeRequest(method, path, body);
+              currWorker = null;
+              // return the data
+              resolve(resultData);
+            } catch(data) {
+              currWorker = self.acquireWorker();
+              resultData = data;
+            }
+          }
+      
+          // if we are here we failed
+          if (!currWorker) {
+            reject(resultData);
+          }
+        } else {
+          reject(null);
+        }  
+      })(this);          
+    });
+  } 
+
+  makeRpcRequest = (method: string, params: any = {}): Promise<any> => {
+    return new Promise<any>((resolve, reject) => {
+      (async function(self) {
+        let waitCounter: number = 0;
+
+        while ((self.nodes.length === 0) && (waitCounter < 5)) {
+          await new Promise(r => setTimeout(r, 1000));
+          ++waitCounter; 
+        }
+
+        // first check if nodes are available already
+        if (self.nodes.length > 0) {
+          let currWorker: NodeWorker | null = self.acquireWorker();
+          let resultData: any = null;
+      
+          while (currWorker) {
+            try {
+              let resultData = await currWorker.makeRpcRequest(method, params);
+              currWorker = null;
+              // return the data
+              resolve(resultData);
+            } catch(data) {
+              currWorker = self.acquireWorker();
+              resultData = data;
+            }
+          }
+      
+          // if we are here we failed
+          if (!currWorker) {
+            reject(resultData);
+          }
+        } else {
+          reject(null);
+        }
+      })(this);    
+    });
+  }
+
+  getNodes = () => {
+    return this.nodes;      
+  }
+
+  start = (nodes: string[]) => {
+    for (let i = 0; i < nodes.length; i++) {
+      this.nodes.push(new NodeWorker(nodes[i]));      
+    }
+  }
+
+  stop = () => {
+    this.nodes = [];
+  }
+}
+
 export type DaemonResponseGetInfo = {
-    "already_generated_coins": number,
-    "block_major_version": number,
-    "contact": string,
-    "cumulative_difficulty": number,
-    "difficulty": number,
-    "fee_address": string,
-    "grey_peerlist_size": number,
-    "height": number,
-    "height_without_bootstrap": number,
-    "is_synchronized": boolean,
-    "incoming_connections_count": number,
-    "outgoing_connections_count": number,
-    "last_known_block_index": number,
-    "min_fee": number,
-    "next_reward": number,
-    "rpc_connections_count": number,
-    "start_time": number,
-    "status": "OK" | string,
-    "target": number,
-    "top_block_hash": string,
-    "transactions_count": number,
-    "transactions_pool_size": number,
-    "white_peerlist_size": number
+  "already_generated_coins": number,
+  "block_major_version": number,
+  "contact": string,
+  "cumulative_difficulty": number,
+  "difficulty": number,
+  "fee_address": string,
+  "grey_peerlist_size": number,
+  "height": number,
+  "height_without_bootstrap": number,
+  "is_synchronized": boolean,
+  "incoming_connections_count": number,
+  "outgoing_connections_count": number,
+  "last_known_block_index": number,
+  "min_fee": number,
+  "next_reward": number,
+  "rpc_connections_count": number,
+  "start_time": number,
+  "status": "OK" | string,
+  "target": number,
+  "top_block_hash": string,
+  "transactions_count": number,
+  "transactions_pool_size": number,
+  "white_peerlist_size": number
 }
 
 export type DaemonResponseGetNodeFeeInfo = {
-    fee_address: string,
-    fee_amount: number,
-    status: "OK" | string
+  fee_address: string,
+  fee_amount: number,
+  status: "OK" | string
 }
 
 export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
-    //daemonAddress = config.nodeList[Math.floor(Math.random() * Math.floor(config.nodeList.length))];
-    daemonAddress = config.nodeUrl;
-    phpProxy: boolean = false;
+  private nodeWorkers: NodeWorkersList;
+  private lastTimeRetrieveHeight = 0;
+  private lastTimeRetrieveInfo = 0;
+  private scannedHeight: number = 0;
+  private cacheHeight: number = 0;
+  private cacheInfo: any = null;
 
-    constructor(daemonAddress: string | null = null) {
-        if (daemonAddress !== null && daemonAddress.trim() !== '') {
-            this.daemonAddress = daemonAddress;
-        }
+
+  constructor() {
+    this.nodeWorkers = new NodeWorkersList();
+    this.resetNodes();
+  }
+
+  getInfo = (): Promise<DaemonResponseGetInfo> => {
+    if (((Date.now() - this.lastTimeRetrieveInfo) < 20 * 1000) && (this.cacheInfo !== null)) {
+      return Promise.resolve(this.cacheInfo);
     }
 
-    protected makeRpcRequest(method: string, params: any = {}): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
-            $.ajax({
-                url: config.nodeUrl + 'json_rpc',
-                method: 'POST',
-                data: JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: method,
-                    params: params,
-                    id: 0
-                }),
-                contentType: 'application/json'
-            }).done(function (raw: any) {
-                if (
-                    typeof raw.id === 'undefined' ||
-                    typeof raw.jsonrpc === 'undefined' ||
-                    raw.jsonrpc !== '2.0' ||
-                    typeof raw.result !== 'object'
-                )
-                    reject('Daemon response is not properly formatted');
-                else
-                    resolve(raw.result);
-            }).fail(function (data: any) {
-                reject(data);
-            });
-        });
+    this.lastTimeRetrieveInfo = Date.now();
+    return this.nodeWorkers.makeRequest('GET', 'getinfo').then((data: DaemonResponseGetInfo) => {
+      this.cacheInfo = data;
+      return data;
+    });
+  }
+
+  getHeight = (): Promise<number> => {
+    if (((Date.now() - this.lastTimeRetrieveHeight) < 20 * 1000) && (this.cacheHeight !== 0)) {
+      return Promise.resolve(this.cacheHeight);
     }
 
-    protected makeRequest(method: 'GET' | 'POST', url: string, body: any = undefined): Promise<any> {
-        return new Promise<any>((resolve, reject) => {
-            $.ajax({
-                url: config.nodeUrl + url,
-                method: method,
-                data: typeof body === 'string' ? body : JSON.stringify(body)
-            }).done(function (raw: any) {
-                resolve(raw);
-            }).fail(function (data: any) {
-                reject(data);
-            });
-        });
+    this.lastTimeRetrieveHeight = Date.now();
+    return this.nodeWorkers.makeRequest('GET', 'getheight').then((data: any) => {
+      let height = parseInt(data.height);
+      this.cacheHeight = height;
+      return height;
+    });
+  }
+
+  getScannedHeight = (): number => {
+    return this.scannedHeight;
+  }
+
+  resetNodes = () => {
+    Storage.getItem('customNodeUrl', null).then(customNodeUrl => {
+      this.nodeWorkers.stop();
+
+      if (customNodeUrl) {
+        this.nodeWorkers.start([customNodeUrl]);
+      } else {
+        this.nodeWorkers.start(config.nodeList);
+      }  
+    });
+  }
+
+  start = (wallet: Wallet): WalletWatchdog => {
+    let watchdog = new WalletWatchdog(wallet, this);
+    watchdog.start();
+    return watchdog;    
+  }
+
+  /**
+   * Returns an array containing all numbers like [start;end]
+   * @param start
+   * @param end
+   */
+  range(start: number, end: number) {
+      let numbers: number[] = [];
+      for (let i = start; i <= end; ++i) {
+          numbers.push(i);
+      }
+
+      return numbers;
+  }
+
+  getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTxs: boolean): Promise<RawDaemon_Transaction[]> {
+    let tempStartBlock: number;
+    if (startBlock === 0) {
+      tempStartBlock = 1;
+    } else {
+      tempStartBlock = startBlock;
     }
 
-    cacheInfo: any = null;
-    cacheHeight: number = 0;
-    lastTimeRetrieveInfo = 0;
+    return this.nodeWorkers.makeRequest('POST', 'get_raw_transactions_by_heights', {
+      heights: [tempStartBlock, endBlock],
+      include_miner_txs: includeMinerTxs,
+      range: true
+    }).then((response: {
+      status: 'OK' | 'string',
+      transactions: { transaction: any, timestamp: number, output_indexes: number[], height: number, block_hash: string, hash: string, fee: number }[]
+    }) => {
+      let formatted: RawDaemon_Transaction[] = [];
 
-    getInfo(): Promise<DaemonResponseGetInfo> {
-        if (Date.now() - this.lastTimeRetrieveInfo < 20 * 1000 && this.cacheInfo !== null) {
-            return Promise.resolve(this.cacheInfo);
-        }
+      if (response.status !== 'OK') {
+        throw 'invalid_transaction_answer';
+      }
 
-        this.lastTimeRetrieveInfo = Date.now();
-        return this.makeRequest('GET', 'getinfo').then((data: DaemonResponseGetInfo) => {
-            this.cacheInfo = data;
-            console.log(`GetInfo: `)
-            return data;
-        })
-    }
+      if (response.transactions.length > 0) {
+        for (let rawTx of response.transactions) {
+          let tx: RawDaemon_Transaction | null = null;
 
-    getHeight(): Promise<number> {
-        if (Date.now() - this.lastTimeRetrieveInfo < 20 * 1000 && this.cacheHeight !== 0) {
-            return Promise.resolve(this.cacheHeight);
-        }
+          if (rawTx && rawTx.transaction) {
+            tx = rawTx.transaction;
 
-        this.lastTimeRetrieveInfo = Date.now();
-        return this.makeRequest('GET', 'getheight').then((data: any) => {
-            let height = parseInt(data.height);
-            this.cacheHeight = height;
-            return height;
-        })
-    }
-
-    scannedHeight: number = 0;
-
-    getScannedHeight(): number {
-        return this.scannedHeight;
-    }
-
-    watchdog(wallet: Wallet): WalletWatchdog {
-        let watchdog = new WalletWatchdog(wallet, this);
-        watchdog.loadHistory();
-        return watchdog;
-    }
-
-    /**
-     * Returns an array containing all numbers like [start;end]
-     * @param start
-     * @param end
-     */
-    range(start: number, end: number) {
-        let numbers: number[] = [];
-        for (let i = start; i <= end; ++i) {
-            numbers.push(i);
-        }
-
-        return numbers;
-    }
-
-    getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTxs: boolean): Promise<any> {
-        let tempStartBlock;
-        if (startBlock === 0) {
-            tempStartBlock = 1;
-        } else {
-            tempStartBlock = startBlock;
-        }
-
-        return this.makeRequest('POST', 'get_raw_transactions_by_heights', {
-            heights: [tempStartBlock, endBlock],
-            include_miner_txs: includeMinerTxs,
-            range: true
-        }).then((response: {
-            status: 'OK' | 'string',
-            transactions: { transaction: any, timestamp: number, output_indexes: number[], height: number, block_hash: string, hash: string, fee: number }[]
-        }) => {
-            let formatted: RawDaemon_Transaction[] = [];
-
-            if (response.status !== 'OK') throw 'invalid_transaction_answer';
-
-            if (response.transactions.length > 0) {
-                for (let rawTx of response.transactions) {
-                    let tx: RawDaemon_Transaction | null = null;
-                    try {
-                        tx = rawTx.transaction;
-                    } catch (e) {
-                        try {
-                            //compat for some invalid endpoints
-                            tx = rawTx.transaction;
-                        } catch (e) {
-                        }
-                    }
-                    if (tx !== null) {
-                        tx.ts = rawTx.timestamp;
-                        tx.height = rawTx.height;
-                        tx.hash = rawTx.hash;
-                        if (rawTx.output_indexes.length > 0)
-                            tx.global_index_start = rawTx.output_indexes[0];
-                        tx.output_indexes = rawTx.output_indexes;
-                        formatted.push(tx);
-                    }
-                }
-
-                return formatted;
-            } else {
-                return response.status;
+            if (tx !== null) {
+              tx.ts = rawTx.timestamp;
+              tx.height = rawTx.height;
+              tx.hash = rawTx.hash;
+              tx.fee = rawTx.fee;
+              if (rawTx.output_indexes.length > 0)
+                tx.global_index_start = rawTx.output_indexes[0];
+              tx.output_indexes = rawTx.output_indexes;
+              formatted.push(tx);
             }
-        });
-    }
+          }
+        }
+      }
 
-    getTransactionPool(): Promise<RawDaemon_Transaction[]> {
-        return this.makeRequest('GET', 'getrawtransactionspool').then(
-              (response: {
-                status: 'OK' | 'string',
-                transactions: { transaction: any, timestamp: number, output_indexes: number[], height: number, block_hash: string, hash: string, fee: number }[]
-              }) => {
+      return formatted;
+    });
+  }
 
-                let formatted: RawDaemon_Transaction[] = [];
+  getTransactionPool(): Promise<RawDaemon_Transaction[]> {
+    return this.nodeWorkers.makeRequest('GET', 'getrawtransactionspool').then(
+      (response: {
+        status: 'OK' | 'string',
+        transactions: { transaction: any, timestamp: number, output_indexes: number[], height: number, block_hash: string, hash: string, fee: number }[]
+      }) => {
+        let formatted: RawDaemon_Transaction[] = [];
 
-                for (let rawTx of response.transactions) {
-                    let tx: RawDaemon_Transaction | null = null;
-                    try {
-                        tx = rawTx.transaction;
-                    } catch (e) {
-                        try {
-                            //compat for some invalid endpoints
-                            tx = rawTx.transaction;
-                        } catch (e) {
-                        }
-                    }
-                    if (tx !== null) {
-                        tx.ts = rawTx.timestamp;
-                        tx.height = rawTx.height;
-                        tx.hash = rawTx.hash;
-                        if (rawTx.output_indexes.length > 0) {
-                            tx.global_index_start = rawTx.output_indexes[0];
-                            tx.output_indexes = rawTx.output_indexes;
-                        }
-                        formatted.push(tx);
-                    }
-                }
+        for (let rawTx of response.transactions) {
+          let tx: RawDaemon_Transaction | null = null;
 
-                return formatted;
-        });
-    }
+          if (rawTx && rawTx.transaction) {
+            tx = rawTx.transaction;
 
-    getRandomOuts(amounts: number[], nbOutsNeeded: number): Promise<RawDaemon_Out[]> {
-        return this.makeRequest('POST', 'getrandom_outs', {
-            amounts: amounts,
-            outs_count: nbOutsNeeded
-        }).then((response: {
-            status: 'OK' | 'string',
-            outs: { global_index: number, public_key: string }[]
-        }) => {
-            if (response.status !== 'OK') throw 'invalid_getrandom_outs_answer';
-            if (response.outs.length > 0) {
-                console.log("Got random outs: ");
-                console.log(response.outs);
+            if (tx !== null) {
+              tx.ts = rawTx.timestamp;
+              tx.height = rawTx.height;
+              tx.hash = rawTx.hash;
+              if (rawTx.output_indexes.length > 0) {
+                tx.global_index_start = rawTx.output_indexes[0];
+                tx.output_indexes = rawTx.output_indexes;
+              }
+              formatted.push(tx);
             }
+          }
+        }
 
-            return response.outs;
-        });
-    }
+        return formatted;
+    });
+  }
 
-    sendRawTx(rawTx: string) {
-        return this.makeRequest('POST', 'sendrawtransaction', {
-            tx_as_hex: rawTx,
-            do_not_relay: false
-        }).then((transactions: any) => {
-            if (!transactions.status || transactions.status !== 'OK')
-                throw transactions;
-        });
-    }
+  getRandomOuts(amounts: number[], nbOutsNeeded: number): Promise<RawDaemon_Out[]> {
+    return this.nodeWorkers.makeRequest('POST', 'getrandom_outs', {
+      amounts: amounts,
+      outs_count: nbOutsNeeded
+    }).then((response: {
+      status: 'OK' | 'string',
+      outs: { global_index: number, public_key: string }[]
+    }) => {
+      if (response.status !== 'OK') throw 'invalid_getrandom_outs_answer';
+      if (response.outs.length > 0) {
+        logDebugMsg(response.outs);
+      }
 
-    resolveOpenAlias(domain: string): Promise<{ address: string, name: string | null }> {
-        return this.makeRpcRequest('resolve_open_alias', {url: domain}).then(function (response: {
-            addresses?: string[],
-            status: 'OK' | string
-        }) {
-            if (response.addresses && response.addresses.length > 0)
-                return {address: response.addresses[0], name: null};
-            throw 'not_found';
-        });
-    }
+      return response.outs;
+    });
+  }
 
-    getNetworkInfo(): Promise<NetworkInfo> {
-        return this.makeRpcRequest('getlastblockheader').then((raw: any) => {
-            //console.log(raw);
-            return {
-                'node': config.nodeUrl,//.split(':')[1].replace(/[-[\]\/{}()*+?\\^$|#\s]/g, ''),
-                'major_version': raw.block_header['major_version'],
-                'hash': raw.block_header['hash'],
-                'reward': raw.block_header['reward'],
-                'height': raw.block_header['height'],
-                'timestamp': raw.block_header['timestamp'],
-                'difficulty': raw.block_header['difficulty']
-            }
-        });
-    }
+  sendRawTx(rawTx: string) {
+    return this.nodeWorkers.makeRequest('POST', 'sendrawtransaction', {
+      tx_as_hex: rawTx,
+      do_not_relay: false
+    }).then((transactions: any) => {
+      if (!transactions.status || transactions.status !== 'OK')
+        throw transactions;
+    });
+  }
 
-    getRemoteNodeInformation(): Promise<RemoteNodeInformation> {
-        // TODO change to /feeaddress
-        return this.getInfo().then((info: DaemonResponseGetInfo) => {
-            return {
-                'fee_address': info['fee_address'],
-                'status': info['status']
-            }
-        });
-    }
+  resolveOpenAlias(domain: string): Promise<{ address: string, name: string | null }> {
+      return this.nodeWorkers.makeRpcRequest('resolve_open_alias', {url: domain}).then(function (response: {
+        addresses?: string[],
+        status: 'OK' | string
+      }) {
+        if (response.addresses && response.addresses.length > 0)
+          return {address: response.addresses[0], name: null};
+        throw 'not_found';
+      });
+  }
 
+  getNetworkInfo(): Promise<any> {
+      return this.nodeWorkers.makeRpcRequest('getlastblockheader').then((raw: any) => {
+        let nodeList: NodeWorker[] = this.nodeWorkers.getNodes();
+        let usedNodes: NodeInfo[] = [];
+
+        for (let i = 0; i < nodeList.length; i++) {
+          usedNodes.push({
+            'url': nodeList[i].url,
+            'requests': nodeList[i].requests,
+            'errors': nodeList[i].errors,
+            'allErrors': nodeList[i].allErrors,
+            'status': nodeList[i].getStatus()
+          });
+        }
+
+        return {
+          'nodes': usedNodes,
+          'major_version': raw.block_header['major_version'],
+          'hash': raw.block_header['hash'],
+          'reward': raw.block_header['reward'],
+          'height': raw.block_header['height'],
+          'timestamp': raw.block_header['timestamp'],
+          'difficulty': raw.block_header['difficulty']
+        }
+      });
+  }
+
+  getRemoteNodeInformation(): Promise<RemoteNodeInformation> {
+    // TODO change to /feeaddress
+    return this.getInfo().then((info: DaemonResponseGetInfo) => {
+      return {
+        'fee_address': info['fee_address'],
+        'status': info['status']
+      }
+    });
+  }
 }

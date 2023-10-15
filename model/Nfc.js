@@ -2,7 +2,7 @@ define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Nfc = void 0;
-    var Nfc = /** @class */ (function () {
+    var Nfc = exports.Nfc = /** @class */ (function () {
         function Nfc() {
             var _this = this;
             this._nativeNfc = false;
@@ -162,5 +162,4 @@ define(["require", "exports"], function (require, exports) {
         Nfc.ERROR_NO_NFC = 'no_nfc';
         return Nfc;
     }());
-    exports.Nfc = Nfc;
 });
