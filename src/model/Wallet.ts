@@ -357,10 +357,10 @@ export class Wallet extends Observable {
 	}
 
 	get amount() : number{
-		return this.unlockedAmount(-1);
+		return this.availableAmount(-1);
 	}
 
-	unlockedAmount = (currentBlockHeight : number = -1) : number => {
+	availableAmount = (currentBlockHeight : number = -1) : number => {
 		let amount = 0;
 		for (let transaction of this.transactions) {
 			if (!transaction.isFullyChecked())
@@ -368,32 +368,73 @@ export class Wallet extends Observable {
 
 			if (transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1) {      
 				for (let out of transaction.outs) {
-					amount += out.amount;
+          if (out.type !== "03") {
+					  amount += out.amount;
+          }
 				}
       }
 
 			for(let nin of transaction.ins){
-				amount -= nin.amount;
+        if (nin.type !== "03") {
+          amount -= nin.amount;
+        }
 			}
 		}
-
-    // debug log of mem pool
-		logDebugMsg("mempool tx", this.txsMem);
 
 		for (let transaction of this.txsMem) {
 			if (transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1) {
 				for (let nout of transaction.outs) {
-					amount += nout.amount;
+          if (nout.type !== "03") {
+					  amount += nout.amount;
+          }
 				}
       }
 
 			for(let nin of transaction.ins){
-				amount -= nin.amount;
+        if (nin.type !== "03") {
+          amount -= nin.amount;
+        }
 			}
 		}
 
 		return amount;
 	}
+
+  lockedDeposits = () : number => {
+    let amount = 0;
+		for (let transaction of this.transactions) {
+			if (!transaction.isFullyChecked())
+				continue;
+
+      for (let out of transaction.outs) {
+        if (out.type === "03") {
+          amount += out.amount;
+        }
+      }
+
+			for(let nin of transaction.ins){
+        if (nin.type === "03") {
+          amount -= nin.amount;
+        }
+			}
+		}
+
+		for (let transaction of this.txsMem) {
+      for (let nout of transaction.outs) {
+        if (nout.type === "03") {
+          amount += nout.amount;
+        }
+      }
+
+			for(let nin of transaction.ins){
+        if (nin.type === "03") {
+          amount -= nin.amount;
+        }
+			}
+		}
+
+		return amount;
+  }    
 
 	hasBeenModified = (): Boolean => {
 		return this.modified;
@@ -544,7 +585,7 @@ export class Wallet extends Observable {
               totalAmountWithoutFee = totalAmountWithoutFee.add(unusedOuts[i].amount);
             }  
         
-            if (totalAmountWithoutFee < this.unlockedAmount(blockchainHeight)) {
+            if (totalAmountWithoutFee < this.availableAmount(blockchainHeight)) {
               // substract fee from the amount we have available              
               let totalAmount = totalAmountWithoutFee.subtract(neededFee);
 

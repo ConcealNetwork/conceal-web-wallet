@@ -110,7 +110,9 @@
         "title": "Dein Guthaben",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Entsperrt"
+        "unlocked": "Entsperrt",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Transaktionshistorie",

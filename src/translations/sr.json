@@ -110,7 +110,9 @@
         "title": "Ваша средства",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Откључано"
+        "unlocked": "Откључано",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Историја ваших трансакција",

@@ -110,7 +110,9 @@
         "title": "잔액",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "해제완료"
+        "unlocked": "해제완료",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "트랜젝션 기록",

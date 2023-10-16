@@ -110,7 +110,9 @@
         "title": "Ваш баланс",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Доступно"
+        "unlocked": "Доступно",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Історія транзакцій",

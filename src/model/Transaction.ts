@@ -36,6 +36,8 @@ export class TransactionOut {
     keyImage: string = '';
     outputIdx: number = 0;
     globalIndex: number = 0;
+    type: string = '';
+    term: number = 0;
 
     ephemeralPub: string = '';
     pubKey: string = '';
@@ -49,6 +51,8 @@ export class TransactionOut {
         nout.outputIdx = raw.outputIdx;
         nout.globalIndex = raw.globalIndex;
         nout.amount = raw.amount;
+        nout.type = raw.type;
+        nout.term = raw.term;
 
         if (typeof raw.ephemeralPub !== 'undefined') nout.ephemeralPub = raw.ephemeralPub;
         if (typeof raw.pubKey !== 'undefined') nout.pubKey = raw.pubKey;
@@ -65,6 +69,8 @@ export class TransactionOut {
             outputIdx: this.outputIdx,
             globalIndex: this.globalIndex,
             amount: this.amount,
+            type: this.type,
+            term: this.term,
         };
         if (this.rtcOutPk !== '') data.rtcOutPk = this.rtcOutPk;
         if (this.rtcMask !== '') data.rtcMask = this.rtcMask;
@@ -80,6 +86,7 @@ export class TransactionIn {
     keyImage: string = '';
     //if < 0, means the in has been seen but not checked (view only wallet)
     amount: number = 0;
+    type: string = '';
 
     static fromRaw(raw: any) {
         let nin = new TransactionIn();
@@ -136,6 +143,26 @@ export class Transaction {
       return transac;
     }
 
+    isDeposit() {
+      for (let out of this.outs) {
+        if (out.type == "03") {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    isWithdraw() {
+      for (let nin of this.ins) {
+        if (nin.type == "03") {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
     export() {
       let data: any = {
           blockHeight: this.blockHeight,
@@ -164,14 +191,14 @@ export class Transaction {
     }
 
     getAmount() {
-        let amount = 0;
-        for (let out of this.outs) {
-            amount += out.amount;
-        }
-        for (let nin of this.ins) {
-            amount -= nin.amount;
-        }
-        return amount;
+      let amount = 0;
+      for (let out of this.outs) {
+        amount += out.amount;
+      }
+      for (let nin of this.ins) {
+        amount -= nin.amount;
+      }
+      return amount;
     }
 
     isCoinbase() {

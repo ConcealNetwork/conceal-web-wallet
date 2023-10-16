@@ -110,7 +110,9 @@
         "title": "您的余额",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "解锁"
+        "unlocked": "解锁",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "交易记录",

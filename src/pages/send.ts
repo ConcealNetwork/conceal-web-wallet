@@ -268,7 +268,7 @@ class SendView extends DestructableView {
       let amount = parseFloat(self.amountToSend);
       if (self.destinationAddress !== null) {
         //todo use BigInteger
-        if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.unlockedAmount(blockchainHeight)) {
+        if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.availableAmount(blockchainHeight)) {
           swal({
             type: 'error',
             title: i18n.t('sendPage.notEnoughMoneyModal.title'),
@@ -297,7 +297,7 @@ class SendView extends DestructableView {
             return blockchainExplorer.getRandomOuts(amounts, numberOuts);
           }
           , function (amount: number, feesAmount: number): Promise<void> {
-            if (amount + feesAmount > wallet.unlockedAmount(blockchainHeight)) {
+            if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
               swal({
                 type: 'error',
                 title: i18n.t('sendPage.notEnoughMoneyModal.title'),

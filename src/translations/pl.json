@@ -109,7 +109,9 @@
         "title": "Stan konta",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Odblokowany"
+        "unlocked": "Odblokowany",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Historia transakcji",

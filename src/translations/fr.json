@@ -108,8 +108,10 @@
 	  },
 	  "balanceBlock": {
       "title": "Votre solde",
-      "unlocked": "Disponible"
-	  },
+      "unlocked": "Disponible",
+      "deposited": "Locked Deposits",
+      "withdrawable": "Withdrawable"
+  },
 	  "historyBlock": {
       "title": "Historique des transactions",
       "pendingTxStatus": "En attente",

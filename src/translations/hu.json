@@ -110,7 +110,9 @@
         "title": "Egyenleg",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Feloldva"
+        "unlocked": "Feloldva",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Tranzakciós előzmények",

@@ -110,7 +110,9 @@
         "title": "Το υπόλοιπό σας",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Ξεκλείδωτο"
+        "unlocked": "Ξεκλείδωτο",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Ιστορικό συναλλαγών",

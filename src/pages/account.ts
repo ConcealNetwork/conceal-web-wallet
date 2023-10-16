@@ -38,6 +38,8 @@ class AccountView extends DestructableView{
 	@VueVar(0) processingQueue !: number;
 	@VueVar(0) walletAmount !: number;
 	@VueVar(0) unlockedWalletAmount !: number;
+	@VueVar(0) depositedWalletAmount !: number;
+	@VueVar(0) withdrawableWalletAmount !: number;
 	@VueVar(0) allTransactionsCount !: number;
 	@VueVar(0) pagesCount !: number;
 	@VueVar(0) txPerPage !: number;
@@ -207,7 +209,9 @@ class AccountView extends DestructableView{
       logDebugMsg("refreshWallet", this.currentScanBlock);      
 
       this.walletAmount = wallet.amount;
-      this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
+      this.unlockedWalletAmount = wallet.availableAmount(this.currentScanBlock);
+      this.depositedWalletAmount = wallet.lockedDeposits();
+      this.withdrawableWalletAmount = 0;
       this.lastPending = this.walletAmount - this.unlockedWalletAmount;
 
       if ((this.refreshTimestamp < wallet.modifiedTimestamp()) || forceRedraw || filterChanged) {

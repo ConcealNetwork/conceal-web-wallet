@@ -150,7 +150,6 @@
    }
 
    static ownsTx(rawTransaction: RawDaemon_Transaction, wallet: Wallet): Boolean {
-     let transaction: Transaction | null = null;
      let tx_pub_key = '';
 
      let txExtras = [];
@@ -195,22 +194,34 @@
      if (!derivation) {
       console.error('UNABLE TO CREATE DERIVATION');
       return false;
-     }
+     }     
 
+     let keyIndex: number = 0;
      for (let iOut = 0; iOut < rawTransaction.vout.length; iOut++) {
        let out = rawTransaction.vout[iOut];
        let txout_k = out.target.data;
-
-       let output_idx_in_tx = iOut;
-       let generated_tx_pubkey = CnNativeBride.derive_public_key(derivation, output_idx_in_tx, wallet.keys.pub.spend);
-
-       if (txout_k.key == generated_tx_pubkey) {
-         return true;
+       if (out.target.type == "02" && typeof txout_k.key !== 'undefined') {
+        let publicEphemeral = CnNativeBride.derive_public_key(derivation, keyIndex, wallet.keys.pub.spend);
+         if (txout_k.key == publicEphemeral) {
+           logDebugMsg("Found our tx...");
+           return true;
+         }
+         ++keyIndex;
+       } else if (out.target.type == "03" && (typeof txout_k.keys !== 'undefined')) {
+         for (let iKey = 0; iKey < txout_k.keys.length; iKey++) {
+           let key = txout_k.keys[iKey];
+           let publicEphemeral = CnNativeBride.derive_public_key(derivation, iOut, wallet.keys.pub.spend);
+           if (key == publicEphemeral) {
+             logDebugMsg("Found our deposit tx...");
+             return true;
+           }
+           ++keyIndex;
+         }
        }
      }
 
      //check if no read only wallet
-    if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
+     if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
       let keyImages = wallet.getTransactionKeyImages();
       for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
         let vin = rawTransaction.vin[iIn];
@@ -406,11 +417,19 @@
        }
 
        let output_idx_in_tx = iOut;
-
        let generated_tx_pubkey = CnNativeBride.derive_public_key(derivation, output_idx_in_tx, wallet.keys.pub.spend);
 
        // check if generated public key matches the current output's key
-       let mine_output = (txout_k.key == generated_tx_pubkey);
+       let mine_output: boolean = false;
+       if (out.target.type == "02" && typeof txout_k.key !== 'undefined') {
+         mine_output = (txout_k.key == generated_tx_pubkey);
+       } else if (out.target.type == "03" && typeof txout_k.keys !== 'undefined') {
+        for (let iKey = 0; iKey < txout_k.keys.length; iKey++) {
+          if (txout_k.keys[iKey] == generated_tx_pubkey) {
+            mine_output = true;
+          }
+        }      
+       }
 
        if (mine_output) {
          let transactionOut = new TransactionOut();
@@ -418,9 +437,16 @@
            transactionOut.globalIndex = rawTransaction.output_indexes[output_idx_in_tx];
          else
            transactionOut.globalIndex = output_idx_in_tx;
-
          transactionOut.amount = amount;
-         transactionOut.pubKey = txout_k.key;
+
+         if (out.target.type == "02" && typeof txout_k.key !== 'undefined') {
+           transactionOut.pubKey = txout_k.key;
+           transactionOut.type = "02";
+         } else if (out.target.type == "03" && typeof txout_k.keys !== 'undefined') {
+           transactionOut.pubKey = generated_tx_pubkey; // assume
+           transactionOut.term = out.target.data.term ? out.target.data.term : 0;  
+           transactionOut.type = "03";
+         }
          transactionOut.outputIdx = output_idx_in_tx;
          /*
          if (!minerTx) {
@@ -428,7 +454,7 @@
            transactionOut.rtcMask = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].mask;
            transactionOut.rtcAmount = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].amount;
          }
-                 */
+         */
          if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
            let m_key_image = CnTransactions.generate_key_image_helper({
              view_secret_key: wallet.keys.priv.view,
@@ -441,9 +467,6 @@
          }
 
          outs.push(transactionOut);
-
-         //if (minerTx)
-         //    break;
        } //  if (mine_output)
      }
 
@@ -456,13 +479,12 @@
            let walletOuts = wallet.getAllOuts();
            for (let ut of walletOuts) {
              if (ut.keyImage == vin.value.k_image) {
-               // ins.push(vin.key.k_image);
-               // sumIns += ut.amount;
-
                let transactionIn = new TransactionIn();
+               transactionIn.type = ut.type;
                transactionIn.amount = ut.amount;
                transactionIn.keyImage = ut.keyImage;
                ins.push(transactionIn);
+
                break;
              }
            }
@@ -792,4 +814,3 @@
      });
    }
  }
-

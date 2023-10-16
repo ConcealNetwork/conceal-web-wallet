@@ -109,7 +109,9 @@
         "title": "Il tuo bilancio",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Sbloccato"
+        "unlocked": "Sbloccato",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Cronologia delle transazioni",

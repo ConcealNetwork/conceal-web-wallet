@@ -109,7 +109,9 @@
         "title": "کل حساب",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "در دسترس"
+        "unlocked": "در دسترس",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "تاریخچه تراکنش ها",

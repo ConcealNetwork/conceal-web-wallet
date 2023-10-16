@@ -112,7 +112,9 @@
         "title": "Su balance",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Desbloqueado"
+        "unlocked": "Desbloqueado",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Historial de transacciones",

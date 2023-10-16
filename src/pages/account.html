@@ -25,15 +25,19 @@
 				<div class="content balance_content" >
           <div class="wallet_amount amount_total">
 		  			<div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.total") }}:</div>
-            <div class="walletAmount amount_cell" >{{ $n(walletAmount / currencyDivider) }} {{ticker}}</div>
+            <div class="walletAmount amount_cell" >{{ $n(unlockedWalletAmount / currencyDivider) }} {{ticker}}</div>
           </div>
           <div class="wallet_amount amount_pending">
             <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.pending") }}:</div>
             <div class="walletAmount amount_cell">{{ $n((walletAmount - unlockedWalletAmount) / currencyDivider) }} {{ticker}}</div>
           </div>
-          <div class="wallet_amount amount_unlocked" v-if="unlockedWalletAmount !== walletAmount">
-            <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.unlocked") }}:</div>
-            <div class="walletAmount amount_cell">{{ $n(unlockedWalletAmount / currencyDivider) }} {{ticker}}</div>
+          <div class="wallet_amount amount_pending">
+            <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.deposited") }}:</div>
+            <div class="walletAmount amount_cell">{{ $n(depositedWalletAmount / currencyDivider) }} {{ticker}}</div>
+          </div>
+          <div class="wallet_amount amount_pending">
+            <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.withdrawable") }}:</div>
+            <div class="walletAmount amount_cell">{{ $n(withdrawableWalletAmount / currencyDivider) }} {{ticker}}</div>
           </div>
 				</div>
 			</div>
@@ -65,7 +69,9 @@
 							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked()">
 								<tr class="transaction" :class="(transaction.blockHeight === 0 ? 'pending' : '')">
 									<td class="direction" >
-										<i v-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
+                    <i v-if="transaction.isDeposit()" class="fa fa-university tx_deposit" aria-hidden="true"></i>
+                    <i v-else-if="transaction.isWithdraw()" class="fa fa-credit-card tx_withdraw" aria-hidden="true"></i>
+										<i v-else-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
 										<i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
 									</td><!--LEfT-->
 									<td class="timestamp" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp*1000), 'long')}}</td>

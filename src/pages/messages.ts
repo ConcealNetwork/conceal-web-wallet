@@ -251,7 +251,7 @@ class MessagesView extends DestructableView {
             return blockchainExplorer.getRandomOuts(amounts, numberOuts);
           }
           , function (amount: number, feesAmount: number): Promise<void> {
-            if (amount + feesAmount > wallet.unlockedAmount(blockchainHeight)) {
+            if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
               swal({
                 type: 'error',
                 title: i18n.t('sendPage.notEnoughMoneyModal.title'),
