@@ -69,7 +69,7 @@
 							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked()">
 								<tr class="transaction" :class="(transaction.blockHeight === 0 ? 'pending' : '')">
 									<td class="direction" >
-                    <i v-if="transaction.isDeposit()" class="fa fa-university tx_deposit" aria-hidden="true"></i>
+                    <i v-if="transaction.isDeposit" class="fa fa-university tx_deposit" aria-hidden="true"></i>
 										<i v-else-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
 										<i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
 									</td><!--LEfT-->
