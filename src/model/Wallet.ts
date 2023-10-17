@@ -94,6 +94,7 @@ export class Wallet extends Observable {
 	private _lastHeight : number = 0;
 
 	private transactions : Transaction[] = [];
+  private deposits : Transaction[] = [];
   private txLookupMap: Map<string, Transaction> = new Map<string, Transaction>();
 	txsMem : Transaction[] = [];
 	private modified = true;
@@ -138,11 +139,15 @@ export class Wallet extends Observable {
 	static loadFromRaw(raw : RawWallet): Wallet {
     let wallet = new Wallet();
 		wallet.transactions = [];
+		wallet.deposits = [];
     wallet.txLookupMap.clear();
 		for (let rawTransac of raw.transactions) {
       let transaction = Transaction.fromRaw(rawTransac);
 			wallet.transactions.push(transaction);
       wallet.txLookupMap.set(transaction.txPubKey, transaction);
+      if (transaction.isDeposit) {
+        wallet.deposits.push(transaction);
+      }
 		}
 		wallet._lastHeight = raw.lastHeight;
 		if (typeof raw.encryptedKeys === 'string' && raw.encryptedKeys !== '') {
@@ -229,11 +234,17 @@ export class Wallet extends Observable {
 			if (!exist) {
         this.txLookupMap.set(transaction.txPubKey, transaction);
 				this.transactions.push(transaction);
+        this.deposits.push(transaction);
 			} else {
 				for(let tr = 0; tr < this.transactions.length; ++tr) {
 					if(this.transactions[tr].txPubKey === transaction.txPubKey) {
             this.txLookupMap.set(transaction.txPubKey, transaction);
 						this.transactions[tr] = transaction;
+					}
+				}
+				for(let tr = 0; tr < this.deposits.length; ++tr) {
+					if(this.deposits[tr].txPubKey === transaction.txPubKey) {
+						this.deposits[tr] = transaction;
 					}
 				}
 			}

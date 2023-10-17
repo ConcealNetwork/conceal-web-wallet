@@ -319,6 +319,7 @@
 
    static parse(rawTransaction: RawDaemon_Transaction, wallet: Wallet): Transaction | null {
      let transaction: Transaction | null = null;
+     let isDeposit: boolean = false;
 
      let tx_pub_key = '';
      let paymentId: string | null = null;
@@ -427,6 +428,7 @@
         for (let iKey = 0; iKey < txout_k.keys.length; iKey++) {
           if (txout_k.keys[iKey] == generated_tx_pubkey) {
             mine_output = true;
+            isDeposit = true;
           }
         }      
        }
@@ -444,7 +446,7 @@
            transactionOut.type = "02";
          } else if (out.target.type == "03" && typeof txout_k.keys !== 'undefined') {
            transactionOut.pubKey = generated_tx_pubkey; // assume
-           transactionOut.term = out.target.data.term ? out.target.data.term : 0;  
+           transactionOut.term = out.target.data.term ? out.target.data.term : 0;
            transactionOut.type = "03";
          }
          transactionOut.outputIdx = output_idx_in_tx;
@@ -543,6 +545,7 @@
          transaction.fees = rawTransaction.fee;
        }
 
+       transaction.isDeposit = isDeposit;
        transaction.outs = outs;
        transaction.ins = ins;
 

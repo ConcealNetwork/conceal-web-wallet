@@ -105,6 +105,7 @@ export class TransactionIn {
 
 export class Transaction {
     blockHeight: number = 0;
+    isDeposit: boolean = false;
     txPubKey: string = '';
     hash: string = '';
 
@@ -141,26 +142,6 @@ export class Transaction {
       if (typeof raw.hash !== 'undefined') transac.hash = raw.hash;
       if (typeof raw.message !== 'undefined') transac.message = raw.message;
       return transac;
-    }
-
-    isDeposit() {
-      for (let out of this.outs) {
-        if (out.type == "03") {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    isWithdraw() {
-      for (let nin of this.ins) {
-        if (nin.type == "03") {
-          return true;
-        }
-      }
-
-      return false;
     }
 
     export() {
