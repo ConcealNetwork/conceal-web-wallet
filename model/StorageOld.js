@@ -121,7 +121,7 @@ define(["require", "exports"], function (require, exports) {
         };
         return NativeStorageWrap;
     }());
-    var StorageOld = exports.StorageOld = /** @class */ (function () {
+    var StorageOld = /** @class */ (function () {
         function StorageOld() {
         }
         StorageOld.clear = function () {
@@ -146,6 +146,7 @@ define(["require", "exports"], function (require, exports) {
         StorageOld._storage = new LocalStorage();
         return StorageOld;
     }());
+    exports.StorageOld = StorageOld;
     if (window.NativeStorage) {
         StorageOld._storage = new NativeStorageWrap();
     }

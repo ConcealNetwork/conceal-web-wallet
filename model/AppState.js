@@ -39,7 +39,7 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
         return WalletWorker;
     }());
     exports.WalletWorker = WalletWorker;
-    var AppState = exports.AppState = /** @class */ (function () {
+    var AppState = /** @class */ (function () {
         function AppState() {
         }
         AppState.openWallet = function (wallet, password) {
@@ -182,4 +182,5 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
         AppState.leftMenuEnabled = false;
         return AppState;
     }());
+    exports.AppState = AppState;
 });

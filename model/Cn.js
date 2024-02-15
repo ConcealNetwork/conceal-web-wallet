@@ -77,7 +77,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
         EC_SCALAR: 32,
         EC_POINT: 32,
         KEY_IMAGE: 32,
-        GE_DSMP: 160 * 8,
+        GE_DSMP: 160 * 8, // ge_cached * 8
         SIGNATURE: 64 // ec_scalar * 2
     };
     var CnVars;
@@ -127,7 +127,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             "746d1dccfed2f0ff1e13c51e2d50d5324375fbd5bf7ca82a8931828d801d43ab", "cb98110d4a6bb97d22feadbc6c0d8930c5f8fc508b2fc5b35328d26b88db19ae",
             "60b626a033b55f27d7676c4095eababc7a2c7ede2624b472e97f64f96b8cfc0e", "e5b52bc927468df71893eb8197ef820cf76cb0aaf6e8e4fe93ad62d803983104",
             "056541ae5da9961be2b0a5e895e5c5ba153cbb62dd561a427bad0ffd41923199", "f8fef05a3fa5c9f3eba41638b247b711a99f960fe73aa2f90136aeb20329b888"];
-    })(CnVars = exports.CnVars || (exports.CnVars = {}));
+    })(CnVars || (exports.CnVars = CnVars = {}));
     var CnRandom;
     (function (CnRandom) {
         // Generate a 256-bit / 64-char / 32-byte crypto random
@@ -151,7 +151,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             return CnNativeBride.sc_reduce32(CnRandom.rand_32());
         }
         CnRandom.random_scalar = random_scalar;
-    })(CnRandom = exports.CnRandom || (exports.CnRandom = {}));
+    })(CnRandom || (exports.CnRandom = CnRandom = {}));
     var CnUtils;
     (function (CnUtils) {
         function hextobin(hex) {
@@ -417,7 +417,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             };
         }
         CnUtils.encode_rct_ecdh = encode_rct_ecdh;
-    })(CnUtils = exports.CnUtils || (exports.CnUtils = {}));
+    })(CnUtils || (exports.CnUtils = CnUtils = {}));
     var CnNativeBride;
     (function (CnNativeBride) {
         function sc_reduce32(hex) {
@@ -730,7 +730,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             return CnUtils.bintohex(res);
         }
         CnNativeBride.derive_public_key = derive_public_key;
-    })(CnNativeBride = exports.CnNativeBride || (exports.CnNativeBride = {}));
+    })(CnNativeBride || (exports.CnNativeBride = CnNativeBride = {}));
     var Cn;
     (function (Cn) {
         function hash_to_scalar(buf) {
@@ -936,7 +936,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             return Cn.formatMoney(units) + ' ' + config.coinSymbol;
         }
         Cn.formatMoneySymbol = formatMoneySymbol;
-    })(Cn = exports.Cn || (exports.Cn = {}));
+    })(Cn || (exports.Cn = Cn = {}));
     var CnTransactions;
     (function (CnTransactions) {
         function commit(amount, mask) {
@@ -2152,5 +2152,5 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl);
         }
         CnTransactions.create_transaction = create_transaction;
-    })(CnTransactions = exports.CnTransactions || (exports.CnTransactions = {}));
+    })(CnTransactions || (exports.CnTransactions = CnTransactions = {}));
 });

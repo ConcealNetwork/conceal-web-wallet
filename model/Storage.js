@@ -173,7 +173,7 @@ define(["require", "exports"], function (require, exports) {
         };
         return IndexedDBStorage;
     }());
-    var Storage = exports.Storage = /** @class */ (function () {
+    var Storage = /** @class */ (function () {
         function Storage() {
         }
         Storage.clear = function () {
@@ -198,4 +198,5 @@ define(["require", "exports"], function (require, exports) {
         Storage._storage = new IndexedDBStorage();
         return Storage;
     }());
+    exports.Storage = Storage;
 });
