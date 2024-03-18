@@ -10,6 +10,7 @@
       "send": "Send",
       "receive": "Receive",
       "message": "Messages",
+      "deposit": "Deposits",
       "export": "Export",
       "donate": "Donate",
       "settings": "Settings",
@@ -378,6 +379,22 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },    
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+
       }
     },
     "receivePage": {

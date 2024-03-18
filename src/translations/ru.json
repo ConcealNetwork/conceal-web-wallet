@@ -9,6 +9,8 @@
       "account": "Аккаунт",
       "send": "Отправить",
       "receive": "Получить",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Экспорт",
       "donate": "Пожертвовать",
       "settings": "Настройки",

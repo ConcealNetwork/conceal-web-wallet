@@ -210,8 +210,8 @@ class AccountView extends DestructableView{
 
       this.walletAmount = wallet.amount;
       this.unlockedWalletAmount = wallet.availableAmount(this.currentScanBlock);
-      this.depositedWalletAmount = wallet.lockedDeposits();
-      this.withdrawableWalletAmount = 0;
+      this.depositedWalletAmount = wallet.lockedDeposits(this.currentScanBlock);
+      this.withdrawableWalletAmount = wallet.unlockedDeposits(this.currentScanBlock);
       this.lastPending = this.walletAmount - this.unlockedWalletAmount;
 
       if ((this.refreshTimestamp < wallet.modifiedTimestamp()) || forceRedraw || filterChanged) {

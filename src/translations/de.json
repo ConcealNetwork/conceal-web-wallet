@@ -9,6 +9,8 @@
       "account": "Account",
       "send": "Senden",
       "receive": "Empfangen",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Export",
       "donate": "Spenden",
       "settings": "Einstellungen",

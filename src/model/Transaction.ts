@@ -108,6 +108,7 @@ export class Transaction {
     isDeposit: boolean = false;
     txPubKey: string = '';
     hash: string = '';
+    term: number = 0;
 
     outs: TransactionOut[] = [];
     ins: TransactionIn[] = [];
@@ -123,6 +124,7 @@ export class Transaction {
       transac.blockHeight = raw.blockHeight;
       transac.txPubKey = raw.txPubKey;
       transac.timestamp = raw.timestamp;
+      transac.isDeposit = raw.isDeposit;
       if (typeof raw.ins !== 'undefined') {
         let ins: TransactionIn[] = [];
         for (let rin of raw.ins) {
@@ -149,6 +151,7 @@ export class Transaction {
           blockHeight: this.blockHeight,
           txPubKey: this.txPubKey,
           timestamp: this.timestamp,
+          isDeposit: this.isDeposit,
           hash: this.hash,
       };
       if (this.ins.length > 0) {

@@ -1,0 +1,69 @@
+<div id="app" class="body-root messageTab" v-cloak="">
+
+  <div id="appContent">
+
+    <div class="body-header">
+      <div class="header-title">
+        <i class="fa fa-comments" aria-hidden="true"></i> {{ $t("messagesPage.title") }}
+      </div>
+    </div>
+
+    <div class="body-content">
+
+      <div class="panel inline" v-if="isWalletSyncing" >
+        <div class="syncProgressContainer">
+          <label class="syncProgressLabel">{{ $t("messagesPage.syncing.label") }}</label>
+        </div>
+      </div>
+
+      <div class="messages">        
+
+        <!-- deposits history -->
+        <div id="depositHistory" class="panel nopadding messageHistory tabcontent">
+          <div class="body" >
+            <div class="header-wrapper">
+              <div class="header-title">{{ $t("depositsPage.depositsBlock.title") }}</div>
+            </div>
+            <div class="content" >
+              <div class="deposits" id="accountDeposits">              
+                <table>
+                  <template v-for="deposit of deposits">
+                    <tr class="deposit" :class="(deposit.blockHeight === 0 ? 'pending' : '')">
+                      <td class="direction" >
+                        <i v-if="deposit.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
+                        <i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
+                      </td><!--LEfT-->
+                      <td class="timestamp" v-if="deposit.blockHeight > 0">{{$d(new Date(deposit.timestamp * 1000), 'short')}}</td>
+                      <td class="timestamp" v-else="">...</td>
+                      <td class="blockHeight">{{deposit.blockHeight}}</td>
+                      <td class="messageText">{{deposit.message}}</td>
+                    </tr>
+                    <tr v-if="deposit.paymentId !== ''">
+                      <td colspan="4" class="paymentId" >{{deposit.paymentId}}</td><!--UNDER-->
+                    </tr>
+                  </template>
+                </table>
+              </div>
+            </div>  
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openMessagesTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+</script>

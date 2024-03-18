@@ -146,6 +146,7 @@ export class Wallet extends Observable {
 			wallet.transactions.push(transaction);
       wallet.txLookupMap.set(transaction.txPubKey, transaction);
       if (transaction.isDeposit) {
+        console.log("transaction deposit found...");
         wallet.deposits.push(transaction);
       }
 		}
@@ -234,7 +235,9 @@ export class Wallet extends Observable {
 			if (!exist) {
         this.txLookupMap.set(transaction.txPubKey, transaction);
 				this.transactions.push(transaction);
-        this.deposits.push(transaction);
+        if (transaction.isDeposit) {
+          this.deposits.push(transaction);
+        }
 			} else {
 				for(let tr = 0; tr < this.transactions.length; ++tr) {
 					if(this.transactions[tr].txPubKey === transaction.txPubKey) {
@@ -367,7 +370,18 @@ export class Wallet extends Observable {
 		return news;
 	}
 
-	get amount() : number{
+	getDepositsCopy = (): Transaction[] => {
+		let news: any[] = [];
+		for(let deposit of this.deposits){
+			news.push(Transaction.fromRaw(deposit.export()));
+		}
+    news.sort((a,b) =>{
+      return a.timestamp - b.timestamp;
+    })    
+		return news;
+	}
+
+  get amount() : number{
 		return this.availableAmount(-1);
 	}
 
@@ -411,23 +425,26 @@ export class Wallet extends Observable {
 		return amount;
 	}
 
-  lockedDeposits = () : number => {
+  lockedDeposits = (currHeight: number) : number => {
     let amount = 0;
-		for (let transaction of this.transactions) {
-			if (!transaction.isFullyChecked())
+		for (let deposit of this.deposits) {
+			if (!deposit.isFullyChecked()) {
 				continue;
-
-      for (let out of transaction.outs) {
-        if (out.type === "03") {
-          amount += out.amount;
-        }
       }
 
-			for(let nin of transaction.ins){
-        if (nin.type === "03") {
-          amount -= nin.amount;
+      if ((deposit.blockHeight + deposit.term) > currHeight) {
+        for (let out of deposit.outs) {
+          if (out.type === "03") {
+            amount += out.amount;
+          }
         }
-			}
+
+        for(let nin of deposit.ins){
+          if (nin.type === "03") {
+            amount -= nin.amount;
+          }
+        }
+      }
 		}
 
 		for (let transaction of this.txsMem) {
@@ -447,7 +464,32 @@ export class Wallet extends Observable {
 		return amount;
   }    
 
-	hasBeenModified = (): Boolean => {
+  unlockedDeposits = (currHeight: number) : number => {
+    let amount = 0;
+		for (let deposit of this.deposits) {
+			if (!deposit.isFullyChecked()) {
+				continue;
+      }
+
+      if ((deposit.blockHeight + deposit.term) <= currHeight) {
+        for (let out of deposit.outs) {
+          if (out.type === "03") {
+            amount += out.amount;
+          }
+        }
+
+        for(let nin of deposit.ins){
+          if (nin.type === "03") {
+            amount -= nin.amount;
+          }
+        }
+      }
+		}
+
+		return amount;
+  }    
+
+  hasBeenModified = (): Boolean => {
 		return this.modified;
 	}
 

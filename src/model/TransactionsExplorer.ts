@@ -212,7 +212,6 @@
            let key = txout_k.keys[iKey];
            let publicEphemeral = CnNativeBride.derive_public_key(derivation, iOut, wallet.keys.pub.spend);
            if (key == publicEphemeral) {
-             logDebugMsg("Found our deposit tx...");
              return true;
            }
            ++keyIndex;
@@ -320,10 +319,15 @@
    static parse(rawTransaction: RawDaemon_Transaction, wallet: Wallet): Transaction | null {
      let transaction: Transaction | null = null;
      let isDeposit: boolean = false;
+     let term: number = 0;
 
      let tx_pub_key = '';
      let paymentId: string | null = null;
      let rawMessage: string = '';
+
+     if (rawTransaction.height == 1398571) {
+       console.log("Found tx at 1398571");
+     }
 
      let txExtras = [];
      try {
@@ -427,8 +431,10 @@
        } else if (out.target.type == "03" && typeof txout_k.keys !== 'undefined') {
         for (let iKey = 0; iKey < txout_k.keys.length; iKey++) {
           if (txout_k.keys[iKey] == generated_tx_pubkey) {
+            if (out.target.data && out.target.data.term) {
+              term = out.target.data.term; 
+            }
             mine_output = true;
-            isDeposit = true;
           }
         }      
        }
@@ -446,8 +452,12 @@
            transactionOut.type = "02";
          } else if (out.target.type == "03" && typeof txout_k.keys !== 'undefined') {
            transactionOut.pubKey = generated_tx_pubkey; // assume
-           transactionOut.term = out.target.data.term ? out.target.data.term : 0;
            transactionOut.type = "03";
+
+           if (out.target.data && out.target.data.term) {
+            term = out.target.data.term; 
+            isDeposit = true;
+          }
          }
          transactionOut.outputIdx = output_idx_in_tx;
          /*
@@ -546,6 +556,7 @@
        }
 
        transaction.isDeposit = isDeposit;
+       transaction.term = term;
        transaction.outs = outs;
        transaction.ins = ins;
 

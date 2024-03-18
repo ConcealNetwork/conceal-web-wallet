@@ -9,6 +9,8 @@
       "account": "Számla",
       "send": "Küldés",
       "receive": "Fogadás",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Exportálás",
       "donate": "Adományozás",
       "settings": "Beállítások",
