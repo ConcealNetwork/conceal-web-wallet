@@ -15,9 +15,9 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import {Transaction, TransactionIn, TransactionOut, Deposit} from "./Transaction";
 import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
 import {BlockchainExplorer, RawDaemon_Out} from "./blockchain/BlockchainExplorer";
-import {Transaction, TransactionIn, TransactionOut} from "./Transaction";
 import {TransactionsExplorer} from "./TransactionsExplorer";
 import {KeysRepository, UserKeys} from "./KeysRepository";
 import {Observable} from "../lib/numbersLab/Observable";
@@ -75,7 +75,9 @@ export class WalletOptions{
 }
 
 export type RawWallet = {
-	transactions : any[],
+  deposits: any[],
+  withdrawals: any[],
+  transactions : any[],
 	txPrivateKeys?:any,
 	lastHeight : number,
 	encryptedKeys?:string|Array<number>,
@@ -94,7 +96,8 @@ export class Wallet extends Observable {
 	private _lastHeight : number = 0;
 
 	private transactions : Transaction[] = [];
-  private deposits : Transaction[] = [];
+  private withdrawals : Deposit[] = [];
+  private deposits : Deposit[] = [];
   private txLookupMap: Map<string, Transaction> = new Map<string, Transaction>();
 	txsMem : Transaction[] = [];
 	private modified = true;
@@ -113,12 +116,22 @@ export class Wallet extends Observable {
   }
 
 	exportToRaw = (): RawWallet => {
+		let deposits : any[] = [];
+		let withdrawals : any[] = [];
 		let transactions : any[] = [];
+		for (let deposit of this.deposits ){
+			deposits.push(deposit.export());
+		}
+		for (let withdrawal of this.transactions ){
+			withdrawals.push(withdrawal.export());
+		}
 		for (let transaction of this.transactions ){
 			transactions.push(transaction.export());
 		}
 
 		let data : RawWallet = {
+			deposits: deposits,
+			withdrawals: withdrawals,
 			transactions: transactions,
 			txPrivateKeys:this.txPrivateKeys,
 			lastHeight: this._lastHeight,
@@ -139,17 +152,32 @@ export class Wallet extends Observable {
 	static loadFromRaw(raw : RawWallet): Wallet {
     let wallet = new Wallet();
 		wallet.transactions = [];
+		wallet.withdrawals = [];
 		wallet.deposits = [];
     wallet.txLookupMap.clear();
-		for (let rawTransac of raw.transactions) {
-      let transaction = Transaction.fromRaw(rawTransac);
-			wallet.transactions.push(transaction);
-      wallet.txLookupMap.set(transaction.txPubKey, transaction);
-      if (transaction.isDeposit) {
-        console.log("transaction deposit found...");
-        wallet.deposits.push(transaction);
+
+    if (raw.deposits) {
+      for (let rawDeposit of raw.deposits) {
+        let deposit = Deposit.fromRaw(rawDeposit);
+        wallet.deposits.push(deposit);
       }
-		}
+    }
+
+    if (raw.withdrawals) {
+      for (let rawWithdrawal of raw.withdrawals) {
+        let withdrawal = Deposit.fromRaw(rawWithdrawal);
+        wallet.withdrawals.push(withdrawal);
+      }
+    }
+
+    if (raw.transactions) {
+      for (let rawTransac of raw.transactions) {
+        let transaction = Transaction.fromRaw(rawTransac);
+        wallet.transactions.push(transaction);
+        wallet.txLookupMap.set(transaction.txPubKey, transaction);
+      }
+    }
+
 		wallet._lastHeight = raw.lastHeight;
 		if (typeof raw.encryptedKeys === 'string' && raw.encryptedKeys !== '') {
 			if (raw.encryptedKeys.length === 128) {
@@ -228,45 +256,75 @@ export class Wallet extends Observable {
 		return outs;
 	}
 
-	addNew = (transaction : Transaction, replace = true) => {
-		let exist = this.findWithTxPubKey(transaction.txPubKey); 
+	addNew = (transaction : Transaction | null, replace = true) => {
+    if (transaction) {
+      let exist = this.findWithTxPubKey(transaction.txPubKey); 
 
-		if (!exist || replace) {
-			if (!exist) {
-        this.txLookupMap.set(transaction.txPubKey, transaction);
-				this.transactions.push(transaction);
-        if (transaction.isDeposit) {
-          this.deposits.push(transaction);
+      if (!exist || replace) {
+        if (!exist) {
+          this.txLookupMap.set(transaction.txPubKey, transaction);
+          this.transactions.push(transaction);
+        } else {
+          for(let tr = 0; tr < this.transactions.length; ++tr) {
+            if(this.transactions[tr].txPubKey === transaction.txPubKey) {
+              this.txLookupMap.set(transaction.txPubKey, transaction);
+              this.transactions[tr] = transaction;
+            }
+          }
         }
-			} else {
-				for(let tr = 0; tr < this.transactions.length; ++tr) {
-					if(this.transactions[tr].txPubKey === transaction.txPubKey) {
-            this.txLookupMap.set(transaction.txPubKey, transaction);
-						this.transactions[tr] = transaction;
-					}
-				}
-				for(let tr = 0; tr < this.deposits.length; ++tr) {
-					if(this.deposits[tr].txPubKey === transaction.txPubKey) {
-						this.deposits[tr] = transaction;
-					}
-				}
-			}
 
-			// remove from unconfirmed
-			let existMem = this.findMemWithTxPubKey(transaction.txPubKey);
-			if (existMem) {
-				let trIndex = this.txsMem.indexOf(existMem);
-				if(trIndex != -1) {
-					this.txsMem.splice(trIndex, 1);
-				}
-			}
+        // remove from unconfirmed
+        let existMem = this.findMemWithTxPubKey(transaction.txPubKey);
+        if (existMem) {
+          let trIndex = this.txsMem.indexOf(existMem);
+          if(trIndex != -1) {
+            this.txsMem.splice(trIndex, 1);
+          }
+        }
 
-      // finalize the add tx function
-      this.recalculateKeyImages();
-      this.signalChanged();
-			this.notify();
-		}
+        // finalize the add tx function
+        this.recalculateKeyImages();
+        this.signalChanged();
+        this.notify();
+      }
+    }
 	}
+
+  addDeposit = (deposit: Deposit) => {
+    let foundMatch = false;
+
+    for(let i = 0; i < this.deposits.length; ++i) {
+      if (this.deposits[i].amount == deposit.amount) {
+        if (this.deposits[i].outputIndex == deposit.outputIndex) {
+          this.deposits[i]  = deposit;
+          foundMatch = true;
+          break;
+        }
+      }
+    }  
+
+    if (!foundMatch)  {
+      this.deposits.push(deposit);
+    }
+  }
+
+  addWithdrawal = (withdrawal: Deposit) => {
+    let foundMatch = false;
+
+    for(let i = 0; i < this.withdrawals.length; ++i) {
+      if (this.withdrawals[i].amount == withdrawal.amount) {
+        if (this.withdrawals[i].outputIndex == withdrawal.outputIndex) {
+          this.withdrawals[i]  = withdrawal;
+          foundMatch = true;
+          break;
+        }
+      }
+    }  
+
+    if (!foundMatch)  {
+      this.withdrawals.push(withdrawal);
+    }
+  }
 
   addNewMemTx = (transaction : Transaction, replace = true) => {
     let modified: boolean = false;
@@ -370,11 +428,18 @@ export class Wallet extends Observable {
 		return news;
 	}
 
-	getDepositsCopy = (): Transaction[] => {
-		let news: any[] = [];
-		for(let deposit of this.deposits){
-			news.push(Transaction.fromRaw(deposit.export()));
-		}
+	getDepositsCopy = (): Deposit[] => {
+		let news: any[] = this.deposits.slice();
+		
+    news.sort((a,b) =>{
+      return a.timestamp - b.timestamp;
+    })    
+		return news;
+	}
+
+	getWithdrawalsCopy = (): Deposit[] => {
+		let news: any[] = this.withdrawals.slice();
+
     news.sort((a,b) =>{
       return a.timestamp - b.timestamp;
     })    
@@ -392,9 +457,9 @@ export class Wallet extends Observable {
 				continue;
 
 			if (transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1) {      
-				for (let out of transaction.outs) {
-          if (out.type !== "03") {
-					  amount += out.amount;
+				for (let nout of transaction.outs) {
+          if (nout.type !== "03") {
+            amount += nout.amount;
           }
 				}
       }
@@ -428,37 +493,13 @@ export class Wallet extends Observable {
   lockedDeposits = (currHeight: number) : number => {
     let amount = 0;
 		for (let deposit of this.deposits) {
-			if (!deposit.isFullyChecked()) {
-				continue;
-      }
+			//if (!deposit.tx?.isFullyChecked()) {
+		  //  continue;
+      //}
 
       if ((deposit.blockHeight + deposit.term) > currHeight) {
-        for (let out of deposit.outs) {
-          if (out.type === "03") {
-            amount += out.amount;
-          }
-        }
-
-        for(let nin of deposit.ins){
-          if (nin.type === "03") {
-            amount -= nin.amount;
-          }
-        }
+        amount += deposit.amount;
       }
-		}
-
-		for (let transaction of this.txsMem) {
-      for (let nout of transaction.outs) {
-        if (nout.type === "03") {
-          amount += nout.amount;
-        }
-      }
-
-			for(let nin of transaction.ins){
-        if (nin.type === "03") {
-          amount -= nin.amount;
-        }
-			}
 		}
 
 		return amount;
@@ -467,22 +508,12 @@ export class Wallet extends Observable {
   unlockedDeposits = (currHeight: number) : number => {
     let amount = 0;
 		for (let deposit of this.deposits) {
-			if (!deposit.isFullyChecked()) {
-				continue;
-      }
+			//if (!deposit.tx?.isFullyChecked()) {
+			//	continue;
+      //}
 
-      if ((deposit.blockHeight + deposit.term) <= currHeight) {
-        for (let out of deposit.outs) {
-          if (out.type === "03") {
-            amount += out.amount;
-          }
-        }
-
-        for(let nin of deposit.ins){
-          if (nin.type === "03") {
-            amount -= nin.amount;
-          }
-        }
+      if (deposit.blockHeight + (deposit.term) <= currHeight) {
+        amount += deposit.amount;
       }
 		}
 
@@ -687,6 +718,8 @@ export class Wallet extends Observable {
 
   clearTransactions = () => {
     this.txsMem = [];
+    this.deposits = [];
+    this.withdrawals = [];
     this.transactions = [];
     this.txLookupMap.clear();
     this.recalculateKeyImages;

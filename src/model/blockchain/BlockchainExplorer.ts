@@ -35,7 +35,7 @@ export type RawDaemon_Transaction = {
     vin: {
         type: string,
         value?: CnTransactions.Vin,
-        gen?: { height: number },
+        gen?: { height: number }
     }[],
     rct_signatures: CnTransactions.RctSignature,
     unlock_time: number,

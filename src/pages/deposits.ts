@@ -21,7 +21,7 @@ import {Url} from "../utils/Url";
 import {CoinUri} from "../model/CoinUri";
 import {QRReader} from "../model/QRReader";
 import {AppState} from "../model/AppState";
-import {Transaction, TransactionIn} from "../model/Transaction";
+import {Transaction, TransactionIn, Deposit} from "../model/Transaction";
 import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
 import {NdefMessage, Nfc} from "../model/Nfc";
 import {BlockchainExplorer, RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
@@ -32,12 +32,13 @@ let wallet: Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'defa
 let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
 
 class DepositsView extends DestructableView {
-	@VueVar([]) deposits !: Transaction[];
+	@VueVar([]) deposits !: Deposit[];
   @VueVar(0) blockchainHeight !: number;
   @VueVar(false) lockedForm !: boolean;
 
 	@VueVar(false) isWalletSyncing !: boolean;
   @VueVar(true) openAliasValid !: boolean;
+  @VueVar(Math.pow(10, config.coinUnitPlaces)) currencyDivider !: number;
 
   readonly refreshInterval = 500;
 	private intervalRefresh : NodeJS.Timeout;
@@ -77,9 +78,10 @@ class DepositsView extends DestructableView {
 
 	refreshWallet = (forceRedraw: boolean = false) => {
     this.deposits = wallet.getDepositsCopy().reverse();
-    console.log("allDeposits", this.deposits);
+    console.log(wallet.getDepositsCopy().reverse());
+    console.log(wallet.getWithdrawalsCopy().reverse());
 	}
-
+  
   reset() {
     this.lockedForm = false;
     this.openAliasValid = false;

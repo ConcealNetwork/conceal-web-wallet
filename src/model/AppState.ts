@@ -17,6 +17,7 @@
 
 import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
 import {Wallet} from "./Wallet";
+import {Transaction, Deposit} from "./Transaction";
 import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
 import {Observable} from "../lib/numbersLab/Observable";
 import {WalletRepository} from "./WalletRepository";
@@ -152,10 +153,19 @@ export class AppState {
                         for (let txs of arrayOfTxs) {
                           for (let rawTx of txs) {
                             if (wallet !== null) {
-                              let tx = TransactionsExplorer.parse(rawTx, wallet);
-                              if (tx !== null) {
-                                console.log(`Added new Tx ${tx.hash} to wallet`);
-                                wallet.addNew(tx);
+                              let txData = TransactionsExplorer.parse(rawTx, wallet);
+
+                              if ((txData !== null) && (txData.transaction !== null)) {
+                                if (txData.transaction) {
+                                  wallet.addNew(Transaction.fromRaw(txData.transaction.export()));
+                                }
+                                for(let i = 0; i < txData.deposits.length; ++i) {
+                                  wallet.addDeposit(Deposit.fromRaw(txData.deposits[i].export()));
+                                }
+                                for(let i = 0; i < txData.withdrawals.length; ++i) {
+                                  wallet.addWithdrawal(Deposit.fromRaw(txData.withdrawals[i].export()));
+                                }
+                  
                               }
                             }
                           }

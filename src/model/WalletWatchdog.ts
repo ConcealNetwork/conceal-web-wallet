@@ -31,7 +31,7 @@
 
 import {Wallet} from "./Wallet";
 import {BlockchainExplorer, RawDaemon_Transaction} from "./blockchain/BlockchainExplorer";
-import {Transaction} from "./Transaction";
+import {Transaction, TransactionData, Deposit} from "./Transaction";
 import {TransactionsExplorer} from "./TransactionsExplorer";
 
 interface IBlockRange {
@@ -87,8 +87,17 @@ class TxQueue {
           this.isRunning = false;
 
           if (message.transactions.length > 0) {
-            for (let tx of message.transactions) {
-              this.wallet.addNew(Transaction.fromRaw(tx));
+            for (let txData of message.transactions) {
+
+              if (txData.transaction) {
+                this.wallet.addNew(Transaction.fromRaw(txData.transaction));
+              }
+              for (let i = 0; i < txData.deposits.length; ++i) {
+                this.wallet.addDeposit(Deposit.fromRaw(txData.deposits[i]));
+              }
+              for (let i = 0; i < txData.withdrawals.length; ++i) {
+                this.wallet.addWithdrawal(Deposit.fromRaw(txData.withdrawals[i]));
+              }
             }
           }
 
@@ -545,9 +554,10 @@ export class WalletWatchdog {
     this.explorer.getTransactionPool().then((pool: any) => {
       if (typeof pool !== 'undefined') {
         for (let rawTx of pool) {
-          let tx = TransactionsExplorer.parse(rawTx, this.wallet);
-          if (tx !== null) {
-            this.wallet.addNewMemTx(tx);
+          let txData = TransactionsExplorer.parse(rawTx, this.wallet);
+
+          if ((txData !== null) && (txData.transaction !== null)) {
+            this.wallet.addNewMemTx(Transaction.fromRaw(txData.transaction.export()));
           }
         }
       }

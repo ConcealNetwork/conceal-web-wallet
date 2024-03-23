@@ -34,13 +34,13 @@
  *     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- import {Transaction, TransactionIn, TransactionOut} from "./Transaction";
  import {Wallet} from "./Wallet";
  import {MathUtil} from "./MathUtil";
+ import {JSChaCha8} from './ChaCha8';
  import {Cn, CnNativeBride, CnRandom, CnTransactions, CnUtils} from "./Cn";
  import {RawDaemon_Transaction, RawDaemon_Out} from "./blockchain/BlockchainExplorer";
- import {JSChaCha8} from './ChaCha8';
-
+ import {Transaction, TransactionData, Deposit, TransactionIn, TransactionOut} from "./Transaction";
+ 
  export const TX_EXTRA_PADDING_MAX_COUNT = 255;
  export const TX_EXTRA_NONCE_MAX_COUNT = 255;
 
@@ -316,18 +316,15 @@
      return decryptedMessage.slice(0, -TX_EXTRA_MESSAGE_CHECKSUM_SIZE);
    }
 
-   static parse(rawTransaction: RawDaemon_Transaction, wallet: Wallet): Transaction | null {
+   static parse(rawTransaction: RawDaemon_Transaction, wallet: Wallet): TransactionData | null {
+     let transactionData: TransactionData | null = null;
      let transaction: Transaction | null = null;
-     let isDeposit: boolean = false;
-     let term: number = 0;
+     let withdrawals: Deposit[] = [];
+     let deposits: Deposit[] = [];
 
      let tx_pub_key = '';
      let paymentId: string | null = null;
      let rawMessage: string = '';
-
-     if (rawTransaction.height == 1398571) {
-       console.log("Found tx at 1398571");
-     }
 
      let txExtras = [];
      try {
@@ -431,9 +428,6 @@
        } else if (out.target.type == "03" && typeof txout_k.keys !== 'undefined') {
         for (let iKey = 0; iKey < txout_k.keys.length; iKey++) {
           if (txout_k.keys[iKey] == generated_tx_pubkey) {
-            if (out.target.data && out.target.data.term) {
-              term = out.target.data.term; 
-            }
             mine_output = true;
           }
         }      
@@ -455,9 +449,18 @@
            transactionOut.type = "03";
 
            if (out.target.data && out.target.data.term) {
-            term = out.target.data.term; 
-            isDeposit = true;
-          }
+             let deposit = new Deposit();
+
+             if (typeof rawTransaction.height  !== 'undefined') deposit.blockHeight = rawTransaction.height;
+             if (typeof rawTransaction.hash  !== 'undefined') deposit.txHash = rawTransaction.hash;
+             if (typeof rawTransaction.ts  !== 'undefined') deposit.timestamp = rawTransaction.ts;
+             deposit.amount = transactionOut.amount; 
+             deposit.term = out.target.data.term; 
+             if (rawTransaction.output_indexes && (rawTransaction.output_indexes.length > iOut)) {
+               deposit.outputIndex = rawTransaction.output_indexes[iOut]; 
+             }
+             deposits.push(deposit);
+           }
          }
          transactionOut.outputIdx = output_idx_in_tx;
          /*
@@ -487,19 +490,54 @@
        let keyImages = wallet.getTransactionKeyImages();
        for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
          let vin = rawTransaction.vin[iIn];
-         if (vin.value && keyImages.indexOf(vin.value.k_image) !== -1) {
+         let wasAdded = false;
+   
+         if (vin.value && vin.value.k_image && keyImages.indexOf(vin.value.k_image) !== -1) {
            let walletOuts = wallet.getAllOuts();
+           
            for (let ut of walletOuts) {
+             if (wasAdded) {
+                console.log(ut.keyImage,  "=", vin.value.k_image);
+             }
+
              if (ut.keyImage == vin.value.k_image) {
                let transactionIn = new TransactionIn();
                transactionIn.type = ut.type;
                transactionIn.amount = ut.amount;
                transactionIn.keyImage = ut.keyImage;
-               ins.push(transactionIn);
 
+               // check if its a withdrawal
+               if (vin.type == "03") {
+                if (vin.value && vin.value.term) {
+                  let withdrawal = new Deposit();
+                  withdrawal.outputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : -1;
+                  if (typeof rawTransaction.height !== 'undefined') withdrawal.blockHeight = rawTransaction.height;
+                  if (typeof rawTransaction.hash !== 'undefined') withdrawal.txHash = rawTransaction.hash;
+                  if (typeof rawTransaction.ts !== 'undefined') withdrawal.timestamp = rawTransaction.ts;
+                  withdrawal.term = (vin.value && vin.value.term) ? vin.value.term : 0;
+                  withdrawal.amount = transactionIn.amount;
+                  withdrawals.push(withdrawal);
+                  wasAdded = true;
+                 }
+               }
+
+               ins.push(transactionIn);
                break;
              }
            }
+         } 
+
+         // add the withdrawal if it was not yet processed
+         if ((!wasAdded) && (vin.type == "03")) {
+           let withdrawal = new Deposit();
+           if (typeof rawTransaction.ts !== 'undefined') withdrawal.timestamp = rawTransaction.ts;
+           if (typeof rawTransaction.hash !== 'undefined') withdrawal.txHash = rawTransaction.hash;
+           if (typeof rawTransaction.height !== 'undefined') withdrawal.blockHeight = rawTransaction.height;
+           if (vin.value && vin.value.amount) withdrawal.amount = parseInt(vin.value?.amount);
+           withdrawal.outputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : -1;
+           withdrawal.term = (vin.value && vin.value.term) ? vin.value.term : 0;
+           withdrawals.push(withdrawal);
+           wasAdded = true;
          }
        }
      } else {
@@ -526,8 +564,17 @@
            let txOut = wallet.getOutWithGlobalIndex(ownTx);
            if (txOut !== null) {
              let transactionIn = new TransactionIn();
+             transactionIn.type = txOut.type;
              transactionIn.amount = -txOut.amount;
-             transactionIn.keyImage = txOut.keyImage;
+             transactionIn.keyImage = txOut.keyImage;             
+
+             // check if its a withdrawal
+             if (vin.type == "03") {
+               if (vin.value && vin.value.term) {
+
+               }
+             }
+
              ins.push(transactionIn);
            }
          }
@@ -535,6 +582,7 @@
      }
 
      if (outs.length > 0 || ins.length) {
+       transactionData = new TransactionData();
        transaction = new Transaction();
 
        if (typeof rawTransaction.height !== 'undefined') transaction.blockHeight = rawTransaction.height;
@@ -555,10 +603,14 @@
          transaction.fees = rawTransaction.fee;
        }
 
-       transaction.isDeposit = isDeposit;
-       transaction.term = term;
+       // fill the transaction info
        transaction.outs = outs;
        transaction.ins = ins;
+
+       // assing transaction, deposits etc... to wrapper
+       transactionData.transaction = transaction;
+       transactionData.withdrawals = withdrawals;
+       transactionData.deposits = deposits;
 
        if (rawMessage !== '') {
          // decode message
@@ -571,7 +623,7 @@
        }
      }
 
-     return transaction;
+     return transactionData;
    }
 
    static formatWalletOutsForTx(wallet: Wallet, blockchainHeight: number): RawOutForTx[] {

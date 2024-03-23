@@ -1260,22 +1260,25 @@ export namespace CnTransactions{
 
 	export type Source = {
 		outputs:CnTransactions.Output[],
-		amount:'',
-		real_out_tx_key:string,
-		real_out:number,
-		real_out_in_tx:number,
-		mask:string|null,
-		key_image:string,
-		in_ephemeral:CnTransactions.Ephemeral,
+		amount: '',
+		real_out_tx_key: string,
+		real_out: number,
+		real_out_in_tx: number,
+		mask: string|null,
+		key_image: string,
+		in_ephemeral: CnTransactions.Ephemeral,
 	};
 
 	export type Destination = {address:string,amount:number};
 
 	export type Vin = {
-		type:string,
-		amount:string,
-		k_image:string,
-		key_offsets:any[]
+		type: string,
+    term?: number,
+		amount: string,
+		k_image: string,
+		key_offsets: any[],
+    signatures?: number 
+    outputIndex?: number
 	};
 
 	export type Vout = {

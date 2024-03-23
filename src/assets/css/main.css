@@ -1727,3 +1727,45 @@ body {
 .tablinks span {
   padding-left: 0.3em;
 }
+
+#accountDeposits {
+  padding-left: 32px; 
+  max-width: 1200px;
+}
+
+#depositHistoryTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#accountDeposits {
+  font-size: 18px;  
+}
+
+#accountDeposits .depositsListHeader {
+  color: orange;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid orange;
+}
+
+#accountDeposits .lockTimestamp,
+#accountDeposits .lockHeight,
+#accountDeposits .unlockTimestamp,
+#accountDeposits .unlockHeight,
+#accountDeposits .depositAmount {
+  width: 20%;
+  text-align: center;
+  padding: 5px;
+}
+
+#accountDeposits .tx_deposit_unlocked {
+  color: green;
+  font-size: 22px;  
+}
+
+#accountDeposits .tx_deposit_locked {
+  color: red;
+  font-size: 22px;  
+}
+
