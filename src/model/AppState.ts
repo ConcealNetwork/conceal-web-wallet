@@ -156,16 +156,9 @@ export class AppState {
                               let txData = TransactionsExplorer.parse(rawTx, wallet);
 
                               if ((txData !== null) && (txData.transaction !== null)) {
-                                if (txData.transaction) {
-                                  wallet.addNew(Transaction.fromRaw(txData.transaction.export()));
-                                }
-                                for(let i = 0; i < txData.deposits.length; ++i) {
-                                  wallet.addDeposit(Deposit.fromRaw(txData.deposits[i].export()));
-                                }
-                                for(let i = 0; i < txData.withdrawals.length; ++i) {
-                                  wallet.addWithdrawal(Deposit.fromRaw(txData.withdrawals[i].export()));
-                                }
-                  
+                                wallet.addNew(txData.transaction);
+                                wallet.addDeposits(txData.deposits);
+                                wallet.addWithdrawals(txData.withdrawals);
                               }
                             }
                           }

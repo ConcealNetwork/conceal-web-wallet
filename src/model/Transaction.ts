@@ -266,7 +266,7 @@ export class Transaction {
   }  
 }
 
-export class Deposit {
+class BaseBanking {
   term: number = 0;
   txHash: string = ''
   amount: number = 0;
@@ -297,7 +297,7 @@ export class Deposit {
     };
   }
 
-  copy = () => { 
+  copy() { 
     let aCopy = new Deposit();
 
     aCopy.term = this.term;
@@ -310,6 +310,36 @@ export class Deposit {
     return aCopy;
   }
 }
+
+export class Deposit extends BaseBanking {
+  isSpent: boolean = false;
+
+  static fromRaw(raw: any) {
+    let deposit = new Deposit();
+    deposit.term = raw.term;
+    deposit.txHash = raw.txHash;
+    deposit.amount = raw.amount;
+    deposit.isSpent = raw.isSpent; 
+    deposit.timestamp = raw.timestamp;
+    deposit.blockHeight = raw.blockHeight;
+    deposit.outputIndex = raw.outputIndex;
+
+    return deposit;
+  }
+
+  export() {
+    return Object.assign(super.export(), {isSpent: this.isSpent });
+  }
+
+  copy = () => { 
+    let aCopy = super.copy();  
+    aCopy.isSpent = this.isSpent;
+  
+    return aCopy;
+  }  
+}
+
+export class Withdrawal extends BaseBanking {}
 
 export class TransactionData {
   transaction: Transaction | null = null;

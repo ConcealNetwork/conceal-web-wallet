@@ -78,8 +78,6 @@ class DepositsView extends DestructableView {
 
 	refreshWallet = (forceRedraw: boolean = false) => {
     this.deposits = wallet.getDepositsCopy().reverse();
-    console.log(wallet.getDepositsCopy().reverse());
-    console.log(wallet.getWithdrawalsCopy().reverse());
 	}
   
   reset() {

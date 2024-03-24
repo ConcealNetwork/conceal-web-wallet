@@ -502,7 +502,6 @@
 
              if (ut.keyImage == vin.value.k_image) {
                let transactionIn = new TransactionIn();
-               transactionIn.type = ut.type;
                transactionIn.amount = ut.amount;
                transactionIn.keyImage = ut.keyImage;
 
@@ -534,7 +533,7 @@
            if (typeof rawTransaction.hash !== 'undefined') withdrawal.txHash = rawTransaction.hash;
            if (typeof rawTransaction.height !== 'undefined') withdrawal.blockHeight = rawTransaction.height;
            if (vin.value && vin.value.amount) withdrawal.amount = parseInt(vin.value?.amount);
-           withdrawal.outputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : -1;
+           withdrawal.outputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
            withdrawal.term = (vin.value && vin.value.term) ? vin.value.term : 0;
            withdrawals.push(withdrawal);
            wasAdded = true;
@@ -564,7 +563,6 @@
            let txOut = wallet.getOutWithGlobalIndex(ownTx);
            if (txOut !== null) {
              let transactionIn = new TransactionIn();
-             transactionIn.type = txOut.type;
              transactionIn.amount = -txOut.amount;
              transactionIn.keyImage = txOut.keyImage;             
 
