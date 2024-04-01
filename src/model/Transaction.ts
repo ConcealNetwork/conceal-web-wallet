@@ -211,10 +211,14 @@ export class Transaction {
   getAmount = () => {
     let amount = 0;
     for (let out of this.outs) {
-      amount += out.amount;
+      if (out.type !== "03") {
+        amount += out.amount;
+      }      
     }
     for (let nin of this.ins) {
-      amount -= nin.amount;
+      if (nin.type !== "03") {
+        amount -= nin.amount;
+      }      
     }
     return amount;
   }
@@ -268,7 +272,7 @@ export class Transaction {
 
 class BaseBanking {
   term: number = 0;
-  txHash: string = ''
+  txHash: string = '';
   amount: number = 0;
   timestamp: number = 0;
   blockHeight: number = 0;
@@ -312,14 +316,14 @@ class BaseBanking {
 }
 
 export class Deposit extends BaseBanking {
-  isSpent: boolean = false;
+  spentTx: string = '';
 
   static fromRaw(raw: any) {
     let deposit = new Deposit();
     deposit.term = raw.term;
     deposit.txHash = raw.txHash;
     deposit.amount = raw.amount;
-    deposit.isSpent = raw.isSpent; 
+    deposit.spentTx = raw.spentTx; 
     deposit.timestamp = raw.timestamp;
     deposit.blockHeight = raw.blockHeight;
     deposit.outputIndex = raw.outputIndex;
@@ -328,12 +332,12 @@ export class Deposit extends BaseBanking {
   }
 
   export() {
-    return Object.assign(super.export(), {isSpent: this.isSpent });
+    return Object.assign(super.export(), {spentTx: this.spentTx });
   }
 
   copy = () => { 
     let aCopy = super.copy();  
-    aCopy.isSpent = this.isSpent;
+    aCopy.spentTx = this.spentTx;
   
     return aCopy;
   }  

@@ -82,8 +82,56 @@ class DepositsView extends DestructableView {
   
   reset() {
     this.lockedForm = false;
-    this.openAliasValid = false;
+    this.openAliasValid = false;  
   }
+
+  moreInfoOnDeposit = (deposit: Deposit) => {
+		let explorerUrlHash = config.testnet ? config.testnetExplorerUrlHash : config.mainnetExplorerUrlHash;
+		let explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
+		let status = 'Locked';
+
+    let creatingTimestamp = 0;
+    let spendingTimestamp = 0;
+    let spendingHeight = 0
+
+    let creationTx = wallet.findWithTxHash(deposit.txHash);
+    let spendingTx = wallet.findWithTxHash(deposit.spentTx);
+
+    if (creationTx) {
+      creatingTimestamp = creationTx.timestamp;
+    }
+
+    if (spendingTx) {
+      spendingTimestamp = spendingTx.timestamp;
+      spendingHeight = spendingTx.blockHeight;
+    }
+
+    if ((deposit.blockHeight + deposit.term) <= this.blockchainHeight) {
+      if (deposit.spentTx) {
+        status = 'Spent'
+      } else {
+        status = 'Unlocked'
+      }
+    }
+
+		swal({
+			title:i18n.t('depositsPage.depositDetails.title'),
+      customClass:'swal-wide',
+			html:`
+        <div class="tl" >
+          <div><span class="txDetailsLabel">` + i18n.t('depositsPage.depositDetails.txHash') + `</span>:<span class="txDetailsValue"><a href="` + explorerUrlHash.replace('{ID}', deposit.txHash) + `" target="_blank">`+ deposit.txHash + `</a></span></div>
+          <div><span class="txDetailsLabel">` + i18n.t('depositsPage.depositDetails.spendingTx') + `</span>:<span class="txDetailsValue"><a href="` + explorerUrlHash.replace('{ID}', deposit.spentTx) + `" target="_blank">`+ deposit.spentTx + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.status') + `</span>:<span class="txDetailsValue">`+ status +`</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.amount')+`</span>:<span class="txDetailsValue">` + (deposit.amount / Math.pow(10, config.coinUnitPlaces)) + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.term')+`</span>:<span class="txDetailsValue">` + deposit.term + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.creationHeight')+`</span>:<span class="txDetailsValue">` + deposit.blockHeight + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.creationTime')+`</span>:<span class="txDetailsValue">` + new Date(creatingTimestamp * 1000).toDateString() + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.unlockHeight')+`</span>:<span class="txDetailsValue">` + (deposit.blockHeight + deposit.term) + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.spendingTime')+`</span>:<span class="txDetailsValue">` + new Date(spendingTimestamp * 1000).toDateString() + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.spendingHeight')+`</span>:<span class="txDetailsValue">` + spendingHeight + `</a></span></div>
+        </div>`
+		});
+	}  
 }
 
 if (wallet !== null && blockchainExplorer !== null)

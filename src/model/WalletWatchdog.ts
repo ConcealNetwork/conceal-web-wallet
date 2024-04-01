@@ -137,9 +137,9 @@ class TxQueue {
           if (txQueueItem.transactions.length > 0) {
             //console.log(`sending ${txQueueItem.transactions.length} transactions to process. Last block ${txQueueItem.maxBlockNum}. All count ${this.countProcessed}`);
             this.workerProcess.postMessage({
-              wallet: txQueueItem.transactions.length > 0 ? this.wallet.exportToRaw() : null,
               transactions: txQueueItem.transactions,
               maxBlock: txQueueItem.maxBlockNum,
+              wallet: this.wallet.exportToRaw(),
               type: 'process'
             });
           } else {

@@ -98,6 +98,7 @@ export class Wallet extends Observable {
 	private transactions : Transaction[] = [];
   private withdrawals : Withdrawal[] = [];
   private deposits : Deposit[] = [];
+  private keyLookupMap: Map<string, Transaction> = new Map<string, Transaction>();
   private txLookupMap: Map<string, Transaction> = new Map<string, Transaction>();
 	txsMem : Transaction[] = [];
 	private modified = true;
@@ -119,6 +120,7 @@ export class Wallet extends Observable {
 		let deposits : any[] = [];
 		let withdrawals : any[] = [];
 		let transactions : any[] = [];
+
 		for (let deposit of this.deposits ){
 			deposits.push(deposit.export());
 		}
@@ -154,6 +156,7 @@ export class Wallet extends Observable {
 		wallet.transactions = [];
 		wallet.withdrawals = [];
 		wallet.deposits = [];
+    wallet.keyLookupMap.clear();
     wallet.txLookupMap.clear();
 
     if (raw.deposits) {
@@ -174,7 +177,8 @@ export class Wallet extends Observable {
       for (let rawTransac of raw.transactions) {
         let transaction = Transaction.fromRaw(rawTransac);
         wallet.transactions.push(transaction);
-        wallet.txLookupMap.set(transaction.txPubKey, transaction);
+        wallet.txLookupMap.set(transaction.hash, transaction);
+        wallet.keyLookupMap.set(transaction.txPubKey, transaction);
       }
     }
 
@@ -183,7 +187,7 @@ export class Wallet extends Observable {
 			if (raw.encryptedKeys.length === 128) {
 				let privView = raw.encryptedKeys.substr(0, 64);
 				let privSpend = raw.encryptedKeys.substr(64, 64);
-				wallet.keys =  KeysRepository.fromPriv(privSpend, privView);
+				wallet.keys = KeysRepository.fromPriv(privSpend, privView);
 			} else {
 				let privView = raw.encryptedKeys.substr(0, 64);
 				let pubViewKey = raw.encryptedKeys.substr(64, 64);
@@ -262,12 +266,14 @@ export class Wallet extends Observable {
 
       if (!exist || replace) {
         if (!exist) {
-          this.txLookupMap.set(transaction.txPubKey, transaction);
+          this.keyLookupMap.set(transaction.txPubKey, transaction);
+          this.txLookupMap.set(transaction.hash, transaction);
           this.transactions.push(transaction);
         } else {
           for(let tr = 0; tr < this.transactions.length; ++tr) {
             if(this.transactions[tr].txPubKey === transaction.txPubKey) {
-              this.txLookupMap.set(transaction.txPubKey, transaction);
+              this.keyLookupMap.set(transaction.txPubKey, transaction);
+              this.txLookupMap.set(transaction.hash, transaction);
               this.transactions[tr] = transaction;
             }
           }
@@ -312,6 +318,9 @@ export class Wallet extends Observable {
     if (!foundMatch)  {
       this.deposits.push(deposit);
     }
+
+    this.signalChanged();
+    this.notify();
   }
 
   addWithdrawals = (withdrawals: Withdrawal[]) => {
@@ -326,7 +335,7 @@ export class Wallet extends Observable {
     for(let i = 0; i < this.deposits.length; ++i) {
       if (this.deposits[i].amount == withdrawal.amount) {
         if (this.deposits[i].outputIndex == withdrawal.outputIndex) {
-          this.deposits[i].isSpent = true;
+          this.deposits[i].spentTx = withdrawal.txHash;
           break;
         }
       }
@@ -345,6 +354,9 @@ export class Wallet extends Observable {
     if (!foundMatch)  {
       this.withdrawals.push(withdrawal);
     }
+
+    this.signalChanged();
+    this.notify();
   }
 
   addNewMemTx = (transaction : Transaction, replace = true) => {
@@ -376,7 +388,7 @@ export class Wallet extends Observable {
   }
 
 	findWithTxPubKey = (pubKey : string): Transaction | null => {
-    let transaction: Transaction | undefined = this.txLookupMap.get(pubKey); 
+    let transaction: Transaction | undefined = this.keyLookupMap.get(pubKey); 
 
     if (transaction !== undefined) {
       return transaction;
@@ -385,7 +397,17 @@ export class Wallet extends Observable {
     }
 	}
 
-	findMemWithTxPubKey = (pubKey : string): Transaction | null => {
+	findWithTxHash = (hash : string): Transaction | null => {
+    let transaction: Transaction | undefined = this.txLookupMap.get(hash); 
+
+    if (transaction !== undefined) {
+      return transaction;
+    } else {
+      return null;
+    }
+	}
+
+  findMemWithTxPubKey = (pubKey : string): Transaction | null => {
 		for(let tr of this.txsMem)
 			if(tr.txPubKey === pubKey)
 				return tr;
@@ -450,11 +472,8 @@ export class Wallet extends Observable {
 	}
 
 	getDepositsCopy = (): Deposit[] => {
-		let news: any[] = this.deposits.slice();
+		let news: any[] = this.deposits.slice();		
 
-    console.log(this.deposits);
-    console.log(this.withdrawals);
-		
     news.sort((a,b) =>{
       return a.timestamp - b.timestamp;
     })    
@@ -537,7 +556,7 @@ export class Wallet extends Observable {
       //}
 
       if (deposit.blockHeight + (deposit.term) <= currHeight) {
-        if (!deposit.isSpent) {
+        if (!deposit.spentTx) {
           amount += deposit.amount;
         }
       }
@@ -748,6 +767,7 @@ export class Wallet extends Observable {
     this.withdrawals = [];
     this.transactions = [];
     this.txLookupMap.clear();
+    this.keyLookupMap.clear();
     this.recalculateKeyImages;
     this.notify();
   }

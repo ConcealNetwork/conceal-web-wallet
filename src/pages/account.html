@@ -42,7 +42,7 @@
 				</div>
 			</div>
 		</div>
-
+    
 		<div class="panel" :hidden="!optimizeIsNeeded || isWalletProcessing">
 			<div class="body">
 				<div class="header-title">{{ $t("global.optimize.label") }}</div>
@@ -64,6 +64,9 @@
           </div>
         </div>
 				<div class="content" >
+          <button type="button" class="btn primary" @click="download()">
+            Download
+          </button>    
 					<div class="transactions" id="accountTransactions">
 						<table>
 							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked()">

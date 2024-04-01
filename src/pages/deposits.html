@@ -29,6 +29,7 @@
                 <table v-if="deposits.length > 0" id="depositHistoryTable">
                   <tr>
                     <th class="depositsListHeader"></th>
+                    <th class="depositsListHeader"></th>
                     <th class="depositsListHeader">Deposit date</th>
                     <th class="depositsListHeader">Deposit block</th>
                     <th class="depositsListHeader">Unlock date</th>
@@ -39,9 +40,12 @@
                     <tr class="deposit" :class="(deposit.blockHeight === 0 ? 'pending' : '')">
                       <td class="direction" >
                         <i v-if="(deposit.blockHeight + deposit.term) > blockchainHeight" class="fa fa-lock tx_deposit_locked" aria-hidden="true"></i>
-                        <i v-else-if="((deposit.blockHeight + deposit.term) <= blockchainHeight) && (deposit.isSpent)" class="fa fa fa-money tx_deposit_spent" aria-hidden="true"></i>                        
+                        <i v-else-if="((deposit.blockHeight + deposit.term) <= blockchainHeight) && (deposit.spentTx)" class="fa fa fa-money tx_deposit_spent" aria-hidden="true"></i>                        
                         <i v-else="" class="fa fa-unlock tx_deposit_unlocked" aria-hidden="true"></i>
-                      </td><!--LEfT-->
+                      </td>
+                      <td class="moreInfo depositTxDetails">
+                        <i class="fa fa-search" aria-hidden="true" @click="moreInfoOnDeposit(deposit)"></i>
+                      </td>
                       <td class="lockTimestamp" v-if="deposit.blockHeight > 0">{{$d(new Date(deposit.timestamp * 1000), 'short')}}</td>
                       <td class="lockTimestamp" v-else="">...</td>
                       <td class="lockHeight">{{deposit.blockHeight}}</td>

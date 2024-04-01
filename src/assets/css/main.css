@@ -1764,8 +1764,17 @@ body {
   font-size: 22px;  
 }
 
+#accountDeposits .tx_deposit_spent {
+  color: orange;
+  font-size: 22px;  
+}
+
 #accountDeposits .tx_deposit_locked {
   color: red;
   font-size: 22px;  
+}
+
+.depositTxDetails {
+  padding-left: 15px;
 }
 
