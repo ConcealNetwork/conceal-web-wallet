@@ -92,10 +92,10 @@ define(["require", "exports"], function (require, exports) {
                 });
             });
         };
-        IndexedDBStorage.prototype.getItem = function (key, defaultValue) {
-            if (defaultValue === void 0) { defaultValue = null; }
-            return __awaiter(this, void 0, void 0, function () {
+        IndexedDBStorage.prototype.getItem = function (key_1) {
+            return __awaiter(this, arguments, void 0, function (key, defaultValue) {
                 var _this = this;
+                if (defaultValue === void 0) { defaultValue = null; }
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, this.ready];
