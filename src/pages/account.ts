@@ -81,7 +81,7 @@ class AccountView extends DestructableView{
 	}
 
 	destruct = (): Promise<void> => {
-		clearInterval(this.intervalRefresh);
+		window.clearInterval(this.intervalRefresh);
 		return super.destruct();
 	}
 
