@@ -22,10 +22,7 @@ jobs:
  
     - name: Install typescript
       run: npm install -g typescript
-      
-    - name: Install type defenitions
-      run: npm i --save-dev @types/node
-
+  
     - name: Prebuild
       run: node ./node_modules/typescript/bin/tsc --project tsconfig.prod.json
 
