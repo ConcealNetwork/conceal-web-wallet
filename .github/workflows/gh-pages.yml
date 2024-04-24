@@ -30,7 +30,7 @@ jobs:
       run: node ./node_modules/typescript/bin/tsc --project tsconfig.prod.json
 
     - name: Build
-      run: node build.js
+      run: node20 build.js
 
     - name: Deploy
       if: success()
