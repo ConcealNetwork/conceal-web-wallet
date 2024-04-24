@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "AMD",
         "target": "es5",
-        "lib": ["ES5","DOM", "es2015"],
+        "lib": ["ES5","DOM", "es2018"],
         "sourceMap": false,
         "moduleResolution": "node",
         "strict":true,
