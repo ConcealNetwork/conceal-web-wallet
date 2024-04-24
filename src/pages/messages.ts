@@ -69,7 +69,7 @@ class MessagesView extends DestructableView {
 		AppState.enableLeftMenu();
 
     this.nfcAvailable = this.nfc.has;
-		this.intervalRefresh: ReturnType<typeof setInterval> = setInterval(() => {
+		this.intervalRefresh = setInterval(() => {
 			this.refresh();
 		}, 3 * 1000);
 
