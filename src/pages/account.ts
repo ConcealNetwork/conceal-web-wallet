@@ -124,13 +124,13 @@ class AccountView extends DestructableView{
             watchdog.checkMempool();
           }
           this.optimizeLoading = false; // set loading state to false
-          window.setTimeout(() => {
+          setTimeout(() => {
             this.checkOptimization(); // check if optimization is still needed
           }, 1000);
         }).catch((err) => {
           console.error("optimize error:", err);
           this.optimizeLoading = false; // set loading state to false
-          window.setTimeout(() => {
+          setTimeout(() => {
             this.checkOptimization(); // check if optimization is still needed
           }, 1000);  
         });      
