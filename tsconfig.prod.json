@@ -6,6 +6,7 @@
         "sourceMap": false,
         "moduleResolution": "node",
         "strict":true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "types": ["node"]
     }
 }
