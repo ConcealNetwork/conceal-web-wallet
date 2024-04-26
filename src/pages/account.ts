@@ -72,7 +72,6 @@ class AccountView extends DestructableView{
 
   	this.checkOptimization();
 		AppState.enableLeftMenu();
-		let intervalRefresh: ReturnType<typeof setInterval> | undefined;
 		this.intervalRefresh = setInterval(() => {
 			this.refresh();
 		}, 1 * 1000);
@@ -93,8 +92,8 @@ class AccountView extends DestructableView{
       this.refreshWallet();
     });
 	}
-
-  onFilterChanged = () => {
+	
+        onFilterChanged = () => {
     this.refreshWallet();		
   }
 
