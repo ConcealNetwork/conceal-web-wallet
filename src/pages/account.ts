@@ -72,7 +72,7 @@ class AccountView extends DestructableView{
 
   	this.checkOptimization();
 		AppState.enableLeftMenu();
-		this.intervalRefresh = window.setInterval(() => {
+		this.intervalRefresh = setInterval(() => {
 			this.refresh();
 		}, 1 * 1000);
 
@@ -80,7 +80,7 @@ class AccountView extends DestructableView{
 	}
 
 	destruct = (): Promise<void> => {
-		window.clearInterval(this.intervalRefresh);
+		clearInterval(this.intervalRefresh);
 		return super.destruct();
 	}
 
