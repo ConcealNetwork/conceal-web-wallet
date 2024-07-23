@@ -77,7 +77,7 @@ class MessagesView extends DestructableView {
 	}
 
 	destruct = (): Promise<void> => {
-		clearInterval(this.intervalRefresh);
+		clearInterval(this.intervalRefresh[Symbol.toPrimitive]());
 		return super.destruct();
 	}
 
