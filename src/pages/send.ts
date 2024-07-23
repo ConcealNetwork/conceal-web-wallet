@@ -255,7 +255,7 @@ class SendView extends DestructableView {
   }
 
   destruct = (): Promise<void> => {
-    clearInterval(this.intervalRefresh);
+    clearInterval(this.intervalRefresh[Symbol.toPrimitive]());
     this.stopScan();
     this.stopNfcScan();
     swal.close();
