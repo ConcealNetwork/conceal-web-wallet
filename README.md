@@ -1,4 +1,4 @@
-# Conceal Web Wallet - Staging Repository (for testing purposes only)
+# Conceal Web Wallet
 This web wallet uses serverless technology and does everything on client-side to give the best privacy to its users.
 
 # Security
@@ -51,4 +51,4 @@ Read [the translations guide](TRANSLATIONS.md) to get instructions on how to do 
 - Report bugs & ideas to help us improve the web wallet by opening an [issue](https://github.com/ConcealNetwork/conceal-web-wallet/issues/new)
 
 # Copyright
-© 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+© 2018-2024 Conceal Community, Conceal.Network & Conceal Devs
