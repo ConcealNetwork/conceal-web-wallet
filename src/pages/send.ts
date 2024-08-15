@@ -70,7 +70,7 @@ class SendView extends DestructableView {
 
   private oldIsWalletSyncing: boolean;
   private qrReader: QRReader | null = null;
-	private intervalRefresh : NodeJS.Timer;
+	private intervalRefresh : NodeJS.Timeout;
   private timeoutResolveAlias = 0;
   private blockchainHeight: number;
   private redirectUrlAfterSend: string | null = null;

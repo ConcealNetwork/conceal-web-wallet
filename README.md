@@ -1,4 +1,4 @@
-# Conceal Web Wallet
+# Conceal Web Wallet - Staging Repository (for testing purposes only)
 This web wallet uses serverless technology and does everything on client-side to give the best privacy to its users.
 
 # Security

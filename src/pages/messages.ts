@@ -32,7 +32,7 @@ let wallet: Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'defa
 let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
 
 class MessagesView extends DestructableView {
-	@VueVar([]) transactions !: Transaction[];
+  @VueVar([]) transactions !: Transaction[];
   @VueVar(0) blockchainHeight !: number;
   @VueVar('') destinationAddressUser !: string;
   @VueVar('') destinationAddress !: string;
@@ -45,7 +45,7 @@ class MessagesView extends DestructableView {
   @VueVar(null) domainAliasAddress !: string | null;
   @VueVar(null) txDestinationName !: string | null;
   @VueVar(null) txDescription !: string | null;
-	@VueVar(false) isWalletSyncing !: boolean;
+  @VueVar(false) isWalletSyncing !: boolean;
   @VueVar(true) openAliasValid !: boolean;
 
   @VueVar(false) qrScanning !: boolean;
@@ -54,7 +54,7 @@ class MessagesView extends DestructableView {
   @Autowire(Nfc.name) nfc !: Nfc;
 
   readonly refreshInterval = 500;
-	private intervalRefresh : NodeJS.Timer;
+  private intervalRefresh : NodeJS.Timeout;
   private qrReader: QRReader | null = null;
   private timeoutResolveAlias = 0;
   private redirectUrlAfterSend: string | null = null;
