@@ -31,15 +31,16 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.VueFilterHashrate = exports.VueFilterFiat = exports.VueFilterPiconero = exports.VueFilterSatoshis = void 0;
+    exports.VueFilterSatoshis = VueFilterSatoshis;
+    exports.VueFilterPiconero = VueFilterPiconero;
+    exports.VueFilterFiat = VueFilterFiat;
+    exports.VueFilterHashrate = VueFilterHashrate;
     function VueFilterSatoshis(value) {
         return '₿ ' + value.toFixed(8);
     }
-    exports.VueFilterSatoshis = VueFilterSatoshis;
     function VueFilterPiconero(value) {
         return value.toFixed(12);
     }
-    exports.VueFilterPiconero = VueFilterPiconero;
     function VueFilterFiat(value, currency) {
         if (currency == 'usd' || currency == 'aud' || currency == 'cad' || currency == 'nzd') {
             return '$ ' + value.toFixed(2);
@@ -69,7 +70,6 @@ define(["require", "exports"], function (require, exports) {
             return 'Ł ' + value.toFixed(2);
         }
     }
-    exports.VueFilterFiat = VueFilterFiat;
     function VueFilterHashrate(hashrate) {
         var i = 0;
         var byteUnits = ['H', 'kH', 'MH', 'GH', 'TH', 'PH', 'EH', 'ZH', 'YH'];
@@ -79,5 +79,4 @@ define(["require", "exports"], function (require, exports) {
         }
         return hashrate.toFixed(2) + byteUnits[i];
     }
-    exports.VueFilterHashrate = VueFilterHashrate;
 });
