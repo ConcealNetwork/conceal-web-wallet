@@ -26,6 +26,7 @@ import {RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {WalletWatchdog} from "../model/WalletWatchdog";
 import {CnUtils} from "../model/Cn";
 
+
 let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name,'default', false);
 let blockchainExplorer = DependencyInjectorInstance().getInstance(Constants.BLOCKCHAIN_EXPLORER);
 let walletWatchdog : WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name,'default', false);
@@ -53,8 +54,8 @@ class AccountView extends DestructableView{
 	@VueVar(false) isWalletSyncing !: boolean;
 	@VueVar(0) optimizeOutputs !: number;
 
-  readonly refreshInterval = 500;
-  private intervalRefresh : NodeJS.Timer;
+  readonly refreshInterval: number = 500;
+  private intervalRefresh: NodeJS.Timeout;
   private refreshTimestamp: Date;
   private oldTxFilter: string;
   private lastPending: number;
@@ -72,17 +73,18 @@ class AccountView extends DestructableView{
 
   	this.checkOptimization();
 		AppState.enableLeftMenu();
+
 		this.intervalRefresh = setInterval(() => {
 			this.refresh();
 		}, 1 * 1000);
-
+    
 		this.refresh();
 	}
 
 	destruct = (): Promise<void> => {
-		clearInterval(this.intervalRefresh[Symbol.toPrimitive]());
+    clearInterval(this.intervalRefresh);
 		return super.destruct();
-	}
+  }
 
 	refresh = () => {
 		blockchainExplorer.getHeight().then((height : number) => {

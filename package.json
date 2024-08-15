@@ -9,10 +9,10 @@
   },
   "main": "index.js",
   "dependencies": {
+    "@types/node": "^22.3.0",
     "typescript": "^5.5.4",
     "workbox-build": "^7.1.1"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ConcealNetwork/conceal-web-wallet.git"
