@@ -104,7 +104,7 @@ $(window).click(function() {
 
 //mobile swipe
 let pageWidth = window.innerWidth || document.body.clientWidth;
-let treshold = Math.max(1,Math.floor(0.01 * (pageWidth)));
+let treshold = Math.max(1,Math.floor(0.2 * (pageWidth)));
 let touchstartX = 0;
 let touchstartY = 0;
 let touchendX = 0;
@@ -149,7 +149,14 @@ function handleGesture(e : Event) {
 			}
 		}
 	} else {
-		//tap
+		//tap, closing even if inferior to treshold
+		if (yx <= limit) {
+			if (x < 0) {
+				//left
+				if(!menuView.isMenuHidden)
+					menuView.toggle();
+			} 
+		}
 	}
 }
 
