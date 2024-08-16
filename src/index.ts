@@ -149,13 +149,15 @@ function handleGesture(e : Event) {
 			}
 		}
 	} else {
-		//tap, closing even if inferior to treshold
+		// closing even if inferior to treshold
 		if (yx <= limit) {
 			if (x < 0) {
 				//left
 				if(!menuView.isMenuHidden)
 					menuView.toggle();
 			} 
+		} else {
+			//tap
 		}
 	}
 }
