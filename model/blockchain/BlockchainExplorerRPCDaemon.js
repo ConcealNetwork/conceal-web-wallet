@@ -402,11 +402,8 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                         timeout: 10 * 1000,
                         url: config.publicNodes + '/list?hasSSL=true'
                     }).done(function (result) {
-                        console.log(result);
                         if (result.success && (result.list.length > 0)) {
-                            console.log(result.list.length);
                             for (var i = 0; i < result.list.length; ++i) {
-                                console.log(config.nodeList.findIndex(doesMatch(result.list[i].url.host)));
                                 if (config.nodeList.findIndex(doesMatch(result.list[i].url.host)) == -1) {
                                     config.nodeList.push(result.list[i].url.host);
                                 }
