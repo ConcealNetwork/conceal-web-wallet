@@ -43,10 +43,6 @@ class IndexView extends DestructableView{
       this.hasLocalWallet = status;
     });
     AppState.disableLeftMenu();
-
-    blockchainExplorer.initialize().then((success : boolean) => {
-      blockchainExplorer.resetNodes();
-    });
 	}
 
 	destruct(): Promise<void> {
@@ -54,7 +50,9 @@ class IndexView extends DestructableView{
 	}
 
 	loadWallet(){
-		AppState.askUserOpenWallet();
+    blockchainExplorer.initialize().then((success : boolean) => {      
+      AppState.askUserOpenWallet();
+    });
 	}
 
 }
