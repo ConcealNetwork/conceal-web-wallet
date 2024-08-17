@@ -404,7 +404,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                     }).done(function (result) {
                         if (result.success && (result.list.length > 0)) {
                             for (var i = 0; i < result.list.length; ++i) {
-                                var finalUrl = result.list[i].url.host + "/";
+                                var finalUrl = "https://" + result.list[i].url.host + "/";
                                 if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
                                     config.nodeList.push(finalUrl);
                                 }
