@@ -37,33 +37,42 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         CreateViewWallet.prototype.generateWallet = function () {
             var self = this;
             setTimeout(function () {
-                blockchainExplorer.getHeight().then(function (currentHeight) {
-                    var seed = Cn_1.CnNativeBride.sc_reduce32(Cn_1.CnRandom.rand_32());
-                    var keys = Cn_1.Cn.create_address(seed);
-                    var newWallet = new Wallet_1.Wallet();
-                    newWallet.keys = KeysRepository_1.KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
-                    var height = currentHeight - 10;
-                    if (height < 0)
-                        height = 0;
-                    newWallet.lastHeight = height;
-                    newWallet.creationHeight = height;
-                    self.newWallet = newWallet;
-                    Translations_1.Translations.getLang().then(function (userLang) {
-                        var langToExport = 'english';
-                        for (var _i = 0, _a = MnemonicLang_1.MnemonicLang.getLangs(); _i < _a.length; _i++) {
-                            var lang = _a[_i];
-                            if (lang.shortLang === userLang) {
-                                langToExport = lang.name;
-                                break;
+                $("#appLoader").addClass("appLoaderVisible");
+                blockchainExplorer.initialize().then(function (success) {
+                    blockchainExplorer.getHeight().then(function (currentHeight) {
+                        $("#appLoader").removeClass("appLoaderVisible");
+                        var seed = Cn_1.CnNativeBride.sc_reduce32(Cn_1.CnRandom.rand_32());
+                        var keys = Cn_1.Cn.create_address(seed);
+                        var newWallet = new Wallet_1.Wallet();
+                        newWallet.keys = KeysRepository_1.KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
+                        var height = currentHeight - 10;
+                        if (height < 0)
+                            height = 0;
+                        newWallet.lastHeight = height;
+                        newWallet.creationHeight = height;
+                        self.newWallet = newWallet;
+                        Translations_1.Translations.getLang().then(function (userLang) {
+                            var langToExport = 'english';
+                            for (var _i = 0, _a = MnemonicLang_1.MnemonicLang.getLangs(); _i < _a.length; _i++) {
+                                var lang = _a[_i];
+                                if (lang.shortLang === userLang) {
+                                    langToExport = lang.name;
+                                    break;
+                                }
                             }
-                        }
-                        var phrase = Mnemonic_1.Mnemonic.mn_encode(newWallet.keys.priv.spend, langToExport);
-                        if (phrase !== null)
-                            self.mnemonicPhrase = phrase;
+                            var phrase = Mnemonic_1.Mnemonic.mn_encode(newWallet.keys.priv.spend, langToExport);
+                            if (phrase !== null) {
+                                self.mnemonicPhrase = phrase;
+                            }
+                        });
+                        setTimeout(function () {
+                            self.step = 1;
+                        }, 2000);
+                    }).catch(function (err) {
+                        console.log(err);
                     });
-                    setTimeout(function () {
-                        self.step = 1;
-                    }, 2000);
+                }).catch(function (err) {
+                    console.log(err);
                 });
             }, 0);
         };
