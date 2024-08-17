@@ -123,8 +123,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     height = currentHeight;
                 newWallet.lastHeight = height;
                 newWallet.creationHeight = newWallet.lastHeight;
-                AppState_1.AppState.openWallet(newWallet, self.password);
-                window.location.href = '#account';
+                AppState_1.AppState.openWallet(newWallet, self.password).then(function (success) {
+                    window.location.href = '#account';
+                });
             });
         };
         ImportView.prototype.initQr = function () {

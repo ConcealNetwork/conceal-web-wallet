@@ -43,20 +43,27 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
         function AppState() {
         }
         AppState.openWallet = function (wallet, password) {
-            var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
-            blockchainExplorer.initialize().then(function (success) {
-                var walletWorker = new WalletWorker(wallet, password);
-                blockchainExplorer.resetNodes();
-                (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, wallet);
-                var watchdog = blockchainExplorer.start(wallet);
-                (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, watchdog);
-                (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, walletWorker);
-                $('body').addClass('connected');
-                if (wallet.isViewOnly()) {
-                    $('body').addClass('viewOnlyWallet');
-                }
-            }).catch(function (err) {
-                console.log("Failed to open the wallet", err);
+            $('#appLoader').addClass('appLoaderVisible');
+            return new Promise(function (resolve, reject) {
+                var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
+                blockchainExplorer.initialize().then(function (success) {
+                    var walletWorker = new WalletWorker(wallet, password);
+                    blockchainExplorer.resetNodes();
+                    (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, wallet);
+                    var watchdog = blockchainExplorer.start(wallet);
+                    (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, watchdog);
+                    (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, walletWorker);
+                    $('body').addClass('connected');
+                    if (wallet.isViewOnly()) {
+                        $('body').addClass('viewOnlyWallet');
+                    }
+                    $('#appLoader').removeClass('appLoaderVisible');
+                    resolve(true);
+                }).catch(function (err) {
+                    $('#appLoader').removeClass('appLoaderVisible');
+                    console.log("Failed to open the wallet", err);
+                    resolve(false);
+                });
             });
         };
         AppState.disconnect = function () {
@@ -151,9 +158,15 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
                                             }
                                             swal.close();
                                             resolve();
-                                            AppState.openWallet(wallet, savePassword_1);
-                                            if (redirectToHome)
-                                                window.location.href = '#account';
+                                            AppState.openWallet(wallet, savePassword_1).then(function (success) {
+                                                if (success) {
+                                                    if (redirectToHome)
+                                                        window.location.href = '#account';
+                                                }
+                                                else {
+                                                    // should show dialog with an error
+                                                }
+                                            });
                                         }
                                         else {
                                             swal({
