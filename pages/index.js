@@ -35,10 +35,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "../model/WalletRepository", "../lib/numbersLab/DependencyInjector", "../lib/numbersLab/VueAnnotate", "../lib/numbersLab/DestructableView", "../model/Wallet", "../model/AppState"], function (require, exports, WalletRepository_1, DependencyInjector_1, VueAnnotate_1, DestructableView_1, Wallet_1, AppState_1) {
+define(["require", "exports", "../model/WalletRepository", "../providers/BlockchainExplorerProvider", "../lib/numbersLab/DependencyInjector", "../lib/numbersLab/VueAnnotate", "../lib/numbersLab/DestructableView", "../model/Wallet", "../model/AppState"], function (require, exports, WalletRepository_1, BlockchainExplorerProvider_1, DependencyInjector_1, VueAnnotate_1, DestructableView_1, Wallet_1, AppState_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
     if (wallet !== null) {
         window.location.href = '#account';
     }
@@ -50,8 +51,10 @@ define(["require", "exports", "../model/WalletRepository", "../lib/numbersLab/De
             WalletRepository_1.WalletRepository.hasOneStored().then(function (status) {
                 _this.hasLocalWallet = status;
             });
-            // this.importWallet();
             AppState_1.AppState.disableLeftMenu();
+            blockchainExplorer.initialize().then(function (success) {
+                blockchainExplorer.resetNodes();
+            });
             return _this;
         }
         IndexView.prototype.destruct = function () {

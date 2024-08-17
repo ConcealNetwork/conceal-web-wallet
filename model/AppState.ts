@@ -53,33 +53,16 @@ export class WalletWorker {
 export class AppState {
 
 	static openWallet(wallet: Wallet, password: string) {
-  	$('#appLoader').addClass('appLoaderVisible');
+    let walletWorker = new WalletWorker(wallet, password);
+    DependencyInjectorInstance().register(Wallet.name, wallet);
+    let watchdog = BlockchainExplorerProvider.getInstance().start(wallet);
+    DependencyInjectorInstance().register(WalletWatchdog.name, watchdog);
+    DependencyInjectorInstance().register(WalletWorker.name, walletWorker);
 
-    return new Promise<boolean>(function (resolve, reject) {
-      let blockchainExplorer =  BlockchainExplorerProvider.getInstance();
-
-      blockchainExplorer.initialize().then((success : boolean) => {
-        let walletWorker = new WalletWorker(wallet, password);
-        blockchainExplorer.resetNodes();
-
-        DependencyInjectorInstance().register(Wallet.name, wallet);
-        let watchdog = blockchainExplorer.start(wallet);
-        DependencyInjectorInstance().register(WalletWatchdog.name, watchdog);
-        DependencyInjectorInstance().register(WalletWorker.name, walletWorker);
-    
-        $('body').addClass('connected');
-        if (wallet.isViewOnly()) {
-          $('body').addClass('viewOnlyWallet');
-        }  
-
-        $('#appLoader').removeClass('appLoaderVisible');
-        resolve(true);
-      }).catch(err => {
-        $('#appLoader').removeClass('appLoaderVisible');
-        console.log("Failed to open the wallet", err);
-        resolve(false);
-      });
-    });
+    $('body').addClass('connected');
+    if (wallet.isViewOnly()) {
+      $('body').addClass('viewOnlyWallet');
+    }  
 	}
 
 	static disconnect() {
@@ -183,14 +166,10 @@ export class AppState {
                     swal.close();
                     resolve();
 
-                    AppState.openWallet(wallet, savePassword).then(success => {
-                      if (success) {
-                        if (redirectToHome)
-                          window.location.href = '#account';  
-                      } else {
-                        // should show dialog with an error
-                      }
-                    });
+                    AppState.openWallet(wallet, savePassword);
+                    if (redirectToHome) {
+                      window.location.href = '#account';  
+                    }
                   } else {
                     swal({
                       type: 'error',

@@ -88,9 +88,8 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     var newWallet = WalletRepository_1.WalletRepository.decodeWithPassword(self.rawFile, self.password);
                     if (newWallet !== null) {
                         newWallet.recalculateIfNotViewOnly();
-                        AppState_1.AppState.openWallet(newWallet, self.password).then(function (success) {
-                            window.location.href = '#account';
-                        });
+                        AppState_1.AppState.openWallet(newWallet, self.password);
+                        window.location.href = '#account';
                     }
                     else {
                         swal({

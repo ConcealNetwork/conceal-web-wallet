@@ -81,7 +81,9 @@ class ImportView extends DestructableView {
 
 	importWallet() {
 		let self = this;
-		blockchainExplorer.getHeight().then(function (currentHeight) {
+    blockchainExplorer.initialize()
+		blockchainExplorer.getHeight().then(function (currentHeight) {      
+      console.log("importWallet 2");
 			let newWallet = new Wallet();
 
 			let mnemonic = self.mnemonicPhrase.trim();
@@ -108,9 +110,8 @@ class ImportView extends DestructableView {
 
 				newWallet.lastHeight = height;
 				newWallet.creationHeight = newWallet.lastHeight;
-				AppState.openWallet(newWallet, self.password).then(success => {
-          window.location.href = '#account';
-        });
+				AppState.openWallet(newWallet, self.password);
+        window.location.href = '#account';
 			} else {
 				swal({
 					type: 'error',
@@ -120,7 +121,7 @@ class ImportView extends DestructableView {
 				});
 			}
 
-		});
+		}).catch();
 	}
 
 	@VueWatched()

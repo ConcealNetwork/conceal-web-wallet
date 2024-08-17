@@ -104,9 +104,8 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         };
         CreateViewWallet.prototype.finish = function () {
             if (this.newWallet !== null) {
-                AppState_1.AppState.openWallet(this.newWallet, this.walletPassword).then(function (success) {
-                    window.location.href = '#account';
-                });
+                AppState_1.AppState.openWallet(this.newWallet, this.walletPassword);
+                window.location.href = '#account';
             }
         };
         __decorate([

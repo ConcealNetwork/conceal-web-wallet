@@ -75,7 +75,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         ImportView.prototype.importWallet = function () {
             var self = this;
+            blockchainExplorer.initialize();
             blockchainExplorer.getHeight().then(function (currentHeight) {
+                console.log("importWallet 2");
                 var newWallet = new Wallet_1.Wallet();
                 var mnemonic = self.mnemonicPhrase.trim();
                 // let current_lang = 'english';
@@ -99,9 +101,8 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                         height = currentHeight;
                     newWallet_1.lastHeight = height;
                     newWallet_1.creationHeight = newWallet_1.lastHeight;
-                    AppState_1.AppState.openWallet(newWallet_1, self.password).then(function (success) {
-                        window.location.href = '#account';
-                    });
+                    AppState_1.AppState.openWallet(newWallet_1, self.password);
+                    window.location.href = '#account';
                 }
                 else {
                     swal({
@@ -111,7 +112,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                         confirmButtonText: i18n.t('global.invalidMnemonicModal.confirmText'),
                     });
                 }
-            });
+            }).catch();
         };
         ImportView.prototype.passwordWatch = function () {
             if (!Password_1.Password.checkPasswordConstraints(this.password, false)) {
