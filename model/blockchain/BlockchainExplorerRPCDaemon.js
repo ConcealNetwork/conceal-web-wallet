@@ -333,6 +333,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
     var BlockchainExplorerRpcDaemon = /** @class */ (function () {
         function BlockchainExplorerRpcDaemon() {
             var _this = this;
+            this.initialized = false;
             this.lastTimeRetrieveHeight = 0;
             this.lastTimeRetrieveInfo = 0;
             this.scannedHeight = 0;
@@ -390,33 +391,43 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                     console.log("resetNodes failed", err);
                 });
             };
+            this.isInitialized = function () {
+                return _this.initialized;
+            };
             this.initialize = function () {
                 var doesMatch = function (toCheck) {
                     return function (element) {
                         return element.toLowerCase() === toCheck.toLowerCase();
                     };
                 };
-                if (config.publicNodes) {
-                    return $.ajax({
-                        method: 'GET',
-                        timeout: 10 * 1000,
-                        url: config.publicNodes + '/list?hasSSL=true'
-                    }).done(function (result) {
-                        if (result.success && (result.list.length > 0)) {
-                            for (var i = 0; i < result.list.length; ++i) {
-                                var finalUrl = "https://" + result.list[i].url.host + "/";
-                                if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
-                                    config.nodeList.push(finalUrl);
-                                }
-                            }
-                        }
-                        return true;
-                    }).fail(function (data, textStatus) {
-                        return false;
-                    });
+                if (_this.initialized) {
+                    return Promise.resolve(true);
                 }
                 else {
-                    return Promise.resolve(true);
+                    if (config.publicNodes) {
+                        return $.ajax({
+                            method: 'GET',
+                            timeout: 10 * 1000,
+                            url: config.publicNodes + '/list?hasSSL=true'
+                        }).done(function (result) {
+                            if (result.success && (result.list.length > 0)) {
+                                for (var i = 0; i < result.list.length; ++i) {
+                                    var finalUrl = "https://" + result.list[i].url.host + "/";
+                                    if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
+                                        config.nodeList.push(finalUrl);
+                                    }
+                                }
+                            }
+                            _this.initialized = true;
+                            _this.resetNodes();
+                            return true;
+                        }).fail(function (data, textStatus) {
+                            return false;
+                        });
+                    }
+                    else {
+                        return Promise.resolve(true);
+                    }
                 }
             };
             this.start = function (wallet) {
@@ -425,6 +436,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 return watchdog;
             };
             this.nodeWorkers = new NodeWorkersList();
+            this.initialized = false;
         }
         /**
          * Returns an array containing all numbers like [start;end]

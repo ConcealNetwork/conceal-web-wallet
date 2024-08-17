@@ -62,15 +62,28 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         ImportView.prototype.importWallet = function () {
             var self = this;
-            blockchainExplorer.getHeight().then(function (currentHeight) {
-                var newWallet = new Wallet_1.Wallet();
-                if (self.mnemonicSeed !== null) {
-                    var detectedMnemonicLang = Mnemonic_1.Mnemonic.detectLang(self.mnemonicSeed);
-                    if (detectedMnemonicLang !== null) {
-                        var mnemonic_decoded = Mnemonic_1.Mnemonic.mn_decode(self.mnemonicSeed, detectedMnemonicLang);
-                        if (mnemonic_decoded !== null) {
-                            var keys = Cn_1.Cn.create_address(mnemonic_decoded);
-                            newWallet.keys = KeysRepository_1.KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
+            $("#appLoader").addClass("appLoaderVisible");
+            blockchainExplorer.initialize().then(function (success) {
+                blockchainExplorer.getHeight().then(function (currentHeight) {
+                    $("#appLoader").removeClass("appLoaderVisible");
+                    var newWallet = new Wallet_1.Wallet();
+                    if (self.mnemonicSeed !== null) {
+                        var detectedMnemonicLang = Mnemonic_1.Mnemonic.detectLang(self.mnemonicSeed);
+                        if (detectedMnemonicLang !== null) {
+                            var mnemonic_decoded = Mnemonic_1.Mnemonic.mn_decode(self.mnemonicSeed, detectedMnemonicLang);
+                            if (mnemonic_decoded !== null) {
+                                var keys = Cn_1.Cn.create_address(mnemonic_decoded);
+                                newWallet.keys = KeysRepository_1.KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
+                            }
+                            else {
+                                swal({
+                                    type: 'error',
+                                    title: i18n.t('global.invalidMnemonicModal.title'),
+                                    text: i18n.t('global.invalidMnemonicModal.content'),
+                                    confirmButtonText: i18n.t('global.invalidMnemonicModal.confirmText'),
+                                });
+                                return;
+                            }
                         }
                         else {
                             swal({
@@ -82,49 +95,44 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             return;
                         }
                     }
-                    else {
-                        swal({
-                            type: 'error',
-                            title: i18n.t('global.invalidMnemonicModal.title'),
-                            text: i18n.t('global.invalidMnemonicModal.content'),
-                            confirmButtonText: i18n.t('global.invalidMnemonicModal.confirmText'),
-                        });
-                        return;
-                    }
-                }
-                else if (self.privateSpendKey !== null) {
-                    var viewkey = self.privateViewKey !== null ? self.privateViewKey : '';
-                    if (viewkey === '') {
-                        viewkey = Cn_1.Cn.generate_keys(Cn_1.CnUtils.cn_fast_hash(self.privateSpendKey)).sec;
-                    }
-                    newWallet.keys = KeysRepository_1.KeysRepository.fromPriv(self.privateSpendKey, viewkey);
-                }
-                else if (self.privateSpendKey === null && self.privateViewKey !== null && self.publicAddress !== null) {
-                    var decodedPublic = Cn_1.Cn.decode_address(self.publicAddress);
-                    newWallet.keys = {
-                        priv: {
-                            spend: '',
-                            view: self.privateViewKey
-                        },
-                        pub: {
-                            spend: decodedPublic.spend,
-                            view: decodedPublic.view,
+                    else if (self.privateSpendKey !== null) {
+                        var viewkey = self.privateViewKey !== null ? self.privateViewKey : '';
+                        if (viewkey === '') {
+                            viewkey = Cn_1.Cn.generate_keys(Cn_1.CnUtils.cn_fast_hash(self.privateSpendKey)).sec;
                         }
-                    };
-                }
-                var height = self.importHeight; //never trust a perfect value from the user
-                if (height >= currentHeight) {
-                    height = currentHeight - 1;
-                }
-                height = height - 10;
-                if (height < 0)
-                    height = 0;
-                if (height > currentHeight)
-                    height = currentHeight;
-                newWallet.lastHeight = height;
-                newWallet.creationHeight = newWallet.lastHeight;
-                AppState_1.AppState.openWallet(newWallet, self.password);
-                window.location.href = '#account';
+                        newWallet.keys = KeysRepository_1.KeysRepository.fromPriv(self.privateSpendKey, viewkey);
+                    }
+                    else if (self.privateSpendKey === null && self.privateViewKey !== null && self.publicAddress !== null) {
+                        var decodedPublic = Cn_1.Cn.decode_address(self.publicAddress);
+                        newWallet.keys = {
+                            priv: {
+                                spend: '',
+                                view: self.privateViewKey
+                            },
+                            pub: {
+                                spend: decodedPublic.spend,
+                                view: decodedPublic.view,
+                            }
+                        };
+                    }
+                    var height = self.importHeight; //never trust a perfect value from the user
+                    if (height >= currentHeight) {
+                        height = currentHeight - 1;
+                    }
+                    height = height - 10;
+                    if (height < 0)
+                        height = 0;
+                    if (height > currentHeight)
+                        height = currentHeight;
+                    newWallet.lastHeight = height;
+                    newWallet.creationHeight = newWallet.lastHeight;
+                    AppState_1.AppState.openWallet(newWallet, self.password);
+                    window.location.href = '#account';
+                }).catch(function (err) {
+                    console.log(err);
+                });
+            }).catch(function (err) {
+                console.log(err);
             });
         };
         ImportView.prototype.initQr = function () {

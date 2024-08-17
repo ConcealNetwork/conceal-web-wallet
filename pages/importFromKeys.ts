@@ -68,46 +68,56 @@ class ImportView extends DestructableView{
 
 	importWallet(){
 		let self = this;
-		blockchainExplorer.getHeight().then(function(currentHeight){
-			let newWallet = new Wallet();
-			if(self.viewOnly){
-				let decodedPublic = Cn.decode_address(self.publicAddress.trim());
-				newWallet.keys = {
-					priv:{
-						spend:'',
-						view:self.privateViewKey.trim()
-					},
-					pub:{
-						spend:decodedPublic.spend,
-						view:decodedPublic.view,
-					}
-				};
-			} else {
-				//console.log(1);
-				let viewkey = self.privateViewKey.trim();
-				if(viewkey === '') {
-					viewkey = Cn.generate_keys(CnUtils.cn_fast_hash(self.privateSpendKey.trim())).sec;
-				}
-				//console.log(1, viewkey);
-				newWallet.keys = KeysRepository.fromPriv(self.privateSpendKey.trim(), viewkey);
-				//console.log(1);
-			}
+    $("#appLoader").addClass("appLoaderVisible");
 
-			let height = self.importHeight;//never trust a perfect value from the user
-			if(height >= currentHeight){
-				height = currentHeight-1;
-			}
-			height = height - 10;
+    blockchainExplorer.initialize().then(success => {
+      blockchainExplorer.getHeight().then(function(currentHeight){
+        $("#appLoader").removeClass("appLoaderVisible");
+        
+        let newWallet = new Wallet();
+        if(self.viewOnly){
+          let decodedPublic = Cn.decode_address(self.publicAddress.trim());
+          newWallet.keys = {
+            priv:{
+              spend:'',
+              view:self.privateViewKey.trim()
+            },
+            pub:{
+              spend:decodedPublic.spend,
+              view:decodedPublic.view,
+            }
+          };
+        } else {
+          //console.log(1);
+          let viewkey = self.privateViewKey.trim();
+          if(viewkey === '') {
+            viewkey = Cn.generate_keys(CnUtils.cn_fast_hash(self.privateSpendKey.trim())).sec;
+          }
+          //console.log(1, viewkey);
+          newWallet.keys = KeysRepository.fromPriv(self.privateSpendKey.trim(), viewkey);
+          //console.log(1);
+        }
 
-			if(height < 0)height = 0;
-			if(height > currentHeight)height = currentHeight;
-			newWallet.lastHeight = height;
-			newWallet.creationHeight = newWallet.lastHeight;
+        let height = self.importHeight;//never trust a perfect value from the user
+        if(height >= currentHeight){
+          height = currentHeight-1;
+        }
+        height = height - 10;
 
-			AppState.openWallet(newWallet, self.password);
-      window.location.href = '#account';
-		});
-	}
+        if(height < 0)height = 0;
+        if(height > currentHeight)height = currentHeight;
+        newWallet.lastHeight = height;
+        newWallet.creationHeight = newWallet.lastHeight;
+
+        AppState.openWallet(newWallet, self.password);
+        window.location.href = '#account';
+      }).catch(err => {
+        console.log(err);
+      });
+    }).catch(err => {
+      console.log(err);
+    });  
+  }
 
 	@VueWatched()
 	passwordWatch(){

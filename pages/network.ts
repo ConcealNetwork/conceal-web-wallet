@@ -56,16 +56,22 @@ class NetworkView extends DestructableView {
 	}
 
 	refreshStats() {
-		blockchainExplorer.getNetworkInfo().then((info: NetworkInfo) => {
-			this.nodeList = [...info.nodes];
-			this.networkDifficulty = info.difficulty;
-			this.networkHashrate = VueFilterHashrate(info.difficulty / config.avgBlockTime);
-			this.blockchainHeight = info.height;
-			this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
-			this.ticker = config.coinSymbol;
-			this.lastBlockFound = info.timestamp;
-    }).catch((err: any) => {
-      // do nothing
+    $("#appLoader").addClass("appLoaderVisible");
+
+    blockchainExplorer.initialize().then((success : boolean) => {      
+      blockchainExplorer.getNetworkInfo().then((info: NetworkInfo) => {
+        this.nodeList = [...info.nodes];
+        this.networkDifficulty = info.difficulty;
+        this.networkHashrate = VueFilterHashrate(info.difficulty / config.avgBlockTime);
+        this.blockchainHeight = info.height;
+        this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
+        this.ticker = config.coinSymbol;
+        this.lastBlockFound = info.timestamp;
+
+        $("#appLoader").removeClass("appLoaderVisible");
+      }).catch((err: any) => {
+        $("#appLoader").removeClass("appLoaderVisible");
+      });
     });
 	}
 }

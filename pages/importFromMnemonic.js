@@ -75,44 +75,50 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         ImportView.prototype.importWallet = function () {
             var self = this;
-            blockchainExplorer.initialize();
-            blockchainExplorer.getHeight().then(function (currentHeight) {
-                console.log("importWallet 2");
-                var newWallet = new Wallet_1.Wallet();
-                var mnemonic = self.mnemonicPhrase.trim();
-                // let current_lang = 'english';
-                var current_lang = 'english';
-                if (self.language === 'auto') {
-                    var detectedLang = Mnemonic_1.Mnemonic.detectLang(self.mnemonicPhrase.trim());
-                    if (detectedLang !== null)
-                        current_lang = detectedLang;
-                }
-                else
-                    current_lang = self.language;
-                var mnemonic_decoded = Mnemonic_1.Mnemonic.mn_decode(mnemonic, current_lang);
-                if (mnemonic_decoded !== null) {
-                    var keys = Cn_1.Cn.create_address(mnemonic_decoded);
-                    var newWallet_1 = new Wallet_1.Wallet();
-                    newWallet_1.keys = KeysRepository_1.KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
-                    var height = self.importHeight - 10;
-                    if (height < 0)
-                        height = 0;
-                    if (height > currentHeight)
-                        height = currentHeight;
-                    newWallet_1.lastHeight = height;
-                    newWallet_1.creationHeight = newWallet_1.lastHeight;
-                    AppState_1.AppState.openWallet(newWallet_1, self.password);
-                    window.location.href = '#account';
-                }
-                else {
-                    swal({
-                        type: 'error',
-                        title: i18n.t('global.invalidMnemonicModal.title'),
-                        text: i18n.t('global.invalidMnemonicModal.content'),
-                        confirmButtonText: i18n.t('global.invalidMnemonicModal.confirmText'),
-                    });
-                }
-            }).catch();
+            $("#appLoader").addClass("appLoaderVisible");
+            blockchainExplorer.initialize().then(function (success) {
+                blockchainExplorer.getHeight().then(function (currentHeight) {
+                    $("#appLoader").removeClass("appLoaderVisible");
+                    var newWallet = new Wallet_1.Wallet();
+                    var mnemonic = self.mnemonicPhrase.trim();
+                    // let current_lang = 'english';
+                    var current_lang = 'english';
+                    if (self.language === 'auto') {
+                        var detectedLang = Mnemonic_1.Mnemonic.detectLang(self.mnemonicPhrase.trim());
+                        if (detectedLang !== null)
+                            current_lang = detectedLang;
+                    }
+                    else
+                        current_lang = self.language;
+                    var mnemonic_decoded = Mnemonic_1.Mnemonic.mn_decode(mnemonic, current_lang);
+                    if (mnemonic_decoded !== null) {
+                        var keys = Cn_1.Cn.create_address(mnemonic_decoded);
+                        var newWallet_1 = new Wallet_1.Wallet();
+                        newWallet_1.keys = KeysRepository_1.KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
+                        var height = self.importHeight - 10;
+                        if (height < 0)
+                            height = 0;
+                        if (height > currentHeight)
+                            height = currentHeight;
+                        newWallet_1.lastHeight = height;
+                        newWallet_1.creationHeight = newWallet_1.lastHeight;
+                        AppState_1.AppState.openWallet(newWallet_1, self.password);
+                        window.location.href = '#account';
+                    }
+                    else {
+                        swal({
+                            type: 'error',
+                            title: i18n.t('global.invalidMnemonicModal.title'),
+                            text: i18n.t('global.invalidMnemonicModal.content'),
+                            confirmButtonText: i18n.t('global.invalidMnemonicModal.confirmText'),
+                        });
+                    }
+                }).catch(function (err) {
+                    console.log(err);
+                });
+            }).catch(function (err) {
+                console.log(err);
+            });
         };
         ImportView.prototype.passwordWatch = function () {
             if (!Password_1.Password.checkPasswordConstraints(this.password, false)) {

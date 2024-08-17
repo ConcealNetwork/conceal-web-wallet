@@ -52,16 +52,15 @@ define(["require", "exports", "../model/WalletRepository", "../providers/Blockch
                 _this.hasLocalWallet = status;
             });
             AppState_1.AppState.disableLeftMenu();
-            blockchainExplorer.initialize().then(function (success) {
-                blockchainExplorer.resetNodes();
-            });
             return _this;
         }
         IndexView.prototype.destruct = function () {
             return _super.prototype.destruct.call(this);
         };
         IndexView.prototype.loadWallet = function () {
-            AppState_1.AppState.askUserOpenWallet();
+            blockchainExplorer.initialize().then(function (success) {
+                AppState_1.AppState.askUserOpenWallet();
+            });
         };
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)

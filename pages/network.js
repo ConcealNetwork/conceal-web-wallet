@@ -67,16 +67,20 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         NetworkView.prototype.refreshStats = function () {
             var _this = this;
-            blockchainExplorer.getNetworkInfo().then(function (info) {
-                _this.nodeList = __spreadArray([], info.nodes, true);
-                _this.networkDifficulty = info.difficulty;
-                _this.networkHashrate = (0, Filters_1.VueFilterHashrate)(info.difficulty / config.avgBlockTime);
-                _this.blockchainHeight = info.height;
-                _this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
-                _this.ticker = config.coinSymbol;
-                _this.lastBlockFound = info.timestamp;
-            }).catch(function (err) {
-                // do nothing
+            $("#appLoader").addClass("appLoaderVisible");
+            blockchainExplorer.initialize().then(function (success) {
+                blockchainExplorer.getNetworkInfo().then(function (info) {
+                    _this.nodeList = __spreadArray([], info.nodes, true);
+                    _this.networkDifficulty = info.difficulty;
+                    _this.networkHashrate = (0, Filters_1.VueFilterHashrate)(info.difficulty / config.avgBlockTime);
+                    _this.blockchainHeight = info.height;
+                    _this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
+                    _this.ticker = config.coinSymbol;
+                    _this.lastBlockFound = info.timestamp;
+                    $("#appLoader").removeClass("appLoaderVisible");
+                }).catch(function (err) {
+                    $("#appLoader").removeClass("appLoaderVisible");
+                });
             });
         };
         __decorate([
