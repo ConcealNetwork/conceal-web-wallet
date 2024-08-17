@@ -382,7 +382,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
       }).done((result: any) => {
         if (result.success && (result.list.length > 0)) {
           for (let i = 0; i < result.list.length; ++i) {
-            let finalUrl = result.list[i].url.host + "/";
+            let finalUrl = "https://" + result.list[i].url.host + "/";
             
             if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
               config.nodeList.push(finalUrl);
