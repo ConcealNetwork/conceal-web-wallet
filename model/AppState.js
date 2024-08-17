@@ -43,15 +43,21 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
         function AppState() {
         }
         AppState.openWallet = function (wallet, password) {
-            var walletWorker = new WalletWorker(wallet, password);
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, wallet);
-            var watchdog = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance().start(wallet);
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, watchdog);
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, walletWorker);
-            $('body').addClass('connected');
-            if (wallet.isViewOnly()) {
-                $('body').addClass('viewOnlyWallet');
-            }
+            var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
+            blockchainExplorer.initialize().then(function (success) {
+                var walletWorker = new WalletWorker(wallet, password);
+                blockchainExplorer.resetNodes();
+                (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, wallet);
+                var watchdog = blockchainExplorer.start(wallet);
+                (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, watchdog);
+                (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, walletWorker);
+                $('body').addClass('connected');
+                if (wallet.isViewOnly()) {
+                    $('body').addClass('viewOnlyWallet');
+                }
+            }).catch(function (err) {
+                console.log("Failed to open the wallet", err);
+            });
         };
         AppState.disconnect = function () {
             var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);

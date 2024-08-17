@@ -2,6 +2,7 @@ declare var config : {
   debug: boolean,
 	apiUrl:string[],
 	nodeList: string[],
+  publicNodes: string,
 	mainnetExplorerUrl: string,
 	mainnetExplorerUrlHash: string,
 	mainnetExplorerUrlBlock: string,

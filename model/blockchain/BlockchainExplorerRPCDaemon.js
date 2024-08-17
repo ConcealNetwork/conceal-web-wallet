@@ -365,13 +365,61 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             this.resetNodes = function () {
                 Storage_1.Storage.getItem('customNodeUrl', null).then(function (customNodeUrl) {
                     _this.nodeWorkers.stop();
+                    function shuffle(array) {
+                        var _a;
+                        var currentIndex = array.length;
+                        // While there remain elements to shuffle...
+                        while (currentIndex != 0) {
+                            // Pick a remaining element...
+                            var randomIndex = Math.floor(Math.random() * currentIndex);
+                            currentIndex--;
+                            // And swap it with the current element.
+                            _a = [
+                                array[randomIndex], array[currentIndex]
+                            ], array[currentIndex] = _a[0], array[randomIndex] = _a[1];
+                        }
+                    }
                     if (customNodeUrl) {
                         _this.nodeWorkers.start([customNodeUrl]);
                     }
                     else {
+                        shuffle(config.nodeList);
                         _this.nodeWorkers.start(config.nodeList);
                     }
+                }).catch(function (err) {
+                    console.log("resetNodes failed", err);
                 });
+            };
+            this.initialize = function () {
+                var doesMatch = function (toCheck) {
+                    return function (element) {
+                        return element.toLowerCase() === toCheck.toLowerCase();
+                    };
+                };
+                if (config.publicNodes) {
+                    return $.ajax({
+                        method: 'GET',
+                        timeout: 10 * 1000,
+                        url: config.publicNodes + '/list?hasSSL=true'
+                    }).done(function (result) {
+                        console.log(result);
+                        if (result.success && (result.list.length > 0)) {
+                            console.log(result.list.length);
+                            for (var i = 0; i < result.list.length; ++i) {
+                                console.log(config.nodeList.findIndex(doesMatch(result.list[i].url.host)));
+                                if (config.nodeList.findIndex(doesMatch(result.list[i].url.host)) == -1) {
+                                    config.nodeList.push(result.list[i].url.host);
+                                }
+                            }
+                        }
+                        return true;
+                    }).fail(function (data, textStatus) {
+                        return false;
+                    });
+                }
+                else {
+                    return Promise.resolve(true);
+                }
             };
             this.start = function (wallet) {
                 var watchdog = new WalletWatchdog_1.WalletWatchdog(wallet, _this);
@@ -379,7 +427,6 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 return watchdog;
             };
             this.nodeWorkers = new NodeWorkersList();
-            this.resetNodes();
         }
         /**
          * Returns an array containing all numbers like [start;end]
