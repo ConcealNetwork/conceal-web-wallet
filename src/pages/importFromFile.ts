@@ -91,9 +91,8 @@ class ImportView extends DestructableView{
 				let newWallet = WalletRepository.decodeWithPassword(self.rawFile,self.password);
 				if(newWallet !== null) {
 					newWallet.recalculateIfNotViewOnly();
-					AppState.openWallet(newWallet, self.password).then(success => {
-            window.location.href = '#account';
-          });
+					AppState.openWallet(newWallet, self.password);
+          window.location.href = '#account';
 				}else{
 					swal({
 						type: 'error',
