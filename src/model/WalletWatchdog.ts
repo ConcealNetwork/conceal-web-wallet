@@ -453,6 +453,7 @@ export class WalletWatchdog {
   private transactionsToProcess: ITransacationQueue[] = [];
 
   constructor(wallet: Wallet, explorer: BlockchainExplorer) {
+    console.log('WalletWatchdog');
     // by default we use all cores but limited up to config.maxWorkerCores
     this.maxCpuCores = Math.min(window.navigator.hardwareConcurrency ? (Math.max(window.navigator.hardwareConcurrency - 1, 1)) : 1, config.maxWorkerCores);
 

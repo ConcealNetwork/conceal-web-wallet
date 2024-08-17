@@ -12,6 +12,7 @@ myGlobal.config = {
     "https://ccxapi.conceal.network/daemon/",
     "https://explorer.conceal.network/daemon/"
   ],
+  publicNodes: "https://explorer.conceal.network/pool",
 	mainnetExplorerUrl: "https://explorer.conceal.network/",
 	mainnetExplorerUrlHash: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_transaction",
 	mainnetExplorerUrlBlock: "https://explorer.conceal.network/index.html?hash={ID}#blockchain_block",

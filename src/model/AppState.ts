@@ -54,18 +54,25 @@ export class WalletWorker {
 export class AppState {
 
 	static openWallet(wallet: Wallet, password: string) {
-		let walletWorker = new WalletWorker(wallet, password);
+    let blockchainExplorer =  BlockchainExplorerProvider.getInstance();
 
-		DependencyInjectorInstance().register(Wallet.name, wallet);
-		let watchdog = BlockchainExplorerProvider.getInstance().start(wallet);
-		DependencyInjectorInstance().register(WalletWatchdog.name, watchdog);
-		DependencyInjectorInstance().register(WalletWorker.name, walletWorker);
+    blockchainExplorer.initialize().then((success : boolean) => {
+      let walletWorker = new WalletWorker(wallet, password);
+      blockchainExplorer.resetNodes();
 
-		$('body').addClass('connected');
-		if (wallet.isViewOnly()) {
-			$('body').addClass('viewOnlyWallet');
-    }
-	}
+      DependencyInjectorInstance().register(Wallet.name, wallet);
+      let watchdog = blockchainExplorer.start(wallet);
+      DependencyInjectorInstance().register(WalletWatchdog.name, watchdog);
+      DependencyInjectorInstance().register(WalletWorker.name, walletWorker);
+  
+      $('body').addClass('connected');
+      if (wallet.isViewOnly()) {
+        $('body').addClass('viewOnlyWallet');
+      }  
+    }).catch(err => {
+      console.log("Failed to open the wallet", err);
+    });
+  }
 
 	static disconnect() {
 		let wallet: Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
