@@ -104,8 +104,9 @@ class ImportView extends DestructableView{
 			newWallet.lastHeight = height;
 			newWallet.creationHeight = newWallet.lastHeight;
 
-			AppState.openWallet(newWallet, self.password);
-			window.location.href = '#account';
+			AppState.openWallet(newWallet, self.password).then(success => {
+        window.location.href = '#account';
+      });
 		});
 	}
 

@@ -133,8 +133,9 @@ class CreateViewWallet extends DestructableView{
 
 	finish(){
 		if(this.newWallet !== null) {
-			AppState.openWallet(this.newWallet, this.walletPassword);
-			window.location.href = '#account';
+			AppState.openWallet(this.newWallet, this.walletPassword).then(success => {
+        window.location.href = '#account';
+      });
 		}
 	}
 
