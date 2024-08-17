@@ -112,7 +112,7 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
     });
     //mobile swipe
     var pageWidth = window.innerWidth || document.body.clientWidth;
-    var treshold = Math.max(1, Math.floor(0.01 * (pageWidth)));
+    var treshold = Math.max(1, Math.floor(0.2 * (pageWidth)));
     var touchstartX = 0;
     var touchstartY = 0;
     var touchendX = 0;
@@ -133,7 +133,7 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
         var y = touchendY - touchstartY;
         var xy = Math.abs(x / y);
         var yx = Math.abs(y / x);
-        if (Math.abs(x) > treshold || Math.abs(y) > treshold) {
+        if (Math.abs(x) > treshold) { // || Math.abs(y) > treshold      ----- >   do we care about y other than a big diagonal swipe already taken into account by xy and yx ?
             if (yx <= limit) {
                 if (x < 0) {
                     //left
