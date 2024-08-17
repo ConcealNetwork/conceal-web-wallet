@@ -380,11 +380,8 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
         timeout: 10 * 1000,
         url: config.publicNodes + '/list?hasSSL=true'
       }).done((result: any) => {
-        console.log(result);
         if (result.success && (result.list.length > 0)) {
-          console.log(result.list.length);
           for (let i = 0; i < result.list.length; ++i) {
-            console.log(config.nodeList.findIndex(doesMatch(result.list[i].url.host)));
             if (config.nodeList.findIndex(doesMatch(result.list[i].url.host)) == -1) {
               config.nodeList.push(result.list[i].url.host);
             }
