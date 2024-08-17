@@ -56,37 +56,47 @@ class CreateViewWallet extends DestructableView{
 	generateWallet(){
 		let self = this;
 		setTimeout(function(){
-			blockchainExplorer.getHeight().then(function(currentHeight){
-				let seed = CnNativeBride.sc_reduce32(CnRandom.rand_32());
-				let keys = Cn.create_address(seed);
+      $("#appLoader").addClass("appLoaderVisible");
 
-				let newWallet = new Wallet();
-				newWallet.keys = KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
-				let height = currentHeight - 10;
-				if(height < 0)height = 0;
-				newWallet.lastHeight = height;
-				newWallet.creationHeight = height;
+      blockchainExplorer.initialize().then(success => {
+        blockchainExplorer.getHeight().then(function(currentHeight) {
+          $("#appLoader").removeClass("appLoaderVisible");
+          
+          let seed = CnNativeBride.sc_reduce32(CnRandom.rand_32());
+          let keys = Cn.create_address(seed);
 
-				self.newWallet = newWallet;
+          let newWallet = new Wallet();
+          newWallet.keys = KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
+          let height = currentHeight - 10;
+          if(height < 0)height = 0;
+          newWallet.lastHeight = height;
+          newWallet.creationHeight = height;
 
-				Translations.getLang().then(function(userLang : string){
-					let langToExport = 'english';
-					for(let lang of MnemonicLang.getLangs()){
-						if(lang.shortLang === userLang){
-							langToExport = lang.name;
-							break;
-						}
-					}
-					let phrase = Mnemonic.mn_encode(newWallet.keys.priv.spend, langToExport);
-					if(phrase !== null)
-						self.mnemonicPhrase = phrase;
+          self.newWallet = newWallet;
 
-				});
+          Translations.getLang().then(function(userLang : string){
+            let langToExport = 'english';
+            for(let lang of MnemonicLang.getLangs()){
+              if(lang.shortLang === userLang){
+                langToExport = lang.name;
+                break;
+              }
+            }
+            let phrase = Mnemonic.mn_encode(newWallet.keys.priv.spend, langToExport);
+            if(phrase !== null) {
+              self.mnemonicPhrase = phrase;
+            }
+          });
 
-				setTimeout(function(){
-					self.step = 1;
-				}, 2000);
-			});
+          setTimeout(function(){
+            self.step = 1;
+          }, 2000);
+        }).catch(err => {
+          console.log(err);
+        });
+      }).catch(err => {
+        console.log(err);
+      });
 		},0);
 	}
 
