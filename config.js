@@ -9,8 +9,7 @@ myGlobal.config = {
     nodeList: [
         "https://seed1.conceal.network/daemon/",
         "https://seed2.conceal.network/daemon/",
-        "https://seed3.conceal.network/daemon/",
-        "https://ccxapi.conceal.network/daemon/",
+        "https://seed3.conceal.network/daemon/"
     ],
     publicNodes: "https://explorer.conceal.network/pool",
     mainnetExplorerUrl: "https://explorer.conceal.network/",
