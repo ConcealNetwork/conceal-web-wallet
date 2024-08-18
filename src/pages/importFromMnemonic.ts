@@ -81,45 +81,54 @@ class ImportView extends DestructableView {
 
 	importWallet() {
 		let self = this;
-		blockchainExplorer.getHeight().then(function (currentHeight) {
-			let newWallet = new Wallet();
+    $("#appLoader").addClass("appLoaderVisible");
 
-			let mnemonic = self.mnemonicPhrase.trim();
-			// let current_lang = 'english';
-			let current_lang = 'english';
+    blockchainExplorer.initialize().then(success => {    
+      blockchainExplorer.getHeight().then(function (currentHeight) {
+        $("#appLoader").removeClass("appLoaderVisible");
 
-			if (self.language === 'auto') {
-				let detectedLang = Mnemonic.detectLang(self.mnemonicPhrase.trim());
-				if (detectedLang !== null)
-					current_lang = detectedLang;
-			} else
-				current_lang = self.language;
+        let newWallet = new Wallet();
+        let mnemonic = self.mnemonicPhrase.trim();
+        // let current_lang = 'english';
+        let current_lang = 'english';
 
-			let mnemonic_decoded = Mnemonic.mn_decode(mnemonic, current_lang);
-			if (mnemonic_decoded !== null) {
-				let keys = Cn.create_address(mnemonic_decoded);
+        if (self.language === 'auto') {
+          let detectedLang = Mnemonic.detectLang(self.mnemonicPhrase.trim());
+          if (detectedLang !== null)
+            current_lang = detectedLang;
+        } else
+          current_lang = self.language;
 
-				let newWallet = new Wallet();
-				newWallet.keys = KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
+        let mnemonic_decoded = Mnemonic.mn_decode(mnemonic, current_lang);
+        if (mnemonic_decoded !== null) {
+          let keys = Cn.create_address(mnemonic_decoded);
 
-				let height = self.importHeight - 10;
-				if (height < 0) height = 0;
-				if (height > currentHeight) height = currentHeight;
+          let newWallet = new Wallet();
+          newWallet.keys = KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);
 
-				newWallet.lastHeight = height;
-				newWallet.creationHeight = newWallet.lastHeight;
-				AppState.openWallet(newWallet, self.password);
-				window.location.href = '#account';
-			} else {
-				swal({
-					type: 'error',
-					title: i18n.t('global.invalidMnemonicModal.title'),
-					text: i18n.t('global.invalidMnemonicModal.content'),
-					confirmButtonText: i18n.t('global.invalidMnemonicModal.confirmText'),
-				});
-			}
+          let height = self.importHeight - 10;
+          if (height < 0) height = 0;
+          if (height > currentHeight) height = currentHeight;
 
-		});
+          newWallet.lastHeight = height;
+          newWallet.creationHeight = newWallet.lastHeight;
+
+          AppState.openWallet(newWallet, self.password);
+          window.location.href = '#account';
+        } else {
+          swal({
+            type: 'error',
+            title: i18n.t('global.invalidMnemonicModal.title'),
+            text: i18n.t('global.invalidMnemonicModal.content'),
+            confirmButtonText: i18n.t('global.invalidMnemonicModal.confirmText'),
+          });
+        }
+     }).catch(err => {
+        console.log(err);
+      });
+    }).catch(err => {
+      console.log(err);
+    });  
 	}
 
 	@VueWatched()

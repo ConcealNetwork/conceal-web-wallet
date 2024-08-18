@@ -72,6 +72,8 @@ export type RawDaemon_Out = {
 export interface BlockchainExplorer {
     resolveOpenAlias(str: string): Promise<{ address: string, name: string | null }>;
 
+    isInitialized(): boolean;
+
     initialize(): Promise<boolean>;
   
     getHeight(): Promise<number>;

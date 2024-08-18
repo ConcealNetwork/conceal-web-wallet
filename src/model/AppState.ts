@@ -54,25 +54,17 @@ export class WalletWorker {
 export class AppState {
 
 	static openWallet(wallet: Wallet, password: string) {
-    let blockchainExplorer =  BlockchainExplorerProvider.getInstance();
+    let walletWorker = new WalletWorker(wallet, password);
+    DependencyInjectorInstance().register(Wallet.name, wallet);
+    let watchdog = BlockchainExplorerProvider.getInstance().start(wallet);
+    DependencyInjectorInstance().register(WalletWatchdog.name, watchdog);
+    DependencyInjectorInstance().register(WalletWorker.name, walletWorker);
 
-    blockchainExplorer.initialize().then((success : boolean) => {
-      let walletWorker = new WalletWorker(wallet, password);
-      blockchainExplorer.resetNodes();
-
-      DependencyInjectorInstance().register(Wallet.name, wallet);
-      let watchdog = blockchainExplorer.start(wallet);
-      DependencyInjectorInstance().register(WalletWatchdog.name, watchdog);
-      DependencyInjectorInstance().register(WalletWorker.name, walletWorker);
-  
-      $('body').addClass('connected');
-      if (wallet.isViewOnly()) {
-        $('body').addClass('viewOnlyWallet');
-      }  
-    }).catch(err => {
-      console.log("Failed to open the wallet", err);
-    });
-  }
+    $('body').addClass('connected');
+    if (wallet.isViewOnly()) {
+      $('body').addClass('viewOnlyWallet');
+    }  
+	}
 
 	static disconnect() {
 		let wallet: Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
@@ -117,94 +109,101 @@ export class AppState {
 				confirmButtonText: i18n.t('global.openWalletModal.confirmText'),
 				cancelButtonText: i18n.t('global.openWalletModal.cancelText'),
 			}).then((result: any) => {
-				setTimeout(function () { //for async
-					if (result.value) {
-						swal({
-							type: 'info',
-							title: i18n.t('global.loading'),
-							onOpen: () => {
-								swal.showLoading();
-							}
-						});
+        $("#appLoader").addClass("appLoaderVisible");
 
-						let savePassword = result.value;
-						// let password = prompt();
-						let memoryWallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
+        BlockchainExplorerProvider.getInstance().initialize().then(success => {        
+          $("#appLoader").removeClass("appLoaderVisible");
+          
+          setTimeout(function () { //for async
+            if (result.value) {
+              swal({
+                type: 'info',
+                title: i18n.t('global.loading'),
+                onOpen: () => {
+                  swal.showLoading();
+                }
+              });
 
-						if (memoryWallet === null) {
-              // if needed migrate from old to new storage
-              WalletRepository.migrateWallet().then(isSuccess => {
-                WalletRepository.getLocalWalletWithPassword(savePassword).then((wallet: Wallet | null) => {
-                  //console.log(wallet);
-                  if (wallet !== null) {
-                    wallet.recalculateIfNotViewOnly();
+              let savePassword = result.value;
+              // let password = prompt();
+              let memoryWallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
 
-                    //checking the wallet to find integrity/problems and try to update it before loading
-                    let blockchainHeightToRescanObj: any = {};
-                    for (let tx of wallet.getTransactionsCopy()) {
-                      if (tx.hash === '') {
-                        blockchainHeightToRescanObj[tx.blockHeight] = true;
+              if (memoryWallet === null) {
+                // if needed migrate from old to new storage
+                WalletRepository.migrateWallet().then(isSuccess => {
+                  WalletRepository.getLocalWalletWithPassword(savePassword).then((wallet: Wallet | null) => {
+                    //console.log(wallet);
+                    if (wallet !== null) {
+                      wallet.recalculateIfNotViewOnly();
+
+                      //checking the wallet to find integrity/problems and try to update it before loading
+                      let blockchainHeightToRescanObj: any = {};
+                      for (let tx of wallet.getTransactionsCopy()) {
+                        if (tx.hash === '') {
+                          blockchainHeightToRescanObj[tx.blockHeight] = true;
+                        }
                       }
-                    }
-                    let blockchainHeightToRescan = Object.keys(blockchainHeightToRescanObj);
-                    if (blockchainHeightToRescan.length > 0) {
-                      let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
+                      let blockchainHeightToRescan = Object.keys(blockchainHeightToRescanObj);
+                      if (blockchainHeightToRescan.length > 0) {
+                        let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
 
-                      let promisesBlocks = [];
-                      for (let height of blockchainHeightToRescan) {
-                        promisesBlocks.push(blockchainExplorer.getTransactionsForBlocks(parseInt(height), parseInt(height), wallet.options.checkMinerTx));
-                        //console.log(`promisesBlocks.length: ${promisesBlocks.length}`);
-                      }
+                        let promisesBlocks = [];
+                        for (let height of blockchainHeightToRescan) {
+                          promisesBlocks.push(blockchainExplorer.getTransactionsForBlocks(parseInt(height), parseInt(height), wallet.options.checkMinerTx));
+                          //console.log(`promisesBlocks.length: ${promisesBlocks.length}`);
+                        }
 
-                      Promise.all(promisesBlocks).then(function (arrayOfTxs: Array<RawDaemon_Transaction[]>) {
-                        for (let txs of arrayOfTxs) {
-                          for (let rawTx of txs) {
-                            if (wallet !== null) {
-                              let txData = TransactionsExplorer.parse(rawTx, wallet);
+                        Promise.all(promisesBlocks).then(function (arrayOfTxs: Array<RawDaemon_Transaction[]>) {
+                          for (let txs of arrayOfTxs) {
+                            for (let rawTx of txs) {
+                              if (wallet !== null) {
+                                let txData = TransactionsExplorer.parse(rawTx, wallet);
 
-                              if ((txData !== null) && (txData.transaction !== null)) {
-                                wallet.addNew(txData.transaction);
-                                wallet.addDeposits(txData.deposits);
-                                wallet.addWithdrawals(txData.withdrawals);
+                                if ((txData !== null) && (txData.transaction !== null)) {
+                                  wallet.addNew(txData.transaction);
+                                  wallet.addDeposits(txData.deposits);
+                                  wallet.addWithdrawals(txData.withdrawals);
+                                }
                               }
                             }
                           }
-                        }
-                      }).catch(err => {
-                        console.error(err);
-                      });
-                    }
-                    swal.close();
-                    resolve();
-
-                    AppState.openWallet(wallet, savePassword);
-                    if (redirectToHome)
-                      window.location.href = '#account';
-                  } else {
-                    swal({
-                      type: 'error',
-                      title: i18n.t('global.invalidPasswordModal.title'),
-                      text: i18n.t('global.invalidPasswordModal.content'),
-                      confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
-                      onOpen: () => {
-                        swal.hideLoading();
+                        }).catch(err => {
+                          console.error(err);
+                        });
                       }
-                    });
-                    reject();
-                  }
+                      swal.close();
+                      resolve();
+
+                      AppState.openWallet(wallet, savePassword);
+                      if (redirectToHome) {
+                        window.location.href = '#account';  
+                      }
+                    } else {
+                      swal({
+                        type: 'error',
+                        title: i18n.t('global.invalidPasswordModal.title'),
+                        text: i18n.t('global.invalidPasswordModal.content'),
+                        confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
+                        onOpen: () => {
+                          swal.hideLoading();
+                        }
+                      });
+                      reject();
+                    }
+                  }).catch(err => {
+                    console.error("Error in getLocalWalletWithPassword", err);
+                  });
                 }).catch(err => {
-                  console.error("Error in getLocalWalletWithPassword", err);
+                  console.error("Error in getLocmigrateWalletalWalletWithPassword", err);
                 });
-              }).catch(err => {
-                console.error("Error in getLocmigrateWalletalWalletWithPassword", err);
-              });
-						} else {
-							swal.close();
-							window.location.href = '#account';
-						}
-					} else
-						reject();
-				}, 1);
+              } else {
+                swal.close();
+                window.location.href = '#account';
+              }
+            } else
+              reject();
+          }, 1);
+        });
 			});
 		});
 	}
