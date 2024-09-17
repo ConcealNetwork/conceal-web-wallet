@@ -108,6 +108,8 @@
 	  },
 	  "balanceBlock": {
       "title": "Votre solde",
+	  "total": "Total",
+	  "pending": "En cours",
       "unlocked": "Disponible"
 	  },
 	  "historyBlock": {
