@@ -28,7 +28,9 @@ html {
 	min-height: 100%;
 	overflow-x: hidden
 }
-
+html {
+	overscroll-behavior: none;
+}
 div,
 p,
 input,
@@ -70,6 +72,7 @@ body {
 	background-image: url(../img/landing/bg-dark.webp);
 	background-position: center center;
 	background-size: cover;
+	overscroll-behavior-y: contain;
 }
 
 body.menuHidden {
