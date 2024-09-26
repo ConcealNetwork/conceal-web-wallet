@@ -132,7 +132,7 @@
         "blockHeight": "Высота блока",
         "paymentId": "Идентификатор платежа",
         "txPrivKey": "Секретный ключ транзакции",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -407,8 +407,7 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height",
-        "status": "Status"
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -620,8 +619,7 @@
       "subtitle": "Использовать приватные ключи для создания кошелька",
       "parametersBlock": {
         "viewOnlyWallet": {
-          "label": "Хотите создать кошелек слежения?",
-          "info": "Обратите внимание, кошелек слежения предназначен только для просмотра входящих платежей, так что баланс может отображаться неправильно!"
+          "label": "Хотите создать кошелек слежения?"
         }
       },
       "keysBlock": {
@@ -631,8 +629,7 @@
           "label": "Приватный ключ расходования"
         },
         "privateView": {
-          "label": "Приватный ключ слежения",
-          "optional": "(необязательно)"
+          "label": "Приватный ключ слежения"
         },
         "publicKey": {
           "label": "Публичный ключ"

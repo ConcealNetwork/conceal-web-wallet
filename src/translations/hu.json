@@ -220,6 +220,7 @@
       "title": "Hálózati statisztika",
       "subtitle": "Betekintés a Conceal hálózatába",
       "statsBlock": {
+        "connectNode": "Csatlakozva",
         "hashrate": "Hálózati hashrate",
         "height": "Blokklánc hossza",
         "difficulty": "Hálózati nehézség",
@@ -406,8 +407,7 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height",
-        "status": "Status"
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -629,8 +629,7 @@
           "label": "Privát költőkulcs"
         },
         "privateView": {
-          "label": "Privát figyelőkulcs",
-          "optional": "(opcionális)"
+          "label": "Privát figyelőkulcs"
         },
         "publicKey": {
           "label": "Nyilvános kulcs"

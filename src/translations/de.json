@@ -220,6 +220,7 @@
       "title": "Netzwerkstatus",
       "subtitle": "Einblick ins Marsir Netzwerk",
       "statsBlock": {
+        "connectNode": "Verbunden",
         "hashrate": "Netzwerk Hashrate",
         "height": "Blockchainhöhe",
         "difficulty": "Netzwerkschwierigkeit",
@@ -393,7 +394,7 @@
         "title": "Deposits list"
       },
       "createBlock": {
-
+        
       },
       "depositDetails": {
         "title": "Deposits details",
@@ -406,8 +407,7 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height",
-        "status": "Status"
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -629,8 +629,7 @@
           "label": "Privater Spend Key"
         },
         "privateView": {
-          "label": "Privater View Key",
-          "optional": "(optional)"
+          "label": "Privater View Key"
         },
         "publicKey": {
           "label": "Öffentlicher Schlüssel"

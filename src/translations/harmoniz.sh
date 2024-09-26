@@ -87,11 +87,11 @@ case $ans in
     messageOut "unknown request"
     ;;
 esac
-echo $ans
+
 #translate if answer true, param $1=$1, $2:ans, $3:y
 answer() {
 if [[ "$2" == true ]]; then
-    echo "tranlation will occur"
+    echo "translation will occur"
     y=$(translate $1 $3)
 fi
 }

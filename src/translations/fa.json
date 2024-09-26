@@ -64,6 +64,7 @@
     },
     "bottom": {
       "termsOfUse": "شرایط استفاده",
+      "privacyPolicy": "حریم خصوصی",
       "support": "پشتیبانی",
       "donate": "ارسال کادو",
       "network": "شبکه",
@@ -130,7 +131,8 @@
         "feesOnTx": "کارمزد تراکنش",
         "blockHeight": "شماره بلوک",
         "paymentId": "شناسه پرداخت",
-        "message": "Message"        
+        "txPrivKey": "Tx",
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -140,8 +142,7 @@
         "invalid": "رمز عبور اشتباه است"
       },
       "newPassword": {
-        "label": "یک رمز عبور جدید انتخاب کنید",
-        "invalid": " یک رمز عبور قوی باید حداقل شامل هشت کاراکتر باشد ، بهمراه حروف بزرگ و کوچک و سمبل ها"
+        "label": "یک رمز عبور جدید انتخاب کنید"
       },
       "newPasswordConfirm": {
         "label": "رمز عبور جدید خود را تایید کنید"
@@ -219,6 +220,7 @@
       "title": "وضعیت شبکه",
       "subtitle": "داخل شبکه ی کربو",
       "statsBlock": {
+        "connectNode": "متصل شد",
         "hashrate": "هش ریت شبکه",
         "height": "ارتفاع زنجیره بلوکی",
         "difficulty": "سختی شبکه",
@@ -234,6 +236,7 @@
       "sendBlock": {
         "address": {
           "label": "ارسال به آدرس",
+          "placeholder": "",
           "invalid": "آدرس اشتباه است",
           "fundsTo": "کربو ها به این آدرس ارسال میشوند",
           "receiver": "دریافت کننده",
@@ -391,7 +394,7 @@
         "title": "Deposits list"
       },
       "createBlock": {
-
+        "[]": "تهی"
       },
       "depositDetails": {
         "title": "Deposits details",
@@ -404,8 +407,7 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height",
-        "status": "Status"
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -438,10 +440,20 @@
     "miningPage": {
       "title": "اطلاعات استخراج",
       "subtitle": "با استخراج شبکه کربو را بهبود بخشیده و به عنوان جایزه کربو دریافت کنید",
-      "contentBlock": {
-        "title": "چگونه شروع به استخراج کنید",
-        "intro": "استخراج به شبکه کربو بسیار کمک میکند و برای شما به عنوان جایزه کربو ارسال میشود ، شما به تجهیزات خاصی جهت استخراج نیاز ندارید",
-        "linkText": "برای خواندن راهنما اینجا کلیک کنید"
+      "parameterBlock": {
+        "title": "پارامترها",
+        "labelDestinationAddress": "کیف پول",
+        "labelThreads": "شماره",
+        "start": "شروع کنید",
+        "stop": "توقف کنید"
+      },
+      "statisticsBlocks": {
+        "title": "آمار",
+        "validShares": "معتبر است",
+        "hashrate": "hashrate",
+        "maxHashrate": "حداکثر",
+        "dedicatedHardware": "با",
+        "miningHandledBy": "این"
       }
     },
     "settingsPage": {
@@ -488,7 +500,7 @@
         "title": "حذف کیف پول نسخه محلی",
         "content": "آیا مطمین هستید که میخواهید کیف پول خود را حذف نمایید؟",
         "confirmText": "بله مطمینم",
-        "cancelButtonText": "لغو"
+        "cancelText": "لغو کنید"
       },
       "resetWalletModal": {
         "title": "Reset My Wallet (local copy)",
@@ -576,6 +588,10 @@
       "title": "شرایط استفاده",
       "subtitle": "لطفا با دقت مطالعه نمایید"
     },
+    "privacyPolicyPage": {
+      "title": "حریم خصوصی",
+      "subtitle": "لطفا"
+    },
     "importFromFilePage": {
       "title": "دزون ریزی کیف پول با استفاده از فایل",
       "subtitle": "از فایل دانلود شده قبل در همین کیف پول استفاده کنید",
@@ -601,10 +617,9 @@
     "importFromKeysPage": {
       "title": "درون ریزی کیف پول با کلید ها",
       "subtitle": "از کلید های شخصی برای درون ریزی کیف پول خود استفاده کنید",
-      "parametersBLock": {
+      "parametersBlock": {
         "viewOnlyWallet": {
-          "label": "آیا تنها یک کیف پول صرفا قابل مشاهده میخواهید ؟",
-          "info": "لطفا توجه کنید که کیف پول های صرفا برای مشاهده تنها موجودی کیف پول شما را نشان میدهند و نمیتوانید کوین ارسال کنید"
+          "label": ""
         }
       },
       "keysBlock": {
@@ -614,8 +629,7 @@
           "label": "کلید شخصی شما"
         },
         "privateView": {
-          "label": "کلید شخصی برای مشاهده",
-          "optional": "دلبخواه"
+          "label": "کلید شخصی برای مشاهده"
         },
         "publicKey": {
           "label": "کلید عمومی"

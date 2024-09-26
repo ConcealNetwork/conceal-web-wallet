@@ -131,10 +131,8 @@
         "feesOnTx": "트랜젝션 비용",
         "blockHeight": "블록넘버",
         "paymentId": "페이먼트 ID",
-        "unlockStatus": "현황",
-        "unlockConfirm": "확인",
         "txPrivKey": "트랜젝션 비공개 키",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -409,8 +407,7 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height",
-        "status": "Status"
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -476,9 +473,6 @@
         },
         "language": {
           "label": "언어"
-        },
-        "currency": {
-          "label": "국가 통화"
         },
         "readMinerTx": {
           "label": "채굴관련 송금 확인 (오직 단독 채굴에 적용됨)"
@@ -635,8 +629,7 @@
           "label": "비공개 스펜드 키"
         },
         "privateView": {
-          "label": "비공개 뷰 키",
-          "optional": "(옵션)"
+          "label": "비공개 뷰 키"
         },
         "publicKey": {
           "label": "공개 키"

@@ -15,7 +15,8 @@
       "donate": "Dona",
       "settings": "Impostazioni",
       "disconnect": "Disconnetti",
-      "network": "Statistiche del network"
+      "network": "Statistiche del network",
+      "mining": "Estrazione mineraria"
     },
     "global": {
       "loading": "Caricamento",
@@ -131,7 +132,7 @@
         "blockHeight": "Altezza sulla blockchain",
         "paymentId": "Payment ID",
         "txPrivKey": "Chiave privata della transazione",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -194,9 +195,9 @@
         "title": "Webwallet",
         "content": "Questo webwallet è sviluppato da Gnock nel suo tempo libero.<br/> Se vuoi aiutare lo sviluppo, aiutare a pagare server e ti piace questa applicazione, prendi in considerazione la possibilità di effettuare una piccola donazione.: <br/><br/>"
       },
-      "ConcealFundBlock": {
-        "title": "Fondo per lo sviluppo di Conceal",
-        "content": "Per aiutare Conceal puoi donare a questo indirizzo "
+      "devFundBlock": {
+        "title": "Nascondere",
+        "content": "A"
       }
     },
     "supportPage": {
@@ -219,6 +220,7 @@
       "title": "Statistiche del network",
       "subtitle": "Dettagli sul network Conceal",
       "statsBlock": {
+        "connectNode": "Collegato",
         "hashrate": "Network Hashrate",
         "height": "Altezza blockchain",
         "difficulty": "Difficoltà network",
@@ -405,8 +407,7 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height",
-        "status": "Status"
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -628,8 +629,7 @@
           "label": "Private Spend Key"
         },
         "privateView": {
-          "label": "Private View Key",
-          "optional": "(optional)"
+          "label": "Private View Key"
         },
         "publicKey": {
           "label": "Public key"
