@@ -375,7 +375,7 @@ class SendView extends DestructableView {
 
             promise.then(function () {
               if (self.redirectUrlAfterSend !== null) {
-                window.location.href = self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash);
+                window.location.href = window.encodeURIComponent(self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash));
               }
             });
           }).catch(function (data: any) {
