@@ -10,3 +10,4 @@ debug/
 .firebaserc
 firebase.json
 .firebase/
+src/translations/H*.json
