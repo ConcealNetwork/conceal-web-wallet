@@ -149,10 +149,18 @@ function handleGesture(e : Event) {
 			}
 		}
 	} else {
+		// closing even if inferior to treshold
+		if (yx <= limit) {
+			if (x < 0) {
+				//left
+				if(!menuView.isMenuHidden)
+					menuView.toggle();
+			} 
+		} else {
 		//tap
 	}
 }
-
+}
 
 
 @VueClass()
