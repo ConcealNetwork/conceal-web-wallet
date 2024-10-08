@@ -104,7 +104,7 @@ $(window).click(function() {
 
 //mobile swipe
 let pageWidth = window.innerWidth || document.body.clientWidth;
-let treshold = Math.max(1,Math.floor(0.01 * (pageWidth)));
+let treshold = Math.max(1,Math.floor(0.18 * (pageWidth)));
 let touchstartX = 0;
 let touchstartY = 0;
 let touchendX = 0;
@@ -129,7 +129,7 @@ function handleGesture(e : Event) {
 	let y = touchendY - touchstartY;
 	let xy = Math.abs(x / y);
 	let yx = Math.abs(y / x);
-	if (Math.abs(x) > treshold || Math.abs(y) > treshold) {
+	if (Math.abs(x) > treshold) {   // || Math.abs(y) > treshold -- > do we care about y other than a big diagonal swipe already taken into account by xy and yx ?
 		if (yx <= limit) {
 			if (x < 0) {
 				//left
@@ -149,7 +149,6 @@ function handleGesture(e : Event) {
 			}
 		}
 	} else {
-		// closing even if inferior to treshold
 		if (yx <= limit) {
 			if (x < 0) {
 				//left
@@ -157,9 +156,9 @@ function handleGesture(e : Event) {
 					menuView.toggle();
 			} 
 		} else {
-		//tap
+			//tap
+		}
 	}
-}
 }
 
 
