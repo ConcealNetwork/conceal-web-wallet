@@ -1222,6 +1222,12 @@ body {
 	font-size: 1.71428571rem;
 }
 
+.button-container {
+	display: flex;
+	justify-content: flex-end;
+	padding-right: 1em;
+	margin-bottom: 1em;
+  }
 
 /*==================FORMS===================*/
 .field {
@@ -1594,6 +1600,11 @@ body {
   line-height: 1.4;
   margin-bottom: -10px !important;
 }
+
+.header-filer:not(:focus) {
+	font-style:italic;
+	}
+
 .nodeRequestsHeader,
 .nodeErrorsHeader,
 .nodeRequestsData,

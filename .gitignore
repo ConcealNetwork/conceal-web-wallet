@@ -11,3 +11,4 @@ debug/
 firebase.json
 .firebase/
 src/translations/H*.json
+.cursorrules
