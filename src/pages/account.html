@@ -60,13 +60,15 @@
         <div class="header-wrapper">
 				  <div class="header-title" >{{ $t("accountPage.historyBlock.title") }} ({{ $n(transactions.length) }} / {{ $n(allTransactionsCount) }})</div>
           <div class="header-filer-wrapper field">
-            <input class="header-filer" type="text" v-model="txFilter" />
+            <input class="header-filer" type="text" placeholder="Search by transaction hash" v-model="txFilter" />
           </div>
         </div>
 				<div class="content" >
-          <button type="button" class="btn primary" @click="download()">
-            Download
-          </button>    
+          <div class="button-container">
+            <button type="button" class="btn primary" @click="download()">
+              Download
+            </button>
+          </div>
 					<div class="transactions" id="accountTransactions">
 						<table>
 							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked()">

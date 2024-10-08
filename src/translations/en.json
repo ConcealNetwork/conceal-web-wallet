@@ -252,7 +252,7 @@
         },
         "message": {
           "label": "Message (optional)",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is too long. Max length is 260 characters"
         },
         "mixin": {
           "label": "Privacy Level",
@@ -330,7 +330,7 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is too long. Max length is 260 characters"
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -407,8 +407,7 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height",
-        "status": "Status"
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {

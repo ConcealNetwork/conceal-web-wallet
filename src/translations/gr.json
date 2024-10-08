@@ -195,9 +195,9 @@
         "title": "Webwallet",
         "content": "Αυτό το πορτοφόλι ιστού αναπτύχθηκε από τον Gnock στον ελεύθερό του χρόνο.<br/> Εαν θέλετε να βοηθήσετε στην ανάπτυξη, να συνεισφέρετε στα έξοδα των διακομιστών και σας αρέσει αυτή η εφαρμογή, παρακαλώ σκεφτείτε να κάνετε μια δωρεά: <br/><br/>"
       },
-      "ConcealFundBlock": {
-        "title": "Conceal Dev fund",
-        "content": "Για να βοηθήσετε το Conceal, μπορείτε να κάνετε δωρεά στις παρακάτω διευθύνσεις"
+      "devFundBlock": {
+        "title": "Conceal",
+        "content": "To"
       }
     },
     "supportPage": {
@@ -220,6 +220,7 @@
       "title": "Στατιστικά Δικτύου΄",
       "subtitle": "Επισκόπηση τπυ δικτύου Conceal",
       "statsBlock": {
+        "connectNode": "Connected",
         "hashrate": "Network hashrate",
         "height": "Blockchain height",
         "difficulty": "Network difficulty",
@@ -406,8 +407,7 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height",
-        "status": "Status"
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -629,8 +629,7 @@
           "label": "Ιδιωτικό κλειδί πληρωμής"
         },
         "privateView": {
-          "label": "Ιδιωτικό κλειδί προβολής",
-          "optional": "(προαιρετικό)"
+          "label": "Ιδιωτικό κλειδί προβολής"
         },
         "publicKey": {
           "label": "Δημόσιο Κλειδί"

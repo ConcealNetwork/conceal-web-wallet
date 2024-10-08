@@ -132,7 +132,7 @@
         "blockHeight": "Block height",
         "paymentId": "Payment ID",
         "txPrivKey": "Transaction Private Key",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -142,8 +142,7 @@
         "invalid": "Погрешна лозинка"
       },
       "newPassword": {
-        "label": "Изаберите нову лозинку",
-        "invalid": " Лозинка мора да се састоји из најмање 8 карактера, једног великог слова, једног малог слова, једног броја и једног симбола"
+        "label": "Изаберите нову лозинку"
       },
       "newPasswordConfirm": {
         "label": "Потврдите нову лозинку"
@@ -221,6 +220,7 @@
       "title": "Статистика мреже",
       "subtitle": "Увид у Карбо мрежу",
       "statsBlock": {
+        "connectNode": "Повезано",
         "hashrate": "Хешрејт мреже",
         "height": "Блокчејн висина",
         "difficulty": "Тешкоћа мреже",
@@ -407,8 +407,7 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height",
-        "status": "Status"
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -618,9 +617,9 @@
     "importFromKeysPage": {
       "title": "Увоз новчаника помоћу кључева",
       "subtitle": "Искористите кључеве за увоз новчаника",
-      "parametersBLock": {
+      "parametersBlock": {
         "viewOnlyWallet": {
-          "label": "Да ли желите новчаник само за преглед (view-only) ?"
+          "label": ""
         }
       },
       "keysBlock": {
@@ -630,8 +629,7 @@
           "label": "Приватни потрошачки кључ"
         },
         "privateView": {
-          "label": "Приватни кључ за преглед",
-          "optional": "(произвољна опција)"
+          "label": "Приватни кључ за преглед"
         },
         "publicKey": {
           "label": "Јавни кључ"

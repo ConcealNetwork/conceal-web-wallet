@@ -28,7 +28,9 @@ html {
 	min-height: 100%;
 	overflow-x: hidden
 }
-
+html {
+	overscroll-behavior: none;
+}
 div,
 p,
 input,
@@ -70,6 +72,7 @@ body {
 	background-image: url(../img/landing/bg-dark.webp);
 	background-position: center center;
 	background-size: cover;
+	overscroll-behavior-y: contain;
 }
 
 body.menuHidden {
@@ -1219,11 +1222,18 @@ body {
 	font-size: 1.71428571rem;
 }
 
+.button-container {
+	display: flex;
+	justify-content: flex-end;
+	padding-right: 1em;
+	margin-bottom: 1em;
+  }
 
 /*==================FORMS===================*/
 .field {
 	margin-bottom: 15px;
 	position: relative;
+	z-index: 0;
 }
 
 .field label {
@@ -1546,10 +1556,15 @@ body {
 	transition: width 1s ease-in-out;
 }
 
+.barLabel {
+    line-height: 1.4em;
+  }
+
 .detInfo {
   font-size: 0.8em;
   text-align: center;
   color: #ccc;
+  margin-top: 3.4em;
 }
 
 .txLoadMore {
@@ -1590,6 +1605,11 @@ body {
   line-height: 1.4;
   margin-bottom: -10px !important;
 }
+
+.header-filer:not(:focus) {
+	font-style:italic;
+	}
+
 .nodeRequestsHeader,
 .nodeErrorsHeader,
 .nodeRequestsData,
@@ -1664,6 +1684,11 @@ body {
     padding-right: 2em;
     margin-bottom: 1em !important;
   }
+
+  .barLabel {
+    line-height: 1.2em;
+  }
+
 }
 
 /* Style the tab */
@@ -1740,6 +1765,7 @@ body {
 
 #accountDeposits {
   font-size: 18px;  
+  overflow-x: auto;
 }
 
 #accountDeposits .depositsListHeader {
