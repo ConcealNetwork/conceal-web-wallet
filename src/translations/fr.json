@@ -314,10 +314,10 @@
 		},
 		"tabs": {
 		  "inbox": "Boite de reception",
-		  "send": "Messages envoyés"
+		  "send": "Envoie Messages"
 		},
 		"inboxBlock": {
-		  "title": "Messages Envoyés"
+		  "title": "Messages Reçus"
 		},
 		"sendBlock": {
 		  "address": {
