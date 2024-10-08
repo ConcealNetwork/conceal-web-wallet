@@ -1556,10 +1556,15 @@ body {
 	transition: width 1s ease-in-out;
 }
 
+.barLabel {
+    line-height: 1.4em;
+  }
+
 .detInfo {
   font-size: 0.8em;
   text-align: center;
   color: #ccc;
+  margin-top: 3.4em;
 }
 
 .txLoadMore {
@@ -1679,6 +1684,11 @@ body {
     padding-right: 2em;
     margin-bottom: 1em !important;
   }
+
+  .barLabel {
+    line-height: 1.2em;
+  }
+
 }
 
 /* Style the tab */
@@ -1755,6 +1765,7 @@ body {
 
 #accountDeposits {
   font-size: 18px;  
+  overflow-x: auto;
 }
 
 #accountDeposits .depositsListHeader {
