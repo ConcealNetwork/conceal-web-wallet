@@ -122,14 +122,15 @@ gestureZone.addEventListener('touchend', function(event : TouchEvent) {
 }, false);
 
 const ANGLE_LIMIT = Math.tan(22 * Math.PI / 180);
-const DISTANCE_THRESHOLD = 50; // minimum swipe distance in pixels
+let pageWidth = window.innerWidth || document.body.clientWidth;
+let distanceThreshold = Math.max(50, Math.floor(0.25 * pageWidth + 15));
 
 function handleGesture(e: Event) {
   let x = touchendX - touchstartX;
   let y = touchendY - touchstartY;
   let distance = Math.sqrt(x*x + y*y);
   
-  if (distance > DISTANCE_THRESHOLD && Math.abs(y) / Math.abs(x) < ANGLE_LIMIT) {
+  if (distance > distanceThreshold && Math.abs(y) / Math.abs(x) < ANGLE_LIMIT) {
     // This is a valid horizontal swipe
     if (x < 0) {
       // Left swipe
@@ -138,7 +139,7 @@ function handleGesture(e: Event) {
       // Right swipe
       if (menuView.isMenuHidden) menuView.toggle();
     }
-  } else if (distance <= DISTANCE_THRESHOLD) {
+  } else if (distance <= distanceThreshold) {
     // This is a tap
     if (!menuView.isMenuHidden) menuView.toggle();
   }
