@@ -145,6 +145,37 @@ function handleGesture(e: Event) {
   }
   // Ignore other gestures
 }
+//Collapse the menu after clicking on a menu item
+function navigateToPage(page: string) {
+	window.location.hash = `!${page}`;
+  }
+
+function isMobileDevice() {
+	return window.innerWidth <= 600; // Adjust this breakpoint as needed
+  }
+  
+  // Select all menu items
+  const menuItems = document.querySelectorAll('#menu a[href^="#!"]');
+  
+  menuItems.forEach(item => {
+	item.addEventListener('click', (event) => {
+	  // Prevent the default action
+	  event.preventDefault();
+  
+	  const target = (event.currentTarget as HTMLAnchorElement).getAttribute('href');
+  
+	  if (target) {
+		// Remove the "#!" from the beginning of the href
+		const page = target.substring(2);
+		navigateToPage(page);
+  
+		// Toggle the menu off only on mobile devices
+		if (isMobileDevice() && !menuView.isMenuHidden) {
+		  menuView.toggle();
+		}
+	  }
+	});
+  });
 
 
 
