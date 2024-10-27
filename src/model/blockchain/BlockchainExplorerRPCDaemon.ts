@@ -187,7 +187,8 @@ class NodeWorkersList {
       
           while (currWorker) {
             try {
-              let resultData = await currWorker.makeRequest(method, path, body);
+              // Fix: Remove 'let' to use outer resultData variable
+              resultData = await currWorker.makeRequest(method, path, body);
               currWorker = null;
               // return the data
               resolve(resultData);
@@ -225,7 +226,8 @@ class NodeWorkersList {
       
           while (currWorker) {
             try {
-              let resultData = await currWorker.makeRpcRequest(method, params);
+              // Fix: Remove 'let' to use outer resultData variable
+              resultData = await currWorker.makeRpcRequest(method, params);
               currWorker = null;
               // return the data
               resolve(resultData);
@@ -410,48 +412,6 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     }   
   }
 
-  isInitialized = (): boolean => {
-    return this.initialized;
-  }
-
-  initialize = (): Promise<boolean> => {     
-    const doesMatch = (toCheck: string) => {
-      return (element: string) => {
-          return element.toLowerCase() === toCheck.toLowerCase();
-      }
-    }
-
-    if (this.initialized) {
-      return Promise.resolve(true);
-    } else {
-      if (config.publicNodes) {
-        return $.ajax({
-          method: 'GET',
-          timeout: 10 * 1000,
-          url: config.publicNodes + '/list?hasSSL=true'
-        }).done((result: any) => {
-          if (result.success && (result.list.length > 0)) {
-            for (let i = 0; i < result.list.length; ++i) {
-              let finalUrl = "https://" + result.list[i].url.host + "/";
-  
-              if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
-                config.nodeList.push(finalUrl);
-              }
-            }
-          }
-          
-          this.initialized = true;
-          this.resetNodes();
-          return true;
-        }).fail((data: any, textStatus: string) => {        
-          return false;
-        });
-      } else {
-        return Promise.resolve(true);
-      }  
-    }   
-  }
-
   start = (wallet: Wallet): WalletWatchdog => {
     let watchdog = new WalletWatchdog(wallet, this);
     watchdog.start();
@@ -559,9 +519,9 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
       outs: { global_index: number, public_key: string }[]
     }) => {
       if (response.status !== 'OK') throw 'invalid_getrandom_outs_answer';
-      if (response.outs.length > 0) {
-        logDebugMsg(response.outs);
-      }
+      // if (response.outs.length > 0) {
+      //   logDebugMsg(response.outs);
+      // }
 
       return response.outs;
     });
@@ -625,3 +585,4 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     });
   }
 }
+
