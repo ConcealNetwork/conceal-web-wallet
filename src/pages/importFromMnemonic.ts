@@ -83,10 +83,10 @@ class ImportView extends DestructableView {
 		let self = this;
     $("#appLoader").addClass("appLoaderVisible");
 
-    blockchainExplorer.initialize().then(success => {
-      blockchainExplorer.getHeight().then(function (currentHeight) {      
+    blockchainExplorer.initialize().then(success => {    
+      blockchainExplorer.getHeight().then(function (currentHeight) {
         $("#appLoader").removeClass("appLoaderVisible");
-        
+
         let newWallet = new Wallet();
         let mnemonic = self.mnemonicPhrase.trim();
         // let current_lang = 'english';

@@ -9,11 +9,14 @@
       "account": "Account",
       "send": "Invia",
       "receive": "Ricevi",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Esporta",
       "donate": "Dona",
       "settings": "Impostazioni",
       "disconnect": "Disconnetti",
-      "network": "Statistiche del network"
+      "network": "Statistiche del network",
+      "mining": "Estrazione mineraria"
     },
     "global": {
       "loading": "Caricamento",
@@ -109,7 +112,9 @@
         "title": "Il tuo bilancio",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Sbloccato"
+        "unlocked": "Sbloccato",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Cronologia delle transazioni",
@@ -127,7 +132,7 @@
         "blockHeight": "Altezza sulla blockchain",
         "paymentId": "Payment ID",
         "txPrivKey": "Chiave privata della transazione",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -190,9 +195,9 @@
         "title": "Webwallet",
         "content": "Questo webwallet è sviluppato da Gnock nel suo tempo libero.<br/> Se vuoi aiutare lo sviluppo, aiutare a pagare server e ti piace questa applicazione, prendi in considerazione la possibilità di effettuare una piccola donazione.: <br/><br/>"
       },
-      "ConcealFundBlock": {
-        "title": "Fondo per lo sviluppo di Conceal",
-        "content": "Per aiutare Conceal puoi donare a questo indirizzo "
+      "devFundBlock": {
+        "title": "Nascondere",
+        "content": "A"
       }
     },
     "supportPage": {
@@ -215,6 +220,7 @@
       "title": "Statistiche del network",
       "subtitle": "Dettagli sul network Conceal",
       "statsBlock": {
+        "connectNode": "Collegato",
         "hashrate": "Network Hashrate",
         "height": "Altezza blockchain",
         "difficulty": "Difficoltà network",
@@ -373,6 +379,35 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -594,8 +629,7 @@
           "label": "Private Spend Key"
         },
         "privateView": {
-          "label": "Private View Key",
-          "optional": "(optional)"
+          "label": "Private View Key"
         },
         "publicKey": {
           "label": "Public key"

@@ -69,6 +69,7 @@ class NodeWorker {
         this._isWorking = false;        
         resolve(raw);
       }).fail((data: any, textStatus: string) => {
+        console.log("makeRequest failed", textStatus);
         this._isWorking = false;        
         this.increaseErrors();
         reject(data);
@@ -303,8 +304,8 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
 
 
   constructor() {
+    console.log('BlockchainExplorerRpcDaemon');
     this.nodeWorkers = new NodeWorkersList();
-    this.initialized = false;
   }
 
   getInfo = (): Promise<DaemonResponseGetInfo> => {
@@ -355,7 +356,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
             array[randomIndex], array[currentIndex]];
         }
       }    
-  
+      
       if (customNodeUrl) {
         this.nodeWorkers.start([customNodeUrl]);
       } else {
@@ -365,6 +366,48 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     }).catch(err => {
       console.log("resetNodes failed", err);
     });
+  }
+  
+  isInitialized = (): boolean => {
+    return this.initialized;
+  }
+
+  initialize = (): Promise<boolean> => {     
+    const doesMatch = (toCheck: string) => {
+      return (element: string) => {
+          return element.toLowerCase() === toCheck.toLowerCase();
+      }
+    }
+
+    if (this.initialized) {
+      return Promise.resolve(true);
+    } else {
+      if (config.publicNodes) {
+        return $.ajax({
+          method: 'GET',
+          timeout: 10 * 1000,
+          url: config.publicNodes + '/list?hasSSL=true'
+        }).done((result: any) => {
+          if (result.success && (result.list.length > 0)) {
+            for (let i = 0; i < result.list.length; ++i) {
+              let finalUrl = "https://" + result.list[i].url.host + "/";
+  
+              if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
+                config.nodeList.push(finalUrl);
+              }
+            }
+          }
+          
+          this.initialized = true;
+          this.resetNodes();
+          return true;
+        }).fail((data: any, textStatus: string) => {        
+          return false;
+        });
+      } else {
+        return Promise.resolve(true);
+      }  
+    }   
   }
 
   isInitialized = (): boolean => {

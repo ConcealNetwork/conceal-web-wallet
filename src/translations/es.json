@@ -9,10 +9,10 @@
       "account": "Cuenta",
       "send": "Enviar",
       "receive": "Recibir",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Exportar",
       "donate": "Donar",
-      "Eleições": "Eleições",
-      "Contatos": "Contatos",
       "settings": "Ajustes",
       "disconnect": "Desconectar",
       "network": "Estado de red",
@@ -112,7 +112,9 @@
         "title": "Su balance",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Desbloqueado"
+        "unlocked": "Desbloqueado",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Historial de transacciones",
@@ -218,6 +220,7 @@
       "title": "Estado de red",
       "subtitle": "Perspectivas sobre la red Conceal",
       "statsBlock": {
+        "connectNode": "Conectado",
         "hashrate": "Tasa de Hachís en red",
         "height": "Altura de blockchain",
         "difficulty": "Dificultad de red",
@@ -377,7 +380,36 @@
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
       }
-    },    
+    },
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height"
+      }
+    },
     "receivePage": {
       "title": "Recibir CCX",
       "receiveBlock": {
@@ -471,10 +503,10 @@
         "cancelText": "Cancelar"
       },
       "resetWalletModal": {
-        "title": "Reset My Wallet (local copy)",
-        "content": "Are you sure you really want to reset your wallet?",
-        "confirmText": "Yes I'm sure",
-        "cancelText": "Cancel"
+        "title": "Reinicializador mi billetera (copia local)",
+        "content": "¿Está seguro de que desea reinicializar su billetera?",
+        "confirmText": "Sí estoy seguro",
+        "cancelText": "Cancelar"
       },
       "optimizeWalletModal": {
         "title": "Nothing to do...",
@@ -597,8 +629,7 @@
           "label": "Clave de gasto privado"
         },
         "privateView": {
-          "label": "Clave de vista privada",
-          "optional": "(opcional)"
+          "label": "Clave de vista privada"
         },
         "publicKey": {
           "label": "Llave pública"

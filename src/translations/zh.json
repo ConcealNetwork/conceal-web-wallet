@@ -9,6 +9,8 @@
       "account": "帐户",
       "send": "发送",
       "receive": "接收",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "导出",
       "donate": "捐助",
       "settings": "设置",
@@ -110,7 +112,9 @@
         "title": "您的余额",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "解锁"
+        "unlocked": "解锁",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "交易记录",
@@ -127,10 +131,8 @@
         "feesOnTx": "手续费",
         "blockHeight": "区块高度",
         "paymentId": "付款ID",
-        "unlockStatus": "状态",
-        "unlockConfirm": "确认数",
         "txPrivKey": "交易私钥",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -379,6 +381,35 @@
         "content": "Bring closer to the other device"
       }
     },
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height"
+      }
+    },
     "receivePage": {
       "title": "收到CCX",
       "receiveBlock": {
@@ -442,9 +473,6 @@
         },
         "language": {
           "label": "语言"
-        },
-        "currency": {
-          "label": "本国货币"
         },
         "readMinerTx": {
           "label": "读取挖矿交易信息（仅适用于Solo挖矿）"
@@ -601,8 +629,7 @@
           "label": "私人消费钥匙"
         },
         "privateView": {
-          "label": "私人视图密钥",
-          "optional": "（可选的)"
+          "label": "私人视图密钥"
         },
         "publicKey": {
           "label": "公钥"

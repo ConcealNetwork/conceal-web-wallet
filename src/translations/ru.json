@@ -9,6 +9,8 @@
       "account": "Аккаунт",
       "send": "Отправить",
       "receive": "Получить",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Экспорт",
       "donate": "Пожертвовать",
       "settings": "Настройки",
@@ -110,7 +112,9 @@
         "title": "Ваш баланс",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Доступно"
+        "unlocked": "Доступно",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "История транзакций",
@@ -128,7 +132,7 @@
         "blockHeight": "Высота блока",
         "paymentId": "Идентификатор платежа",
         "txPrivKey": "Секретный ключ транзакции",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -377,6 +381,35 @@
         "content": "Bring closer to the other device"
       }
     },
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height"
+      }
+    },
     "receivePage": {
       "title": "Получить CCX",
       "receiveBlock": {
@@ -586,8 +619,7 @@
       "subtitle": "Использовать приватные ключи для создания кошелька",
       "parametersBlock": {
         "viewOnlyWallet": {
-          "label": "Хотите создать кошелек слежения?",
-          "info": "Обратите внимание, кошелек слежения предназначен только для просмотра входящих платежей, так что баланс может отображаться неправильно!"
+          "label": "Хотите создать кошелек слежения?"
         }
       },
       "keysBlock": {
@@ -597,8 +629,7 @@
           "label": "Приватный ключ расходования"
         },
         "privateView": {
-          "label": "Приватный ключ слежения",
-          "optional": "(необязательно)"
+          "label": "Приватный ключ слежения"
         },
         "publicKey": {
           "label": "Публичный ключ"

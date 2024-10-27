@@ -17,6 +17,7 @@
 
 import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
 import {Wallet} from "./Wallet";
+import {Transaction, Deposit} from "./Transaction";
 import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
 import {Observable} from "../lib/numbersLab/Observable";
 import {WalletRepository} from "./WalletRepository";
@@ -123,6 +124,28 @@ export class AppState {
                 }
               });
 
+			swal({
+				title: i18n.t('global.openWalletModal.title'),
+				input: 'password',
+				showCancelButton: true,
+				confirmButtonText: i18n.t('global.openWalletModal.confirmText'),
+				cancelButtonText: i18n.t('global.openWalletModal.cancelText'),
+			}).then((result: any) => {
+        $("#appLoader").addClass("appLoaderVisible");
+
+        BlockchainExplorerProvider.getInstance().initialize().then(success => {        
+          $("#appLoader").removeClass("appLoaderVisible");
+          
+          setTimeout(function () { //for async
+            if (result.value) {
+              swal({
+                type: 'info',
+                title: i18n.t('global.loading'),
+                onOpen: () => {
+                  swal.showLoading();
+                }
+              });
+
               let savePassword = result.value;
               // let password = prompt();
               let memoryWallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
@@ -156,10 +179,12 @@ export class AppState {
                           for (let txs of arrayOfTxs) {
                             for (let rawTx of txs) {
                               if (wallet !== null) {
-                                let tx = TransactionsExplorer.parse(rawTx, wallet);
-                                if (tx !== null) {
-                                  console.log(`Added new Tx ${tx.hash} to wallet`);
-                                  wallet.addNew(tx);
+                                let txData = TransactionsExplorer.parse(rawTx, wallet);
+
+                                if ((txData !== null) && (txData.transaction !== null)) {
+                                  wallet.addNew(txData.transaction);
+                                  wallet.addDeposits(txData.deposits);
+                                  wallet.addWithdrawals(txData.withdrawals);
                                 }
                               }
                             }
@@ -201,7 +226,7 @@ export class AppState {
               reject();
           }, 1);
         });
-      });
-    });
+			});
+		});
 	}
 }

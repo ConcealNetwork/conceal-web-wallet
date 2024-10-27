@@ -58,8 +58,8 @@ class CreateViewWallet extends DestructableView{
 		setTimeout(function(){
       $("#appLoader").addClass("appLoaderVisible");
 
-      blockchainExplorer.initialize().then(success => {
-        blockchainExplorer.getHeight().then(function(currentHeight) {
+      blockchainExplorer.initialize().then(success => {    
+        blockchainExplorer.getHeight().then(function(currentHeight){
           $("#appLoader").removeClass("appLoaderVisible");
           
           let seed = CnNativeBride.sc_reduce32(CnRandom.rand_32());
@@ -83,9 +83,9 @@ class CreateViewWallet extends DestructableView{
               }
             }
             let phrase = Mnemonic.mn_encode(newWallet.keys.priv.spend, langToExport);
-            if(phrase !== null) {
+            if(phrase !== null)
               self.mnemonicPhrase = phrase;
-            }
+
           });
 
           setTimeout(function(){
@@ -96,7 +96,7 @@ class CreateViewWallet extends DestructableView{
         });
       }).catch(err => {
         console.log(err);
-      });
+      });  
 		},0);
 	}
 
@@ -143,9 +143,9 @@ class CreateViewWallet extends DestructableView{
 
 	finish(){
 		if(this.newWallet !== null) {
-			AppState.openWallet(this.newWallet, this.walletPassword);
+      AppState.openWallet(this.newWallet, this.walletPassword);
       window.location.href = '#account';
-		}
+    }
 	}
 
 }

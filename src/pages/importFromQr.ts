@@ -68,7 +68,7 @@ class ImportView extends DestructableView{
 		let self = this;
     $("#appLoader").addClass("appLoaderVisible");
 
-    blockchainExplorer.initialize().then(success => {
+    blockchainExplorer.initialize().then(success => {    
       blockchainExplorer.getHeight().then(function(currentHeight){
         $("#appLoader").removeClass("appLoaderVisible");
         let newWallet = new Wallet();
@@ -133,12 +133,12 @@ class ImportView extends DestructableView{
 
         AppState.openWallet(newWallet, self.password);
         window.location.href = '#account';
-      }).catch(err => {
+     }).catch(err => {
         console.log(err);
       });
     }).catch(err => {
       console.log(err);
-    });
+    });  
 	}
 
 

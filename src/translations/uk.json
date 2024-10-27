@@ -9,6 +9,8 @@
       "account": "Огляд",
       "send": "Надіслати",
       "receive": "Отримати",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Експорт",
       "donate": "Пожертвувати",
       "settings": "Налаштування",
@@ -110,7 +112,9 @@
         "title": "Ваш баланс",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Доступно"
+        "unlocked": "Доступно",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Історія транзакцій",
@@ -128,7 +132,7 @@
         "blockHeight": "Висота блоку",
         "paymentId": "Ідентифікатор платежу",
         "txPrivKey": "Секретний ключ транзакції",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -377,6 +381,35 @@
         "content": "Bring closer to the other device"
       }
     },
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height"
+      }
+    },
     "receivePage": {
       "title": "Отримати CCX",
       "receiveBlock": {
@@ -586,8 +619,7 @@
       "subtitle": "Використати приватні ключі для створення гаманця",
       "parametersBlock": {
         "viewOnlyWallet": {
-          "label": "Хочете створити гаманець стеження?",
-          "info": "Зверніть увагу, гаманець стеження призначений тільки для перегляду вхідних платежів, так що баланс може відображатися неправильно!"
+          "label": "Хочете створити гаманець стеження?"
         }
       },
       "keysBlock": {
@@ -597,8 +629,7 @@
           "label": "Приватний ключ витрачання"
         },
         "privateView": {
-          "label": "Приватний ключ стеження",
-          "optional": "(не обов'язково)"
+          "label": "Приватний ключ стеження"
         },
         "publicKey": {
           "label": "Публічний ключ"

@@ -9,6 +9,8 @@
       "account": "Számla",
       "send": "Küldés",
       "receive": "Fogadás",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Exportálás",
       "donate": "Adományozás",
       "settings": "Beállítások",
@@ -110,7 +112,9 @@
         "title": "Egyenleg",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Feloldva"
+        "unlocked": "Feloldva",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Tranzakciós előzmények",
@@ -216,6 +220,7 @@
       "title": "Hálózati statisztika",
       "subtitle": "Betekintés a Conceal hálózatába",
       "statsBlock": {
+        "connectNode": "Csatlakozva",
         "hashrate": "Hálózati hashrate",
         "height": "Blokklánc hossza",
         "difficulty": "Hálózati nehézség",
@@ -374,6 +379,35 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -595,8 +629,7 @@
           "label": "Privát költőkulcs"
         },
         "privateView": {
-          "label": "Privát figyelőkulcs",
-          "optional": "(opcionális)"
+          "label": "Privát figyelőkulcs"
         },
         "publicKey": {
           "label": "Nyilvános kulcs"

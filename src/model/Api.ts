@@ -170,7 +170,7 @@ export class Api {
 			let amount = parseFloat(amountToSend);
 			if (destinationAddress !== null) {
 				//todo use BigInteger
-				if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.unlockedAmount(blockchainHeight)) {
+				if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.availableAmount(blockchainHeight)) {
 					console.log("Amount higher than the funds")
 					return;
 				}
@@ -183,7 +183,7 @@ export class Api {
 						return blockchainExplorer.getRandomOuts(amounts, numberOuts);
 					}
 					, function (amount: number, feesAmount: number): Promise<void> {
-						if (amount + feesAmount > wallet.unlockedAmount(blockchainHeight)) {
+						if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
 							console.log("Amount higher than the funds");
 							throw 'Amount higher than the funds';
 						}
