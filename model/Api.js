@@ -144,7 +144,7 @@ define(["require", "exports", "../model/KeysRepository", "../model/Wallet", "../
                 var amount = parseFloat(amountToSend);
                 if (destinationAddress !== null) {
                     //todo use BigInteger
-                    if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.unlockedAmount(blockchainHeight)) {
+                    if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.availableAmount(blockchainHeight)) {
                         console.log("Amount higher than the funds");
                         return;
                     }
@@ -154,7 +154,7 @@ define(["require", "exports", "../model/KeysRepository", "../model/Wallet", "../
                     TransactionsExplorer_1.TransactionsExplorer.createTx([{ address: destinationAddress, amount: amountToSend_1 }], paymentId, wallet, blockchainHeight, function (amounts, numberOuts) {
                         return blockchainExplorer.getRandomOuts(amounts, numberOuts);
                     }, function (amount, feesAmount) {
-                        if (amount + feesAmount > wallet.unlockedAmount(blockchainHeight)) {
+                        if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
                             console.log("Amount higher than the funds");
                             throw 'Amount higher than the funds';
                         }

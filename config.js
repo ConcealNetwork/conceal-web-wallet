@@ -40,7 +40,7 @@ myGlobal.config = {
     idleTimeout: 30,
     idleWarningDuration: 20,
     syncBlockCount: 300, // how many block we sync at once for a single remote node
-    maxBlockQueue: 25, // how many watchdog blocks can be max in the queue before waiting
+    maxBlockQueue: 10, // how many watchdog blocks can be max in the queue before waiting
     maxRemoteNodes: 8, // what is the max remote nodes we use in a sync process
     maxWorkerCores: 8, // max cores that the workers can use. If lower they will use numberOfCores - 1
     coinSymbol: 'CCX',

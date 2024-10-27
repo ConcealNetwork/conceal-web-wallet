@@ -77,7 +77,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     var amount = parseFloat(self.amountToSend);
                     if (self.destinationAddress !== null) {
                         //todo use BigInteger
-                        if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.unlockedAmount(blockchainHeight)) {
+                        if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.availableAmount(blockchainHeight)) {
                             swal({
                                 type: 'error',
                                 title: i18n.t('sendPage.notEnoughMoneyModal.title'),
@@ -100,7 +100,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                         TransactionsExplorer_1.TransactionsExplorer.createTx([{ address: destinationAddress_1, amount: amountToSend }], self.paymentId, wallet, blockchainHeight, function (amounts, numberOuts) {
                             return blockchainExplorer.getRandomOuts(amounts, numberOuts);
                         }, function (amount, feesAmount) {
-                            if (amount + feesAmount > wallet.unlockedAmount(blockchainHeight)) {
+                            if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
                                 swal({
                                     type: 'error',
                                     title: i18n.t('sendPage.notEnoughMoneyModal.title'),
@@ -174,7 +174,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                                     });
                                 promise.then(function () {
                                     if (self.redirectUrlAfterSend !== null) {
-                                        window.location.href = self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash);
+                                        window.location.href = window.encodeURIComponent(self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash));
                                     }
                                 });
                             }).catch(function (data) {

@@ -80,7 +80,6 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
         };
         AppState.askUserOpenWallet = function (redirectToHome) {
             if (redirectToHome === void 0) { redirectToHome = true; }
-            var self = this;
             return new Promise(function (resolve, reject) {
                 swal({
                     title: i18n.t('global.openWalletModal.title'),
@@ -102,90 +101,95 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
                                     }
                                 });
                                 var savePassword_1 = result.value;
-                                // let password = prompt();
                                 var memoryWallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
                                 if (memoryWallet === null) {
-                                    // if needed migrate from old to new storage
-                                    WalletRepository_1.WalletRepository.migrateWallet().then(function (isSuccess) {
-                                        WalletRepository_1.WalletRepository.getLocalWalletWithPassword(savePassword_1).then(function (wallet) {
-                                            //console.log(wallet);
-                                            if (wallet !== null) {
-                                                wallet.recalculateIfNotViewOnly();
-                                                //checking the wallet to find integrity/problems and try to update it before loading
-                                                var blockchainHeightToRescanObj = {};
-                                                for (var _i = 0, _a = wallet.getTransactionsCopy(); _i < _a.length; _i++) {
-                                                    var tx = _a[_i];
-                                                    if (tx.hash === '') {
-                                                        blockchainHeightToRescanObj[tx.blockHeight] = true;
-                                                    }
-                                                }
-                                                var blockchainHeightToRescan = Object.keys(blockchainHeightToRescanObj);
-                                                if (blockchainHeightToRescan.length > 0) {
-                                                    var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
-                                                    var promisesBlocks = [];
-                                                    for (var _b = 0, blockchainHeightToRescan_1 = blockchainHeightToRescan; _b < blockchainHeightToRescan_1.length; _b++) {
-                                                        var height = blockchainHeightToRescan_1[_b];
-                                                        promisesBlocks.push(blockchainExplorer.getTransactionsForBlocks(parseInt(height), parseInt(height), wallet.options.checkMinerTx));
-                                                        //console.log(`promisesBlocks.length: ${promisesBlocks.length}`);
-                                                    }
-                                                    Promise.all(promisesBlocks).then(function (arrayOfTxs) {
-                                                        for (var _i = 0, arrayOfTxs_1 = arrayOfTxs; _i < arrayOfTxs_1.length; _i++) {
-                                                            var txs = arrayOfTxs_1[_i];
-                                                            for (var _a = 0, txs_1 = txs; _a < txs_1.length; _a++) {
-                                                                var rawTx = txs_1[_a];
-                                                                if (wallet !== null) {
-                                                                    var tx = TransactionsExplorer_1.TransactionsExplorer.parse(rawTx, wallet);
-                                                                    if (tx !== null) {
-                                                                        console.log("Added new Tx ".concat(tx.hash, " to wallet"));
-                                                                        wallet.addNew(tx);
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }).catch(function (err) {
-                                                        console.error(err);
-                                                    });
-                                                }
-                                                swal.close();
-                                                resolve();
-                                                AppState.openWallet(wallet, savePassword_1);
-                                                if (redirectToHome) {
-                                                    window.location.href = '#account';
-                                                }
-                                            }
-                                            else {
-                                                swal({
-                                                    type: 'error',
-                                                    title: i18n.t('global.invalidPasswordModal.title'),
-                                                    text: i18n.t('global.invalidPasswordModal.content'),
-                                                    confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
-                                                    onOpen: function () {
-                                                        swal.hideLoading();
-                                                    }
-                                                });
-                                                reject();
-                                            }
-                                        }).catch(function (err) {
-                                            console.error("Error in getLocalWalletWithPassword", err);
-                                        });
-                                    }).catch(function (err) {
-                                        console.error("Error in getLocmigrateWalletalWalletWithPassword", err);
+                                    // Migration and wallet loading logic
+                                    WalletRepository_1.WalletRepository.migrateWallet()
+                                        .then(function (isSuccess) {
+                                        return WalletRepository_1.WalletRepository.getLocalWalletWithPassword(savePassword_1);
+                                    })
+                                        .then(function (wallet) {
+                                        if (wallet !== null) {
+                                            handleWalletLoading(wallet, savePassword_1, resolve, redirectToHome);
+                                        }
+                                        else {
+                                            showInvalidPasswordError();
+                                            reject();
+                                        }
+                                    })
+                                        .catch(function (err) {
+                                        console.error("Error loading wallet:", err);
+                                        reject(err);
                                     });
                                 }
                                 else {
                                     swal.close();
                                     window.location.href = '#account';
+                                    resolve();
                                 }
                             }
-                            else
+                            else {
                                 reject();
+                            }
                         }, 1);
-                    });
-                });
+                    }).catch(reject);
+                }).catch(reject);
             });
         };
         AppState.leftMenuEnabled = false;
         return AppState;
     }());
     exports.AppState = AppState;
+    // Helper functions to improve readability
+    function handleWalletLoading(wallet, savePassword, resolve, redirectToHome) {
+        wallet.recalculateIfNotViewOnly();
+        updateWalletTransactions(wallet);
+        swal.close();
+        resolve();
+        AppState.openWallet(wallet, savePassword);
+        if (redirectToHome) {
+            window.location.href = '#account';
+        }
+    }
+    function showInvalidPasswordError() {
+        swal({
+            type: 'error',
+            title: i18n.t('global.invalidPasswordModal.title'),
+            text: i18n.t('global.invalidPasswordModal.content'),
+            confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
+            onOpen: function () {
+                swal.hideLoading();
+            }
+        });
+    }
+    function updateWalletTransactions(wallet) {
+        var blockchainHeightToRescanObj = {};
+        for (var _i = 0, _a = wallet.getTransactionsCopy(); _i < _a.length; _i++) {
+            var tx = _a[_i];
+            if (tx.hash === '') {
+                blockchainHeightToRescanObj[tx.blockHeight] = true;
+            }
+        }
+        var blockchainHeightToRescan = Object.keys(blockchainHeightToRescanObj);
+        if (blockchainHeightToRescan.length > 0) {
+            var blockchainExplorer_1 = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
+            var promisesBlocks = blockchainHeightToRescan.map(function (height) {
+                return blockchainExplorer_1.getTransactionsForBlocks(parseInt(height), parseInt(height), wallet.options.checkMinerTx);
+            });
+            Promise.all(promisesBlocks)
+                .then(function (arrayOfTxs) {
+                arrayOfTxs.forEach(function (txs) {
+                    txs.forEach(function (rawTx) {
+                        var txData = TransactionsExplorer_1.TransactionsExplorer.parse(rawTx, wallet);
+                        if (txData === null || txData === void 0 ? void 0 : txData.transaction) {
+                            wallet.addNew(txData.transaction);
+                            wallet.addDeposits(txData.deposits);
+                            wallet.addWithdrawals(txData.withdrawals);
+                        }
+                    });
+                });
+            })
+                .catch(console.error);
+        }
+    }
 });

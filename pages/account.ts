@@ -39,6 +39,8 @@ class AccountView extends DestructableView{
 	@VueVar(0) processingQueue !: number;
 	@VueVar(0) walletAmount !: number;
 	@VueVar(0) unlockedWalletAmount !: number;
+	@VueVar(0) depositedWalletAmount !: number;
+	@VueVar(0) withdrawableWalletAmount !: number;
 	@VueVar(0) allTransactionsCount !: number;
 	@VueVar(0) pagesCount !: number;
 	@VueVar(0) txPerPage !: number;
@@ -54,8 +56,8 @@ class AccountView extends DestructableView{
 	@VueVar(false) isWalletSyncing !: boolean;
 	@VueVar(0) optimizeOutputs !: number;
 
-  readonly refreshInterval: number = 500;
-  private intervalRefresh: NodeJS.Timeout;
+  readonly refreshInterval = 500;
+	private intervalRefresh : NodeJS.Timeout;
   private refreshTimestamp: Date;
   private oldTxFilter: string;
   private lastPending: number;
@@ -208,7 +210,9 @@ class AccountView extends DestructableView{
       logDebugMsg("refreshWallet", this.currentScanBlock);      
 
       this.walletAmount = wallet.amount;
-      this.unlockedWalletAmount = wallet.unlockedAmount(this.currentScanBlock);
+      this.unlockedWalletAmount = wallet.availableAmount(this.currentScanBlock);
+      this.depositedWalletAmount = wallet.lockedDeposits(this.currentScanBlock);
+      this.withdrawableWalletAmount = wallet.unlockedDeposits(this.currentScanBlock);
       this.lastPending = this.walletAmount - this.unlockedWalletAmount;
 
       if ((this.refreshTimestamp < wallet.modifiedTimestamp()) || forceRedraw || filterChanged) {
@@ -234,6 +238,22 @@ class AccountView extends DestructableView{
       this.refreshTimestamp = new Date();
     }
 	}
+
+  download = () => {
+    // credit: https://www.bitdegree.org/learn/javascript-download
+    let text = JSON.stringify(this.transactions);
+    let filename = 'cats.json';
+    let element = document.createElement('a');
+    element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+    document.body.removeChild(element);     
+  }  
+
 }
 
 if (wallet !== null && blockchainExplorer !== null)

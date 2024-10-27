@@ -9,6 +9,8 @@
       "account": "계정",
       "send": "보내기",
       "receive": "받기",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "내보내기",
       "donate": "기부",
       "settings": "설정",
@@ -110,7 +112,9 @@
         "title": "잔액",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "해제완료"
+        "unlocked": "해제완료",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "트랜젝션 기록",
@@ -127,10 +131,8 @@
         "feesOnTx": "트랜젝션 비용",
         "blockHeight": "블록넘버",
         "paymentId": "페이먼트 ID",
-        "unlockStatus": "현황",
-        "unlockConfirm": "확인",
         "txPrivKey": "트랜젝션 비공개 키",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -379,6 +381,35 @@
         "content": "Bring closer to the other device"
       }
     },
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height"
+      }
+    },
     "receivePage": {
       "title": "카르보 코인 받기",
       "receiveBlock": {
@@ -442,9 +473,6 @@
         },
         "language": {
           "label": "언어"
-        },
-        "currency": {
-          "label": "국가 통화"
         },
         "readMinerTx": {
           "label": "채굴관련 송금 확인 (오직 단독 채굴에 적용됨)"
@@ -601,8 +629,7 @@
           "label": "비공개 스펜드 키"
         },
         "privateView": {
-          "label": "비공개 뷰 키",
-          "optional": "(옵션)"
+          "label": "비공개 뷰 키"
         },
         "publicKey": {
           "label": "공개 키"

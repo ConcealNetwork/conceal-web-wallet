@@ -24,8 +24,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -83,6 +83,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                         _this._isWorking = false;
                         resolve(raw);
                     }).fail(function (data, textStatus) {
+                        console.log("makeRequest failed", textStatus);
                         _this._isWorking = false;
                         _this.increaseErrors();
                         reject(data);
@@ -206,7 +207,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 return new Promise(function (resolve, reject) {
                     (function (self) {
                         return __awaiter(this, void 0, void 0, function () {
-                            var waitCounter, currWorker, resultData, resultData_1, data_1;
+                            var waitCounter, currWorker, resultData, data_1;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0:
@@ -231,10 +232,11 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                                         _a.trys.push([5, 7, , 8]);
                                         return [4 /*yield*/, currWorker.makeRequest(method, path, body)];
                                     case 6:
-                                        resultData_1 = _a.sent();
+                                        // Fix: Remove 'let' to use outer resultData variable
+                                        resultData = _a.sent();
                                         currWorker = null;
                                         // return the data
-                                        resolve(resultData_1);
+                                        resolve(resultData);
                                         return [3 /*break*/, 8];
                                     case 7:
                                         data_1 = _a.sent();
@@ -263,7 +265,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 return new Promise(function (resolve, reject) {
                     (function (self) {
                         return __awaiter(this, void 0, void 0, function () {
-                            var waitCounter, currWorker, resultData, resultData_2, data_2;
+                            var waitCounter, currWorker, resultData, data_2;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0:
@@ -288,10 +290,11 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                                         _a.trys.push([5, 7, , 8]);
                                         return [4 /*yield*/, currWorker.makeRpcRequest(method, params)];
                                     case 6:
-                                        resultData_2 = _a.sent();
+                                        // Fix: Remove 'let' to use outer resultData variable
+                                        resultData = _a.sent();
                                         currWorker = null;
                                         // return the data
-                                        resolve(resultData_2);
+                                        resolve(resultData);
                                         return [3 /*break*/, 8];
                                     case 7:
                                         data_2 = _a.sent();
@@ -435,8 +438,8 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 watchdog.start();
                 return watchdog;
             };
+            console.log('BlockchainExplorerRpcDaemon');
             this.nodeWorkers = new NodeWorkersList();
-            this.initialized = false;
         }
         /**
          * Returns an array containing all numbers like [start;end]
@@ -519,9 +522,9 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             }).then(function (response) {
                 if (response.status !== 'OK')
                     throw 'invalid_getrandom_outs_answer';
-                if (response.outs.length > 0) {
-                    logDebugMsg(response.outs);
-                }
+                // if (response.outs.length > 0) {
+                //   logDebugMsg(response.outs);
+                // }
                 return response.outs;
             });
         };

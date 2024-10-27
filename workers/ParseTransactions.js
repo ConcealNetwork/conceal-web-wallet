@@ -33,11 +33,10 @@ define(["require", "exports", "../model/Wallet", "../model/TransactionsExplorer"
                                 }
                                 try {
                                     // parse the raw transaction to include it into the wallet
-                                    var transaction = TransactionsExplorer_1.TransactionsExplorer.parse(rawTransaction, currentWallet);
-                                    if (transaction) {
-                                        currentWallet.addNew(transaction);
-                                        transactions.push(transaction.export());
-                                        logDebugMsg("pushed tx to transactions[]");
+                                    var txData = TransactionsExplorer_1.TransactionsExplorer.parse(rawTransaction, currentWallet);
+                                    if (txData && txData.transaction) {
+                                        currentWallet.addNew(txData.transaction);
+                                        transactions.push(txData.export());
                                     }
                                 }
                                 catch (err) {

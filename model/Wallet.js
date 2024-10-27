@@ -39,8 +39,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -106,6 +106,9 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this._lastHeight = 0;
             _this.transactions = [];
+            _this.withdrawals = [];
+            _this.deposits = [];
+            _this.keyLookupMap = new Map();
             _this.txLookupMap = new Map();
             _this.txsMem = [];
             _this.modified = true;
@@ -119,12 +122,24 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
                 _this.modified = true;
             };
             _this.exportToRaw = function () {
+                var deposits = [];
+                var withdrawals = [];
                 var transactions = [];
-                for (var _i = 0, _a = _this.transactions; _i < _a.length; _i++) {
-                    var transaction = _a[_i];
+                for (var _i = 0, _a = _this.deposits; _i < _a.length; _i++) {
+                    var deposit = _a[_i];
+                    deposits.push(deposit.export());
+                }
+                for (var _b = 0, _c = _this.withdrawals; _b < _c.length; _b++) {
+                    var withdrawal = _c[_b];
+                    withdrawals.push(withdrawal.export());
+                }
+                for (var _d = 0, _e = _this.transactions; _d < _e.length; _d++) {
+                    var transaction = _e[_d];
                     transactions.push(transaction.export());
                 }
                 var data = {
+                    deposits: deposits,
+                    withdrawals: withdrawals,
                     transactions: transactions,
                     txPrivateKeys: _this.txPrivateKeys,
                     lastHeight: _this._lastHeight,
@@ -156,33 +171,89 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
             };
             _this.addNew = function (transaction, replace) {
                 if (replace === void 0) { replace = true; }
-                var exist = _this.findWithTxPubKey(transaction.txPubKey);
-                if (!exist || replace) {
-                    if (!exist) {
-                        _this.txLookupMap.set(transaction.txPubKey, transaction);
-                        _this.transactions.push(transaction);
-                    }
-                    else {
-                        for (var tr = 0; tr < _this.transactions.length; ++tr) {
-                            if (_this.transactions[tr].txPubKey === transaction.txPubKey) {
-                                _this.txLookupMap.set(transaction.txPubKey, transaction);
-                                _this.transactions[tr] = transaction;
+                if (transaction) {
+                    var exist = _this.findWithTxPubKey(transaction.txPubKey);
+                    if (!exist || replace) {
+                        if (!exist) {
+                            _this.keyLookupMap.set(transaction.txPubKey, transaction);
+                            _this.txLookupMap.set(transaction.hash, transaction);
+                            _this.transactions.push(transaction);
+                        }
+                        else {
+                            for (var tr = 0; tr < _this.transactions.length; ++tr) {
+                                if (_this.transactions[tr].txPubKey === transaction.txPubKey) {
+                                    _this.keyLookupMap.set(transaction.txPubKey, transaction);
+                                    _this.txLookupMap.set(transaction.hash, transaction);
+                                    _this.transactions[tr] = transaction;
+                                }
                             }
                         }
+                        // remove from unconfirmed
+                        var existMem = _this.findMemWithTxPubKey(transaction.txPubKey);
+                        if (existMem) {
+                            var trIndex = _this.txsMem.indexOf(existMem);
+                            if (trIndex != -1) {
+                                _this.txsMem.splice(trIndex, 1);
+                            }
+                        }
+                        // finalize the add tx function
+                        _this.recalculateKeyImages();
+                        _this.signalChanged();
+                        _this.notify();
                     }
-                    // remove from unconfirmed
-                    var existMem = _this.findMemWithTxPubKey(transaction.txPubKey);
-                    if (existMem) {
-                        var trIndex = _this.txsMem.indexOf(existMem);
-                        if (trIndex != -1) {
-                            _this.txsMem.splice(trIndex, 1);
+                }
+            };
+            _this.addDeposits = function (deposits) {
+                for (var i = 0; i < deposits.length; ++i) {
+                    _this.addDeposit(deposits[i]);
+                }
+            };
+            _this.addDeposit = function (deposit) {
+                var foundMatch = false;
+                for (var i = 0; i < _this.deposits.length; ++i) {
+                    if (_this.deposits[i].amount == deposit.amount) {
+                        if (_this.deposits[i].outputIndex == deposit.outputIndex) {
+                            _this.deposits[i] = deposit;
+                            foundMatch = true;
+                            break;
                         }
                     }
-                    // finalize the add tx function
-                    _this.recalculateKeyImages();
-                    _this.signalChanged();
-                    _this.notify();
                 }
+                if (!foundMatch) {
+                    _this.deposits.push(deposit);
+                }
+                _this.signalChanged();
+                _this.notify();
+            };
+            _this.addWithdrawals = function (withdrawals) {
+                for (var i = 0; i < withdrawals.length; ++i) {
+                    _this.addWithdrawal(withdrawals[i]);
+                }
+            };
+            _this.addWithdrawal = function (withdrawal) {
+                var foundMatch = false;
+                for (var i = 0; i < _this.deposits.length; ++i) {
+                    if (_this.deposits[i].amount == withdrawal.amount) {
+                        if (_this.deposits[i].outputIndex == withdrawal.outputIndex) {
+                            _this.deposits[i].spentTx = withdrawal.txHash;
+                            break;
+                        }
+                    }
+                }
+                for (var i = 0; i < _this.withdrawals.length; ++i) {
+                    if (_this.withdrawals[i].amount == withdrawal.amount) {
+                        if (_this.withdrawals[i].outputIndex == withdrawal.outputIndex) {
+                            _this.withdrawals[i] = withdrawal;
+                            foundMatch = true;
+                            break;
+                        }
+                    }
+                }
+                if (!foundMatch) {
+                    _this.withdrawals.push(withdrawal);
+                }
+                _this.signalChanged();
+                _this.notify();
             };
             _this.addNewMemTx = function (transaction, replace) {
                 if (replace === void 0) { replace = true; }
@@ -209,7 +280,16 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
                 _this.txsMem = [];
             };
             _this.findWithTxPubKey = function (pubKey) {
-                var transaction = _this.txLookupMap.get(pubKey);
+                var transaction = _this.keyLookupMap.get(pubKey);
+                if (transaction !== undefined) {
+                    return transaction;
+                }
+                else {
+                    return null;
+                }
+            };
+            _this.findWithTxHash = function (hash) {
+                var transaction = _this.txLookupMap.get(hash);
                 if (transaction !== undefined) {
                     return transaction;
                 }
@@ -264,7 +344,21 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
                 });
                 return news;
             };
-            _this.unlockedAmount = function (currentBlockHeight) {
+            _this.getDepositsCopy = function () {
+                var news = _this.deposits.slice();
+                news.sort(function (a, b) {
+                    return a.timestamp - b.timestamp;
+                });
+                return news;
+            };
+            _this.getWithdrawalsCopy = function () {
+                var news = _this.withdrawals.slice();
+                news.sort(function (a, b) {
+                    return a.timestamp - b.timestamp;
+                });
+                return news;
+            };
+            _this.availableAmount = function (currentBlockHeight) {
                 if (currentBlockHeight === void 0) { currentBlockHeight = -1; }
                 var amount = 0;
                 for (var _i = 0, _a = _this.transactions; _i < _a.length; _i++) {
@@ -273,28 +367,62 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
                         continue;
                     if (transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1) {
                         for (var _b = 0, _c = transaction.outs; _b < _c.length; _b++) {
-                            var out = _c[_b];
-                            amount += out.amount;
+                            var nout = _c[_b];
+                            if (nout.type !== "03") {
+                                amount += nout.amount;
+                            }
                         }
                     }
                     for (var _d = 0, _e = transaction.ins; _d < _e.length; _d++) {
                         var nin = _e[_d];
-                        amount -= nin.amount;
+                        if (nin.type !== "03") {
+                            amount -= nin.amount;
+                        }
                     }
                 }
-                // debug log of mem pool
-                logDebugMsg("mempool tx", _this.txsMem);
                 for (var _f = 0, _g = _this.txsMem; _f < _g.length; _f++) {
                     var transaction = _g[_f];
                     if (transaction.isConfirmed(currentBlockHeight) || currentBlockHeight === -1) {
                         for (var _h = 0, _j = transaction.outs; _h < _j.length; _h++) {
                             var nout = _j[_h];
-                            amount += nout.amount;
+                            if (nout.type !== "03") {
+                                amount += nout.amount;
+                            }
                         }
                     }
                     for (var _k = 0, _l = transaction.ins; _k < _l.length; _k++) {
                         var nin = _l[_k];
-                        amount -= nin.amount;
+                        if (nin.type !== "03") {
+                            amount -= nin.amount;
+                        }
+                    }
+                }
+                return amount;
+            };
+            _this.lockedDeposits = function (currHeight) {
+                var amount = 0;
+                for (var _i = 0, _a = _this.deposits; _i < _a.length; _i++) {
+                    var deposit = _a[_i];
+                    //if (!deposit.tx?.isFullyChecked()) {
+                    //  continue;
+                    //}
+                    if ((deposit.blockHeight + deposit.term) > currHeight) {
+                        amount += deposit.amount;
+                    }
+                }
+                return amount;
+            };
+            _this.unlockedDeposits = function (currHeight) {
+                var amount = 0;
+                for (var _i = 0, _a = _this.deposits; _i < _a.length; _i++) {
+                    var deposit = _a[_i];
+                    //if (!deposit.tx?.isFullyChecked()) {
+                    //	continue;
+                    //}
+                    if (deposit.blockHeight + (deposit.term) <= currHeight) {
+                        if (!deposit.spentTx) {
+                            amount += deposit.amount;
+                        }
                     }
                 }
                 return amount;
@@ -439,7 +567,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
                                     for (i = 0; i < unusedOuts.length; i++) {
                                         totalAmountWithoutFee = totalAmountWithoutFee.add(unusedOuts[i].amount);
                                     }
-                                    if (!(totalAmountWithoutFee < this.unlockedAmount(blockchainHeight))) return [3 /*break*/, 6];
+                                    if (!(totalAmountWithoutFee < this.availableAmount(blockchainHeight))) return [3 /*break*/, 6];
                                     totalAmount = totalAmountWithoutFee.subtract(neededFee);
                                     if (!(totalAmount > 0)) return [3 /*break*/, 5];
                                     dsts.push({
@@ -489,8 +617,11 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
             };
             _this.clearTransactions = function () {
                 _this.txsMem = [];
+                _this.deposits = [];
+                _this.withdrawals = [];
                 _this.transactions = [];
                 _this.txLookupMap.clear();
+                _this.keyLookupMap.clear();
                 _this.recalculateKeyImages;
                 _this.notify();
             };
@@ -504,12 +635,32 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
         Wallet.loadFromRaw = function (raw) {
             var wallet = new Wallet();
             wallet.transactions = [];
+            wallet.withdrawals = [];
+            wallet.deposits = [];
+            wallet.keyLookupMap.clear();
             wallet.txLookupMap.clear();
-            for (var _i = 0, _a = raw.transactions; _i < _a.length; _i++) {
-                var rawTransac = _a[_i];
-                var transaction = Transaction_1.Transaction.fromRaw(rawTransac);
-                wallet.transactions.push(transaction);
-                wallet.txLookupMap.set(transaction.txPubKey, transaction);
+            if (raw.deposits) {
+                for (var _i = 0, _a = raw.deposits; _i < _a.length; _i++) {
+                    var rawDeposit = _a[_i];
+                    var deposit = Transaction_1.Deposit.fromRaw(rawDeposit);
+                    wallet.deposits.push(deposit);
+                }
+            }
+            if (raw.withdrawals) {
+                for (var _b = 0, _c = raw.withdrawals; _b < _c.length; _b++) {
+                    var rawWithdrawal = _c[_b];
+                    var withdrawal = Transaction_1.Withdrawal.fromRaw(rawWithdrawal);
+                    wallet.withdrawals.push(withdrawal);
+                }
+            }
+            if (raw.transactions) {
+                for (var _d = 0, _e = raw.transactions; _d < _e.length; _d++) {
+                    var rawTransac = _e[_d];
+                    var transaction = Transaction_1.Transaction.fromRaw(rawTransac);
+                    wallet.transactions.push(transaction);
+                    wallet.txLookupMap.set(transaction.hash, transaction);
+                    wallet.keyLookupMap.set(transaction.txPubKey, transaction);
+                }
             }
             wallet._lastHeight = raw.lastHeight;
             if (typeof raw.encryptedKeys === 'string' && raw.encryptedKeys !== '') {
@@ -597,7 +748,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
         };
         Object.defineProperty(Wallet.prototype, "amount", {
             get: function () {
-                return this.unlockedAmount(-1);
+                return this.availableAmount(-1);
             },
             enumerable: false,
             configurable: true

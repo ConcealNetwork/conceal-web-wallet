@@ -69,6 +69,7 @@ class NodeWorker {
         this._isWorking = false;        
         resolve(raw);
       }).fail((data: any, textStatus: string) => {
+        console.log("makeRequest failed", textStatus);
         this._isWorking = false;        
         this.increaseErrors();
         reject(data);
@@ -186,7 +187,8 @@ class NodeWorkersList {
       
           while (currWorker) {
             try {
-              let resultData = await currWorker.makeRequest(method, path, body);
+              // Fix: Remove 'let' to use outer resultData variable
+              resultData = await currWorker.makeRequest(method, path, body);
               currWorker = null;
               // return the data
               resolve(resultData);
@@ -224,7 +226,8 @@ class NodeWorkersList {
       
           while (currWorker) {
             try {
-              let resultData = await currWorker.makeRpcRequest(method, params);
+              // Fix: Remove 'let' to use outer resultData variable
+              resultData = await currWorker.makeRpcRequest(method, params);
               currWorker = null;
               // return the data
               resolve(resultData);
@@ -303,8 +306,8 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
 
 
   constructor() {
+    console.log('BlockchainExplorerRpcDaemon');
     this.nodeWorkers = new NodeWorkersList();
-    this.initialized = false;
   }
 
   getInfo = (): Promise<DaemonResponseGetInfo> => {
@@ -355,7 +358,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
             array[randomIndex], array[currentIndex]];
         }
       }    
-  
+      
       if (customNodeUrl) {
         this.nodeWorkers.start([customNodeUrl]);
       } else {
@@ -366,7 +369,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
       console.log("resetNodes failed", err);
     });
   }
-
+  
   isInitialized = (): boolean => {
     return this.initialized;
   }
@@ -516,9 +519,9 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
       outs: { global_index: number, public_key: string }[]
     }) => {
       if (response.status !== 'OK') throw 'invalid_getrandom_outs_answer';
-      if (response.outs.length > 0) {
-        logDebugMsg(response.outs);
-      }
+      // if (response.outs.length > 0) {
+      //   logDebugMsg(response.outs);
+      // }
 
       return response.outs;
     });
@@ -582,3 +585,4 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     });
   }
 }
+

@@ -10,6 +10,7 @@
       "send": "Send",
       "receive": "Receive",
       "message": "Messages",
+      "deposit": "Deposits",
       "export": "Export",
       "donate": "Donate",
       "settings": "Settings",
@@ -111,7 +112,9 @@
         "title": "Your balance",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Unlocked"
+        "unlocked": "Unlocked",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Transaction history",
@@ -249,7 +252,7 @@
         },
         "message": {
           "label": "Message (optional)",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is too long. Max length is 260 characters"
         },
         "mixin": {
           "label": "Privacy Level",
@@ -327,7 +330,7 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is too long. Max length is 260 characters"
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -376,6 +379,35 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },    
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {

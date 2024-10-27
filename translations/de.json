@@ -9,6 +9,8 @@
       "account": "Account",
       "send": "Senden",
       "receive": "Empfangen",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Export",
       "donate": "Spenden",
       "settings": "Einstellungen",
@@ -110,7 +112,9 @@
         "title": "Dein Guthaben",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Entsperrt"
+        "unlocked": "Entsperrt",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Transaktionshistorie",
@@ -216,6 +220,7 @@
       "title": "Netzwerkstatus",
       "subtitle": "Einblick ins Marsir Netzwerk",
       "statsBlock": {
+        "connectNode": "Verbunden",
         "hashrate": "Netzwerk Hashrate",
         "height": "Blockchainhöhe",
         "difficulty": "Netzwerkschwierigkeit",
@@ -374,6 +379,35 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+        
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -595,8 +629,7 @@
           "label": "Privater Spend Key"
         },
         "privateView": {
-          "label": "Privater View Key",
-          "optional": "(optional)"
+          "label": "Privater View Key"
         },
         "publicKey": {
           "label": "Öffentlicher Schlüssel"

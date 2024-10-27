@@ -91,7 +91,7 @@ class ImportView extends DestructableView{
     blockchainExplorer.initialize().then(success => {
       blockchainExplorer.getHeight().then(function(currentHeight){
         $("#appLoader").removeClass("appLoaderVisible");
-
+        
         setTimeout(function(){
           let newWallet = WalletRepository.decodeWithPassword(self.rawFile,self.password);
           if(newWallet !== null) {
@@ -107,13 +107,13 @@ class ImportView extends DestructableView{
             });
           }
         },1);
-      }).catch(err => {
+     }).catch(err => {
         console.log(err);
       });
     }).catch(err => {
       console.log(err);
-    });
-	}
+    });  
+  }
 
 	@VueWatched()
 	passwordWatch(){

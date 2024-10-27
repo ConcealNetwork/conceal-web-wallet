@@ -61,9 +61,8 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                                 }
                             }
                             var phrase = Mnemonic_1.Mnemonic.mn_encode(newWallet.keys.priv.spend, langToExport);
-                            if (phrase !== null) {
+                            if (phrase !== null)
                                 self.mnemonicPhrase = phrase;
-                            }
                         });
                         setTimeout(function () {
                             self.step = 1;

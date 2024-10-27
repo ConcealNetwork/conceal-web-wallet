@@ -28,7 +28,9 @@ html {
 	min-height: 100%;
 	overflow-x: hidden
 }
-
+html {
+	overscroll-behavior: none;
+}
 div,
 p,
 input,
@@ -70,6 +72,7 @@ body {
 	background-image: url(../img/landing/bg-dark.webp);
 	background-position: center center;
 	background-size: cover;
+	overscroll-behavior-y: contain;
 }
 
 body.menuHidden {
@@ -1219,6 +1222,12 @@ body {
 	font-size: 1.71428571rem;
 }
 
+.button-container {
+	display: flex;
+	justify-content: flex-end;
+	padding-right: 1em;
+	margin-bottom: 1em;
+  }
 
 /*==================FORMS===================*/
 .field {
@@ -1547,10 +1556,15 @@ body {
 	transition: width 1s ease-in-out;
 }
 
+.barLabel {
+    line-height: 1.4em;
+  }
+
 .detInfo {
   font-size: 0.8em;
   text-align: center;
   color: #ccc;
+  margin-top: 3.4em;
 }
 
 .txLoadMore {
@@ -1591,6 +1605,11 @@ body {
   line-height: 1.4;
   margin-bottom: -10px !important;
 }
+
+.header-filer:not(:focus) {
+	font-style:italic;
+	}
+
 .nodeRequestsHeader,
 .nodeErrorsHeader,
 .nodeRequestsData,
@@ -1665,6 +1684,11 @@ body {
     padding-right: 2em;
     margin-bottom: 1em !important;
   }
+
+  .barLabel {
+    line-height: 1.2em;
+  }
+
 }
 
 /* Style the tab */
@@ -1727,6 +1751,57 @@ body {
 
 .tablinks span {
   padding-left: 0.3em;
+}
+
+#accountDeposits {
+  padding-left: 32px; 
+  max-width: 1200px;
+}
+
+#depositHistoryTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#accountDeposits {
+  font-size: 18px;  
+  overflow-x: auto;
+}
+
+#accountDeposits .depositsListHeader {
+  color: orange;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 1px solid orange;
+}
+
+#accountDeposits .lockTimestamp,
+#accountDeposits .lockHeight,
+#accountDeposits .unlockTimestamp,
+#accountDeposits .unlockHeight,
+#accountDeposits .depositAmount {
+  width: 20%;
+  text-align: center;
+  padding: 5px;
+}
+
+#accountDeposits .tx_deposit_unlocked {
+  color: green;
+  font-size: 22px;  
+}
+
+#accountDeposits .tx_deposit_spent {
+  color: orange;
+  font-size: 22px;  
+}
+
+#accountDeposits .tx_deposit_locked {
+  color: red;
+  font-size: 22px;  
+}
+
+.depositTxDetails {
+  padding-left: 15px;
 }
 
 .loaderWrapper {

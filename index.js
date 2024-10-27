@@ -55,11 +55,14 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
     var browserUserLang = '' + (navigator.language || navigator.userLanguage);
     browserUserLang = browserUserLang.toLowerCase().split('-')[0];
     Storage_1.Storage.getItem('user-lang', browserUserLang).then(function (userLang) {
-        Translations_1.Translations.loadLangTranslation(userLang).catch(function (err) {
-            Translations_1.Translations.loadLangTranslation('en').catch(function (err) {
+        if (userLang) {
+            Translations_1.Translations.loadLangTranslation(userLang).catch(function (err) {
+                console.error("Failed to load '".concat(userLang, "' language"), err);
+                return Translations_1.Translations.loadLangTranslation('en');
+            }).catch(function (err) {
                 console.error("Failed to load 'en' language", err);
             });
-        });
+        }
     });
     //========================================================
     //====================Generic design======================
@@ -117,7 +120,6 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
     var touchstartY = 0;
     var touchendX = 0;
     var touchendY = 0;
-    var limit = Math.tan(45 * 1.5 / 180 * Math.PI);
     var gestureZone = $('body')[0];
     gestureZone.addEventListener('touchstart', function (event) {
         touchstartX = event.changedTouches[0].screenX;
@@ -128,6 +130,7 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
         touchendY = event.changedTouches[0].screenY;
         handleGesture(event);
     }, false);
+    var limit = 0.8; // Add this constant before handleGesture function
     function handleGesture(e) {
         var x = touchendX - touchstartX;
         var y = touchendY - touchstartY;
@@ -159,6 +162,31 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
             //tap
         }
     }
+    //Collapse the menu after clicking on a menu item
+    function navigateToPage(page) {
+        window.location.hash = "!".concat(page);
+    }
+    function isMobileDevice() {
+        return window.innerWidth <= 600; // Adjust this breakpoint as needed
+    }
+    // Select all menu items
+    var menuItems = document.querySelectorAll('#menu a[href^="#!"]');
+    menuItems.forEach(function (item) {
+        item.addEventListener('click', function (event) {
+            // Prevent the default action
+            event.preventDefault();
+            var target = event.currentTarget.getAttribute('href');
+            if (target) {
+                // Remove the "#!" from the beginning of the href
+                var page = target.substring(2);
+                navigateToPage(page);
+                // Toggle the menu off only on mobile devices
+                if (isMobileDevice() && !menuView.isMenuHidden) {
+                    menuView.toggle();
+                }
+            }
+        });
+    });
     var CopyrightView = /** @class */ (function (_super) {
         __extends(CopyrightView, _super);
         function CopyrightView(containerName, vueData) {

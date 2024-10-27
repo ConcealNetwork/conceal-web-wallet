@@ -84,7 +84,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                         TransactionsExplorer_1.TransactionsExplorer.createTx([{ address: destinationAddress, amount: amountToSend }], '', wallet, blockchainHeight, function (amounts, numberOuts) {
                             return blockchainExplorer.getRandomOuts(amounts, numberOuts);
                         }, function (amount, feesAmount) {
-                            if (amount + feesAmount > wallet.unlockedAmount(blockchainHeight)) {
+                            if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
                                 swal({
                                     type: 'error',
                                     title: i18n.t('sendPage.notEnoughMoneyModal.title'),

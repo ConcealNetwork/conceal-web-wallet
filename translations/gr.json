@@ -9,6 +9,8 @@
       "account": "Λογαριασμός",
       "send": "Αποστολή",
       "receive": "Λήψη",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Εξαγωγή",
       "donate": "Δωρεά",
       "settings": "Ρυθμίσεις",
@@ -110,7 +112,9 @@
         "title": "Το υπόλοιπό σας",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Ξεκλείδωτο"
+        "unlocked": "Ξεκλείδωτο",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Ιστορικό συναλλαγών",
@@ -191,9 +195,9 @@
         "title": "Webwallet",
         "content": "Αυτό το πορτοφόλι ιστού αναπτύχθηκε από τον Gnock στον ελεύθερό του χρόνο.<br/> Εαν θέλετε να βοηθήσετε στην ανάπτυξη, να συνεισφέρετε στα έξοδα των διακομιστών και σας αρέσει αυτή η εφαρμογή, παρακαλώ σκεφτείτε να κάνετε μια δωρεά: <br/><br/>"
       },
-      "ConcealFundBlock": {
-        "title": "Conceal Dev fund",
-        "content": "Για να βοηθήσετε το Conceal, μπορείτε να κάνετε δωρεά στις παρακάτω διευθύνσεις"
+      "devFundBlock": {
+        "title": "Conceal",
+        "content": "To"
       }
     },
     "supportPage": {
@@ -216,6 +220,7 @@
       "title": "Στατιστικά Δικτύου΄",
       "subtitle": "Επισκόπηση τπυ δικτύου Conceal",
       "statsBlock": {
+        "connectNode": "Connected",
         "hashrate": "Network hashrate",
         "height": "Blockchain height",
         "difficulty": "Network difficulty",
@@ -374,6 +379,35 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },
+    "depositsPage": {
+      "title": "Deposits",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "createBlock": {
+
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height"
       }
     },
     "receivePage": {
@@ -595,8 +629,7 @@
           "label": "Ιδιωτικό κλειδί πληρωμής"
         },
         "privateView": {
-          "label": "Ιδιωτικό κλειδί προβολής",
-          "optional": "(προαιρετικό)"
+          "label": "Ιδιωτικό κλειδί προβολής"
         },
         "publicKey": {
           "label": "Δημόσιο Κλειδί"

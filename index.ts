@@ -43,11 +43,14 @@ let browserUserLang = ''+(navigator.language || (<any>navigator).userLanguage);
 browserUserLang = browserUserLang.toLowerCase().split('-')[0];
 
 Storage.getItem('user-lang', browserUserLang).then(function(userLang : string) {
-	Translations.loadLangTranslation(userLang).catch(err => {
-		Translations.loadLangTranslation('en').catch(err => {
-      console.error("Failed to load 'en' language", err);
-    });
-	});
+	if (userLang) {
+		Translations.loadLangTranslation(userLang).catch(err => {
+			console.error(`Failed to load '${userLang}' language`, err);
+			return Translations.loadLangTranslation('en');
+		}).catch(err => {
+			console.error("Failed to load 'en' language", err);
+		});
+	}
 });
 
 
@@ -110,7 +113,6 @@ let touchstartY = 0;
 let touchendX = 0;
 let touchendY = 0;
 
-const limit = Math.tan(45 * 1.5 / 180 * Math.PI);
 const gestureZone : HTMLElement= $('body')[0];
 
 gestureZone.addEventListener('touchstart', function(event : TouchEvent) {
@@ -123,6 +125,8 @@ gestureZone.addEventListener('touchend', function(event : TouchEvent) {
 	touchendY = event.changedTouches[0].screenY;
 	handleGesture(event);
 }, false);
+
+const limit = 0.8; // Add this constant before handleGesture function
 
 function handleGesture(e : Event) {
 	let x = touchendX - touchstartX;
@@ -152,6 +156,37 @@ function handleGesture(e : Event) {
 		//tap
 	}
 }
+//Collapse the menu after clicking on a menu item
+function navigateToPage(page: string) {
+	window.location.hash = `!${page}`;
+  }
+
+function isMobileDevice() {
+	return window.innerWidth <= 600; // Adjust this breakpoint as needed
+  }
+  
+  // Select all menu items
+  const menuItems = document.querySelectorAll('#menu a[href^="#!"]');
+  
+  menuItems.forEach(item => {
+	item.addEventListener('click', (event) => {
+	  // Prevent the default action
+	  event.preventDefault();
+  
+	  const target = (event.currentTarget as HTMLAnchorElement).getAttribute('href');
+  
+	  if (target) {
+		// Remove the "#!" from the beginning of the href
+		const page = target.substring(2);
+		navigateToPage(page);
+  
+		// Toggle the menu off only on mobile devices
+		if (isMobileDevice() && !menuView.isMenuHidden) {
+		  menuView.toggle();
+		}
+	  }
+	});
+  });
 
 
 

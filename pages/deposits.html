@@ -1,0 +1,81 @@
+<div id="app" class="body-root messageTab" v-cloak="">
+
+  <div id="appContent">
+
+    <div class="body-header">
+      <div class="header-title">
+        <i class="fa fa-bank" aria-hidden="true"></i> {{ $t("depositsPage.title") }}
+      </div>
+    </div>
+
+    <div class="body-content">
+
+      <div class="panel inline" v-if="isWalletSyncing" >
+        <div class="syncProgressContainer">
+          <label class="syncProgressLabel">{{ $t("depositsPage.syncing.label") }}</label>
+        </div>
+      </div>
+
+      <div class="messages">        
+
+        <!-- deposits history -->
+        <div id="depositHistory" class="panel nopadding tabcontent">
+          <div class="body" >
+            <div class="header-wrapper">
+              <div class="header-title">{{ $t("depositsPage.depositsBlock.title") }}</div>
+            </div>
+            <div class="content" >
+              <div class="deposits" id="accountDeposits">              
+                <table v-if="deposits.length > 0" id="depositHistoryTable">
+                  <tr>
+                    <th class="depositsListHeader"></th>
+                    <th class="depositsListHeader"></th>
+                    <th class="depositsListHeader">Deposit date</th>
+                    <th class="depositsListHeader">Deposit block</th>
+                    <th class="depositsListHeader">Unlock date</th>
+                    <th class="depositsListHeader">Unlock block</th>
+                    <th class="depositsListHeader">Amount</th>
+                  </tr>
+                  <template v-for="deposit of deposits">
+                    <tr class="deposit" :class="(deposit.blockHeight === 0 ? 'pending' : '')">
+                      <td class="direction" >
+                        <i v-if="(deposit.blockHeight + deposit.term) > blockchainHeight" class="fa fa-lock tx_deposit_locked" aria-hidden="true"></i>
+                        <i v-else-if="((deposit.blockHeight + deposit.term) <= blockchainHeight) && (deposit.spentTx)" class="fa fa fa-money tx_deposit_spent" aria-hidden="true"></i>                        
+                        <i v-else="" class="fa fa-unlock tx_deposit_unlocked" aria-hidden="true"></i>
+                      </td>
+                      <td class="moreInfo depositTxDetails">
+                        <i class="fa fa-search" aria-hidden="true" @click="moreInfoOnDeposit(deposit)"></i>
+                      </td>
+                      <td class="lockTimestamp" v-if="deposit.blockHeight > 0">{{$d(new Date(deposit.timestamp * 1000), 'short')}}</td>
+                      <td class="lockTimestamp" v-else="">...</td>
+                      <td class="lockHeight">{{deposit.blockHeight}}</td>
+                      <td class="unlockTimestamp">{{$d(new Date((deposit.timestamp + (deposit.term * 120)) * 1000), 'short')}}</td>
+                      <td class="unlockHeight">{{deposit.blockHeight + deposit.term}}</td>
+                      <td class="depositAmount">{{deposit.amount / currencyDivider}}</td>
+                    </tr>
+                  </template>
+                </table>
+              </div>
+            </div>  
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openMessagesTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+</script>

@@ -39,7 +39,6 @@ define(["require", "exports", "../model/TransactionsExplorer", "../model/Wallet"
                                 // parse the transaction to see if we need to include it in the wallet
                                 if (TransactionsExplorer_1.TransactionsExplorer.ownsTx(rawTransaction, currentWallet)) {
                                     transactions.push(rawTransaction);
-                                    logDebugMsg("pushed tx to transactions[]");
                                 }
                             }
                             catch (err) {

@@ -150,7 +150,9 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                 if ((((_this.refreshTimestamp < wallet.modifiedTimestamp()) || (_this.lastPending > 0)) && (timeDiff > _this.refreshInterval)) || forceRedraw || filterChanged) {
                     logDebugMsg("refreshWallet", _this.currentScanBlock);
                     _this.walletAmount = wallet.amount;
-                    _this.unlockedWalletAmount = wallet.unlockedAmount(_this.currentScanBlock);
+                    _this.unlockedWalletAmount = wallet.availableAmount(_this.currentScanBlock);
+                    _this.depositedWalletAmount = wallet.lockedDeposits(_this.currentScanBlock);
+                    _this.withdrawableWalletAmount = wallet.unlockedDeposits(_this.currentScanBlock);
                     _this.lastPending = _this.walletAmount - _this.unlockedWalletAmount;
                     if ((_this.refreshTimestamp < wallet.modifiedTimestamp()) || forceRedraw || filterChanged) {
                         var allTransactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
@@ -170,6 +172,18 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                     // set new refresh timestamp to
                     _this.refreshTimestamp = new Date();
                 }
+            };
+            _this.download = function () {
+                // credit: https://www.bitdegree.org/learn/javascript-download
+                var text = JSON.stringify(_this.transactions);
+                var filename = 'cats.json';
+                var element = document.createElement('a');
+                element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text));
+                element.setAttribute('download', filename);
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
             };
             _this.refreshTimestamp = new Date(0);
             _this.ticker = config.coinSymbol;
@@ -207,6 +221,12 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         __decorate([
             (0, VueAnnotate_1.VueVar)(0)
         ], AccountView.prototype, "unlockedWalletAmount", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(0)
+        ], AccountView.prototype, "depositedWalletAmount", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(0)
+        ], AccountView.prototype, "withdrawableWalletAmount", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(0)
         ], AccountView.prototype, "allTransactionsCount", void 0);
