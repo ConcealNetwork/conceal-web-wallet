@@ -112,7 +112,6 @@ class ImportView extends DestructableView {
 
           newWallet.lastHeight = height;
           newWallet.creationHeight = newWallet.lastHeight;
-
           AppState.openWallet(newWallet, self.password);
           window.location.href = '#account';
         } else {
@@ -123,12 +122,12 @@ class ImportView extends DestructableView {
             confirmButtonText: i18n.t('global.invalidMnemonicModal.confirmText'),
           });
         }
-     }).catch(err => {
+      }).catch(err => {
         console.log(err);
       });
     }).catch(err => {
       console.log(err);
-    });  
+    });
 	}
 
 	@VueWatched()

@@ -103,6 +103,8 @@ $(window).click(function() {
 });
 
 //mobile swipe
+let pageWidth = window.innerWidth || document.body.clientWidth;
+let treshold = Math.max(1,Math.floor(0.2 * (pageWidth)));
 let touchstartX = 0;
 let touchstartY = 0;
 let touchendX = 0;
@@ -121,29 +123,33 @@ gestureZone.addEventListener('touchend', function(event : TouchEvent) {
 	handleGesture(event);
 }, false);
 
-const ANGLE_LIMIT = Math.tan(22 * Math.PI / 180);
-let pageWidth = window.innerWidth || document.body.clientWidth;
-let distanceThreshold = Math.max(50, Math.floor(0.25 * pageWidth + 15));
-
-function handleGesture(e: Event) {
-  let x = touchendX - touchstartX;
-  let y = touchendY - touchstartY;
-  let distance = Math.sqrt(x*x + y*y);
-  
-  if (distance > distanceThreshold && Math.abs(y) / Math.abs(x) < ANGLE_LIMIT) {
-    // This is a valid horizontal swipe
-    if (x < 0) {
-      // Left swipe
-      if (!menuView.isMenuHidden) menuView.toggle();
-    } else {
-      // Right swipe
-      if (menuView.isMenuHidden) menuView.toggle();
-    }
-  } else if (distance <= distanceThreshold) {
-    // This is a tap
-    if (!menuView.isMenuHidden) menuView.toggle();
-  }
-  // Ignore other gestures
+function handleGesture(e : Event) {
+	let x = touchendX - touchstartX;
+	let y = touchendY - touchstartY;
+	let xy = Math.abs(x / y);
+	let yx = Math.abs(y / x);
+	if (Math.abs(x) > treshold) {   // || Math.abs(y) > treshold      ----- >   do we care about y other than a big diagonal swipe already taken into account by xy and yx ?
+		if (yx <= limit) {
+			if (x < 0) {
+				//left
+				if(!menuView.isMenuHidden)
+					menuView.toggle();
+			} else {
+				//right
+				if(menuView.isMenuHidden)
+					menuView.toggle();
+			}
+		}
+		if (xy <= limit) {
+			if (y < 0) {
+				//top
+			} else {
+				//bottom
+			}
+		}
+	} else {
+		//tap
+	}
 }
 //Collapse the menu after clicking on a menu item
 function navigateToPage(page: string) {

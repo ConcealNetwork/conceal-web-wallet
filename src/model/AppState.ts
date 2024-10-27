@@ -100,7 +100,29 @@ export class AppState {
 
 	static askUserOpenWallet(redirectToHome: boolean = true) {
 		let self = this;
+
 		return new Promise<void>(function (resolve, reject) {
+        swal({
+          title: i18n.t('global.openWalletModal.title'),
+          input: 'password',
+          showCancelButton: true,
+          confirmButtonText: i18n.t('global.openWalletModal.confirmText'),
+          cancelButtonText: i18n.t('global.openWalletModal.cancelText'),
+      }).then((result: any) => {
+        $("#appLoader").addClass("appLoaderVisible");
+
+        BlockchainExplorerProvider.getInstance().initialize().then(success => {
+          $("#appLoader").removeClass("appLoaderVisible");
+          
+          setTimeout(function () { //for async
+            if (result.value) {
+              swal({
+                type: 'info',
+                title: i18n.t('global.loading'),
+                onOpen: () => {
+                  swal.showLoading();
+                }
+              });
 
 			swal({
 				title: i18n.t('global.openWalletModal.title'),

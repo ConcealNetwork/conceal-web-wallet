@@ -299,7 +299,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
   private lastTimeRetrieveHeight = 0;
   private lastTimeRetrieveInfo = 0;
   private scannedHeight: number = 0;
-  private cacheHeight: number = 0;
+  private cacheHeight: number = 0;  
   private cacheInfo: any = null;
 
 
@@ -368,6 +368,48 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     });
   }
   
+  isInitialized = (): boolean => {
+    return this.initialized;
+  }
+
+  initialize = (): Promise<boolean> => {     
+    const doesMatch = (toCheck: string) => {
+      return (element: string) => {
+          return element.toLowerCase() === toCheck.toLowerCase();
+      }
+    }
+
+    if (this.initialized) {
+      return Promise.resolve(true);
+    } else {
+      if (config.publicNodes) {
+        return $.ajax({
+          method: 'GET',
+          timeout: 10 * 1000,
+          url: config.publicNodes + '/list?hasSSL=true'
+        }).done((result: any) => {
+          if (result.success && (result.list.length > 0)) {
+            for (let i = 0; i < result.list.length; ++i) {
+              let finalUrl = "https://" + result.list[i].url.host + "/";
+  
+              if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
+                config.nodeList.push(finalUrl);
+              }
+            }
+          }
+          
+          this.initialized = true;
+          this.resetNodes();
+          return true;
+        }).fail((data: any, textStatus: string) => {        
+          return false;
+        });
+      } else {
+        return Promise.resolve(true);
+      }  
+    }   
+  }
+
   isInitialized = (): boolean => {
     return this.initialized;
   }

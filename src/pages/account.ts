@@ -26,13 +26,14 @@ import {RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {WalletWatchdog} from "../model/WalletWatchdog";
 import {CnUtils} from "../model/Cn";
 
+
 let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name,'default', false);
 let blockchainExplorer = DependencyInjectorInstance().getInstance(Constants.BLOCKCHAIN_EXPLORER);
 let walletWatchdog : WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name,'default', false);
 
 class AccountView extends DestructableView{
 	@VueVar([]) transactions !: Transaction[];
-  @VueVar('') txFilter !: string;
+  	@VueVar('') txFilter !: string;
 	@VueVar(0) lastBlockLoading !: number;
 	@VueVar(0) processingTxQueue !: number;
 	@VueVar(0) processingQueue !: number;
@@ -50,8 +51,8 @@ class AccountView extends DestructableView{
 	@VueVar(Math.pow(10, config.coinUnitPlaces)) currencyDivider !: number;
 
 	@VueVar(false) isWalletProcessing !: boolean;
-  @VueVar(false) optimizeIsNeeded !: boolean;
-  @VueVar(false) optimizeLoading !: boolean;
+  	@VueVar(false) optimizeIsNeeded !: boolean;
+  	@VueVar(false) optimizeLoading !: boolean;
 	@VueVar(false) isWalletSyncing !: boolean;
 	@VueVar(0) optimizeOutputs !: number;
 
@@ -78,14 +79,14 @@ class AccountView extends DestructableView{
 		this.intervalRefresh = setInterval(() => {
 			this.refresh();
 		}, 1 * 1000);
-
+    
 		this.refresh();
 	}
 
 	destruct = (): Promise<void> => {
-		clearInterval(this.intervalRefresh);
+    clearInterval(this.intervalRefresh);
 		return super.destruct();
-	}
+  }
 
 	refresh = () => {
 		blockchainExplorer.getHeight().then((height : number) => {
@@ -95,8 +96,8 @@ class AccountView extends DestructableView{
       this.refreshWallet();
     });
 	}
-
-  onFilterChanged = () => {
+	
+        onFilterChanged = () => {
     this.refreshWallet();		
   }
 
