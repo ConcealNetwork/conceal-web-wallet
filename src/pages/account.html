@@ -64,11 +64,6 @@
           </div>
         </div>
 				<div class="content" >
-          <div class="button-container">
-            <button type="button" class="btn primary" @click="download()">
-              Download
-            </button>
-          </div>
 					<div class="transactions" id="accountTransactions">
 						<table>
 							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked()">

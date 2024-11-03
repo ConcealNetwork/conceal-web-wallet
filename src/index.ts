@@ -43,11 +43,14 @@ let browserUserLang = ''+(navigator.language || (<any>navigator).userLanguage);
 browserUserLang = browserUserLang.toLowerCase().split('-')[0];
 
 Storage.getItem('user-lang', browserUserLang).then(function(userLang : string) {
-	Translations.loadLangTranslation(userLang).catch(err => {
-		Translations.loadLangTranslation('en').catch(err => {
-      console.error("Failed to load 'en' language", err);
-    });
-	});
+	if (userLang) {
+		Translations.loadLangTranslation(userLang).catch(err => {
+			console.error(`Failed to load '${userLang}' language`, err);
+			return Translations.loadLangTranslation('en');
+		}).catch(err => {
+			console.error("Failed to load 'en' language", err);
+		});
+	}
 });
 
 
@@ -122,6 +125,8 @@ gestureZone.addEventListener('touchend', function(event : TouchEvent) {
 	touchendY = event.changedTouches[0].screenY;
 	handleGesture(event);
 }, false);
+
+const limit = 0.8; // Add this constant before handleGesture function
 
 function handleGesture(e : Event) {
 	let x = touchendX - touchstartX;
