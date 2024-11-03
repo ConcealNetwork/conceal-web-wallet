@@ -167,8 +167,8 @@ define(["require", "exports"], function (require, exports) {
                 encoded += '?encrypt_method=' + encryptMethod;
             return encoded;
         };
-        CoinUri.coinTxPrefix = 'conceal:';
-        CoinUri.coinWalletPrefix = 'conceal:';
+        CoinUri.coinTxPrefix = 'conceal.';
+        CoinUri.coinWalletPrefix = 'conceal.';
         CoinUri.coinAddressLength = 98;
         return CoinUri;
     }());
