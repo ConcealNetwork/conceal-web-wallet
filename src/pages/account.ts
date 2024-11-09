@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2024 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -56,11 +56,15 @@ class AccountView extends DestructableView{
 	@VueVar(false) isWalletSyncing !: boolean;
 	@VueVar(0) optimizeOutputs !: number;
 
+  @VueVar(false) private isInitialized: boolean = false;
+	@VueVar(0) private messagesCountRecord: number = 0;
+
   readonly refreshInterval = 500;
 	private intervalRefresh : NodeJS.Timeout;
   private refreshTimestamp: Date;
   private oldTxFilter: string;
   private lastPending: number;
+  private initMessagesCount: number = wallet.txsMem.concat(wallet.getTransactionsCopy()).filter(tx => tx.message).length;
 
 	constructor(container : string) {
 		super(container);
@@ -79,8 +83,10 @@ class AccountView extends DestructableView{
 		this.intervalRefresh = setInterval(() => {
 			this.refresh();
 		}, 1 * 1000);
-    
+
 		this.refresh();
+
+		(window as any).accountView = this;
 	}
 
 	destruct = (): Promise<void> => {
@@ -92,7 +98,8 @@ class AccountView extends DestructableView{
 		blockchainExplorer.getHeight().then((height : number) => {
 			this.blockchainHeight = height;
       this.refreshWallet();
-		}).catch((err: any) => {
+      this.updateMessageNotifications();
+    }).catch((err: any) => {
       this.refreshWallet();
     });
 	}
@@ -253,6 +260,33 @@ class AccountView extends DestructableView{
     element.click();
     document.body.removeChild(element);     
   }  
+
+  private updateMessageNotifications() {
+    if (!this.isInitialized) {
+        this.initMessagesCount = wallet.txsMem.concat(wallet.getTransactionsCopy()).filter(tx => tx.message).length;
+        this.isInitialized = true;
+    } else {
+        let previousMessagesCount = this.initMessagesCount;
+        let currentMessagesCount = wallet.txsMem.concat(wallet.getTransactionsCopy()).filter(tx => tx.message).length;
+        let newMessagesCount = currentMessagesCount - previousMessagesCount;
+        
+        if (newMessagesCount > this.messagesCountRecord) {
+            const messageItem = document.querySelector('#menu a[href="#!messages"]');
+            if (messageItem) {
+                const messageText = messageItem.querySelector('span:last-child');
+                if (messageText && messageText.textContent) {
+                    messageItem.classList.add('font-bold');
+                    if (messageText.textContent.includes('(+')) {
+                        messageText.textContent = messageText.textContent.split('(')[0] + `(+${newMessagesCount})`;
+                    } else {
+                        messageText.textContent += ` (+${newMessagesCount})`;
+                    }
+                }
+                this.messagesCountRecord = newMessagesCount;
+            }
+        }
+    }
+  }
 
 }
 
