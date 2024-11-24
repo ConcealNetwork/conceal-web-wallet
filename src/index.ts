@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2024 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -22,6 +22,7 @@ import {VueClass, VueVar, VueWatched} from "./lib/numbersLab/VueAnnotate";
 import {Storage} from "./model/Storage";
 import {Translations} from "./model/Translations";
 import {Transaction} from "./model/Transaction";
+import { initializeMessageMenu } from "./lib/numbersLab/messageClick";
 
 //========================================================
 //bridge for cnUtil with the new mnemonic class
@@ -256,6 +257,9 @@ promiseLoadingReady.then(function(){
 	window.onhashchange = function () {
 		router.changePageFromHash();
 	};
+	
+	// Initialize message menu after the page is ready
+	initializeMessageMenu();
 });
 
 //========================================================

@@ -66,7 +66,7 @@
 	<a href="#!account" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-tachometer" aria-hidden="true"></i></span> {{ $t("menu.account") }}</a>
 	<a href="#!send" class="onlyWhenConnected notViewOnlyWallet"><span class="icon" ><i class="fa fa-paper-plane" aria-hidden="true"></i></span> {{ $t("menu.send") }}</a>
 	<a href="#!receive" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-inbox" aria-hidden="true"></i></span> {{ $t("menu.receive") }}</a>
-	<a href="#!messages" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-comments" aria-hidden="true"></i></span> {{ $t("menu.message") }}</a>
+	<a href="#!messages" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-comments" aria-hidden="true"></i></span><span> {{ $t("menu.message") }}</span></a>
 	<a href="#!deposits" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-bank" aria-hidden="true"></i></span> {{ $t("menu.deposit") }}</a>
 	<a href="#!export" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-download" aria-hidden="true"></i></span> {{ $t("menu.export") }}</a>
 	<a href="#!settings" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-cog" aria-hidden="true"></i></span> {{ $t("menu.settings") }}</a>
@@ -122,6 +122,7 @@
 <script src="lib/cn_utils_native.js"></script>
 <script src="lib/FileSaver.min.js"></script>
 <script data-main="index.js" src="lib/require.js"></script>
+
 
 </body>
 </html>
