@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2024 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -45,7 +45,10 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         __extends(AccountView, _super);
         function AccountView(container) {
             var _this = _super.call(this, container) || this;
+            _this.isInitialized = false;
+            _this.messagesCountRecord = 0;
             _this.refreshInterval = 500;
+            _this.initMessagesCount = wallet.txsMem.concat(wallet.getTransactionsCopy()).filter(function (tx) { return tx.message; }).length;
             _this.destruct = function () {
                 clearInterval(_this.intervalRefresh);
                 return _super.prototype.destruct.call(_this);
@@ -54,6 +57,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                 blockchainExplorer.getHeight().then(function (height) {
                     _this.blockchainHeight = height;
                     _this.refreshWallet();
+                    _this.updateMessageNotifications();
                 }).catch(function (err) {
                     _this.refreshWallet();
                 });
@@ -198,8 +202,36 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                 _this.refresh();
             }, 1 * 1000);
             _this.refresh();
+            window.accountView = _this;
             return _this;
         }
+        AccountView.prototype.updateMessageNotifications = function () {
+            if (!this.isInitialized) {
+                this.initMessagesCount = wallet.txsMem.concat(wallet.getTransactionsCopy()).filter(function (tx) { return tx.message; }).length;
+                this.isInitialized = true;
+            }
+            else {
+                var previousMessagesCount = this.initMessagesCount;
+                var currentMessagesCount = wallet.txsMem.concat(wallet.getTransactionsCopy()).filter(function (tx) { return tx.message; }).length;
+                var newMessagesCount = currentMessagesCount - previousMessagesCount;
+                if (newMessagesCount > this.messagesCountRecord) {
+                    var messageItem = document.querySelector('#menu a[href="#!messages"]');
+                    if (messageItem) {
+                        var messageText = messageItem.querySelector('span:last-child');
+                        if (messageText && messageText.textContent) {
+                            messageItem.classList.add('font-bold');
+                            if (messageText.textContent.includes('(+')) {
+                                messageText.textContent = messageText.textContent.split('(')[0] + "(+".concat(newMessagesCount, ")");
+                            }
+                            else {
+                                messageText.textContent += " (+".concat(newMessagesCount, ")");
+                            }
+                        }
+                        this.messagesCountRecord = newMessagesCount;
+                    }
+                }
+            }
+        };
         __decorate([
             (0, VueAnnotate_1.VueVar)([])
         ], AccountView.prototype, "transactions", void 0);
@@ -263,6 +295,12 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         __decorate([
             (0, VueAnnotate_1.VueVar)(0)
         ], AccountView.prototype, "optimizeOutputs", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(false)
+        ], AccountView.prototype, "isInitialized", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(0)
+        ], AccountView.prototype, "messagesCountRecord", void 0);
         return AccountView;
     }(DestructableView_1.DestructableView));
     if (wallet !== null && blockchainExplorer !== null)

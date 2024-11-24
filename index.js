@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2024 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -35,7 +35,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./lib/numbersLab/VueAnnotate", "./model/Storage", "./model/Translations"], function (require, exports, Router_1, Mnemonic_1, VueAnnotate_1, Storage_1, Translations_1) {
+define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./lib/numbersLab/VueAnnotate", "./model/Storage", "./model/Translations", "./lib/numbersLab/messageClick"], function (require, exports, Router_1, Mnemonic_1, VueAnnotate_1, Storage_1, Translations_1, messageClick_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     //========================================================
@@ -253,6 +253,8 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
         window.onhashchange = function () {
             router.changePageFromHash();
         };
+        // Initialize message menu after the page is ready
+        (0, messageClick_1.initializeMessageMenu)();
     });
     //========================================================
     //==================Service worker for web================

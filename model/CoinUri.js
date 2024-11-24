@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2024 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -22,8 +22,8 @@ define(["require", "exports"], function (require, exports) {
         function CoinUri() {
         }
         CoinUri.decodeTx = function (str) {
-            if (str.indexOf(CoinUri.coinTxPrefix) === 0) {
-                var data = str.replace(this.coinTxPrefix, '');
+            if (str.startsWith(CoinUri.coinAddressPrefix)) { // legacy code use to check .coinTxPrefix
+                var data = str; //legacy .replace(this.coinTxPrefix,'');
                 var temp = data.replace(/&/g, '?').trim();
                 var exploded = temp.split('?');
                 if (exploded.length == 0)
@@ -79,7 +79,7 @@ define(["require", "exports"], function (require, exports) {
             if (amount === void 0) { amount = null; }
             if (recipientName === void 0) { recipientName = null; }
             if (description === void 0) { description = null; }
-            var encoded = this.coinTxPrefix + address;
+            var encoded = address; //legacy this.coinTxPrefix + address;
             if (address.length !== this.coinAddressLength)
                 throw 'invalid_address_length';
             if (paymentId !== null)
@@ -93,7 +93,7 @@ define(["require", "exports"], function (require, exports) {
             return encoded;
         };
         CoinUri.decodeWallet = function (str) {
-            if (str.indexOf(CoinUri.coinWalletPrefix) === 0) {
+            if (str.startsWith(CoinUri.coinWalletPrefix)) {
                 var data = str.replace(this.coinWalletPrefix, '').trim();
                 var exploded = data.split('?');
                 if (exploded.length == 0)
@@ -167,8 +167,9 @@ define(["require", "exports"], function (require, exports) {
                 encoded += '?encrypt_method=' + encryptMethod;
             return encoded;
         };
-        CoinUri.coinTxPrefix = 'conceal.';
-        CoinUri.coinWalletPrefix = 'conceal.';
+        CoinUri.coinTxPrefix = 'conceal.'; //legacy, used to be 'conceal:', but the char ':' was creating scanning issue
+        CoinUri.coinAddressPrefix = 'ccx7'; //coin Address prefix, to check address , without using coinTxPrefix
+        CoinUri.coinWalletPrefix = 'conceal.'; //legacy, used to be 'conceal:'
         CoinUri.coinAddressLength = 98;
         return CoinUri;
     }());
