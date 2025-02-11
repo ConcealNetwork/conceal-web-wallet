@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2024 Acktarius
- * Copyright (c) 2018-2024 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
 */
 
 /**
