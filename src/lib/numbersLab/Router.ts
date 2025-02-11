@@ -20,6 +20,8 @@ export class Router {
 
 	urlPrefix = '!';
 
+	allowedPages = ['index', 'home', 'about', 'contact']; // Add your allowed page names here
+
 	constructor(routerBaseHtmlRelativity  : string = './', routerBaseRelativity : string = '../') {
 		let self = this;
 		this.routerBaseHtmlRelativity = routerBaseHtmlRelativity;
@@ -102,16 +104,22 @@ export class Router {
 	injectNewPage(content: string, jsContentPath: string | null) {
 		$('#page').hide().html(content);
 		if (jsContentPath !== null) {
-			this.unloadRequirejs(jsContentPath);
-			this.unloadRequirejs(jsContentPath.replace(this.routerBaseJsRelativity, ''));
-			requirejs([jsContentPath], function (App) {
-				$('#page').show();
+			let pageName = jsContentPath.split('/').pop()?.replace('.js', '');
+			if (pageName && this.allowedPages.includes(pageName)) {
+				this.unloadRequirejs(jsContentPath);
+				this.unloadRequirejs(jsContentPath.replace(this.routerBaseJsRelativity, ''));
+				requirejs([jsContentPath], function (App) {
+					$('#page').show();
+					$('#pageLoading').hide();
+				}, function (err) {
+					//console.log(err);
+					$('#page').show();
+					$('#pageLoading').hide();
+				});
+			} else {
+				console.error('Invalid page name:', pageName);
 				$('#pageLoading').hide();
-			}, function (err) {
-				//console.log(err);
-				$('#page').show();
-				$('#pageLoading').hide();
-			});
+			}
 		}
 	}
 
