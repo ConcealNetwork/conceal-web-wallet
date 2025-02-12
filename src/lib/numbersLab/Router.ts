@@ -32,13 +32,13 @@ export class Router {
 	 * @returns {any}
 	 */
 	static extractPageFromUrl() {
+		let pageName = 'index';
 		if (window.location.hash.indexOf('#!') != -1) {
-			return window.location.hash.substr(2);
-		}else if (window.location.hash.indexOf('#') != -1) {
-			return window.location.hash.substr(1);
-		} else {
-			return 'index';
+			pageName = window.location.hash.substr(2);
+		} else if (window.location.hash.indexOf('#') != -1) {
+			pageName = window.location.hash.substr(1);
 		}
+		return encodeURIComponent(pageName);
 	}
 
 	changePageFromHash(){
