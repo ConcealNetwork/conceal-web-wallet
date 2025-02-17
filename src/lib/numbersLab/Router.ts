@@ -36,7 +36,7 @@ export class Router {
 		let pageName = 'index';
 		if (window.location.hash.indexOf('#!') != -1) {
 			pageName = window.location.hash.slice(2);
-		}else if (window.location.hash.indexOf('#') != -1) {
+		} else if (window.location.hash.indexOf('#') != -1) {
 			pageName = window.location.hash.slice(1);
 		}
 		return encodeURIComponent(pageName);
