@@ -289,6 +289,75 @@ body.menuDisabled #page {
 	left: 0;
 }
 
+/*================= TERMS OF USE ====================*/
+.terms-main-title {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-bottom: 1.5em;
+    color: var(--text-color);
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.terms-section-title {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin: 1.5em 0 1em;
+    color: var(--text-color);
+    text-transform: uppercase;
+    counter-increment: section;
+}
+
+.terms-section-title::before {
+    content: counter(section) ". ";
+    color: var(--text-color);
+}
+
+.terms-section {
+    margin-bottom: 2em;
+}
+
+.content p {
+    text-align: justify;
+    margin-bottom: 1em;
+    line-height: 1.6;
+}
+.bullet-list {
+    list-style: none;
+    padding-left: 1.25rem;
+    margin-top: 1em;
+}
+
+.bullet-list li {
+    margin-bottom: 1.5em;
+}
+
+.bullet-item-title {
+    font-weight: bold;
+    color: orange;
+}
+
+.bullet-item-title::before {
+    content: "• ";
+}
+
+.bullet-item-content {
+    padding-left: 0.2em;
+	text-align: justify;
+}
+.terms-footer {
+    margin-top: 2em;
+    padding-top: 1em;
+    border-top: 1px solid var(--border-color);
+}
+.terms-link {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.terms-link:hover {
+    text-decoration: underline;
+}
 /* computer */
 @media screen and (min-width: 600px) {
 
