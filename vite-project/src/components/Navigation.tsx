@@ -23,7 +23,7 @@ export function Navigation() {
   }
 
   const navItems = [
-    { icon: Home, label: 'Home', path: '/transaction' },
+    { icon: Home, label: 'Home', path: '/account' },
     { icon: Send, label: 'Send', path: '/send' },
     { icon: Download, label: 'Receive', path: '/receive' },
     { icon: MessageSquare, label: 'Message', path: '/message' },

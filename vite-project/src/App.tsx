@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Wallet, Send, Download, MessageSquare, Plus, Settings, ArrowLeft, Moon, Sun, ArrowUpRight, ArrowDownLeft, SwitchCamera } from 'lucide-react';
+import { Wallet, Send, Download, MessageSquare, Plus, Settings, ArrowLeft, Moon, Sun, ArrowUpRight, ArrowDownLeft, SwitchCamera, Key, File, BookOpen, QrCode } from 'lucide-react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { Footer } from './components/Footer';
 import { Navigation } from './components/Navigation';
@@ -12,6 +12,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { WalletRepository } from '@shared/model/WalletRepository';
+import { OpenWalletDialog } from './components/OpenWalletDialog';
 
 const ThemeContext = React.createContext({
   isDarkMode: true,
@@ -21,11 +23,23 @@ const ThemeContext = React.createContext({
 function MainPage() {
   const navigate = useNavigate();
   const [hasStoredWallet, setHasStoredWallet] = useState(false);
+  const [openWalletDialog, setOpenWalletDialog] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const wallet = localStorage.getItem('wallet');
-    setHasStoredWallet(!!wallet);
+    const checkWallet = async () => {
+      try {
+        const hasWallet = await WalletRepository.hasOneStored();
+        setHasStoredWallet(hasWallet);
+      } catch (err) {
+        console.error('Error checking wallet:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkWallet();
 
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -34,6 +48,12 @@ function MainPage() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-[#ffa500]" />
+    </div>;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center gap-6 p-8 relative z-10">
@@ -45,18 +65,20 @@ function MainPage() {
       <div className="text-center mt-12 mb-8">
         <h1 className="text-5xl font-bold text-white drop-shadow-lg">Conceal Web Wallet</h1>
       </div>
+
+      {hasStoredWallet && (
+        <Button
+          onClick={() => setOpenWalletDialog(true)}
+          variant="outline"
+          className="w-64 gap-2"
+        >
+          <Wallet className="w-5 h-5" />
+          Open My Wallet
+        </Button>
+      )}
       
       <Button
-        onClick={() => navigate('/transaction')}
-        variant="outline"
-        className="w-64 gap-2"
-      >
-        <Download className="w-5 h-5" />
-        Import Wallet
-      </Button>
-
-      <Button
-        onClick={() => navigate('/transaction')}
+        onClick={() => navigate('/create-wallet')}
         variant="outline"
         className="w-64 gap-2"
       >
@@ -64,21 +86,78 @@ function MainPage() {
         Create New Wallet
       </Button>
 
-      {hasStoredWallet && (
-        <Button
-          onClick={() => navigate('/transaction')}
-          variant="outline"
-          className="w-64 gap-2"
-        >
-          <Wallet className="w-5 h-5" />
-          Open Existing Wallet
-        </Button>
-      )}
+      <Accordion type="single" collapsible className="w-64">
+        <AccordionItem value="import" className="border border-[#ffa500] rounded-lg bg-black/30 backdrop-blur-sm">
+          <AccordionTrigger className="px-4">
+            <div className="flex items-center gap-2">
+              <Download className="w-5 h-5" />
+              Import Wallet
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="p-4">
+            <div className="flex flex-col gap-3">
+              <Button
+                onClick={() => navigate('/import/keys')}
+                variant="outline"
+                className="w-full justify-start gap-2"
+              >
+                <Key className="w-4 h-4" />
+                From Private Keys
+              </Button>
+
+              <Button
+                onClick={() => navigate('/import/file')}
+                variant="outline"
+                className="w-full justify-start gap-2"
+              >
+                <File className="w-4 h-4" />
+                From Wallet File
+              </Button>
+
+              <Button
+                onClick={() => navigate('/import/mnemonic')}
+                variant="outline"
+                className="w-full justify-start gap-2"
+              >
+                <BookOpen className="w-4 h-4" />
+                From Mnemonic Phrase
+              </Button>
+              {/*
+              <Button
+                onClick={() => navigate('/import/qr')}
+                variant="outline"
+                className="w-full justify-start gap-2"
+              >
+                <QrCode className="w-4 h-4" />
+                From QR Code
+              </Button>
+              */}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      {/* Security Notice Panel 
+      <div className="mt-8 w-full max-w-md p-6 bg-black/30 backdrop-blur-sm border border-[#ffa500] rounded-lg text-white">
+        <h3 className="text-lg font-semibold mb-4">Security Notice</h3>
+        <p className="text-sm opacity-80 mb-2">
+          Your keys, your coins. Keep your seed phrase safe and never share it with anyone.
+        </p>
+        <p className="text-sm opacity-80">
+          This is a client-side wallet - your private keys never leave your device.
+        </p>
+      </div>
+      */}
+
+      <OpenWalletDialog 
+        open={openWalletDialog} 
+        onOpenChange={setOpenWalletDialog}
+      />
     </div>
   );
 }
 
-function TransactionPage() {
+function AccountPage() {
   const [isAmountHidden, setIsAmountHidden] = useState(false);
   const amount = "1,234.56";
   const { isDarkMode } = React.useContext(ThemeContext);
@@ -282,7 +361,7 @@ function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<MainPage />} />
-            <Route path="/transaction" element={<TransactionPage />} />
+            <Route path="/account" element={<AccountPage />} />
             <Route path="/more" element={<MorePage />} />
           </Routes>
         </main>
