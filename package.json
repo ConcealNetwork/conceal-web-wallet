@@ -9,7 +9,7 @@
   },
   "main": "index.js",
   "dependencies": {
-    "@types/node": "^22.13.4",
+    "@types/node": "^22.13.5",
     "typescript": "^5.7.3",
     "workbox-build": "^7.3.0"
   },
@@ -24,6 +24,6 @@
   },
   "homepage": "https://github.com/ConcealNetwork/conceal-web-wallet#readme",
   "devDependencies": {
-    "@types/node": "^22.13.4"
+    "@types/node": "^22.13.5"
   }
 }
