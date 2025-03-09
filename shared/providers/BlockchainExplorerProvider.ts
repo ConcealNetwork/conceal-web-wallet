@@ -15,22 +15,20 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-const workboxBuild = require('workbox-build');
+import {Constants} from "../model/Constants";
+import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
+import {BlockchainExplorer} from "../model/blockchain/BlockchainExplorer";
+import {BlockchainExplorerRpcDaemon} from "../model/blockchain/BlockchainExplorerRPCDaemon";
 
-// NOTE: This should be run *AFTER* all your assets are built
-const buildSW = () => {
-	// This will return a Promise
-	return workboxBuild.injectManifest({
-		swSrc: 'src/service-worker-raw.js',
-		swDest: 'src/service-worker.js',
-		globDirectory: 'src',
-		globPatterns: [
-			'**\/*.{js,css,html,json,png,ico,jpg}',
-		],
-		globIgnores:[
-			'd/Vue.js', 'src/service-worker-raw.js', 'vite-project/**', 'shared/**'
-		]
-	});
-};
+export class BlockchainExplorerProvider {
 
-buildSW();
+	static getInstance() : BlockchainExplorer {
+		let blockchainExplorer : BlockchainExplorer = DependencyInjectorInstance().getInstance(Constants.BLOCKCHAIN_EXPLORER);
+		if(blockchainExplorer === null) {
+			blockchainExplorer = new BlockchainExplorerRpcDaemon();
+			DependencyInjectorInstance().register(Constants.BLOCKCHAIN_EXPLORER, blockchainExplorer);
+		}
+		return blockchainExplorer;
+	}
+
+}

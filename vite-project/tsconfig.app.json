@@ -30,6 +30,6 @@
   "include": [
     "src",
     "../shared",
-    "../shared/d/*.d.ts"
+    "../shared/src/d/*.d.ts"
   ]
 }

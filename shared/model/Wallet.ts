@@ -16,11 +16,11 @@
  */
 
 import {Transaction, TransactionIn, TransactionOut, Deposit, Withdrawal} from "./Transaction";
-import {DependencyInjectorInstance} from "../lib/numberslab/DependencyInjector";
+import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
 import {BlockchainExplorer, RawDaemon_Out} from "./blockchain/BlockchainExplorer";
 import {TransactionsExplorer} from "./TransactionsExplorer";
 import {KeysRepository, UserKeys} from "./KeysRepository";
-import {Observable} from "../lib/numberslab/Observable";
+import {Observable} from "../lib/numbersLab/Observable";
 import {Cn, CnNativeBride, CnTransactions} from "./Cn";
 import {Constants} from "./Constants";
 import {MathUtil} from "./MathUtil";

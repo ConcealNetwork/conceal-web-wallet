@@ -12,4 +12,5 @@ debug/
 firebase.json
 .firebase/
 src/translations/H*.json
+vite-project/dist/*
 .cursorrules

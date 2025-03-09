@@ -7,5 +7,10 @@
         "moduleResolution": "node",
         "strict":true,
         "experimentalDecorators": true
-    }
+    },
+    "exclude": [
+        "vite-project/**/*",
+        "shared/**/*",
+        "node_modules"
+    ]
 }

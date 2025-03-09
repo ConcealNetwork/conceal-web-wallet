@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { SyncStatus } from '../components/SyncStatus';
 import { ThemeContext } from '../context/ThemeContext';
 
-export function AccountPage() {
+export function Account() {
   const [isAmountHidden, setIsAmountHidden] = useState(false);
   const amount = "1,234.56";
   const { isDarkMode } = useContext(ThemeContext);
