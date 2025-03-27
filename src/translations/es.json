@@ -391,10 +391,34 @@
         "send": "Create"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Lista de depósitos"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Confirmar Depósito",
+        "message": "Ingrese su contraseña para confirmar la creación de un depósito de {amount} CCX por {term} meses?",
+        "confirm": "Crear Depósito",
+        "cancel": "Cancelar",
+        "passwordRequired": "Se requiere la contraseña de la billetera"
+      },
+      "createDeposit": {
+        "title": "Crear Nuevo Depósito",
+        "amount": "Cantidad a depositar",
+        "term": "Tiempo de bloqueo (en meses)",
+        "termError": "Por favor ingrese un número entero entre 1 y 12 meses",
+        "confirm": "Crear Depósito",
+        "cancel": "Cancelar",
+        "createSuccess": "Depósito Creado",
+        "createPending": "Su depósito está siendo procesado",
+        "createError": "Error al Crear el Depósito",
+        "withdrawSuccess": "Depósito Retirado",
+        "withdrawPending": "Su retiro está siendo procesado",
+        "withdrawError": "Error al Retirar el Depósito",
+        "amountError": "Cantidad Inválida",
+        "amountMustBePositive": "La cantidad debe ser positiva",
+        "termMustBeValid": "El término debe estar entre 1 y 12 meses",
+        "insufficientFunds": "Fondos Insuficientes",
+        "insufficientFundsMessage": "No tiene suficientes fondos para crear este depósito",
+        "maxAmount": "Cantidad máxima de depósito: {amount} CCX"
       },
       "depositDetails": {
         "title": "Deposits details",

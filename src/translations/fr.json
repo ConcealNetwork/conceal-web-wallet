@@ -391,10 +391,34 @@
 		  "send": "Créer"
 		},
 		"depositsBlock": {
-		  "title": "Liste des Dépots"
+		  "title": "Liste des dépôts"
 		},
-		"createBlock": {
-			
+		"confirmDeposit": {
+		  "title": "Confirmer le Dépôt",
+		  "message": "Entrer votre mot de passe pour confirmer la création d'un dépôt de {amount} CCX pour {term} mois ?",
+		  "confirm": "Créer le Dépôt",
+		  "cancel": "Annuler",
+		  "passwordRequired": "Le mot de passe du portefeuille est requis"
+		},
+		"createDeposit": {
+		  "title": "Créer un Nouveau Dépôt",
+		  "amount": "Montant à déposer",
+		  "term": "Durée de blocage (en mois)",
+		  "termError": "Veuillez entrer un nombre entier entre 1 et 12 mois",
+		  "confirm": "Créer le Dépôt",
+		  "cancel": "Annuler",
+		  "createSuccess": "Dépôt Créé",
+		  "createPending": "Votre dépôt est en cours de traitement",
+		  "createError": "Erreur lors de la création du dépôt",
+		  "withdrawSuccess": "Dépôt Retiré",
+		  "withdrawPending": "Votre retrait est en cours de traitement",
+		  "withdrawError": "Erreur lors du retrait du dépôt",
+		  "amountError": "Montant Invalide",
+		  "amountMustBePositive": "Le montant doit être positif",
+		  "termMustBeValid": "La durée doit être comprise entre 1 et 12 mois",
+		  "insufficientFunds": "Fonds Insuffisants",
+		  "insufficientFundsMessage": "Vous n'avez pas assez de fonds pour créer ce dépôt",
+		  "maxAmount": "Montant maximal du dépôt: {amount} CCX"
 		},
 		"depositDetails": {
 		  "title": "Détails des dépots",

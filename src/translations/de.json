@@ -382,32 +382,56 @@
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Einlagen",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "Synchronisiere Wallet.... Wenn es vollständig synchronisiert ist, können Sie Ihre Einlagen sehen."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Einlagen",
+        "send": "Erstellen"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Liste der Einzahlungen"
       },
-      "createBlock": {
-        
+      "confirmDeposit": {
+        "title": "Einzahlung Bestätigen",
+        "message": "Geben Sie Ihr Passwort ein um eine Einzahlung von {amount} CCX für {term} Monate zu bestätigen?",
+        "confirm": "Einzahlung Erstellen",
+        "cancel": "Abbrechen",
+        "passwordRequired": "Wallet-Passwort ist erforderlich"
+      },
+      "createDeposit": {
+        "title": "Neue Einlage Erstellen",
+        "amount": "Einzahlungsbetrag",
+        "term": "Sperrfrist (in Monaten)",
+        "termError": "Bitte geben Sie eine ganze Zahl zwischen 1 und 12 Monaten ein",
+        "confirm": "Einlage Erstellen",
+        "cancel": "Abbrechen",
+        "createSuccess": "Einlage Erstellt",
+        "createPending": "Ihre Einlage wird verarbeitet",
+        "createError": "Fehler beim Erstellen der Einlage",
+        "withdrawSuccess": "Einlage Ausgezahlt",
+        "withdrawPending": "Ihre Auszahlung wird verarbeitet",
+        "withdrawError": "Fehler bei der Auszahlung der Einlage",
+        "amountError": "Ungültiger Betrag",
+        "amountMustBePositive": "Der Betrag muss positiv sein",
+        "termMustBeValid": "Die Laufzeit muss zwischen 1 und 12 Monaten liegen",
+        "insufficientFunds": "Unzureichende Mittel",
+        "insufficientFundsMessage": "Sie haben nicht genügend Mittel für diese Einlage",
+        "maxAmount": "Maximaler Einlagebetrag: {amount} CCX"
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
+        "title": "Einlagendetails",
+        "txHash": "Transaktionserstellung",
+        "spendingTx": "Transaktionsausgabe",
         "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "amount": "Betrag",
+        "term": "Laufzeit",
+        "creationTime": "Erstellungsdatum",
+        "spendingTime": "Auszahlungsdatum",
+        "spendingHeight": "Auszahlungshöhe",
+        "creationHeight": "Erstellungshöhe",
+        "unlockHeight": "Freigabehöhe"
       }
     },
     "receivePage": {

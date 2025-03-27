@@ -27,6 +27,7 @@ import {NdefMessage, Nfc} from "../model/Nfc";
 import {BlockchainExplorer, RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {Cn} from "../model/Cn";
 import {WalletWatchdog} from "../model/WalletWatchdog";
+import {WalletRepository} from "../model/WalletRepository";
 
 let wallet: Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
 let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
@@ -35,22 +36,37 @@ class DepositsView extends DestructableView {
 	@VueVar([]) deposits !: Deposit[];
   @VueVar(0) blockchainHeight !: number;
   @VueVar(false) lockedForm !: boolean;
-
+  @VueVar(0) walletAmount !: number;
+  @VueVar(0) lastPending !: number;
+  @VueVar(0) currentScanBlock !: number;
+  
 	@VueVar(false) isWalletSyncing !: boolean;
   @VueVar(true) openAliasValid !: boolean;
   @VueVar(Math.pow(10, config.coinUnitPlaces)) currencyDivider !: number;
 
+  
   readonly refreshInterval = 500;
 	private intervalRefresh : NodeJS.Timeout;
   private qrReader: QRReader | null = null;
   private timeoutResolveAlias = 0;
   private redirectUrlAfterSend: string | null = null;
+  private refreshTimestamp: Date = new Date(0);
 
   ndefListener : ((data: NdefMessage)=>void)|null = null;
+
+  // Add this as a class property
+  private static currentInstance: DepositsView | null = null;
+
+  // Add properties for deposit amount and term
+  @VueVar(0) depositAmount !: number;
+  @VueVar(1) depositTerm !: number;
 
   constructor(container : string) {
 		super(container);
 
+    // Store the instance reference
+    DepositsView.currentInstance = this;
+    
     this.isWalletSyncing = true;
 		AppState.enableLeftMenu();
 
@@ -78,6 +94,26 @@ class DepositsView extends DestructableView {
 
 	refreshWallet = (forceRedraw: boolean = false) => {
     this.deposits = wallet.getDepositsCopy().reverse();
+    
+    let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
+    
+    if ((((this.refreshTimestamp < wallet.modifiedTimestamp()) || (this.lastPending > 0)) && (timeDiff > this.refreshInterval)) || forceRedraw /*|| filterChanged*/) {
+      logDebugMsg("refreshWallet", this.currentScanBlock);      
+
+      this.walletAmount = wallet.amount;
+    }
+    // Add test deposit for UI testing -------------------------------to be remove --- <
+    let testDeposit = new Deposit();
+    testDeposit.txHash = "test_tx_hash";
+    testDeposit.outputIndex = 0;
+    testDeposit.blockHeight = this.blockchainHeight - 100; // Set it 100 blocks in the past
+    testDeposit.timestamp = Math.floor(Date.now() / 1000) - (60 * 60 * 24); // 24h ago
+    testDeposit.amount = 1000000; // 1 CCX (6 decimals)
+    testDeposit.term = 10;
+    testDeposit.spentTx = "";
+    this.deposits.push(testDeposit);
+
+    this.refreshTimestamp = new Date();
 	}
   
   reset() {
@@ -132,6 +168,183 @@ class DepositsView extends DestructableView {
         </div>`
 		});
 	}  
+
+  async withdrawDeposit(deposit: Deposit) {
+    try {
+      this.lockedForm = true;
+      console.log('Withdrawing deposit:', deposit.txHash);
+      
+      // Simulate success
+      swal({
+        type: 'success',
+        title: i18n.t('depositsPage.withdrawSuccess'),
+        text: i18n.t('depositsPage.withdrawPending')
+      });
+    } catch (error: unknown) {
+      console.error('Error withdrawing deposit:', error);
+      swal({
+        type: 'error',
+        title: i18n.t('depositsPage.withdrawError'),
+        text: error instanceof Error ? error.message : String(error)
+      });
+    } finally {
+      this.lockedForm = false;
+    }
+  }
+
+  showCreateDepositModal = () => {
+    // Reset values before showing modal
+    this.depositAmount = 0;
+    this.depositTerm = 1;
+    
+    swal({
+      title: i18n.t('depositsPage.createDeposit.title'),
+      html: `
+        <div class="deposit-form" style="width: 100%; max-width: 400px; margin: 0 auto;">
+          <div class="input-group" style="margin-bottom: 20px;">
+            <input id="depositAmount" type="number" min="1" step="1" max="${Math.floor(this.walletAmount / this.currencyDivider)}" pattern="\\d*" class="swal2-input" 
+              placeholder="${i18n.t('depositsPage.createDeposit.amount')}"
+              onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+              style="width: 100%; max-width: 300px; margin: 10px auto;">
+            <p style="text-align: center; color: #666; margin: 5px 0 0 0; font-size: 0.9em;">
+              ${i18n.t('depositsPage.createDeposit.maxAmount', { amount: Math.floor(this.walletAmount / this.currencyDivider) })}
+            </p>
+          </div>
+          <div class="input-group">
+            <input id="depositTerm" type="number" min="1" max="12" step="1" pattern="\\d*" class="swal2-input" 
+              placeholder="${i18n.t('depositsPage.createDeposit.term')}"
+              onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+              style="width: 100%; max-width: 300px; margin: 10px auto;">
+          </div>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: i18n.t('depositsPage.createDeposit.confirm'),
+      cancelButtonText: i18n.t('depositsPage.createDeposit.cancel'),
+      preConfirm: () => {
+        const amountInput = (document.getElementById('depositAmount') as HTMLInputElement).value;
+        const termInput = (document.getElementById('depositTerm') as HTMLInputElement).value;
+        
+        // Clean and validate amount
+        const cleanAmount = amountInput.replace(/[^0-9]/g, '');
+        const amount = parseInt(cleanAmount);
+        
+        // Clean and validate term
+        const cleanTerm = termInput.replace(/[^0-9]/g, '');
+        const term = parseInt(cleanTerm);
+        
+        // Validate amount
+        if (isNaN(amount) || amount <= 0 || !Number.isInteger(amount) || amount > Math.floor(this.walletAmount / this.currencyDivider)) {
+          swal({
+            title: i18n.t('depositsPage.createDeposit.amountError'),
+            type: 'error',
+            confirmButtonText: 'OK'
+          });
+          return false;
+        }
+        
+        // Validate term
+        if (isNaN(term) || term < 1 || term > 12 || !Number.isInteger(term)) {
+          swal({
+            title: i18n.t('depositsPage.createDeposit.termError'),
+            type: 'error',
+            confirmButtonText: 'OK'
+          });
+          return false;
+        }
+        
+        // Store values directly on the instance using our static reference
+        if (DepositsView.currentInstance) {
+          DepositsView.currentInstance.depositAmount = amount;
+          DepositsView.currentInstance.depositTerm = term;
+        }
+        
+        console.log('Amount:', amount, "Term:", term);
+        return true;
+      }
+    }).then((result) => {
+      if (result && result.value) {
+        console.log('Modal confirmed, using values:', this.depositAmount, this.depositTerm);
+        
+        // After initial modal confirmation, show password prompt
+        return swal({
+          title: i18n.t('depositsPage.confirmDeposit.title'),
+          text: i18n.t('depositsPage.confirmDeposit.message', { 
+            amount: this.depositAmount, 
+            term: this.depositTerm 
+          }),
+          input: 'password',
+          showCancelButton: true,
+          confirmButtonText: i18n.t('depositsPage.confirmDeposit.confirm'),
+          cancelButtonText: i18n.t('depositsPage.confirmDeposit.cancel')
+        });
+      }
+    }).then((result: any) => {
+      if (result && result.value) {
+        let savePassword: string = result.value;
+        
+        // Show loading state
+        swal({
+          type: 'info',
+          title: i18n.t('global.loading'),
+          onOpen: () => {
+            swal.showLoading();
+          }
+        });
+
+        // Verify password using WalletRepository
+        return WalletRepository.getLocalWalletWithPassword(savePassword)
+          .then(wallet => {
+            if (wallet !== null) {
+              // Password is correct, proceed with deposit creation
+              swal.close();
+              return this.createDeposit(this.depositAmount, this.depositTerm);
+            } else {
+              // Password is incorrect
+              return swal({
+                type: 'error',
+                title: i18n.t('global.invalidPasswordModal.title'),
+                text: i18n.t('global.invalidPasswordModal.content'),
+                confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText')
+              });
+            }
+          })
+          .catch(error => {
+            console.error('Error validating password:', error);
+            return swal({
+              type: 'error',
+              title: i18n.t('global.error'),
+              text: i18n.t('global.invalidPasswordModal.content')
+            });
+          });
+      }
+    }).catch((error) => {
+      console.error('Error in deposit modal:', error);
+    });
+  }
+
+  async createDeposit(amount: number, term: number) {
+    try {
+      this.lockedForm = true;
+      console.log('Creating deposit:', { amount, term });
+      
+      // Simulate success
+      swal({
+        type: 'success',
+        title: i18n.t('depositsPage.createDeposit.createSuccess')
+        /*text: i18n.t('depositsPage.createPending')*/
+      });
+    } catch (error: unknown) {
+      console.error('Error creating deposit:', error);
+      swal({
+        type: 'error',
+        title: i18n.t('depositsPage.createError'),
+        text: error instanceof Error ? error.message : String(error)
+      });
+    } finally {
+      this.lockedForm = false;
+    }
+  }
 }
 
 if (wallet !== null && blockchainExplorer !== null)

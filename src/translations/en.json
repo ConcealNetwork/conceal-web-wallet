@@ -393,8 +393,32 @@
       "depositsBlock": {
         "title": "Deposits list"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Confirm Deposit",
+        "message": "Enter your Password to confirm creation of a deposit of {amount} CCX for {term} months?",
+        "confirm": "Create Deposit",
+        "cancel": "Cancel",
+        "passwordRequired": "Wallet password is required"
+      },
+      "createDeposit": {
+        "title": "Create New Deposit",
+        "amount": "Amount to deposit",
+        "term": "Lock time (in months)",
+        "termError": "Please enter a whole number between 1 and 12 months",
+        "confirm": "Create Deposit",
+        "cancel": "Cancel",
+        "createSuccess": "Deposit Created",
+        "createPending": "Your deposit is being processed",
+        "createError": "Error Creating Deposit",
+        "withdrawSuccess": "Deposit Withdrawn",
+        "withdrawPending": "Your withdrawal is being processed",
+        "withdrawError": "Error Withdrawing Deposit",
+        "amountError": "Invalid Amount",
+        "amountMustBePositive": "Amount must be positive",
+        "termMustBeValid": "Term must be between 1 and 12 months",
+        "insufficientFunds": "Insufficient Funds",
+        "insufficientFundsMessage": "You don't have enough funds to create this deposit",
+        "maxAmount": "Maximum deposit amount: {amount} CCX"
       },
       "depositDetails": {
         "title": "Deposits details",
