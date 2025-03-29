@@ -37,12 +37,15 @@ class DepositsView extends DestructableView {
   @VueVar(0) blockchainHeight !: number;
   @VueVar(false) lockedForm !: boolean;
   @VueVar(0) walletAmount !: number;
+  @VueVar(0) unlockedWalletAmount !: number;
   @VueVar(0) lastPending !: number;
   @VueVar(0) currentScanBlock !: number;
   
 	@VueVar(false) isWalletSyncing !: boolean;
   @VueVar(true) openAliasValid !: boolean;
   @VueVar(Math.pow(10, config.coinUnitPlaces)) currencyDivider !: number;
+  @VueVar(0) maxDepositAmount !: number;
+  @VueVar(false) isDepositDisabled !: boolean;
 
   
   readonly refreshInterval = 500;
@@ -60,6 +63,7 @@ class DepositsView extends DestructableView {
   // Add properties for deposit amount and term
   @VueVar(0) depositAmount !: number;
   @VueVar(1) depositTerm !: number;
+  @VueVar(new JSBigInt((<any>window).config.coinFee)) coinFee !: typeof JSBigInt;
 
   constructor(container : string) {
 		super(container);
@@ -68,6 +72,7 @@ class DepositsView extends DestructableView {
     DepositsView.currentInstance = this;
     
     this.isWalletSyncing = true;
+    this.isDepositDisabled = true;
 		AppState.enableLeftMenu();
 
 		this.intervalRefresh = setInterval(() => {
@@ -87,6 +92,8 @@ class DepositsView extends DestructableView {
       this.isWalletSyncing = (wallet.lastHeight + 2) < height;
 			this.blockchainHeight = height;
       this.refreshWallet();
+      // Update isDepositDisabled based on syncing status and max amount
+      this.isDepositDisabled = this.isWalletSyncing || this.maxDepositAmount < 1;    
     }).catch((err: any) => {
       this.refreshWallet();
     });
@@ -94,13 +101,18 @@ class DepositsView extends DestructableView {
 
 	refreshWallet = (forceRedraw: boolean = false) => {
     this.deposits = wallet.getDepositsCopy().reverse();
-    
+    this.currentScanBlock = wallet.lastHeight;
+
     let timeDiff: number = new Date().getTime() - this.refreshTimestamp.getTime();
     
     if ((((this.refreshTimestamp < wallet.modifiedTimestamp()) || (this.lastPending > 0)) && (timeDiff > this.refreshInterval)) || forceRedraw /*|| filterChanged*/) {
       logDebugMsg("refreshWallet", this.currentScanBlock);      
 
       this.walletAmount = wallet.amount;
+      this.unlockedWalletAmount = wallet.availableAmount(this.currentScanBlock);
+      // Calculate the maximum deposit amount
+      this.maxDepositAmount = Math.floor((this.unlockedWalletAmount - config.coinFee) / this.currencyDivider);
+
     }
     // Add test deposit for UI testing -------------------------------to be remove --- <
     let testDeposit = new Deposit();
@@ -169,7 +181,7 @@ class DepositsView extends DestructableView {
 		});
 	}  
 
-  async withdrawDeposit(deposit: Deposit) {
+  withdrawDeposit = async (deposit: Deposit) => {
     try {
       this.lockedForm = true;
       console.log('Withdrawing deposit:', deposit.txHash);
@@ -195,32 +207,45 @@ class DepositsView extends DestructableView {
   showCreateDepositModal = () => {
     // Reset values before showing modal
     this.depositAmount = 0;
-    this.depositTerm = 1;
+    this.depositTerm = config.depositMinTermMonth;  // default initial term
+    //this.coinFee = new JSBigInt((<any>window).config.coinFee);
     
+    // Calculate max amount once to ensure consistency
+    let maxAmount = this.maxDepositAmount;
+
     swal({
       title: i18n.t('depositsPage.createDeposit.title'),
       html: `
         <div class="deposit-form" style="width: 100%; max-width: 400px; margin: 0 auto;">
           <div class="input-group" style="margin-bottom: 20px;">
-            <input id="depositAmount" type="number" min="1" step="1" max="${Math.floor(this.walletAmount / this.currencyDivider)}" pattern="\\d*" class="swal2-input" 
+            <input id="depositAmount" type="number" min="${config.depositMinAmountCoin}" step="1" max="${maxAmount}" pattern="\\d*" class="swal2-input" 
               placeholder="${i18n.t('depositsPage.createDeposit.amount')}"
               onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-              style="width: 100%; max-width: 300px; margin: 10px auto;">
-            <p style="text-align: center; color: #666; margin: 5px 0 0 0; font-size: 0.9em;">
-              ${i18n.t('depositsPage.createDeposit.maxAmount', { amount: Math.floor(this.walletAmount / this.currencyDivider) })}
+              style="width: 100%; max-width: 300px; margin: 8px auto;">
+            <p style="text-align: center; color: #666; margin: 4px 0 0 0; font-size: 0.9em; cursor: pointer;" id="maxAmountText">
+              ${i18n.t('depositsPage.createDeposit.maxAmount', { amount: maxAmount })}
             </p>
           </div>
           <div class="input-group">
-            <input id="depositTerm" type="number" min="1" max="12" step="1" pattern="\\d*" class="swal2-input" 
+            <input id="depositTerm" type="number" min="${config.depositMinTermMonth}" max="${config.depositMaxTermMonth}" step="1" pattern="\\d*" class="swal2-input" 
               placeholder="${i18n.t('depositsPage.createDeposit.term')}"
               onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-              style="width: 100%; max-width: 300px; margin: 10px auto;">
+              style="width: 100%; max-width: 300px; margin: 8px auto;">
           </div>
         </div>
       `,
       showCancelButton: true,
       confirmButtonText: i18n.t('depositsPage.createDeposit.confirm'),
       cancelButtonText: i18n.t('depositsPage.createDeposit.cancel'),
+      onOpen: () => {
+        // Add click event handler to the maximum amount text
+        document.getElementById('maxAmountText')?.addEventListener('click', () => {
+          const depositAmountInput = document.getElementById('depositAmount') as HTMLInputElement;
+          if (depositAmountInput) {
+            depositAmountInput.value = maxAmount.toString();
+          }
+        });
+      },
       preConfirm: () => {
         const amountInput = (document.getElementById('depositAmount') as HTMLInputElement).value;
         const termInput = (document.getElementById('depositTerm') as HTMLInputElement).value;
@@ -232,9 +257,9 @@ class DepositsView extends DestructableView {
         // Clean and validate term
         const cleanTerm = termInput.replace(/[^0-9]/g, '');
         const term = parseInt(cleanTerm);
-        
+        console.log('Available amount:', (this.unlockedWalletAmount - this.coinFee) / this.currencyDivider );
         // Validate amount
-        if (isNaN(amount) || amount <= 0 || !Number.isInteger(amount) || amount > Math.floor(this.walletAmount / this.currencyDivider)) {
+        if (isNaN(amount) || amount < 1 || !Number.isInteger(amount) || amount > maxAmount) {
           swal({
             title: i18n.t('depositsPage.createDeposit.amountError'),
             type: 'error',
@@ -323,7 +348,7 @@ class DepositsView extends DestructableView {
     });
   }
 
-  async createDeposit(amount: number, term: number) {
+  createDeposit = async (amount: number, term: number) => {
     try {
       this.lockedForm = true;
       console.log('Creating deposit:', { amount, term });

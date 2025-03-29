@@ -38,5 +38,10 @@ declare var config : {
   maxRemoteNodes: number
   maxWorkerCores: number,
 	maxBlockNumber: number,
-	avgBlockTime: number
+	avgBlockTime: number,
+	coinFee: typeof JSBigInt,
+	depositMinAmountCoin: number,
+	depositMinTermMonth: number,
+	depositMinTermBlock: number,
+	depositMaxTermMonth: number,
 };

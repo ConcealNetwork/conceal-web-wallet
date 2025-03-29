@@ -663,20 +663,20 @@
     }
   },
   "number": {},
-  "date": {
-    "short": {
-      "year": "numérico",
-      "month": "corto",
-      "day": "numérico"
-    },
-    "long": {
-      "year": "numérico",
-      "month": "corto",
-      "day": "numérico",
-      "weekday": "corto",
-      "hour": "numérico",
-      "minute": "numérico",
-      "hour12": true
-    }
+	"date": {
+	  "short": {
+		"year": "numeric",
+		"month": "short",
+		"day": "numeric"
+	  },
+	  "long": {
+		"year": "numeric",
+		"month": "short",
+		"day": "numeric",
+		"weekday": "short",
+		"hour": "numeric",
+		"minute": "numeric",
+		"hour12": true
+	  }
   }
 }

@@ -13,3 +13,4 @@ firebase.json
 .firebase/
 src/translations/H*.json
 .cursorrules
+vite-project/

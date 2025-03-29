@@ -55,6 +55,11 @@ myGlobal.config = {
 
 	avgBlockTime: 120,
 	maxBlockNumber: 500000000,
+
+	depositMinAmountCoin: 1,
+	depositMinTermMonth: 1,
+	depositMinTermBlock: 21900,
+	depositMaxTermMonth: 12,
 };
 
 function logDebugMsg(...data: any[]) {

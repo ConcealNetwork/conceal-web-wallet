@@ -40,8 +40,8 @@
                   </table>
                 </div>
                 <div :style="{ 
-                  maxHeight: deposits.length > 6 ? '270px' : 'auto',
-                  overflowY: deposits.length > 6 ? 'auto' : 'visible'
+                  maxHeight: deposits.length > 12 ? '460px' : 'auto',
+                  overflowY: deposits.length > 12 ? 'auto' : 'visible'
                 }">
                   <table style="width: 100%;">
                     <template v-for="deposit of deposits">
@@ -71,7 +71,7 @@
 
         <!-- Add Create Deposit button at bottom -->
         <div class="create-deposit-button">
-          <button @click="showCreateDepositModal" class="btn btn-primary" :disabled="isWalletSyncing">
+          <button @click="showCreateDepositModal" class="btn btn-primary" :disabled="isDepositDisabled">
             {{ $t("depositsPage.createDeposit.title") }}
           </button>
         </div>
