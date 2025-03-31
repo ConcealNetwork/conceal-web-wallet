@@ -418,7 +418,8 @@
         "termMustBeValid": "Term must be between 1 and 12 months",
         "insufficientFunds": "Insufficient Funds",
         "insufficientFundsMessage": "You don't have enough funds to create this deposit",
-        "maxAmount": "Maximum deposit amount: {amount} CCX"
+        "maxAmount": "Maximum deposit amount: {amount} CCX",
+        "rewardAtTerm": "Reward at Term: {reward} CCX"
       },
       "depositDetails": {
         "title": "Deposits details",

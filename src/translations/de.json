@@ -418,7 +418,8 @@
         "termMustBeValid": "Die Laufzeit muss zwischen 1 und 12 Monaten liegen",
         "insufficientFunds": "Unzureichende Mittel",
         "insufficientFundsMessage": "Sie haben nicht genügend Mittel für diese Einlage",
-        "maxAmount": "Maximaler Einlagebetrag: {amount} CCX"
+        "maxAmount": "Maximaler Einlagebetrag: {amount} CCX",
+        "rewardAtTerm": "Belohnung bei Laufzeit: {reward} CCX"
       },
       "depositDetails": {
         "title": "Einlagendetails",

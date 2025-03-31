@@ -232,6 +232,9 @@ class DepositsView extends DestructableView {
               onkeypress="return event.charCode >= 48 && event.charCode <= 57"
               style="width: 100%; max-width: 300px; margin: 8px auto;">
           </div>
+          <p style="text-align: center; color: #666; margin: 10px 0 0 0; font-size: 1em; font-weight: bold;" id="rewardText">
+            ${i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: '0' })}
+          </p>
         </div>
       `,
       showCancelButton: true,
@@ -240,11 +243,73 @@ class DepositsView extends DestructableView {
       onOpen: () => {
         // Add click event handler to the maximum amount text
         document.getElementById('maxAmountText')?.addEventListener('click', () => {
-          const depositAmountInput = document.getElementById('depositAmount') as HTMLInputElement;
+          let depositAmountInput = document.getElementById('depositAmount') as HTMLInputElement;
           if (depositAmountInput) {
             depositAmountInput.value = maxAmount.toString();
+            // Update reward info based on the new amount value
+            updateRewardInfo();
           }
         });
+        
+        // Add input event listener to update reward information when deposit amount changes
+        let depositAmountInput = document.getElementById('depositAmount') as HTMLInputElement;
+        let depositTermInput = document.getElementById('depositTerm') as HTMLInputElement;
+        
+        if (depositAmountInput) {
+          depositAmountInput.addEventListener('input', () => {
+            updateRewardInfo();
+          });
+        }
+        
+        // Add input event listener for term changes as well
+        if (depositTermInput) {
+          depositTermInput.addEventListener('input', () => {
+            updateRewardInfo();
+          });
+        }
+        
+        // Function to update the reward calculation
+        function updateRewardInfo() {
+          let amount = parseInt((document.getElementById('depositAmount') as HTMLInputElement).value) || 0;
+          let term = parseInt((document.getElementById('depositTerm') as HTMLInputElement).value) || 0;
+          
+          let aprIndex = 0;
+          
+          if (amount >= 20000) {
+            aprIndex = 2;
+          } else if (amount >= 10000) {
+            aprIndex = 1;
+          }
+          
+          // Use type assertion directly in one line
+          let aprRate = (config as any).depositRateV3[aprIndex];
+          
+          // Calculate interest using the formula
+          // calculateInterest = depositAmount * depositTerm * (aprRate + (depositTerm - 1) * 0.001) / 12
+          let adjustedRate = aprRate + (term - 1) * 0.001;
+          let reward = amount * term * adjustedRate / 12;
+          
+          // Update reward text
+          let rewardText = document.getElementById('rewardText');
+          if (rewardText) {
+            // First format with full decimal places
+            let rewardFixed = reward.toFixed(config.coinUnitPlaces); // 6 decimals
+            
+            // Remove trailing zeros using a for loop (up to 4 times)
+            for (let i = 0; i < 4; i++) {
+              if (rewardFixed.endsWith('0')) {
+                rewardFixed = rewardFixed.slice(0, -1);
+              } else {
+                break;
+              }
+            }
+                        
+            rewardText.textContent = i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: rewardFixed });
+          }
+        }
+        
+        // Initialize the reward display when the modal opens
+        updateRewardInfo();
       },
       preConfirm: () => {
         const amountInput = (document.getElementById('depositAmount') as HTMLInputElement).value;
