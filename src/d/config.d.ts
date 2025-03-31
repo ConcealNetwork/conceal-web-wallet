@@ -44,4 +44,5 @@ declare var config : {
 	depositMinTermMonth: number,
 	depositMinTermBlock: number,
 	depositMaxTermMonth: number,
+	depositRateV3: number[],
 };

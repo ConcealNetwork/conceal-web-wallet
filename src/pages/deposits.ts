@@ -416,8 +416,24 @@ class DepositsView extends DestructableView {
   createDeposit = async (amount: number, term: number) => {
     try {
       this.lockedForm = true;
-      console.log('Creating deposit:', { amount, term });
-      
+      const blockchainHeight = await blockchainExplorer.getHeight();
+      console.log('Creating deposit:', { amount, term }, 'at height:', blockchainHeight);
+          // Convert amount to atomic units
+      const amountToDeposit: typeof JSBigInt = amount * Math.pow(10, config.coinUnitPlaces);
+      if ( ( amountToDeposit + config.coinFee ) > wallet.availableAmount(blockchainHeight)) {
+        console.log('Not enough money to deposit');
+        return;
+      }
+      console.log('Amount to deposit in atomic units:', amountToDeposit);
+      const termToDeposit = term > 12 ? 12 * config.depositMinTermBlock : term * config.depositMinTermBlock;
+      console.log('Term to deposit in blocks:', termToDeposit);
+      // Use the wallet's own address for deposits
+      const destinationAddress = wallet.getPublicAddress();
+      console.log('Destination address:', destinationAddress);
+
+      // let mixinToSendWith: number = config.defaultMixin;
+
+
       // Simulate success
       swal({
         type: 'success',
