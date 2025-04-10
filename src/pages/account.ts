@@ -54,7 +54,7 @@ class AccountView extends DestructableView{
 	@VueVar(0) optimizeOutputs !: number;
 
   readonly refreshInterval = 500;
-  private intervalRefresh : NodeJS.Timer;
+  private intervalRefresh : NodeJS.Timeout;
   private refreshTimestamp: Date;
   private oldTxFilter: string;
   private lastPending: number;
@@ -80,7 +80,7 @@ class AccountView extends DestructableView{
 	}
 
 	destruct = (): Promise<void> => {
-		clearInterval(this.intervalRefresh[Symbol.toPrimitive]());
+		clearInterval(this.intervalRefresh);
 		return super.destruct();
 	}
 

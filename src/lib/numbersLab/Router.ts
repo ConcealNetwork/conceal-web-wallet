@@ -52,6 +52,14 @@ export class Router {
 	 */
 	changePage(completeNewPageName: string, replaceState: boolean = false) {
 		let self = this;
+		
+		// Extract the base page name without query parameters
+		let newPageName = completeNewPageName;
+		if (newPageName.indexOf('?') !== -1) {
+			newPageName = newPageName.slice(0, newPageName.indexOf('?'));
+		}
+		
+		
 		Logger.info(this, 'Changing page to {newPage} from {oldPage}', {
 			newPage: completeNewPageName,
 			oldPage: this.currentPage
@@ -59,10 +67,6 @@ export class Router {
 
 		$('#pageLoading').show();
 
-		let newPageName = completeNewPageName;
-		if (newPageName.indexOf('?') != -1) {
-			newPageName = newPageName.substr(0, newPageName.indexOf('?'));
-		}
 
 		let currentView = DestructableView.getCurrentAppView();
 		let promiseDestruct: Promise<void>;
