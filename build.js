@@ -16,6 +16,56 @@
  */
 
 const workboxBuild = require('workbox-build');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+const dotenv = require('dotenv');
+
+// Load environment variables
+dotenv.config();
+
+// Function to generate SHA384 integrity hash for a file
+const generateIntegrityHash = (filePath) => {
+	try {
+		const fileContent = fs.readFileSync(filePath);
+		const hash = crypto.createHash('sha384').update(fileContent).digest('base64');
+		return `sha384-${hash}`;
+	} catch (error) {
+		console.error(`Error generating hash for ${filePath}:`, error);
+		return null;
+	}
+};
+
+// Generate integrity hash for api.html and update the API file
+const updateApiIntegrityHash = () => {
+	const apiHtmlPath = path.join(__dirname, 'src', 'api.html');
+	
+	const integrityHash = generateIntegrityHash(apiHtmlPath);
+	if (!integrityHash) return;
+	
+	console.log(`Generated new integrity hash for api.html`);
+	
+	// Store in .env if not exists or has changed
+	const envPath = path.join(__dirname, '.env');
+	let envContent = '';
+	
+	if (fs.existsSync(envPath)) {
+		envContent = fs.readFileSync(envPath, 'utf8');
+	}
+	
+	// Update or add the API_INTEGRITY_HASH in .env
+	if (!envContent.includes('API_INTEGRITY_HASH=')) {
+		fs.appendFileSync(envPath, `\nAPI_INTEGRITY_HASH=${integrityHash}\n`);
+	} else {
+		const newEnvContent = envContent.replace(
+			/API_INTEGRITY_HASH=.*/,
+			`API_INTEGRITY_HASH=${integrityHash}`
+		);
+		fs.writeFileSync(envPath, newEnvContent);
+	}
+	
+	console.log('Updated .env with new integrity hash');
+};
 
 // NOTE: This should be run *AFTER* all your assets are built
 const buildSW = () => {
@@ -33,4 +83,6 @@ const buildSW = () => {
 	});
 };
 
+// Update integrity hash before building SW
+updateApiIntegrityHash();
 buildSW();
