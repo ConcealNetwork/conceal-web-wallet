@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -15,12 +15,20 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// Load environment variables if available
+try {
+	require('dotenv').config();
+} catch (e) {
+	console.log('dotenv not available, using default values');
+}
+
 var ConcealAPI = new function(){
 
 	this.ready = false;
 	this.apiDomain = 'http://localhost:38090';
 	this.timeoutErrorTime = 10000;
 	this.timeoutError = 10000;
+	this.apiIntegrityHash = process.env.API_INTEGRITY_HASH || 'sha384-akR4d4WI0aBIvwvuucK9YnuVVRJrj+riPGFT2l9zCHty3n71nJ60rUqm0rjG67Z4';
 
 	var self = this;
 
@@ -59,6 +67,8 @@ var ConcealAPI = new function(){
 			self.registerPromise('ready', resolve, reject);
 			var ifrm = document.createElement("iframe");
 			ifrm.setAttribute("src", self.apiDomain+"/api.html");
+			ifrm.setAttribute("integrity", self.apiIntegrityHash);
+			ifrm.setAttribute("crossorigin", "anonymous");
 			ifrm.style.width = "0";
 			ifrm.style.height = "0";
 			ifrm.style.display = 'none';
@@ -69,6 +79,7 @@ var ConcealAPI = new function(){
 			},self.timeoutErrorTime);
 
 			ifrm.addEventListener('load', function(){
+				console.log('Iframe loaded successfully - integrity check passed');
 				clearTimeout(self.timeoutError);
 				self.timeoutError = 0;
 			});
