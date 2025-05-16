@@ -407,7 +407,7 @@
         "termError": "Please enter a whole number between 1 and 12 months",
         "confirm": "Create Deposit",
         "cancel": "Cancel",
-        "createSuccess": "Deposit Created",
+        "createSuccess": "Deposit Submitted to Blockchain",
         "createPending": "Your deposit is being processed",
         "createError": "Error Creating Deposit",
         "withdrawSuccess": "Deposit Withdrawn",
@@ -543,7 +543,8 @@
       "parametersBlock": {
         "title": "Parameters",
         "password": {
-          "label": "Password to protect your wallet"
+          "label": "Password to protect your wallet",
+          "label_input": "Wallet Password"
         },
         "passwordConfirm": {
           "label": "Confirm the password",
@@ -619,11 +620,14 @@
     },
     "importFromFilePage": {
       "title": "Importing wallet from a backup file",
-      "subtitle": "Use your backup file to create a wallet",
+      "subtitle": "Use your backup json file to import a wallet",
       "walletBlock": {
         "title": "Wallet file",
         "label": "Select the file",
-        "importButton": "Import"
+        "importButton": "Import",
+        "selectFile": "Please select a valid wallet json file:",
+        "fileSelected": "File selected",
+        "invalidFile": "The selected file is not a valid wallet file."
       }
     },
     "importFromMnemonicPage": {

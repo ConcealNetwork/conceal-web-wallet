@@ -248,6 +248,11 @@ export class Transaction {
     return true;
   }
 
+  get isDeposit() {
+    // Check if any of the outputs has a type "03", which indicates it's a deposit transaction
+    return this.outs.some(out => out.type === "03");
+  }
+
   copy = () => { 
     let aCopy = new Transaction();
 

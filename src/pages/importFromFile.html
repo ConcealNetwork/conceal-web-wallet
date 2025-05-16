@@ -8,12 +8,29 @@
 		</div>
 	</div>
 	<div class="body-content" >
-		<div class="panel">
+		<div class="panel" >
 			<div class="body" >
-				<div class="header-title" >{{ $t("importFromFilePage.title") }}</div>
+				<div class="header-title" >{{ $t("importFromFilePage.walletBlock.title") }}</div>
 				<div class="content" >
 					<div class="field">
-						<label>{{ $t("importBasePage.parametersBlock.password.label") }}</label>
+						<label>{{ $t("importFromFilePage.walletBlock.selectFile") }}</label>
+						<div class="actions tc" >
+							<button class="btn" @click="selectFile()" >{{ $t("importFromFilePage.walletBlock.label") }}</button>
+						</div>
+						<label v-if="fileSelected">
+							<strong>{{ $t("importFromFilePage.walletBlock.fileSelected") }}:</strong> {{ fileName }}
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel" v-if="fileSelected">
+			<div class="body" >
+				<div class="header-title" >{{ $t("importBasePage.parametersBlock.title") }}</div>
+				<div class="content" >
+					<div class="field">
+						<label>{{ $t("importBasePage.parametersBlock.password.label_input") }}</label>
 						<input type="password" name="public" v-model="password">
 						<div v-if="insecurePassword && !forceInsecurePassword" class="message error">
 							{{ $t("global.passwordInvalidRequirements") }}
@@ -30,24 +47,12 @@
 							{{ $t("importBasePage.parametersBlock.passwordConfirm.invalid") }}
 						</div>
 					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="panel" >
-			<div class="body" >
-				<div class="header-title" >{{ $t("importFromFilePage.walletBlock.title") }}</div>
-				<div class="content" >
-					<div class="actions tc" >
-						<button class="btn" @click="selectFile()" >{{ $t("importFromFilePage.walletBlock.label") }}</button>
-					</div>
-
-					<div class="actions tc" >
+					
+					<div class="actions tc" style="margin-top: 20px;">
 						<button @click="importWallet()" class="btn primary" :disabled="!formValid()" >{{ $t("importFromFilePage.walletBlock.importButton") }}</button>
 					</div>
 				</div>
 			</div>
 		</div>
-
 	</div>
 </div>

@@ -58,6 +58,7 @@ if (config.testnet === true)
 let UINT64_MAX = new JSBigInt(2).pow(64);
 let CURRENT_TX_VERSION = 1;
 let OLD_TX_VERSION = 1;
+let DEPOSIT_TX_VERSION = 2;
 let TX_EXTRA_NONCE_MAX_COUNT = 255;
 let TX_EXTRA_TAGS = {
 	PADDING: '00',
@@ -322,6 +323,23 @@ export namespace CnUtils{
 			j = j.divide(new JSBigInt(2).pow(7));
 		}
 		out += ("0" + j.toJSValue().toString(16)).slice(-2);
+		return out;
+	}
+
+	export function encode_varint_term(i: number|string) {		// doing the same job as varint, but suppose to be a bit faster
+		let value = new JSBigInt(i);
+		let out = '';
+		do {
+			// Get the lowest 8 bits
+			const byteValue = value.lowVal() & 0xFF;
+			// Set MSB if more bytes will follow
+			const byte = value.compare(0x7f) > 0 ? byteValue | 0x80 : byteValue;
+			out += byte.toString(16).padStart(2, '0');
+			
+			// Right shift by 7 bits (unsigned)
+			value = value.divide(0x80);
+		} while (value.compare(0) > 0);
+	
 		return out;
 	}
 
@@ -1286,7 +1304,10 @@ export namespace CnTransactions{
 		target:{
 			type: string,
 			data: {
-				key: string
+				key?: string,
+				keys?: string[],
+				required_signatures?: number,
+				term?: number
 			}
 		}
 	};
@@ -1387,6 +1408,13 @@ export namespace CnTransactions{
 					}
 					buf += vin.k_image;
 					break;
+				case "input_to_deposit_key":
+					buf += "03";
+					buf += CnUtils.encode_varint(vin.amount);
+					buf += CnUtils.encode_varint(vin.signatures || 1);
+					buf += CnUtils.encode_varint(vin.outputIndex || 0);
+					buf += CnUtils.encode_varint(vin.term || 0);
+					break;
 				default:
 					throw "Unhandled vin type: " + vin.type;
 			}
@@ -1401,6 +1429,16 @@ export namespace CnTransactions{
 				case "txout_to_key":
 					buf += "02";
 					buf += vout.target.data.key;
+					break;
+				case "txout_to_deposit_key":
+					buf += "03";
+					const keys = vout.target.data.keys || [];
+					buf += CnUtils.encode_varint(keys.length);	// varint for number of keys, only one for deposit
+					for (let i = 0; i < keys.length; i++) {
+					buf += keys[i];	// vector of keys derivated using the recipient's view public key and the transaction secret key			
+					}
+					buf += CnUtils.encode_varint(1);  // requiredSignatureCount is always 1 for deposits
+					buf += CnUtils.encode_varint_term(vout.target.data.term || 0);  // The term in block
 					break;
 				default:
 					throw "Unhandled txout target type: " + vout.target.type;
@@ -1927,8 +1965,10 @@ export namespace CnTransactions{
 		realDestViewKey : string|undefined,
 		unlock_time : number = 0,    
 		rct:boolean,
-    message: string,
-    ttl: number
+    	message: string,
+    	ttl: number,
+		transactionType: string,
+		term: number
 	){
 		//we move payment ID stuff here, because we need txkey to encrypt
 		let txkey = Cn.random_keypair();
@@ -1969,6 +2009,10 @@ export namespace CnTransactions{
 			tx.rct_signatures = {ecdhInfo: [], outPk: [], pseudoOuts: [], txnFee: "", type: 0};
 		} else {
 			tx.signatures = [];
+		}
+
+		if (transactionType === "deposit") {
+			tx.version = DEPOSIT_TX_VERSION;
 		}
 
 		tx.prvkey = txkey.sec;
@@ -2013,12 +2057,31 @@ export namespace CnTransactions{
 		for (i = 0; i < sources.length; i++) {
 			inputs_money = inputs_money.add(sources[i].amount);
 			in_contexts.push(sources[i].in_ephemeral);
-			let input_to_key : CnTransactions.Vin = {
+			let input_to_key : CnTransactions.Vin;
+			
+			if (transactionType !== "withdraw") {
+				input_to_key = {
+					type:"input_to_key",
+					amount:sources[i].amount,
+					k_image:sources[i].key_image,
+					key_offsets:[],
+				};
+			} else {													// will need to be changed when we'll worl on withdraw																
+				input_to_key = {
+					type:"input_to_deposit_key",
+					term:term,
+					amount:sources[i].amount,
+					k_image:sources[i].key_image,
+					key_offsets:[],
+				};
+			}
+			/*let input_to_key : CnTransactions.Vin = {
 				type:"input_to_key",
 				amount:sources[i].amount,
 				k_image:sources[i].key_image,
 				key_offsets:[],
 			};
+			*/
 			for (j = 0; j < sources[i].outputs.length; ++j) {
 				logDebugMsg('add to key offsets',sources[i].outputs[j].index, j, sources[i].outputs);
 				input_to_key.key_offsets.push(sources[i].outputs[j].index);
@@ -2102,19 +2165,47 @@ export namespace CnTransactions{
 				amountKeys.push(CnUtils.derivation_to_scalar(out_derivation, out_index));
 			}
 			let out_ephemeral_pub = Cn.derive_public_key(out_derivation, out_index, destKeys.spend);
-			let out : CnTransactions.Vout = {
-				amount: dsts[i].amount,
-				target:{
-					type: "txout_to_key",
-					data: {
-						key: out_ephemeral_pub
-					}
+			let out : CnTransactions.Vout;
+			
+				if (transactionType === "deposit" && i === 0 ) {
+					let depositOut = {
+						amount: dsts[i].amount, // dsts[0].amount = amount_to_deposit
+						target:{
+							type: "txout_to_deposit_key",
+							data: {
+								keys: [out_ephemeral_pub],
+								required_signatures: 1,
+								term: term
+							}
+						}
+					};
+					tx.vout.push(depositOut);
+					++out_index;
+					++i;
+					out_ephemeral_pub = Cn.derive_public_key(out_derivation, out_index, destKeys.spend);
+
 				}
-			};
-			// txout_to_key
+
+					out = {
+						amount: dsts[i].amount,
+						target:{
+							type: "txout_to_key",
+							data: {
+								key: out_ephemeral_pub
+							}
+						}
+					};
+					tx.vout.push(out);
+					++out_index;
+				
+			
+			
+
+			
+			/*
 			tx.vout.push(out);
 			++out_index;
-			outputs_money = outputs_money.add(dsts[i].amount);
+			*/
 		}
 
 		// add pub key to extra after we know whether to use R = rG or R = rD
@@ -2248,7 +2339,9 @@ export namespace CnTransactions{
     unlock_time : number = 0,
     rct:boolean,
     message: string,
-    ttl: number
+    ttl: number,
+	transactionType: string,
+	term: number
 	) : CnTransactions.Transaction{
 		let i, j;
 		if (dsts.length === 0) {
@@ -2282,6 +2375,7 @@ export namespace CnTransactions{
 				throw "Output overflow!";
 			}
 		}
+		
 		let found_money = JSBigInt.ZERO;
 		let sources : CnTransactions.Source[] = [];
 		logDebugMsg('Selected transfers: ', outputs);
@@ -2407,6 +2501,6 @@ export namespace CnTransactions{
 		} else if (cmp > 0) {
 			throw "Need more money than found! (have: " + Cn.formatMoney(found_money) + " need: " + Cn.formatMoney(needed_money) + ")";
 		}
-		return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl);
+		return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl, transactionType, term);
 	}
 }

@@ -64,6 +64,7 @@ class DepositsView extends DestructableView {
   @VueVar(0) depositAmount !: number;
   @VueVar(1) depositTerm !: number;
   @VueVar(new JSBigInt((<any>window).config.coinFee)) coinFee !: typeof JSBigInt;
+  @VueVar() showCreateDepositModal !: () => void;
 
   constructor(container : string) {
 		super(container);
@@ -74,6 +75,215 @@ class DepositsView extends DestructableView {
     this.isWalletSyncing = true;
     this.isDepositDisabled = true;
 		AppState.enableLeftMenu();
+
+    // Initialize the modal method here
+    this.showCreateDepositModal = () => {
+      // Reset values before showing modal
+      this.depositAmount = 0;
+      this.depositTerm = config.depositMinTermMonth;  // default initial term
+      
+      // Calculate max amount once to ensure consistency
+      let maxAmount = this.maxDepositAmount;
+
+      swal({
+        title: i18n.t('depositsPage.createDeposit.title'),
+        html: `
+          <div class="deposit-form" style="width: 100%; max-width: 400px; margin: 0 auto;">
+            <div class="input-group" style="margin-bottom: 20px;">
+              <input id="depositAmount" type="number" min="${config.depositMinAmountCoin}" step="1" max="${maxAmount}" pattern="\\d*" class="swal2-input" 
+                placeholder="${i18n.t('depositsPage.createDeposit.amount')}"
+                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                style="width: 100%; max-width: 300px; margin: 8px auto;">
+              <p style="text-align: center; color: #666; margin: 4px 0 0 0; font-size: 0.9em; cursor: pointer;" id="maxAmountText">
+                ${i18n.t('depositsPage.createDeposit.maxAmount', { amount: maxAmount })}
+              </p>
+            </div>
+            <div class="input-group">
+              <input id="depositTerm" type="number" min="${config.depositMinTermMonth}" max="${config.depositMaxTermMonth}" step="1" pattern="\\d*" class="swal2-input" 
+                placeholder="${i18n.t('depositsPage.createDeposit.term')}"
+                onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                style="width: 100%; max-width: 300px; margin: 8px auto;">
+            </div>
+            <p style="text-align: center; color: #666; margin: 10px 0 0 0; font-size: 1em; font-weight: bold;" id="rewardText">
+              ${i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: '0' })}
+            </p>
+          </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: i18n.t('depositsPage.createDeposit.confirm'),
+        cancelButtonText: i18n.t('depositsPage.createDeposit.cancel'),
+        onOpen: () => {
+          // Add click event handler to the maximum amount text
+          document.getElementById('maxAmountText')?.addEventListener('click', () => {
+            let depositAmountInput = document.getElementById('depositAmount') as HTMLInputElement;
+            if (depositAmountInput) {
+              depositAmountInput.value = maxAmount.toString();
+              // Update reward info based on the new amount value
+              updateRewardInfo();
+            }
+          });
+          
+          // Add input event listener to update reward information when deposit amount changes
+          let depositAmountInput = document.getElementById('depositAmount') as HTMLInputElement;
+          let depositTermInput = document.getElementById('depositTerm') as HTMLInputElement;
+          
+          if (depositAmountInput) {
+            depositAmountInput.addEventListener('input', () => {
+              updateRewardInfo();
+            });
+          }
+          
+          // Add input event listener for term changes as well
+          if (depositTermInput) {
+            depositTermInput.addEventListener('input', () => {
+              updateRewardInfo();
+            });
+          }
+          
+          // Function to update the reward calculation
+          function updateRewardInfo() {
+            let amount = parseInt((document.getElementById('depositAmount') as HTMLInputElement).value) || 0;
+            let term = parseInt((document.getElementById('depositTerm') as HTMLInputElement).value) || 0;
+            
+            let aprIndex = 0;
+            
+            if (amount >= 20000) {
+              aprIndex = 2;
+            } else if (amount >= 10000) {
+              aprIndex = 1;
+            }
+            
+            // Use type assertion directly in one line
+            let aprRate = (config as any).depositRateV3[aprIndex];
+            
+            // Calculate interest using the formula
+            // calculateInterest = depositAmount * depositTerm * (aprRate + (depositTerm - 1) * 0.001) / 12
+            let adjustedRate = aprRate + (term - 1) * 0.001;
+            let reward = amount * term * adjustedRate / 12;
+            
+            // Update reward text
+            let rewardText = document.getElementById('rewardText');
+            if (rewardText) {
+              // First format with full decimal places
+              let rewardFixed = reward.toFixed(config.coinUnitPlaces); // 6 decimals
+              
+              // Remove trailing zeros using a for loop (up to 4 times)
+              for (let i = 0; i < 4; i++) {
+                if (rewardFixed.endsWith('0')) {
+                  rewardFixed = rewardFixed.slice(0, -1);
+                } else {
+                  break;
+                }
+              }
+                          
+              rewardText.textContent = i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: rewardFixed });
+            }
+          }
+          
+          // Initialize the reward display when the modal opens
+          updateRewardInfo();
+        },
+        preConfirm: () => {
+          const amountInput = (document.getElementById('depositAmount') as HTMLInputElement).value;
+          const termInput = (document.getElementById('depositTerm') as HTMLInputElement).value;
+          
+          // Clean and validate amount
+          const cleanAmount = amountInput.replace(/[^0-9]/g, '');
+          const amount = parseInt(cleanAmount);
+          
+          // Clean and validate term
+          const cleanTerm = termInput.replace(/[^0-9]/g, '');
+          const term = parseInt(cleanTerm);
+          console.log('Available amount:', (this.unlockedWalletAmount - this.coinFee) / this.currencyDivider );
+          // Validate amount
+          if (isNaN(amount) || amount < 1 || !Number.isInteger(amount) || amount > maxAmount) {
+            swal({
+              title: i18n.t('depositsPage.createDeposit.amountError'),
+              type: 'error',
+              confirmButtonText: 'OK'
+            });
+            return false;
+          }
+          
+          // Validate term
+          if (isNaN(term) || term < 1 || term > 12 || !Number.isInteger(term)) {
+            swal({
+              title: i18n.t('depositsPage.createDeposit.termError'),
+              type: 'error',
+              confirmButtonText: 'OK'
+            });
+            return false;
+          }
+          
+          // Store values directly on the instance using our static reference
+          if (DepositsView.currentInstance) {
+            DepositsView.currentInstance.depositAmount = amount;
+            DepositsView.currentInstance.depositTerm = term;
+          }
+          
+          console.log('Amount:', amount, "Term:", term);
+          return true;
+        }
+      }).then((result) => {
+        if (result && result.value) {
+          console.log('Modal confirmed, using values:', this.depositAmount, this.depositTerm);
+          
+          // After initial modal confirmation, show password prompt
+          return swal({
+            title: i18n.t('depositsPage.confirmDeposit.title'),
+            text: i18n.t('depositsPage.confirmDeposit.message', { 
+              amount: this.depositAmount, 
+              term: this.depositTerm 
+            }),
+            input: 'password',
+            showCancelButton: true,
+            confirmButtonText: i18n.t('depositsPage.confirmDeposit.confirm'),
+            cancelButtonText: i18n.t('depositsPage.confirmDeposit.cancel')
+          });
+        }
+      }).then((result: any) => {
+        if (result && result.value) {
+          let savePassword: string = result.value;
+          
+          // Show loading state
+          swal({
+            type: 'info',
+            title: i18n.t('global.loading'),
+            onOpen: () => {
+              swal.showLoading();
+            }
+          });
+
+          // Verify password using WalletRepository
+          return WalletRepository.getLocalWalletWithPassword(savePassword)
+            .then(wallet => {
+              if (wallet !== null) {
+                // Password is correct, proceed with deposit creation
+                swal.close();
+                return this.createDeposit(this.depositAmount, this.depositTerm);
+              } else {
+                // Password is incorrect
+                return swal({
+                  type: 'error',
+                  title: i18n.t('global.invalidPasswordModal.title'),
+                  text: i18n.t('global.invalidPasswordModal.content'),
+                  confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText')
+                });
+              }
+            })
+            .catch(error => {
+              console.error('Error validating password:', error);
+              return swal({
+                type: 'error',
+                title: i18n.t('global.error'),
+                text: i18n.t('global.invalidPasswordModal.content')
+              });
+            });
+        }
+      }).catch((error) => {
+        console.error('Error in deposit modal:', error);
+      });
+    };
 
 		this.intervalRefresh = setInterval(() => {
 			this.refresh();
@@ -114,16 +324,6 @@ class DepositsView extends DestructableView {
       this.maxDepositAmount = Math.floor((this.unlockedWalletAmount - config.coinFee) / this.currencyDivider);
 
     }
-    // Add test deposit for UI testing -------------------------------to be remove --- <
-    let testDeposit = new Deposit();
-    testDeposit.txHash = "test_tx_hash";
-    testDeposit.outputIndex = 0;
-    testDeposit.blockHeight = this.blockchainHeight - 100; // Set it 100 blocks in the past
-    testDeposit.timestamp = Math.floor(Date.now() / 1000) - (60 * 60 * 24); // 24h ago
-    testDeposit.amount = 1000000; // 1 CCX (6 decimals)
-    testDeposit.term = 10;
-    testDeposit.spentTx = "";
-    this.deposits.push(testDeposit);
 
     this.refreshTimestamp = new Date();
 	}
@@ -204,215 +404,6 @@ class DepositsView extends DestructableView {
     }
   }
 
-  showCreateDepositModal = () => {
-    // Reset values before showing modal
-    this.depositAmount = 0;
-    this.depositTerm = config.depositMinTermMonth;  // default initial term
-    //this.coinFee = new JSBigInt((<any>window).config.coinFee);
-    
-    // Calculate max amount once to ensure consistency
-    let maxAmount = this.maxDepositAmount;
-
-    swal({
-      title: i18n.t('depositsPage.createDeposit.title'),
-      html: `
-        <div class="deposit-form" style="width: 100%; max-width: 400px; margin: 0 auto;">
-          <div class="input-group" style="margin-bottom: 20px;">
-            <input id="depositAmount" type="number" min="${config.depositMinAmountCoin}" step="1" max="${maxAmount}" pattern="\\d*" class="swal2-input" 
-              placeholder="${i18n.t('depositsPage.createDeposit.amount')}"
-              onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-              style="width: 100%; max-width: 300px; margin: 8px auto;">
-            <p style="text-align: center; color: #666; margin: 4px 0 0 0; font-size: 0.9em; cursor: pointer;" id="maxAmountText">
-              ${i18n.t('depositsPage.createDeposit.maxAmount', { amount: maxAmount })}
-            </p>
-          </div>
-          <div class="input-group">
-            <input id="depositTerm" type="number" min="${config.depositMinTermMonth}" max="${config.depositMaxTermMonth}" step="1" pattern="\\d*" class="swal2-input" 
-              placeholder="${i18n.t('depositsPage.createDeposit.term')}"
-              onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-              style="width: 100%; max-width: 300px; margin: 8px auto;">
-          </div>
-          <p style="text-align: center; color: #666; margin: 10px 0 0 0; font-size: 1em; font-weight: bold;" id="rewardText">
-            ${i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: '0' })}
-          </p>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: i18n.t('depositsPage.createDeposit.confirm'),
-      cancelButtonText: i18n.t('depositsPage.createDeposit.cancel'),
-      onOpen: () => {
-        // Add click event handler to the maximum amount text
-        document.getElementById('maxAmountText')?.addEventListener('click', () => {
-          let depositAmountInput = document.getElementById('depositAmount') as HTMLInputElement;
-          if (depositAmountInput) {
-            depositAmountInput.value = maxAmount.toString();
-            // Update reward info based on the new amount value
-            updateRewardInfo();
-          }
-        });
-        
-        // Add input event listener to update reward information when deposit amount changes
-        let depositAmountInput = document.getElementById('depositAmount') as HTMLInputElement;
-        let depositTermInput = document.getElementById('depositTerm') as HTMLInputElement;
-        
-        if (depositAmountInput) {
-          depositAmountInput.addEventListener('input', () => {
-            updateRewardInfo();
-          });
-        }
-        
-        // Add input event listener for term changes as well
-        if (depositTermInput) {
-          depositTermInput.addEventListener('input', () => {
-            updateRewardInfo();
-          });
-        }
-        
-        // Function to update the reward calculation
-        function updateRewardInfo() {
-          let amount = parseInt((document.getElementById('depositAmount') as HTMLInputElement).value) || 0;
-          let term = parseInt((document.getElementById('depositTerm') as HTMLInputElement).value) || 0;
-          
-          let aprIndex = 0;
-          
-          if (amount >= 20000) {
-            aprIndex = 2;
-          } else if (amount >= 10000) {
-            aprIndex = 1;
-          }
-          
-          // Use type assertion directly in one line
-          let aprRate = (config as any).depositRateV3[aprIndex];
-          
-          // Calculate interest using the formula
-          // calculateInterest = depositAmount * depositTerm * (aprRate + (depositTerm - 1) * 0.001) / 12
-          let adjustedRate = aprRate + (term - 1) * 0.001;
-          let reward = amount * term * adjustedRate / 12;
-          
-          // Update reward text
-          let rewardText = document.getElementById('rewardText');
-          if (rewardText) {
-            // First format with full decimal places
-            let rewardFixed = reward.toFixed(config.coinUnitPlaces); // 6 decimals
-            
-            // Remove trailing zeros using a for loop (up to 4 times)
-            for (let i = 0; i < 4; i++) {
-              if (rewardFixed.endsWith('0')) {
-                rewardFixed = rewardFixed.slice(0, -1);
-              } else {
-                break;
-              }
-            }
-                        
-            rewardText.textContent = i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: rewardFixed });
-          }
-        }
-        
-        // Initialize the reward display when the modal opens
-        updateRewardInfo();
-      },
-      preConfirm: () => {
-        const amountInput = (document.getElementById('depositAmount') as HTMLInputElement).value;
-        const termInput = (document.getElementById('depositTerm') as HTMLInputElement).value;
-        
-        // Clean and validate amount
-        const cleanAmount = amountInput.replace(/[^0-9]/g, '');
-        const amount = parseInt(cleanAmount);
-        
-        // Clean and validate term
-        const cleanTerm = termInput.replace(/[^0-9]/g, '');
-        const term = parseInt(cleanTerm);
-        console.log('Available amount:', (this.unlockedWalletAmount - this.coinFee) / this.currencyDivider );
-        // Validate amount
-        if (isNaN(amount) || amount < 1 || !Number.isInteger(amount) || amount > maxAmount) {
-          swal({
-            title: i18n.t('depositsPage.createDeposit.amountError'),
-            type: 'error',
-            confirmButtonText: 'OK'
-          });
-          return false;
-        }
-        
-        // Validate term
-        if (isNaN(term) || term < 1 || term > 12 || !Number.isInteger(term)) {
-          swal({
-            title: i18n.t('depositsPage.createDeposit.termError'),
-            type: 'error',
-            confirmButtonText: 'OK'
-          });
-          return false;
-        }
-        
-        // Store values directly on the instance using our static reference
-        if (DepositsView.currentInstance) {
-          DepositsView.currentInstance.depositAmount = amount;
-          DepositsView.currentInstance.depositTerm = term;
-        }
-        
-        console.log('Amount:', amount, "Term:", term);
-        return true;
-      }
-    }).then((result) => {
-      if (result && result.value) {
-        console.log('Modal confirmed, using values:', this.depositAmount, this.depositTerm);
-        
-        // After initial modal confirmation, show password prompt
-        return swal({
-          title: i18n.t('depositsPage.confirmDeposit.title'),
-          text: i18n.t('depositsPage.confirmDeposit.message', { 
-            amount: this.depositAmount, 
-            term: this.depositTerm 
-          }),
-          input: 'password',
-          showCancelButton: true,
-          confirmButtonText: i18n.t('depositsPage.confirmDeposit.confirm'),
-          cancelButtonText: i18n.t('depositsPage.confirmDeposit.cancel')
-        });
-      }
-    }).then((result: any) => {
-      if (result && result.value) {
-        let savePassword: string = result.value;
-        
-        // Show loading state
-        swal({
-          type: 'info',
-          title: i18n.t('global.loading'),
-          onOpen: () => {
-            swal.showLoading();
-          }
-        });
-
-        // Verify password using WalletRepository
-        return WalletRepository.getLocalWalletWithPassword(savePassword)
-          .then(wallet => {
-            if (wallet !== null) {
-              // Password is correct, proceed with deposit creation
-              swal.close();
-              return this.createDeposit(this.depositAmount, this.depositTerm);
-            } else {
-              // Password is incorrect
-              return swal({
-                type: 'error',
-                title: i18n.t('global.invalidPasswordModal.title'),
-                text: i18n.t('global.invalidPasswordModal.content'),
-                confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText')
-              });
-            }
-          })
-          .catch(error => {
-            console.error('Error validating password:', error);
-            return swal({
-              type: 'error',
-              title: i18n.t('global.error'),
-              text: i18n.t('global.invalidPasswordModal.content')
-            });
-          });
-      }
-    }).catch((error) => {
-      console.error('Error in deposit modal:', error);
-    });
-  }
-
   createDeposit = async (amount: number, term: number) => {
     try {
       this.lockedForm = true;
@@ -433,13 +424,85 @@ class DepositsView extends DestructableView {
 
       // let mixinToSendWith: number = config.defaultMixin;
 
+      let mixinToSendWith: number = config.defaultMixin;
 
-      // Simulate success
-      swal({
-        type: 'success',
-        title: i18n.t('depositsPage.createDeposit.createSuccess')
-        /*text: i18n.t('depositsPage.createPending')*/
-      });
+        TransactionsExplorer.createTx([{address: destinationAddress, amount: amountToDeposit}], "", wallet, blockchainHeight,
+          function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+            return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+          }
+          , function (amount: number, feesAmount: number): Promise<void> {
+            if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
+              swal({
+                type: 'error',
+                title: i18n.t('sendPage.notEnoughMoneyModal.title'),
+                text: i18n.t('sendPage.notEnoughMoneyModal.content'),
+                confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
+                onOpen: () => {
+                  swal.hideLoading();
+                }
+              });
+              throw '';
+            }
+            return Promise.resolve();
+          },
+          mixinToSendWith, "", 0, "deposit", termToDeposit).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+          
+          console.log('Raw transaction data:', rawTxData);
+        
+          //rawTxData.raw.raw not ready for blockchain yet ?
+  
+  
+          blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
+            //save the tx private key
+            wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
+
+            //force a mempool check so the user is up to date
+            let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+            if (watchdog !== null)
+              watchdog.checkMempool();
+        
+            // Success
+            swal({
+              type: 'success',
+              title: i18n.t('depositsPage.createDeposit.createSuccess'),
+              html: `TxHash:<br>
+              <a href="${config.mainnetExplorerUrlHash.replace('{ID}', rawTxData.raw.hash)}" 
+              target="_blank" class="tx-hash-value">${rawTxData.raw.hash}</a>`
+            });
+            let promise = Promise.resolve();
+            promise.then(function () {
+              console.log('Deposit successfully submitted to the blockchain');
+            });
+          }).catch(function (data: any) {
+            swal({
+              type: 'error',
+              title: i18n.t('sendPage.transferExceptionModal.title'),
+              html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(data)}),
+              confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+            });
+          });
+          
+          swal.close();
+        }).catch(function (error: any) {
+          //console.log(error);
+          if (error && error !== '') {
+            if (typeof error === 'string')
+              swal({
+                type: 'error',
+                title: i18n.t('sendPage.transferExceptionModal.title'),
+                html: i18n.t('sendPage.transferExceptionModal.content', {details: error}),
+                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+              });
+            else
+              swal({
+                type: 'error',
+                title: i18n.t('sendPage.transferExceptionModal.title'),
+                html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(error)}),
+                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+              });
+          }
+        });
+
     } catch (error: unknown) {
       console.error('Error creating deposit:', error);
       swal({

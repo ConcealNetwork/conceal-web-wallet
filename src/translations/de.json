@@ -407,7 +407,7 @@
         "termError": "Bitte geben Sie eine ganze Zahl zwischen 1 und 12 Monaten ein",
         "confirm": "Einlage Erstellen",
         "cancel": "Abbrechen",
-        "createSuccess": "Einlage Erstellt",
+        "createSuccess": "Einlage an die Blockchain gesendet",
         "createPending": "Ihre Einlage wird verarbeitet",
         "createError": "Fehler beim Erstellen der Einlage",
         "withdrawSuccess": "Einlage Ausgezahlt",
@@ -543,7 +543,8 @@
       "parametersBlock": {
         "title": "Parameter",
         "password": {
-          "label": "Passwort zum Schutz deiner Wallet"
+          "label": "Passwort zum Schutz deiner Wallet",
+          "label_input": "Wallet Passwort"
         },
         "passwordConfirm": {
           "label": "Bestätige das Passwort",
@@ -623,7 +624,10 @@
       "walletBlock": {
         "title": "Wallet Datei",
         "label": "Datei auswählen",
-        "importButton": "Importiere"
+        "importButton": "Importiere",
+        "selectFile": "Bitte wähle eine gültige Wallet Datei json aus:",
+        "fileSelected": "Datei ausgewählt",
+        "invalidFile": "Die ausgewählte Datei ist keine gültige Wallet Datei."
       }
     },
     "importFromMnemonicPage": {

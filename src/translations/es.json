@@ -407,7 +407,7 @@
         "termError": "Por favor ingrese un número entero entre 1 y 12 meses",
         "confirm": "Crear Depósito",
         "cancel": "Cancelar",
-        "createSuccess": "Depósito Creado",
+        "createSuccess": "Depósito Enviado a la Blockchain",
         "createPending": "Su depósito está siendo procesado",
         "createError": "Error al Crear el Depósito",
         "withdrawSuccess": "Depósito Retirado",
@@ -543,7 +543,8 @@
       "parametersBlock": {
         "title": "Parámetros",
         "password": {
-          "label": "Contraseña para proteger su billetera"
+          "label": "Contraseña para proteger su billetera",
+          "label_input": "Contraseña de la billetera"
         },
         "passwordConfirm": {
           "label": "Confirmar la contraseña",
@@ -623,7 +624,10 @@
       "walletBlock": {
         "title": "Archivo de billetera",
         "label": "Selecciona el archivo",
-        "importButton": "Importar"
+        "importButton": "Importar",
+        "selectFile": "Por favor seleccione un archivo de copia de seguridad de billetera json válido:",
+        "fileSelected": "Archivo seleccionado",
+        "invalidFile": "El archivo seleccionado no es un archivo de billetera válido."
       }
     },
     "importFromMnemonicPage": {

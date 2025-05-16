@@ -407,7 +407,7 @@
 		  "termError": "Veuillez entrer un nombre entier entre 1 et 12 mois",
 		  "confirm": "Créer le Dépôt",
 		  "cancel": "Annuler",
-		  "createSuccess": "Dépôt Créé",
+		  "createSuccess": "Dépôt Envoyé à la Blockchain",
 		  "createPending": "Votre dépôt est en cours de traitement",
 		  "createError": "Erreur lors de la création du dépôt",
 		  "withdrawSuccess": "Dépôt Retiré",
@@ -543,7 +543,8 @@
 		"parametersBlock": {
 		  "title": "Paramètres",
 		  "password": {
-			"label": "Mot de passe pour protéger le portefeuille"
+			"label": "Mot de passe pour protéger le portefeuille",
+			"label_input": "Mot de passe du portefeuille"
 		  },
 		  "passwordConfirm": {
 			"label": "Confirmer le mot de passe",
@@ -619,11 +620,14 @@
 	  },
 	  "importFromFilePage": {
 		"title": "Importer un portefeuille depuis un fichier",
-		"subtitle": "Utilisez votre sauvegarde pour récréer le portefeuille",
+		"subtitle": "Utilisez votre sauvegarde json pour importer le portefeuille",
 		"walletBlock": {
 		  "title": "Fichier du portefeuille",
 		  "label": "Sélectionner",
-		  "importButton": "Importer"
+		  "importButton": "Importer",
+		  "selectFile": "Veuillez sélectionner un fichier de portefeuille json valide:",
+		  "fileSelected": "Fichier sélectionné",
+		  "invalidFile": "Le fichier sélectionné n'est pas un fichier portefeuille valide."
 		}
 	  },
 	  "importFromMnemonicPage": {

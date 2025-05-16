@@ -685,7 +685,9 @@
      neededFee: number,
      payment_id: string,
      message: string,
-     ttl: number
+     ttl: number,
+     transactionType: string = "regular",
+     term: number = 0
    ): Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
      return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>(function (resolve, reject) {
        let signed;
@@ -696,7 +698,23 @@
            realDestViewKey = Cn.decode_address(dsts[0].address).view;
          }
 
-         let splittedDsts = CnTransactions.decompose_tx_destinations(dsts, rct);
+         //let splittedDsts = CnTransactions.decompose_tx_destinations(dsts, rct);
+         let splittedDsts;
+         if (transactionType === "deposit") {
+           // For deposit transactions, keep the first destination intact. At this stage, dsts[0].amount is the deposit amount. and will be type "03"
+           let depositDst = dsts[0];
+           let otherDsts = dsts.slice(1);
+           
+           // Only decompose the non-deposit destinations, those destinations will be type "02"
+           let decomposedOtherDsts = CnTransactions.decompose_tx_destinations(otherDsts, rct);
+           
+           // Combine back with the deposit destination first
+           splittedDsts = [depositDst].concat(decomposedOtherDsts);
+         } else {
+           // Regular transaction - decompose all destinations
+           splittedDsts = CnTransactions.decompose_tx_destinations(dsts, rct);
+         }
+         
          signed = CnTransactions.create_transaction(
            {
              spend: wallet.keys.pub.spend,
@@ -711,10 +729,13 @@
            mix_outs, mixin, neededFee,
            payment_id, pid_encrypt,
            realDestViewKey, 0, rct,
-           message, ttl);
+           message, ttl, 
+           transactionType, term);
 
          logDebugMsg("signed tx: ", signed);
+         // console.log('Pre-serialization transaction:', JSON.stringify(signed, null, 2));
          let raw_tx_and_hash = CnTransactions.serialize_tx_with_hash(signed);
+         // console.log('Serialized transaction structure:', JSON.stringify(raw_tx_and_hash, null, 2));
          resolve({raw: raw_tx_and_hash, signed: signed});
 
        } catch (e) {
@@ -733,7 +754,9 @@
      confirmCallback: (amount: number, feesAmount: number) => Promise<void>,
      mixin: number = config.defaultMixin,
      message: string = '',
-     ttl: number = 0
+     ttl: number = 0,
+     transactionType: string = "regular",
+     term: number = 0
     ): Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
      return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>(function (resolve, reject) {
 
@@ -802,7 +825,7 @@
        let unusedOuts = unspentOuts.slice(0);
 
        let totalAmount = totalAmountWithoutFee.add(neededFee)/*.add(chargeAmount)*/;
-
+       
        //selecting outputs to fit the desired amount (totalAmount);
        function pop_random_value(list: any[]) {
          let idx = Math.floor(MathUtil.randomFloat() * list.length);
@@ -868,7 +891,7 @@
            logDebugMsg('amounts', amounts);
            logDebugMsg('lots_mix_outs', lotsMixOuts);
 
-           TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId, message, ttl).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+           TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId, message, ttl, transactionType, term).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
              resolve(data);
            }).catch(function (e) {
              reject(e);
