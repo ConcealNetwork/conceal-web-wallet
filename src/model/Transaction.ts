@@ -114,6 +114,7 @@ export class TransactionIn {
     nin.outputIndex = raw.outputIndex,
     nin.keyImage = raw.keyImage;
     nin.amount = raw.amount;
+    nin.type = raw.type;
     nin.term =  raw.term;
 
     return nin;
@@ -124,7 +125,8 @@ export class TransactionIn {
       outputIndex: this.outputIndex,
       keyImage: this.keyImage,
       amount: this.amount,
-      term: this.term
+      term: this.term,
+      type: this.type
     };
   }
 
@@ -253,6 +255,11 @@ export class Transaction {
     return this.outs.some(out => out.type === "03");
   }
 
+  get isWithdrawal() {
+    // Check if any of the inputs has a type "03", which indicates it's a withdrawal transaction
+    return this.ins.some(input => input.type === "03");
+  }
+
   copy = () => { 
     let aCopy = new Transaction();
 
@@ -279,8 +286,10 @@ class BaseBanking {
   term: number = 0;
   txHash: string = '';
   amount: number = 0;
+  interest: number = 0;
   timestamp: number = 0;
   blockHeight: number = 0;
+  unlockHeight: number = 0;
   outputIndex: number = -1;
 
   static fromRaw(raw: any) {
@@ -288,8 +297,10 @@ class BaseBanking {
     deposit.term = raw.term;
     deposit.txHash = raw.txHash;
     deposit.amount = raw.amount;
+    deposit.interest = raw.interest;
     deposit.timestamp = raw.timestamp;
     deposit.blockHeight = raw.blockHeight;
+    deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
     deposit.outputIndex = raw.outputIndex;
 
     return deposit;
@@ -300,8 +311,10 @@ class BaseBanking {
       term: this.term,
       txHash: this.txHash,
       amount: this.amount,
+      interest: this.interest,
       timestamp: this.timestamp,
       blockHeight: this.blockHeight,
+      unlockHeight: this.unlockHeight,
       outputIndex: this.outputIndex
     };
   }
@@ -312,8 +325,10 @@ class BaseBanking {
     aCopy.term = this.term;
     aCopy.txHash = this.txHash;
     aCopy.amount = this.amount;
+    aCopy.interest = this.interest;
     aCopy.timestamp = this.timestamp;
     aCopy.blockHeight = this.blockHeight;
+    aCopy.unlockHeight = this.unlockHeight;
     aCopy.outputIndex = this.outputIndex;
   
     return aCopy;
@@ -322,30 +337,62 @@ class BaseBanking {
 
 export class Deposit extends BaseBanking {
   spentTx: string = '';
+  withdrawPending: boolean = false;
 
   static fromRaw(raw: any) {
     let deposit = new Deposit();
     deposit.term = raw.term;
     deposit.txHash = raw.txHash;
     deposit.amount = raw.amount;
+    deposit.interest = raw.interest;
     deposit.spentTx = raw.spentTx; 
     deposit.timestamp = raw.timestamp;
     deposit.blockHeight = raw.blockHeight;
     deposit.outputIndex = raw.outputIndex;
-
+    deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
     return deposit;
   }
 
   export() {
-    return Object.assign(super.export(), {spentTx: this.spentTx });
+    return Object.assign(super.export(), {
+      spentTx: this.spentTx,
+      withdrawPending: this.withdrawPending
+    });
   }
 
   copy = () => { 
     let aCopy = super.copy();  
     aCopy.spentTx = this.spentTx;
-  
+    aCopy.withdrawPending = this.withdrawPending;
     return aCopy;
-  }  
+  }
+  
+  // Get total amount (principal + interest)
+  getTotalAmount(): number {
+    return this.amount + this.interest;
+  }
+  
+  // Check if deposit is unlocked at current height
+  isUnlocked(currentHeight: number): boolean {
+    return currentHeight >= this.unlockHeight;
+  }
+  
+  // Check if deposit has been spent
+  isSpent(): boolean {
+    return !!this.spentTx;
+  }
+  
+  // Get deposit status
+  getStatus(currentHeight: number): 'Locked' | 'Unlocked' | 'Spent' {
+    if (this.isSpent()) {
+      return 'Spent';
+    } else if (this.isUnlocked(currentHeight)) {
+      return 'Unlocked';
+    } else {
+      return 'Locked';
+    }
+  }
+  
 }
 
 export class Withdrawal extends BaseBanking {}

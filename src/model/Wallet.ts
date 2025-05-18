@@ -306,13 +306,13 @@ export class Wallet extends Observable {
     let foundMatch = false;
 
     for(let i = 0; i < this.deposits.length; ++i) {
-      if (this.deposits[i].amount == deposit.amount) {
-        if (this.deposits[i].outputIndex == deposit.outputIndex) {
+      if (this.deposits[i].txHash == deposit.txHash &&                //used to be matcth by amount
+        this.deposits[i].outputIndex == deposit.outputIndex) {    // double check
           this.deposits[i]  = deposit;
           foundMatch = true;
           break;
         }
-      }
+      
     }  
 
     if (!foundMatch)  {
@@ -330,28 +330,57 @@ export class Wallet extends Observable {
   }
 
   addWithdrawal = (withdrawal: Withdrawal) => {
-    let foundMatch = false;
+    let foundMatchDeposit = false;
+    let foundMatchWithdrawal = false;
 
+    // 1. First Priority: Match deposits with withdrawPending=true AND matching amount and outputIndex
     for(let i = 0; i < this.deposits.length; ++i) {
-      if (this.deposits[i].amount == withdrawal.amount) {
-        if (this.deposits[i].outputIndex == withdrawal.outputIndex) {
+      if (this.deposits[i].withdrawPending === true && 
+          this.deposits[i].amount === withdrawal.amount &&
+          this.deposits[i].outputIndex === withdrawal.outputIndex) {
+        this.deposits[i].spentTx = withdrawal.txHash;
+        this.deposits[i].withdrawPending = false; // Clear the flag
+        foundMatchDeposit = true;
+        break;
+      }
+    }
+
+    // 2. Second Priority: Match by amount and outputIndex (fallback)
+    if (!foundMatchDeposit) {
+      for(let i = 0; i < this.deposits.length; ++i) {
+        if (this.deposits[i].amount === withdrawal.amount &&
+            this.deposits[i].outputIndex === withdrawal.outputIndex &&
+            !this.deposits[i].spentTx) {
           this.deposits[i].spentTx = withdrawal.txHash;
+          foundMatchDeposit = true;
           break;
         }
       }
     }
 
+    // 3. Update withdrawals array - first try to find by txHash (most reliable)
     for(let i = 0; i < this.withdrawals.length; ++i) {
-      if (this.withdrawals[i].amount == withdrawal.amount) {
-        if (this.withdrawals[i].outputIndex == withdrawal.outputIndex) {
-          this.withdrawals[i]  = withdrawal;
-          foundMatch = true;
+      if (this.withdrawals[i].txHash === withdrawal.txHash) {
+        this.withdrawals[i] = withdrawal;
+        foundMatchWithdrawal = true;
+        break;
+      }
+    }
+
+    // 4. Update withdrawals array - fallback to amount & outputIndex if needed
+    if (!foundMatchWithdrawal) {
+      for(let i = 0; i < this.withdrawals.length; ++i) {
+        if (this.withdrawals[i].amount === withdrawal.amount &&
+            this.withdrawals[i].outputIndex === withdrawal.outputIndex) {
+          this.withdrawals[i] = withdrawal;
+          foundMatchWithdrawal = true;
           break;
         }
       }
-    }  
+    }
 
-    if (!foundMatch)  {
+    // Add as new withdrawal if no match found
+    if (!foundMatchWithdrawal) {
       this.withdrawals.push(withdrawal);
     }
 

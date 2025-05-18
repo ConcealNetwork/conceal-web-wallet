@@ -28,6 +28,7 @@ import {BlockchainExplorer, RawDaemon_Out} from "../model/blockchain/BlockchainE
 import {Cn} from "../model/Cn";
 import {WalletWatchdog} from "../model/WalletWatchdog";
 import {WalletRepository} from "../model/WalletRepository";
+import {InterestCalculator} from "../model/Interest";
 
 let wallet: Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
 let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
@@ -153,31 +154,56 @@ class DepositsView extends DestructableView {
               aprIndex = 1;
             }
             
-            // Use type assertion directly in one line
-            let aprRate = (config as any).depositRateV3[aprIndex];
+            // Calculate interest using the InterestCalculator class
+            const termBlocks = term * config.depositMinTermBlock; // Convert term (months) to blocks
             
-            // Calculate interest using the formula
-            // calculateInterest = depositAmount * depositTerm * (aprRate + (depositTerm - 1) * 0.001) / 12
-            let adjustedRate = aprRate + (term - 1) * 0.001;
-            let reward = amount * term * adjustedRate / 12;
-            
-            // Update reward text
-            let rewardText = document.getElementById('rewardText');
-            if (rewardText) {
-              // First format with full decimal places
-              let rewardFixed = reward.toFixed(config.coinUnitPlaces); // 6 decimals
+            // Get current blockchain height for interest calculation
+            blockchainExplorer.getHeight().then((height: number) => {
+              // Calculate the interest using our Interest class
+              let reward = InterestCalculator.calculateInterest(
+                amount * Math.pow(10, config.coinUnitPlaces), // Convert to atomic units
+                termBlocks, 
+                height
+              ) / Math.pow(10, config.coinUnitPlaces); // Convert back to human-readable amount
               
-              // Remove trailing zeros using a for loop (up to 4 times)
-              for (let i = 0; i < 4; i++) {
-                if (rewardFixed.endsWith('0')) {
-                  rewardFixed = rewardFixed.slice(0, -1);
-                } else {
-                  break;
+              // Update reward text
+              let rewardText = document.getElementById('rewardText');
+              if (rewardText) {
+                // First format with full decimal places
+                let rewardFixed = reward.toFixed(config.coinUnitPlaces); // 6 decimals
+                
+                // Remove trailing zeros using a for loop (up to 4 times)
+                for (let i = 0; i < 4; i++) {
+                  if (rewardFixed.endsWith('0')) {
+                    rewardFixed = rewardFixed.slice(0, -1);
+                  } else {
+                    break;
+                  }
                 }
+                            
+                rewardText.textContent = i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: rewardFixed });
               }
-                          
-              rewardText.textContent = i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: rewardFixed });
-            }
+            }).catch((error) => {
+              console.log('Failed to get blockchain height:', error);
+              // Fallback to the old calculation method if we can't get the height
+              let aprRate = (config as any).depositRateV3[aprIndex];
+              let adjustedRate = aprRate + (term - 1) * 0.001;
+              let reward = amount * term * adjustedRate / 12;
+              
+              // Update reward text
+              let rewardText = document.getElementById('rewardText');
+              if (rewardText) {
+                let rewardFixed = reward.toFixed(config.coinUnitPlaces);
+                for (let i = 0; i < 4; i++) {
+                  if (rewardFixed.endsWith('0')) {
+                    rewardFixed = rewardFixed.slice(0, -1);
+                  } else {
+                    break;
+                  }
+                }
+                rewardText.textContent = i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: rewardFixed });
+              }
+            });
           }
           
           // Initialize the reward display when the modal opens
@@ -336,7 +362,7 @@ class DepositsView extends DestructableView {
   moreInfoOnDeposit = (deposit: Deposit) => {
 		let explorerUrlHash = config.testnet ? config.testnetExplorerUrlHash : config.mainnetExplorerUrlHash;
 		let explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
-		let status = 'Locked';
+		let status = deposit.getStatus(this.blockchainHeight);
 
     let creatingTimestamp = 0;
     let spendingTimestamp = 0;
@@ -353,7 +379,7 @@ class DepositsView extends DestructableView {
       spendingTimestamp = spendingTx.timestamp;
       spendingHeight = spendingTx.blockHeight;
     }
-
+/*
     if ((deposit.blockHeight + deposit.term) <= this.blockchainHeight) {
       if (deposit.spentTx) {
         status = 'Spent'
@@ -361,7 +387,7 @@ class DepositsView extends DestructableView {
         status = 'Unlocked'
       }
     }
-
+*/
 		swal({
 			title:i18n.t('depositsPage.depositDetails.title'),
       customClass:'swal-wide',
@@ -374,9 +400,10 @@ class DepositsView extends DestructableView {
           <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.term')+`</span>:<span class="txDetailsValue">` + deposit.term + `</a></span></div>
           <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.creationHeight')+`</span>:<span class="txDetailsValue">` + deposit.blockHeight + `</a></span></div>
           <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.creationTime')+`</span>:<span class="txDetailsValue">` + new Date(creatingTimestamp * 1000).toDateString() + `</a></span></div>
-          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.unlockHeight')+`</span>:<span class="txDetailsValue">` + (deposit.blockHeight + deposit.term) + `</a></span></div>
-          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.spendingTime')+`</span>:<span class="txDetailsValue">` + new Date(spendingTimestamp * 1000).toDateString() + `</a></span></div>
-          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.spendingHeight')+`</span>:<span class="txDetailsValue">` + spendingHeight + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.unlockHeight')+`</span>:<span class="txDetailsValue">` + (deposit.unlockHeight) + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.interest')+`</span>:<span class="txDetailsValue">` + (deposit.interest / Math.pow(10, config.coinUnitPlaces)) + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.spendingTime')+`</span>:<span class="txDetailsValue">` + (spendingTimestamp == 0 ? "unspent" : new Date(spendingTimestamp * 1000).toDateString()) + `</a></span></div>
+          <div><span class="txDetailsLabel">`+i18n.t('depositsPage.depositDetails.spendingHeight')+`</span>:<span class="txDetailsValue">` + (spendingHeight == 0 ? "unspent" : spendingHeight) + `</a></span></div>
         </div>`
 		});
 	}  
@@ -385,6 +412,26 @@ class DepositsView extends DestructableView {
     try {
       this.lockedForm = true;
       console.log('Withdrawing deposit:', deposit.txHash);
+      
+      // Find deposit by txHash and outputIndex (natural unique identifiers)
+      const foundDeposit = this.deposits.find(d => 
+        d.txHash === deposit.txHash && 
+        d.outputIndex === deposit.outputIndex
+      );
+      if (!foundDeposit || foundDeposit.withdrawPending) {
+        swal({
+          type: 'error',
+          title: i18n.t('depositsPage.withdrawError'),
+          text: i18n.t('depositsPage.withdrawPending')
+        });
+        return;
+      }
+
+      foundDeposit.withdrawPending = true;
+        
+        // Update the deposit in the wallet
+        wallet.addDeposit(foundDeposit);
+      
       
       // Simulate success
       swal({

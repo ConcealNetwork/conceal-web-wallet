@@ -382,7 +382,13 @@
 		}
 	  },
 	  "depositsPage": {
-		"title": "Dépots",
+		"title": "Dépots",	
+		"depositDate": "Date de dépot",
+		"lockHeight": "Hauteur de blocage",
+		"unlockDate": "Date de déblocage",
+		"unlockHeight": "Hauteur de déblocage",
+		"interest": "Intérêt",
+		"deposit": "Dépot",
 		"syncing": {
 		  "label": "Synchronisation du portefeuille.... Quand il sera totalement synchronisé vous pourrez voir vos dépots."
 		},
@@ -432,7 +438,8 @@
 		  "spendingTime": "Date de la dépense",
 		  "spendingHeight": "Hauteur de la dépense",
 		  "creationHeight": "Hauteur de création",
-		  "unlockHeight": "Hauteur de déverouillage"
+		  "unlockHeight": "Hauteur de déverouillage",
+		  "interest": "Intérêt"
 		}
 	  },
 	  "receivePage": {

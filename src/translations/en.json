@@ -383,6 +383,12 @@
     },    
     "depositsPage": {
       "title": "Deposits",
+      "unlockDate": "Unlock Date",
+      "interest": "Interest",
+      "deposit": "Deposit",
+      "lockHeight": "Lock Height",
+      "unlockHeight": "Unlock Height",
+      "depositDate": "Deposit Date",
       "syncing": {
         "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
       },
@@ -432,7 +438,8 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "unlockHeight": "Unlock height",
+        "interest": "Interest"
       }
     },
     "receivePage": {

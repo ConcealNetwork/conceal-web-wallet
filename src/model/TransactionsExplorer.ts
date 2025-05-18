@@ -34,13 +34,39 @@
  *     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// Declare global config type
+declare var config: {
+  debug: boolean;
+  apiUrl: string[];
+  nodeList: string[];
+  publicNodes: string;
+  mainnetExplorerUrl: string;
+  mainnetExplorerUrlHash: string;
+  mainnetExplorerUrlBlock: string;
+  testnetExplorerUrl: string;
+  testnetExplorerUrlHash: string;
+  testnetExplorerUrlBlock: string;
+  testnet: boolean;
+  coinUnitPlaces: number;
+  txMinConfirms: number;
+  txCoinbaseMinConfirms: number;
+  coinFee: number;
+  maxBlockNumber: number;
+  depositMinTermBlock: number;
+  depositMaxTermMonth: number;
+  depositRateV3: number[];
+  depositHeightV3: number;
+  [key: string]: any;
+};
+
  import {Wallet} from "./Wallet";
  import {MathUtil} from "./MathUtil";
  import {JSChaCha8} from './ChaCha8';
  import {Cn, CnNativeBride, CnRandom, CnTransactions, CnUtils} from "./Cn";
  import {RawDaemon_Transaction, RawDaemon_Out} from "./blockchain/BlockchainExplorer";
  import {Transaction, TransactionData, Deposit, TransactionIn, TransactionOut} from "./Transaction";
- 
+ import {InterestCalculator} from "./Interest";
+
  export const TX_EXTRA_PADDING_MAX_COUNT = 255;
  export const TX_EXTRA_NONCE_MAX_COUNT = 255;
 
@@ -450,7 +476,6 @@
 
            if (out.target.data && out.target.data.term) {
              let deposit = new Deposit();
-
              if (typeof rawTransaction.height  !== 'undefined') deposit.blockHeight = rawTransaction.height;
              if (typeof rawTransaction.hash  !== 'undefined') deposit.txHash = rawTransaction.hash;
              if (typeof rawTransaction.ts  !== 'undefined') deposit.timestamp = rawTransaction.ts;
@@ -459,6 +484,9 @@
              if (rawTransaction.output_indexes && (rawTransaction.output_indexes.length > iOut)) {
                deposit.outputIndex = rawTransaction.output_indexes[iOut]; 
              }
+             // Calculate the interest for this deposit
+             deposit.interest = InterestCalculator.calculateInterest(deposit.amount, deposit.term, deposit.blockHeight);
+
              deposits.push(deposit);
            }
          }
@@ -528,7 +556,17 @@
 
          // add the withdrawal if it was not yet processed
          if ((!wasAdded) && (vin.type == "03")) {
-           let withdrawal = new Deposit();
+          let transactionIn = new TransactionIn();
+           transactionIn.type = "03"; // Set type explicitly for withdrawal
+           transactionIn.term = (vin.value && vin.value.term) ? vin.value.term : 0;
+           if (vin.value && vin.value.amount) {
+             transactionIn.amount = parseInt(vin.value.amount);
+           }
+           // Add the transaction input to the array
+           ins.push(transactionIn); 
+          
+          
+          let withdrawal = new Deposit();
            if (typeof rawTransaction.ts !== 'undefined') withdrawal.timestamp = rawTransaction.ts;
            if (typeof rawTransaction.hash !== 'undefined') withdrawal.txHash = rawTransaction.hash;
            if (typeof rawTransaction.height !== 'undefined') withdrawal.blockHeight = rawTransaction.height;

@@ -383,6 +383,12 @@
     },
     "depositsPage": {
       "title": "Einlagen",
+      "depositDate": "Einzahlungsdatum",
+      "lockHeight": "Sperrfrist",
+      "unlockDate": "Entsperrungsdatum",
+      "unlockHeight": "Entsperrungsfrist",
+      "interest": "Zinsen",
+      "deposit": "Einzahlung",
       "syncing": {
         "label": "Synchronisiere Wallet.... Wenn es vollständig synchronisiert ist, können Sie Ihre Einlagen sehen."
       },
@@ -432,7 +438,8 @@
         "spendingTime": "Auszahlungsdatum",
         "spendingHeight": "Auszahlungshöhe",
         "creationHeight": "Erstellungshöhe",
-        "unlockHeight": "Freigabehöhe"
+        "unlockHeight": "Freigabehöhe",
+        "interest": "Zinsen"
       }
     },
     "receivePage": {
