@@ -20,6 +20,7 @@ define(["require", "exports"], function (require, exports) {
         'importFromKeys',
         'importFromFile',
         'importFromMnemonic',
+        'importFromQr',
         'termsOfUse',
         'privacyPolicy',
         'support',

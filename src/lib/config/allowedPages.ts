@@ -15,6 +15,7 @@ export const allowedPages = [
   'importFromKeys',
   'importFromFile',
   'importFromMnemonic',
+  'importFromQr',
   'termsOfUse',
   'privacyPolicy',
   'support',
