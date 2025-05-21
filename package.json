@@ -10,6 +10,7 @@
   "main": "index.js",
   "dependencies": {
     "@types/node": "^22.14.0",
+    "dotenv": "^16.5.0",
     "typescript": "^5.8.3",
     "workbox-build": "^7.3.0"
   },
