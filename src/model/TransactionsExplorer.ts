@@ -482,7 +482,7 @@ declare var config: {
              deposit.amount = transactionOut.amount; 
              deposit.term = out.target.data.term; 
              if (rawTransaction.output_indexes && (rawTransaction.output_indexes.length > iOut)) {
-               deposit.outputIndex = rawTransaction.output_indexes[iOut]; 
+               deposit.outputIndex = rawTransaction.output_indexes[iOut];
              }
              // Calculate the interest for this deposit
              deposit.interest = InterestCalculator.calculateInterest(deposit.amount, deposit.term, deposit.blockHeight);
@@ -771,9 +771,9 @@ declare var config: {
            transactionType, term);
 
          logDebugMsg("signed tx: ", signed);
-         // console.log('Pre-serialization transaction:', JSON.stringify(signed, null, 2));
+        console.log('Pre-serialization transaction:', JSON.stringify(signed, null, 2));
          let raw_tx_and_hash = CnTransactions.serialize_tx_with_hash(signed);
-         // console.log('Serialized transaction structure:', JSON.stringify(raw_tx_and_hash, null, 2));
+         console.log('Serialized transaction structure:', JSON.stringify(raw_tx_and_hash, null, 2));
          resolve({raw: raw_tx_and_hash, signed: signed});
 
        } catch (e) {
@@ -863,7 +863,6 @@ declare var config: {
        let unusedOuts = unspentOuts.slice(0);
 
        let totalAmount = totalAmountWithoutFee.add(neededFee)/*.add(chargeAmount)*/;
-       
        //selecting outputs to fit the desired amount (totalAmount);
        function pop_random_value(list: any[]) {
          let idx = Math.floor(MathUtil.randomFloat() * list.length);
@@ -938,4 +937,111 @@ declare var config: {
        });
      });
    }
+ 
+   static createWithdrawTx(
+    deposit: Deposit,
+    wallet: Wallet,
+    blockchainHeight: number,
+    obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>,
+    confirmCallback: (amount: number, feesAmount: number) => Promise<void>,
+    mixin: number = config.defaultMixin,
+    paymentId: string = '',
+    message: string = '',
+    ttl: number = 0,
+    transactionType: string = "withdraw",
+    term: number = 0
+  ): Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
+    return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>((resolve, reject) => {
+      let lockedAmount = deposit.amount;
+      let totalInterest = deposit.interest;
+      let totalAmount = lockedAmount + totalInterest;
+      let pid_encrypt = false; // don't encrypt payment ID for withdrawals
+      let paymentId = '';
+      // Check if the deposit is unlocked
+      if (deposit.unlockHeight > blockchainHeight) {
+        reject(new Error("Deposit is still locked"));
+        return;
+      }
+
+      logDebugMsg('Withdrawing deposit with amount', totalAmount);
+
+      // For withdrawals, we want a small fee for the transaction
+      let neededFee = new JSBigInt(config.depositSmallWithdrawFee);
+      let totalAmountWithoutFee = new JSBigInt(totalAmount);
+
+      if (lockedAmount < 1) {
+        reject(new Error('such a deposit cannot could not have been created'));
+        return;
+      }
+
+
+      confirmCallback(totalAmountWithoutFee.subtract(neededFee), neededFee).then(() => {
+        let usingOuts: RawOutForTx[] = [];
+        
+        // Create the multisignature input for the deposit
+        // Only need fields that match the C++ implementation
+        let depositOutput: RawOutForTx = {
+          keyImage: '', // Not needed for deposit withdrawal
+          amount: deposit.amount,
+          public_key: '', // Will be set during transaction creation
+          index: deposit.outputIndex,
+          global_index: deposit.outputIndex,
+          tx_pub_key: '' // Will be set during transaction creation
+        };
+        
+        usingOuts.push(depositOutput);
+        let changeAmount = totalAmountWithoutFee.subtract(neededFee);
+        // Create destination - all funds minus fee go back to the wallet
+        let dsts: { address: string, amount: number }[] = [];
+        
+        
+        logDebugMsg("Sending withdrawn amount of " + Cn.formatMoneySymbol(changeAmount) 
+          + " to " + wallet.getPublicAddress()); 
+        dsts.push({
+          address: wallet.getPublicAddress(),
+          amount: changeAmount
+        });
+
+        logDebugMsg('destinations', dsts);
+
+        let amounts: number[] = [];
+        for (let l = 0; l < usingOuts.length; l++) {
+          amounts.push(usingOuts[l].amount);
+        }
+        let nbOutsNeeded: number = mixin + 1;
+
+        obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts: any[]) {
+          logDebugMsg('------------------------------mix_outs');
+          logDebugMsg('amounts', amounts);
+          logDebugMsg('lots_mix_outs', lotsMixOuts);
+
+          TransactionsExplorer.createRawTx(
+            dsts, 
+            wallet, 
+            false, 
+            usingOuts, 
+            pid_encrypt, 
+            lotsMixOuts, 
+            mixin, 
+            neededFee, 
+            paymentId, 
+            message, 
+            ttl, 
+            "withdraw", 
+            deposit.term
+          ).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+            resolve(data);
+          }).catch(function (e) {
+            reject(e);
+          });
+        }).catch((error) => {
+          reject(error);
+        });
+      }).catch((error) => {
+        reject(error);
+      });
+    });
+  }
+
+
  }

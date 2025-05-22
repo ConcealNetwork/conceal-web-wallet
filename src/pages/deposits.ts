@@ -411,14 +411,12 @@ class DepositsView extends DestructableView {
   withdrawDeposit = async (deposit: Deposit) => {
     try {
       this.lockedForm = true;
-      console.log('Withdrawing deposit:', deposit.txHash);
-      
       // Find deposit by txHash and outputIndex (natural unique identifiers)
       const foundDeposit = this.deposits.find(d => 
         d.txHash === deposit.txHash && 
         d.outputIndex === deposit.outputIndex
       );
-      if (!foundDeposit || foundDeposit.withdrawPending) {
+      if (!foundDeposit || foundDeposit.withdrawPending || foundDeposit.isSpent()) {
         swal({
           type: 'error',
           title: i18n.t('depositsPage.withdrawError'),
@@ -427,11 +425,98 @@ class DepositsView extends DestructableView {
         return;
       }
 
-      foundDeposit.withdrawPending = true;
-        
-        // Update the deposit in the wallet
-        wallet.addDeposit(foundDeposit);
+      foundDeposit.withdrawPending = true;   
+      wallet.addDeposit(foundDeposit); // Update the deposit in the wallet
+      console.log("withdrawal of deposit block , tx, amount, output_index", foundDeposit.blockHeight, foundDeposit.txHash, foundDeposit.amount, foundDeposit.outputIndex);
+
+      const blockchainHeight = await blockchainExplorer.getHeight();
       
+      let mixinToSendWith: number = config.defaultMixin;
+
+        TransactionsExplorer.createWithdrawTx(foundDeposit, wallet, blockchainHeight,
+          function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+            return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+          }
+          , function (amount: number, feesAmount: number): Promise<void> {
+            if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
+              swal({
+                type: 'error',
+                title: i18n.t('sendPage.notEnoughMoneyModal.title'),
+                text: i18n.t('sendPage.notEnoughMoneyModal.content'),
+                confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
+                onOpen: () => {
+                  swal.hideLoading();
+                }
+              });
+              throw '';
+            }
+            return Promise.resolve();
+          },
+          mixinToSendWith, "", "", 0, "withdraw", foundDeposit.term).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+          
+          console.log('Raw transaction data:', rawTxData);
+        
+          //rawTxData.raw.raw not ready for blockchain yet ?
+  /*
+  
+          blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
+            //save the tx private key
+            wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
+
+            //force a mempool check so the user is up to date
+            let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+            if (watchdog !== null)
+              watchdog.checkMempool();
+        
+            // Success
+            swal({
+              type: 'success',
+              title: i18n.t('depositsPage.createDeposit.createSuccess'),
+              html: `TxHash:<br>
+              <a href="${config.mainnetExplorerUrlHash.replace('{ID}', rawTxData.raw.hash)}" 
+              target="_blank" class="tx-hash-value">${rawTxData.raw.hash}</a>`
+            });
+            let promise = Promise.resolve();
+            promise.then(function () {
+              console.log('Deposit successfully submitted to the blockchain');
+            });
+          }).catch(function (data: any) {
+            swal({
+              type: 'error',
+              title: i18n.t('sendPage.transferExceptionModal.title'),
+              html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(data)}),
+              confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+            });
+          });
+         */
+          swal.close();
+        }).catch(function (error: any) {
+          //console.log(error);
+          if (error && error !== '') {
+            if (typeof error === 'string')
+              swal({
+                type: 'error',
+                title: i18n.t('sendPage.transferExceptionModal.title'),
+                html: i18n.t('sendPage.transferExceptionModal.content', {details: error}),
+                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+              });
+            else
+              swal({
+                type: 'error',
+                title: i18n.t('sendPage.transferExceptionModal.title'),
+                html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(error)}),
+                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+              });
+          }
+        });
+
+
+
+
+
+
+
+
       
       // Simulate success
       swal({

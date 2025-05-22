@@ -983,6 +983,44 @@ export namespace Cn{
 		return Cn.formatMoney(units) + ' ' + config.coinSymbol;
 	}
 
+	/**
+	 * Generates a signature for a transaction using Schnorr-style signature
+	 * @param prefixHash - Hash of the transaction prefix
+	 * @param publicKey - Public key for signature verification
+	 * @param secretKey - Secret key to sign with
+	 * @returns The generated signature as a hex string
+	 */
+	export function generate_signature(prefixHash: string, publicKey: string, secretKey: string): string {
+		try {
+			// Convert inputs to binary format
+			const prefixHashBin = CnUtils.hextobin(prefixHash);
+			const publicKeyBin = CnUtils.hextobin(publicKey);
+			const secretKeyBin = CnUtils.hextobin(secretKey);
+        
+			// Generate a random scalar k
+			const k = CnRandom.random_scalar();
+			const kBin = CnUtils.hextobin(k);
+        
+			// Calculate commitment point: commitment = kG (G is the base point)
+			const commitment = CnUtils.ge_scalarmult_base(k);
+        
+			// Create buffer with prefix hash, public key, and commitment for hashing
+			const dataToHash = prefixHash + publicKey + commitment;
+        
+			// Hash the buffer to create the challenge scalar c
+			const c = Cn.hash_to_scalar(dataToHash);
+			const cBin = CnUtils.hextobin(c);
+        
+			// Calculate response scalar: r = k - c*sec mod l
+			const r = CnNativeBride.sc_mulsub(c, secretKey, k);
+        
+			// Return signature as combined c and r values
+			return c + r;
+		} catch (e) {
+			console.error("Error in generate_signature:", e);
+			throw e;
+		}
+	}
 }
 
 export namespace CnTransactions{
@@ -1413,7 +1451,7 @@ export namespace CnTransactions{
 					buf += CnUtils.encode_varint(vin.amount);
 					buf += CnUtils.encode_varint(vin.signatures || 1);
 					buf += CnUtils.encode_varint(vin.outputIndex || 0);
-					buf += CnUtils.encode_varint(vin.term || 0);
+					buf += CnUtils.encode_varint_term(vin.term || 0);
 					break;
 				default:
 					throw "Unhandled vin type: " + vin.type;
@@ -2011,7 +2049,7 @@ export namespace CnTransactions{
 			tx.signatures = [];
 		}
 
-		if (transactionType === "deposit") {
+		if (transactionType !== "regular") {
 			tx.version = DEPOSIT_TX_VERSION;
 		}
 
@@ -2024,6 +2062,7 @@ export namespace CnTransactions{
 		logDebugMsg('Sources: ');
 		//run the for loop twice to sort ins by key image
 		//first generate key image and other construction data to sort it all in one go
+		if (transactionType !== "withdraw") {
 		for (i = 0; i < sources.length; i++) {
 			logDebugMsg(i + ': ' + Cn.formatMoneyFull(sources[i].amount));
 			if (sources[i].real_out >= sources[i].outputs.length) {
@@ -2047,7 +2086,8 @@ export namespace CnTransactions{
 				throw "in_ephemeral.pub != source.real_out.key";
 			}
 			sources[i].key_image = res.image;
-			sources[i].in_ephemeral = res.in_ephemeral;
+				sources[i].in_ephemeral = res.in_ephemeral;
+			}
 		}
 		//sort ins
 		sources.sort(function(a,b){
@@ -2071,8 +2111,10 @@ export namespace CnTransactions{
 					type:"input_to_deposit_key",
 					term:term,
 					amount:sources[i].amount,
-					k_image:sources[i].key_image,
+					k_image: sources[i].key_image,
 					key_offsets:[],
+					signatures : 1,
+					outputIndex : parseInt(sources[i].outputs[sources[i].real_out].index)
 				};
 			}
 			/*let input_to_key : CnTransactions.Vin = {
@@ -2267,9 +2309,38 @@ export namespace CnTransactions{
 				for (j = 0; j < sources[i].outputs.length; ++j) {
 					src_keys.push(sources[i].outputs[j].key);
 				}
+				if (transactionType !== "withdraw") {
 				let sigs = CnNativeBride.generate_ring_signature(CnTransactions.get_tx_prefix_hash(tx), tx.vin[i].k_image, src_keys,
 					in_contexts[i].sec, sources[i].real_out);
 				tx.signatures.push(sigs);
+				} else {
+					// For withdrawals, use multisignature signing instead of ring signatures
+					let txPrefixHash = CnTransactions.get_tx_prefix_hash(tx);
+					// Derive keys for the deposit output we're spending
+					let derivation = CnNativeBride.generate_key_derivation(
+						sources[i].real_out_tx_key,
+						keys.view.sec
+					);
+					// Derive ephemeral keys
+					let ephemeralPublicKey = CnNativeBride.derive_public_key(
+						derivation, 
+						sources[i].real_out_in_tx,
+						keys.spend.pub
+					);
+					let ephemeralSecretKey = CnNativeBride.derive_secret_key(
+						derivation,
+						sources[i].real_out_in_tx,
+						keys.spend.sec
+					);
+					// Generate multisignature
+					let sig = Cn.generate_signature(
+						txPrefixHash,
+						ephemeralPublicKey,
+						ephemeralSecretKey
+					);
+					// Add the signature to the transaction
+					tx.signatures.push([sig]);
+				}
 			}
 		} else { //rct
 			let txnFee = fee_amount;
@@ -2399,7 +2470,8 @@ export namespace CnTransactions{
 				}
 			};
 			src.amount = new JSBigInt(outputs[i].amount).toString();
-			if (mix_outs.length !== 0) { //if mixin
+			
+			if (transactionType !== "withdraw" && mix_outs.length !== 0) { //if mixin
 				// Sort fake outputs by global index
 				logDebugMsg('mix outs before sort',mix_outs[i].outs);
 				mix_outs[i].outs.sort(function(a, b) {
@@ -2493,6 +2565,9 @@ export namespace CnTransactions{
 			amount: JSBigInt.ZERO
 		};
 		let cmp = needed_money.compare(found_money);
+		if (transactionType === "withdraw") {                     // until we find something better
+			cmp = 0;
+		}
 		if (cmp < 0) {
 			change.amount = found_money.subtract(needed_money);
 			if (change.amount.compare(fee_amount) !== 0) {

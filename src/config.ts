@@ -60,6 +60,7 @@ myGlobal.config = {
 	depositMinTermMonth: 1,
 	depositMinTermBlock: 21900,
 	depositMaxTermMonth: 12,
+	depositSmallWithdrawFee: 10,
 	depositRateV3: [0.029, 0.039, 0.049], // Define deposit rates for different tiers	
 };
 
