@@ -306,24 +306,33 @@ body.menuHidden #menu {
 	padding: 14px 0;
 	text-decoration: none;
 	font-weight: 300;
+	transition: all 0.3s ease;
 }
 
-#menu a:hover {
+#menu a:not(#menu_logo):hover {
 	border-right: 5px solid white;
+	color: #faa933;
 }
 
-#menu a:first-child:hover {
-	border-right: none;
-}
-
-#menu a:last-child {
-	border-bottom: none;
-}
-
-#menu a .icon {
+#menu a:not(#menu_logo) .icon {
 	display: inline-block;
 	width: 30px;
 	text-align: center;
+	transition: all 0.3s ease;
+}
+
+#menu a:not(#menu_logo):hover .icon {
+	color: #faa933;
+	transform: scale(1.1);
+}
+
+#menu a:not(#menu_logo) span {
+	transition: all 0.3s ease;
+}
+
+#menu a:not(#menu_logo):hover span {
+	color: #faa933;
+	text-shadow: 0 0 8px rgba(250, 169, 51, 0.3);
 }
 
 #menu img {
@@ -1157,13 +1166,18 @@ body {
 }
 
 .panel {
-	background: #424242ea;
+	background: rgba(66, 66, 66, 0.95);
 	border-radius: 5px;
 	padding: 1rem 1.1rem 1rem 1.1rem;
 	margin-bottom: 1.8rem;
-
 	box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
 	position: relative;
+	transition: all 0.3s ease;
+}
+
+.panel:hover {
+	background: rgba(66, 66, 66, 0.88);
+	box-shadow: 0 6px 10px -1px #0003, 0 12px 20px #00000024, 0 2px 36px #0000001f;
 }
 
 .panel.nopadding {
