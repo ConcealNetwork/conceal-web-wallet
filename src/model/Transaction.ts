@@ -291,6 +291,7 @@ class BaseBanking {
   blockHeight: number = 0;
   unlockHeight: number = 0;
   outputIndex: number = -1;
+  txPubKey: string = '';
 
   static fromRaw(raw: any) {
     let deposit = new Deposit();
@@ -302,6 +303,7 @@ class BaseBanking {
     deposit.blockHeight = raw.blockHeight;
     deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
     deposit.outputIndex = raw.outputIndex;
+    deposit.txPubKey = raw.txPubKey;
 
     return deposit;
   }
@@ -315,7 +317,8 @@ class BaseBanking {
       timestamp: this.timestamp,
       blockHeight: this.blockHeight,
       unlockHeight: this.unlockHeight,
-      outputIndex: this.outputIndex
+      outputIndex: this.outputIndex,
+      txPubKey: this.txPubKey
     };
   }
 
@@ -330,6 +333,7 @@ class BaseBanking {
     aCopy.blockHeight = this.blockHeight;
     aCopy.unlockHeight = this.unlockHeight;
     aCopy.outputIndex = this.outputIndex;
+    aCopy.txPubKey = this.txPubKey;
   
     return aCopy;
   }
@@ -337,8 +341,9 @@ class BaseBanking {
 
 export class Deposit extends BaseBanking {
   spentTx: string = '';
+  keys: string[] = []; // Array of public keys for multisignature deposit
   withdrawPending: boolean = false;
-
+  
   static fromRaw(raw: any) {
     let deposit = new Deposit();
     deposit.term = raw.term;
@@ -349,14 +354,17 @@ export class Deposit extends BaseBanking {
     deposit.timestamp = raw.timestamp;
     deposit.blockHeight = raw.blockHeight;
     deposit.outputIndex = raw.outputIndex;
+    deposit.txPubKey = raw.txPubKey;
     deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
+    deposit.keys = raw.keys || [];
     return deposit;
   }
 
   export() {
     return Object.assign(super.export(), {
       spentTx: this.spentTx,
-      withdrawPending: this.withdrawPending
+      withdrawPending: this.withdrawPending,
+      keys: this.keys
     });
   }
 
@@ -364,6 +372,7 @@ export class Deposit extends BaseBanking {
     let aCopy = super.copy();  
     aCopy.spentTx = this.spentTx;
     aCopy.withdrawPending = this.withdrawPending;
+    aCopy.keys = [...this.keys];
     return aCopy;
   }
   

@@ -425,9 +425,7 @@ class DepositsView extends DestructableView {
         return;
       }
 
-      foundDeposit.withdrawPending = true;   
-      wallet.addDeposit(foundDeposit); // Update the deposit in the wallet
-      console.log("withdrawal of deposit block , tx, amount, output_index", foundDeposit.blockHeight, foundDeposit.txHash, foundDeposit.amount, foundDeposit.outputIndex);
+      console.log("withdrawal of deposit block , tx, amount, output_index TX_PUBKEY, term", foundDeposit.blockHeight, foundDeposit.txHash, foundDeposit.amount, foundDeposit.outputIndex, foundDeposit.txPubKey, foundDeposit.term);
 
       const blockchainHeight = await blockchainExplorer.getHeight();
       
@@ -450,48 +448,83 @@ class DepositsView extends DestructableView {
               });
               throw '';
             }
-            return Promise.resolve();
+
+            return new Promise<void>(function (resolve, reject) {
+              setTimeout(function () {//prevent bug with swal when code is too fast
+                swal({
+                  title: i18n.t('sendPage.confirmTransactionModal.title'),
+                  html: i18n.t('sendPage.confirmTransactionModal.content', {
+                    amount: (amount + feesAmount) / Math.pow(10, config.coinUnitPlaces),
+                    fees: feesAmount / Math.pow(10, config.coinUnitPlaces),
+                    total: amount  / Math.pow(10, config.coinUnitPlaces),
+                  }),
+                  showCancelButton: true,
+                  confirmButtonText: i18n.t('sendPage.confirmTransactionModal.confirmText'),
+                  cancelButtonText: i18n.t('sendPage.confirmTransactionModal.cancelText'),
+                }).then(function (result: any) {
+                  if (result.dismiss) {
+                    reject('');
+                  } else {
+                    foundDeposit.withdrawPending = true;   
+                    wallet.addDeposit(foundDeposit); // Update the deposit in the wallet
+
+                    swal({
+                      title: i18n.t('sendPage.finalizingTransferModal.title'),
+                      html: i18n.t('sendPage.finalizingTransferModal.content'),
+                      onOpen: () => {
+                        swal.showLoading();
+                      }
+                    });
+                    resolve();
+                  }
+                }).catch(reject);
+              }, 1);
+            });
           },
           mixinToSendWith, "", "", 0, "withdraw", foundDeposit.term).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
           
-          console.log('Raw transaction data:', rawTxData);
+          console.log('Raw transaction data:', rawTxData.raw.raw);
         
           //rawTxData.raw.raw not ready for blockchain yet ?
-  /*
   
-          blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
-            //save the tx private key
-            wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
+         /*  WIP -------------------------------------------------------------------------
+            blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
+              setTimeout(() => {
+              //save the tx private key
+              wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
 
-            //force a mempool check so the user is up to date
-            let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
-            if (watchdog !== null)
-              watchdog.checkMempool();
+              //force a mempool check so the user is up to date
+              let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+              if (watchdog !== null)
+                watchdog.checkMempool();
         
-            // Success
-            swal({
-              type: 'success',
-              title: i18n.t('depositsPage.createDeposit.createSuccess'),
-              html: `TxHash:<br>
-              <a href="${config.mainnetExplorerUrlHash.replace('{ID}', rawTxData.raw.hash)}" 
-              target="_blank" class="tx-hash-value">${rawTxData.raw.hash}</a>`
+              // Success
+              swal({
+                type: 'success',
+                title: i18n.t('depositsPage.createDeposit.createSuccess'),
+                html: `TxHash:<br>
+                <a href="${config.mainnetExplorerUrlHash.replace('{ID}', rawTxData.raw.hash)}" 
+                target="_blank" class="tx-hash-value">${rawTxData.raw.hash}</a>`
+              });
+              let promise = Promise.resolve();
+              promise.then(function () {
+                console.log('Withdrawal successfully submitted to the blockchain');
+              });
+              }, 5);
+            }).catch(function (data: any) {
+              setTimeout(() => {
+              swal({
+                type: 'error',
+                title: i18n.t('sendPage.transferExceptionModal.title'),
+                html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(data)}),
+                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+              });
+              }, 5);
             });
-            let promise = Promise.resolve();
-            promise.then(function () {
-              console.log('Deposit successfully submitted to the blockchain');
-            });
-          }).catch(function (data: any) {
-            swal({
-              type: 'error',
-              title: i18n.t('sendPage.transferExceptionModal.title'),
-              html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(data)}),
-              confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-            });
-          });
-         */
+*/
           swal.close();
-        }).catch(function (error: any) {
-          //console.log(error);
+        }).catch((error) => {
+          setTimeout(() => {
           if (error && error !== '') {
             if (typeof error === 'string')
               swal({
@@ -508,15 +541,8 @@ class DepositsView extends DestructableView {
                 confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
               });
           }
+        }, 100);
         });
-
-
-
-
-
-
-
-
       
       // Simulate success
       swal({
@@ -542,8 +568,10 @@ class DepositsView extends DestructableView {
       const blockchainHeight = await blockchainExplorer.getHeight();
       console.log('Creating deposit:', { amount, term }, 'at height:', blockchainHeight);
           // Convert amount to atomic units
-      const amountToDeposit: typeof JSBigInt = amount * Math.pow(10, config.coinUnitPlaces);
-      if ( ( amountToDeposit + config.coinFee ) > wallet.availableAmount(blockchainHeight)) {
+      const amountToDeposit = new JSBigInt(amount).multiply(new JSBigInt(Math.pow(10, config.coinUnitPlaces)));
+      const fee = new JSBigInt(config.coinFee);
+      const neededAmount = amountToDeposit.add(fee);
+      if ( neededAmount > wallet.availableAmount(blockchainHeight)) {
         console.log('Not enough money to deposit');
         return;
       }
@@ -578,42 +606,44 @@ class DepositsView extends DestructableView {
             return Promise.resolve();
           },
           mixinToSendWith, "", 0, "deposit", termToDeposit).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
-          
-          console.log('Raw transaction data:', rawTxData);
-        
-          //rawTxData.raw.raw not ready for blockchain yet ?
-  
-  
-          blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
-            //save the tx private key
-            wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
+            // console.log(JSON.stringify(rawTxData, null, 2));
+            blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
+              //save the tx private key
+              wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
 
-            //force a mempool check so the user is up to date
-            let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
-            if (watchdog !== null)
-              watchdog.checkMempool();
+              //force a mempool check so the user is up to date
+              let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+              if (watchdog !== null)
+                watchdog.checkMempool();
         
-            // Success
-            swal({
-              type: 'success',
-              title: i18n.t('depositsPage.createDeposit.createSuccess'),
-              html: `TxHash:<br>
-              <a href="${config.mainnetExplorerUrlHash.replace('{ID}', rawTxData.raw.hash)}" 
-              target="_blank" class="tx-hash-value">${rawTxData.raw.hash}</a>`
+              // Success
+              swal({
+                type: 'success',
+                title: i18n.t('depositsPage.createDeposit.createSuccess'),
+                html: `TxHash:<br>
+                <a href="${config.mainnetExplorerUrlHash.replace('{ID}', rawTxData.raw.hash)}" 
+                target="_blank" class="tx-hash-value">${rawTxData.raw.hash}</a>`
+              });
+              let promise = Promise.resolve();
+              promise.then(function () {
+                console.log('Deposit successfully submitted to the blockchain');
+              });
+            }).catch((error) => {
+              console.error('Transaction creation error:', error);
+              // Wait a short moment to ensure all console logs are printed
+              setTimeout(() => {
+                swal({
+                  type: 'error',
+                  title: i18n.t('sendPage.transferExceptionModal.title'),
+                  html: i18n.t('sendPage.transferExceptionModal.content', {
+                    details: error instanceof Error ? error.message : JSON.stringify(error)
+                  }),
+                  confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                });
+              }, 100);
             });
-            let promise = Promise.resolve();
-            promise.then(function () {
-              console.log('Deposit successfully submitted to the blockchain');
-            });
-          }).catch(function (data: any) {
-            swal({
-              type: 'error',
-              title: i18n.t('sendPage.transferExceptionModal.title'),
-              html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(data)}),
-              confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-            });
-          });
-          
+
+        
           swal.close();
         }).catch(function (error: any) {
           //console.log(error);

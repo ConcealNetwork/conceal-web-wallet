@@ -31,7 +31,8 @@ type RawOutForTx = {
 	public_key: string,
 	index: number,
 	global_index: number,
-	tx_pub_key: string
+	tx_pub_key: string,
+	keys: string[],
 };
 
 interface IOptimizeInfo {

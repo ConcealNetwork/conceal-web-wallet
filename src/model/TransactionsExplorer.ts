@@ -91,7 +91,10 @@ declare var config: {
    public_key: string,
    index: number,
    global_index: number,
-   tx_pub_key: string
+   tx_pub_key: string,
+   type?: string,
+   required_signatures?: number,
+   keys: string[],
  };
 
  type TxExtra = {
@@ -480,13 +483,18 @@ declare var config: {
              if (typeof rawTransaction.hash  !== 'undefined') deposit.txHash = rawTransaction.hash;
              if (typeof rawTransaction.ts  !== 'undefined') deposit.timestamp = rawTransaction.ts;
              deposit.amount = transactionOut.amount; 
-             deposit.term = out.target.data.term; 
+             deposit.term = out.target.data.term;
              if (rawTransaction.output_indexes && (rawTransaction.output_indexes.length > iOut)) {
                deposit.outputIndex = rawTransaction.output_indexes[iOut];
              }
+             // Extract keys from the transaction output target data
+             if (out.target.data.keys && Array.isArray(out.target.data.keys)) {
+               deposit.keys = out.target.data.keys;
+             }
+             deposit.txPubKey = tx_pub_key; // Reuse the already extracted transaction public key
              // Calculate the interest for this deposit
              deposit.interest = InterestCalculator.calculateInterest(deposit.amount, deposit.term, deposit.blockHeight);
-
+             
              deposits.push(deposit);
            }
          }
@@ -547,7 +555,7 @@ declare var config: {
                   wasAdded = true;
                  }
                }
-
+               
                ins.push(transactionIn);
                break;
              }
@@ -693,7 +701,8 @@ declare var config: {
            public_key: out.pubKey,
            index: out.outputIdx,
            global_index: out.globalIndex,
-           tx_pub_key: tr.txPubKey
+           tx_pub_key: tr.txPubKey,
+           keys: []
          });
        }
      }
@@ -771,9 +780,9 @@ declare var config: {
            transactionType, term);
 
          logDebugMsg("signed tx: ", signed);
-        console.log('Pre-serialization transaction:', JSON.stringify(signed, null, 2));
+        //console.log('Pre-serialization transaction:', JSON.stringify(signed, null, 2));
          let raw_tx_and_hash = CnTransactions.serialize_tx_with_hash(signed);
-         console.log('Serialized transaction structure:', JSON.stringify(raw_tx_and_hash, null, 2));
+         //console.log('Serialized transaction structure:', JSON.stringify(raw_tx_and_hash, null, 2));
          resolve({raw: raw_tx_and_hash, signed: signed});
 
        } catch (e) {
@@ -944,7 +953,7 @@ declare var config: {
     blockchainHeight: number,
     obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>,
     confirmCallback: (amount: number, feesAmount: number) => Promise<void>,
-    mixin: number = config.defaultMixin,
+    mixin: number = 0,
     paymentId: string = '',
     message: string = '',
     ttl: number = 0,
@@ -957,6 +966,7 @@ declare var config: {
       let totalAmount = lockedAmount + totalInterest;
       let pid_encrypt = false; // don't encrypt payment ID for withdrawals
       let paymentId = '';
+      
       // Check if the deposit is unlocked
       if (deposit.unlockHeight > blockchainHeight) {
         reject(new Error("Deposit is still locked"));
@@ -974,26 +984,26 @@ declare var config: {
         return;
       }
 
-
       confirmCallback(totalAmountWithoutFee.subtract(neededFee), neededFee).then(() => {
         let usingOuts: RawOutForTx[] = [];
         
+        
         // Create the multisignature input for the deposit
-        // Only need fields that match the C++ implementation
         let depositOutput: RawOutForTx = {
           keyImage: '', // Not needed for deposit withdrawal
           amount: deposit.amount,
-          public_key: '', // Will be set during transaction creation
+          public_key: deposit.keys[0], // Source Transaction key from deposit extract from extra
           index: deposit.outputIndex,
           global_index: deposit.outputIndex,
-          tx_pub_key: '' // Will be set during transaction creation
+          tx_pub_key: deposit.txPubKey,
+          type: "input_to_deposit_key", // Specify this is a deposit key input
+          required_signatures: 1, // We know this is a single-signature deposit
+          keys: [deposit.keys[0]], // Add the single key from deposit
         };
-        
         usingOuts.push(depositOutput);
+
         let changeAmount = totalAmountWithoutFee.subtract(neededFee);
-        // Create destination - all funds minus fee go back to the wallet
         let dsts: { address: string, amount: number }[] = [];
-        
         
         logDebugMsg("Sending withdrawn amount of " + Cn.formatMoneySymbol(changeAmount) 
           + " to " + wallet.getPublicAddress()); 
