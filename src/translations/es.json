@@ -231,7 +231,7 @@
     "sendPage": {
       "title": "Enviar CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "La billetera se está sincronizando.... Cuando esté completamente sincronizada, podrá enviar fondos."
       },
       "sendBlock": {
         "address": {
@@ -310,7 +310,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "La billetera se está sincronizando.... Cuando esté completamente sincronizada, podrá enviar mensajes."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -390,7 +390,7 @@
       "interest": "Interés",
       "deposit": "Depósito",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "La billetera se está sincronizando.... Cuando esté completamente sincronizada, podrá ver los depósitos."
       },
       "tabs": {
         "inbox": "Deposits",

@@ -231,7 +231,7 @@
     "sendPage": {
       "title": "Send CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Wallet is syncing.... When its fully synced you will be able to send funds."
       },
       "sendBlock": {
         "address": {
@@ -310,7 +310,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Wallet is syncing.... When its fully synced you will be able to send messages."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -390,7 +390,7 @@
       "unlockHeight": "Unlock Height",
       "depositDate": "Deposit Date",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "Wallet is syncing.... When its fully synced you will be able to view deposits."
       },
       "tabs": {
         "inbox": "Deposits",

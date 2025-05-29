@@ -231,7 +231,7 @@
     "sendPage": {
       "title": "Schicke CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Wallet wird synchronisiert.... Wenn es vollständig synchronisiert ist, können Sie Mittel schicken."
       },
       "sendBlock": {
         "address": {
@@ -310,7 +310,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Wallet wird synchronisiert.... Wenn es vollständig synchronisiert ist, können Sie Nachrichten senden."
       },
       "tabs": {
         "inbox": "Inbox",

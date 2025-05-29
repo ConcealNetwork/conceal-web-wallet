@@ -1970,6 +1970,12 @@ body {
   font-size: 22px;  
 }
 
+#accountDeposits .tx_deposit_unlocked.disabled-icon {
+  color: #666;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 #accountDeposits .tx_deposit_spent {
   color: orange;
   font-size: 22px;  

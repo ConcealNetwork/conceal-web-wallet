@@ -51,7 +51,12 @@
                           <i v-if="(deposit.blockHeight + deposit.term) > blockchainHeight" class="fa fa-lock tx_deposit_locked" aria-hidden="true"></i>
                           <i v-else-if="((deposit.blockHeight + deposit.term) <= blockchainHeight) && (deposit.spentTx)" class="fa fa fa-money tx_deposit_spent" aria-hidden="true"></i>                        
                           <i v-else-if="deposit.withdrawPending" class="fa fa-spinner fa-spin tx_deposit_pending" aria-hidden="true"></i>
-                          <i v-else class="fa fa-unlock tx_deposit_unlocked" aria-hidden="true" @click="withdrawDeposit(deposit)" style="cursor: pointer;"></i>
+                          <i v-else 
+                             class="fa fa-unlock tx_deposit_unlocked" :class="{'disabled-icon': isDepositDisabled}" aria-hidden="true" 
+                             @click="!isDepositDisabled && withdrawDeposit(deposit)" 
+                             :style="{'cursor': isDepositDisabled ? 'not-allowed' : 'pointer'}"
+                             :disabled="isDepositDisabled">
+                          </i>
                         </td>
                         <td class="moreInfo depositTxDetails" style="width: 30px; text-align: center;">
                           <i class="fa fa-search" aria-hidden="true" @click="moreInfoOnDeposit(deposit)"></i>
