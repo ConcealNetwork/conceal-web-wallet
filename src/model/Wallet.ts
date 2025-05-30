@@ -678,7 +678,7 @@ export class Wallet extends Observable {
 		}
 	}
 
-  optimizationNeeded = (blockchainHeight: number, threshhold: number): IOptimizeInfo => {
+  optimizationNeeded = (blockchainHeight: number, threshhold: typeof JSBigInt): IOptimizeInfo => {
     let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(this, blockchainHeight);
     let counter: number = 0;    
 
@@ -687,7 +687,8 @@ export class Wallet extends Observable {
     logDebugMsg("unspentOuts", unspentOuts.length);
 
     for (let i = 0; i < unspentOuts.length; i++) {
-      if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < config.optimizeOutputs)) {
+      let amount = new JSBigInt(unspentOuts[i].amount);
+      if ((amount.compare(threshhold) < 0) && (counter < config.optimizeOutputs)) {
         counter++;
       } else {
         break;
@@ -709,6 +710,9 @@ export class Wallet extends Observable {
 
       //selecting outputs to fit the desired amount (totalAmount);
       function pop_random_value(list: any[]) {
+        if (list.length === 0) {
+          return null;
+        }
         let idx = Math.floor(MathUtil.randomFloat() * list.length);
         let val = list[idx];
         list.splice(idx, 1);
@@ -734,19 +738,25 @@ export class Wallet extends Observable {
               break;
             }
           }
+          //console.log('Found', counter, 'outputs to process in this iteration');
 
           if (stillData) {
             let usingOuts: RawOutForTx[] = [];
             let usingOuts_amount = new JSBigInt(0);
             let unusedOuts = unspentOuts.slice(iteration * config.optimizeOutputs, (iteration * config.optimizeOutputs) + counter);
+            
+            // Sort outputs by amount in ascending order to prioritize small outputs
+            unusedOuts.sort((a, b) => a.amount - b.amount);
 
             for (let i = 0; i < unusedOuts.length; i++) {
-              totalAmountWithoutFee = totalAmountWithoutFee.add(unusedOuts[i].amount);
+              totalAmountWithoutFee = totalAmountWithoutFee.add(unusedOuts[i].amount);  // confusing naming of variable
             }  
+            //console.log('Total amount without fee:', totalAmountWithoutFee.toString());
         
             if (totalAmountWithoutFee < this.availableAmount(blockchainHeight)) {
-              // substract fee from the amount we have available              
-              let totalAmount = totalAmountWithoutFee.subtract(neededFee);
+              // totalAmountWithoutFee already includes the fee, so we don't need to add it again
+              let totalAmount = totalAmountWithoutFee;
+              //console.log('Total amount (including fee):', totalAmount.toString());
 
               if (totalAmount > 0) {
                 dsts.push({
@@ -756,8 +766,22 @@ export class Wallet extends Observable {
 
                 while ((usingOuts_amount.compare(totalAmount) < 0) && (unusedOuts.length > 0)) {
                   let out = pop_random_value(unusedOuts);
+                  if (out === null) break;
+                  
+                  // Double check this output hasn't been used
+                  if (usingOuts.some(usedOut => usedOut.keyImage === out.keyImage)) {
+                    console.log('Warning: Attempted to use same output twice, skipping');
+                    continue;
+                  }
+                  
                   usingOuts.push(out);
                   usingOuts_amount = usingOuts_amount.add(out.amount);
+                  console.log('Added output:', {
+                    amount: out.amount,
+                    currentTotal: usingOuts_amount.toString(),
+                    targetAmount: totalAmount.toString(),
+                    remaining: unusedOuts.length
+                  });
                 }
                                 
                 let amounts: number[] = [];

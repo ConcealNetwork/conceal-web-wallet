@@ -686,6 +686,14 @@ declare var config: {
      // {"timestamp"       , static_cast<uint64_t>(out.timestamp)},
      // {"height"          , tx.height},
      // {"spend_key_images", json::array()}
+    let totalOutputs = 0;
+     // Get all deposits from the wallet and filter out locked ones
+     const deposits = wallet.getDepositsCopy();
+     const lockedDepositIndexes = deposits
+       .filter(deposit => deposit.getStatus(blockchainHeight) === 'Locked')
+       .map(deposit => deposit.outputIndex);
+
+     //console.log('Number of locked deposits:', lockedDepositIndexes.length);
 
      for (let tr of wallet.getAll()) {
        //todo improve to take into account miner tx
@@ -693,8 +701,13 @@ declare var config: {
        if (!tr.isConfirmed(blockchainHeight)) {
          continue;
        }
-
+       //totalOutputs += tr.outs.length;
        for (let out of tr.outs) {
+         // Skip outputs that are locked by deposits
+         if (lockedDepositIndexes.includes(out.globalIndex)) {
+           continue;
+         }
+
          unspentOuts.push({
            keyImage: out.keyImage,
            amount: out.amount,
@@ -706,6 +719,8 @@ declare var config: {
          });
        }
      }
+     //console.log('Total outputs before filtering:', totalOutputs);
+     //console.log('Unspent outputs after filtering:', unspentOuts.length);
 
      for (let tr of wallet.getAll().concat(wallet.txsMem)) {
        for (let i of tr.ins) {

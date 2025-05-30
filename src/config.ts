@@ -36,8 +36,8 @@ myGlobal.config = {
 	feePerKB: new JSBigInt('1000'), //for testnet its not used, as fee is dynamic.
 	dustThreshold: new JSBigInt('10'),//used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
 	defaultMixin: 5, // default value mixin
-  optimizeOutputs: 100, // how many outputs we put into a fusion tx
-  optimizeThreshold: 1, // what is the optimization threshold in CCX
+  optimizeOutputs: 50, // how many outputs we put into a fusion tx, 100 to be like C++ but too big to handle
+  optimizeThreshold: new JSBigInt('10'), // is the optimization threshold matching C++ defaultDustThreshold
   messageTxAmount: new JSBigInt('1000'), // the amount sent to the receiver of the message needed so we have at least one output for them
   maxMessageSize: 260, // maximum lenght of the message
 
