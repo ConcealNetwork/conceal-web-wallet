@@ -416,7 +416,7 @@
         "createSuccess": "Deposit Submitted to Blockchain",
         "createPending": "Your deposit is being processed",
         "createError": "Error Creating Deposit",
-        "withdrawSuccess": "Deposit Withdrawn",
+        "withdrawSuccess": "Withdrawal Submitted to Blockchain",
         "withdrawPending": "Your withdrawal is being processed",
         "withdrawError": "Error Withdrawing Deposit",
         "amountError": "Invalid Amount",

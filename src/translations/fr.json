@@ -416,7 +416,7 @@
 		  "createSuccess": "Dépôt Envoyé à la Blockchain",
 		  "createPending": "Votre dépôt est en cours de traitement",
 		  "createError": "Erreur lors de la création du dépôt",
-		  "withdrawSuccess": "Dépôt Retiré",
+		  "withdrawSuccess": "Retrait envoyé à la blockchain",
 		  "withdrawPending": "Votre retrait est en cours de traitement",
 		  "withdrawError": "Erreur lors du retrait du dépôt",
 		  "amountError": "Montant Invalide",

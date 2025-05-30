@@ -53,9 +53,9 @@
                           <i v-else-if="deposit.withdrawPending" class="fa fa-spinner fa-spin tx_deposit_pending" aria-hidden="true"></i>
                           <i v-else 
                              class="fa fa-unlock tx_deposit_unlocked" :class="{'disabled-icon': isDepositDisabled}" aria-hidden="true" 
-                             @click="!isDepositDisabled && withdrawDeposit(deposit)" 
-                             :style="{'cursor': isDepositDisabled ? 'not-allowed' : 'pointer'}"
-                             :disabled="isDepositDisabled">
+                             @click="!isWithdrawDisabled && withdrawDeposit(deposit)" 
+                             :style="{'cursor': isWithdrawDisabled ? 'not-allowed' : 'pointer'}"
+                             :disabled="isWithdrawDisabled">
                           </i>
                         </td>
                         <td class="moreInfo depositTxDetails" style="width: 30px; text-align: center;">

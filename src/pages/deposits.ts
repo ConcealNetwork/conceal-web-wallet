@@ -47,6 +47,7 @@ class DepositsView extends DestructableView {
   @VueVar(Math.pow(10, config.coinUnitPlaces)) currencyDivider !: number;
   @VueVar(0) maxDepositAmount !: number;
   @VueVar(false) isDepositDisabled !: boolean;
+  @VueVar(false) isWithdrawDisabled !: boolean;
 
   
   readonly refreshInterval = 500;
@@ -75,6 +76,7 @@ class DepositsView extends DestructableView {
     
     this.isWalletSyncing = true;
     this.isDepositDisabled = true;
+    this.isWithdrawDisabled = true;
 		AppState.enableLeftMenu();
 
     // Initialize the modal method here
@@ -329,7 +331,8 @@ class DepositsView extends DestructableView {
 			this.blockchainHeight = height;
       this.refreshWallet();
       // Update isDepositDisabled based on syncing status and max amount
-      this.isDepositDisabled = this.isWalletSyncing || this.maxDepositAmount < 1;    
+      this.isDepositDisabled = this.isWalletSyncing || this.maxDepositAmount < 1;
+      this.isWithdrawDisabled = this.isWalletSyncing;
     }).catch((err: any) => {
       this.refreshWallet();
     });
@@ -485,9 +488,7 @@ class DepositsView extends DestructableView {
           
           console.log('Raw transaction data:', rawTxData.raw.raw);
         
-          //rawTxData.raw.raw not ready for blockchain yet ?
-  
-         /*  WIP -------------------------------------------------------------------------
+
             blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
               setTimeout(() => {
               //save the tx private key
@@ -501,7 +502,7 @@ class DepositsView extends DestructableView {
               // Success
               swal({
                 type: 'success',
-                title: i18n.t('depositsPage.createDeposit.createSuccess'),
+                title: i18n.t('depositsPage.createDeposit.withdrawSuccess'),
                 html: `TxHash:<br>
                 <a href="${config.mainnetExplorerUrlHash.replace('{ID}', rawTxData.raw.hash)}" 
                 target="_blank" class="tx-hash-value">${rawTxData.raw.hash}</a>`
@@ -513,6 +514,8 @@ class DepositsView extends DestructableView {
               }, 5);
             }).catch(function (data: any) {
               setTimeout(() => {
+                foundDeposit.withdrawPending = false;   
+                wallet.addDeposit(foundDeposit);
               swal({
                 type: 'error',
                 title: i18n.t('sendPage.transferExceptionModal.title'),
@@ -521,7 +524,7 @@ class DepositsView extends DestructableView {
               });
               }, 5);
             });
-*/
+
           swal.close();
         }).catch((error) => {
           setTimeout(() => {
@@ -586,6 +589,11 @@ class DepositsView extends DestructableView {
 
       let mixinToSendWith: number = config.defaultMixin;
 
+      // Get all blocked deposit indices to filter randomOuts-------- <---------- WIP
+      /*const blockedIndex = this.deposits
+        .filter(deposit => deposit.getStatus(this.blockchainHeight) === 'Locked')
+        .map(deposit => deposit.outputIndex);
+      */
         TransactionsExplorer.createTx([{address: destinationAddress, amount: amountToDeposit}], "", wallet, blockchainHeight,
           function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
             return blockchainExplorer.getRandomOuts(amounts, numberOuts);

@@ -416,7 +416,7 @@
         "createSuccess": "Einlage an die Blockchain gesendet",
         "createPending": "Ihre Einlage wird verarbeitet",
         "createError": "Fehler beim Erstellen der Einlage",
-        "withdrawSuccess": "Einlage Ausgezahlt",
+        "withdrawSuccess": "Auszahlung an die Blockchain gesendet",
         "withdrawPending": "Ihre Auszahlung wird verarbeitet",
         "withdrawError": "Fehler bei der Auszahlung der Einlage",
         "amountError": "Ungültiger Betrag",

@@ -416,7 +416,7 @@
         "createSuccess": "Depósito Enviado a la Blockchain",
         "createPending": "Su depósito está siendo procesado",
         "createError": "Error al Crear el Depósito",
-        "withdrawSuccess": "Depósito Retirado",
+        "withdrawSuccess": "Retiro enviado a la blockchain",
         "withdrawPending": "Su retiro está siendo procesado",
         "withdrawError": "Error al Retirar el Depósito",
         "amountError": "Cantidad Inválida",
