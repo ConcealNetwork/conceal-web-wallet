@@ -36,5 +36,20 @@
   "scope": "/",
   "categories": ["finance", "utilities"],
   "screenshots": [],
-  "shortcuts": []
+  "shortcuts": [
+    {
+      "name": "Send ₡CCX",
+      "short_name": "Send",
+      "description": "Send CCX to another address",
+      "url": "/#!send",
+      "icons": [{ "src": "assets/img/icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Receive ₡CCX",
+      "short_name": "Receive",
+      "description": "View your address to receive CCX",
+      "url": "/#!receive",
+      "icons": [{ "src": "assets/img/icons/icon-96x96.png", "sizes": "96x96" }]
+    }
+  ]
 }
