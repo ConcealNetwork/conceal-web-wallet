@@ -23,8 +23,16 @@
 			<div class="body" >
 				<div class="header-title balance_title" >{{ $t("accountPage.balanceBlock.title") }}</div>
 				<div class="content balance_content" >
-          <div class="wallet_amount amount_total">
-		  			<div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.total") }}:</div>
+		  <div class="wallet_amount amount_portfolio">
+			<div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.portfolio") }}:</div>
+		    <div class="walletAmount amount_cell" >{{ ($n((walletAmount + depositedWalletAmount + withdrawableWalletAmount) / currencyDivider)) }} {{ticker}}</div>
+		  </div>
+		  <div class="wallet_amount amount_spacer">
+			<div class="amount_cell" >&nbsp;</div>
+			<div class="amount_cell" >&nbsp;</div>
+		  </div>
+		  <div class="wallet_amount amount_total">
+		  	<div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.available") }}:</div>
             <div class="walletAmount amount_cell" >{{ $n(unlockedWalletAmount / currencyDivider) }} {{ticker}}</div>
           </div>
           <div class="wallet_amount amount_pending">

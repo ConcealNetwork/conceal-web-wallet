@@ -110,11 +110,12 @@
       },
       "balanceBlock": {
         "title": "Su balance",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "Portfolio",
+        "available": "Disponible",
+        "pending": "Pendiente",
         "unlocked": "Desbloqueado",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "Depósitos",
+        "withdrawable": "Retirable"
       },
       "historyBlock": {
         "title": "Historial de transacciones",

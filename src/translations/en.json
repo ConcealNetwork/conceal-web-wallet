@@ -110,10 +110,11 @@
       },
       "balanceBlock": {
         "title": "Your balance",
-        "total": "Total",
+        "portfolio": "Portfolio",
+        "available": "Available",
         "pending": "Pending",
         "unlocked": "Unlocked",
-        "deposited": "Locked Deposits",
+        "deposited": "Deposits",
         "withdrawable": "Withdrawable"
       },
       "historyBlock": {

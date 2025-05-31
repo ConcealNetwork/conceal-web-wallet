@@ -1696,6 +1696,14 @@ body {
   color: orange;
 }
 
+.amount_portfolio .amount_cell {
+	font-size: 1.8em;
+	font-weight: bold;
+	color: orange;
+	padding: 0.2em 0 0 0;
+	border-bottom: 1px solid #e2e2e2 !important;
+}
+
 .amount_cell {
   display: table-cell;
   padding: 0.1em;

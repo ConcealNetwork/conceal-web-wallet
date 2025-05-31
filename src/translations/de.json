@@ -110,11 +110,12 @@
       },
       "balanceBlock": {
         "title": "Dein Guthaben",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "Portfolio",
+        "available": "Verfügbar",
+        "pending": "Ausstehend",
         "unlocked": "Entsperrt",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "Einlagen",
+        "withdrawable": "Auszahlbar"
       },
       "historyBlock": {
         "title": "Transaktionshistorie",

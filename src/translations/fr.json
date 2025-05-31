@@ -110,7 +110,8 @@
 		},
 		"balanceBlock": {
 		  "title": "Votre solde",
-		  "total": "Total",
+		  "portfolio": "Portfolio",
+		  "available": "Disponible",
 		  "pending": "En cours",
 		  "unlocked": "Disponible",
 		  "deposited": "Dépots",
