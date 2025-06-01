@@ -290,9 +290,11 @@ body.menuHidden #menu {
 }
 
 #menu {
-	background: #363636;
 	color: white;
 	padding: 10px 15px;
+	background: linear-gradient(to right, rgba(54, 54, 54, 0.99) 90%, rgba(54, 54, 54, 0.95));
+	border-right: 1px solid rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
 }
 
 .menuDisabled #menu {
@@ -2041,4 +2043,11 @@ body {
 
 .tx_withdrawal {
   color: #6bc534; /* Green */
+}
+
+.selected-filename {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #e2e2e2;
+  margin-left: 5px;
 }
