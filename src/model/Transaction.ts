@@ -290,7 +290,8 @@ class BaseBanking {
   timestamp: number = 0;
   blockHeight: number = 0;
   unlockHeight: number = 0;
-  outputIndex: number = -1;
+  globalOutputIndex: number = 0;
+  indexInVout: number = 0;
   txPubKey: string = '';
 
   static fromRaw(raw: any) {
@@ -302,7 +303,8 @@ class BaseBanking {
     deposit.timestamp = raw.timestamp;
     deposit.blockHeight = raw.blockHeight;
     deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
-    deposit.outputIndex = raw.outputIndex;
+    deposit.globalOutputIndex = raw.globalOutputIndex;
+    deposit.indexInVout = raw.indexInVout;
     deposit.txPubKey = raw.txPubKey;
 
     return deposit;
@@ -317,7 +319,8 @@ class BaseBanking {
       timestamp: this.timestamp,
       blockHeight: this.blockHeight,
       unlockHeight: this.unlockHeight,
-      outputIndex: this.outputIndex,
+      globalOutputIndex: this.globalOutputIndex,
+      indexInVout: this.indexInVout,
       txPubKey: this.txPubKey
     };
   }
@@ -332,7 +335,8 @@ class BaseBanking {
     aCopy.timestamp = this.timestamp;
     aCopy.blockHeight = this.blockHeight;
     aCopy.unlockHeight = this.unlockHeight;
-    aCopy.outputIndex = this.outputIndex;
+    aCopy.globalOutputIndex = this.globalOutputIndex;
+    aCopy.indexInVout = this.indexInVout;
     aCopy.txPubKey = this.txPubKey;
   
     return aCopy;
@@ -353,7 +357,8 @@ export class Deposit extends BaseBanking {
     deposit.spentTx = raw.spentTx; 
     deposit.timestamp = raw.timestamp;
     deposit.blockHeight = raw.blockHeight;
-    deposit.outputIndex = raw.outputIndex;
+    deposit.globalOutputIndex = raw.globalOutputIndex;
+    deposit.indexInVout = raw.indexInVout;
     deposit.txPubKey = raw.txPubKey;
     deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
     deposit.keys = raw.keys || [];

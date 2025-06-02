@@ -41,11 +41,29 @@
           </div>
           <div class="wallet_amount amount_pending">
             <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.deposited") }}:</div>
-            <div class="walletAmount amount_cell">{{ $n(depositedWalletAmount / currencyDivider) }} {{ticker}}</div>
+            <div class="walletAmount amount_cell hover-amount-cell"
+                 @mouseenter="showDepositsFuture = true"
+                 @mouseleave="showDepositsFuture = false">
+              <span v-if="showDepositsFuture && futureLockedInterest > 0">
+                {{ $n(depositedWalletAmount / currencyDivider) }} {{ticker}} + {{ $t("accountPage.balanceBlock.futureInterest") }} {{ $n(futureLockedInterest / currencyDivider) }} {{ticker}}
+              </span>
+              <span v-else>
+                {{ $n(depositedWalletAmount / currencyDivider) }} {{ticker}}
+              </span>
+            </div>
           </div>
           <div class="wallet_amount amount_pending">
             <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.withdrawable") }}:</div>
-            <div class="walletAmount amount_cell">{{ $n(withdrawableWalletAmount / currencyDivider) }} {{ticker}}</div>
+            <div class="walletAmount amount_cell hover-amount-cell"
+                 @mouseenter="showWithdrawableFuture = true"
+                 @mouseleave="showWithdrawableFuture = false">
+              <span v-if="showWithdrawableFuture && futureUnlockedInterest > 0">
+                {{ $n(withdrawableWalletAmount / currencyDivider) }} {{ticker}} + {{ $t("accountPage.balanceBlock.futureInterest") }} {{ $n(futureUnlockedInterest / currencyDivider) }} {{ticker}}
+              </span>
+              <span v-else>
+				{{ $n(withdrawableWalletAmount / currencyDivider) }} {{ticker}}               
+              </span>
+            </div>
           </div>
 				</div>
 			</div>

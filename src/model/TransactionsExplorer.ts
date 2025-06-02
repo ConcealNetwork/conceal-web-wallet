@@ -484,9 +484,8 @@ declare var config: {
              if (typeof rawTransaction.ts  !== 'undefined') deposit.timestamp = rawTransaction.ts;
              deposit.amount = transactionOut.amount; 
              deposit.term = out.target.data.term;
-             if (rawTransaction.output_indexes && (rawTransaction.output_indexes.length > iOut)) {
-               deposit.outputIndex = rawTransaction.output_indexes[iOut];
-             }
+             deposit.globalOutputIndex = rawTransaction.output_indexes[iOut];
+             deposit.indexInVout = iOut;
              // Extract keys from the transaction output target data
              if (out.target.data.keys && Array.isArray(out.target.data.keys)) {
                deposit.keys = out.target.data.keys;
@@ -494,7 +493,6 @@ declare var config: {
              deposit.txPubKey = tx_pub_key; // Reuse the already extracted transaction public key
              // Calculate the interest for this deposit
              deposit.interest = InterestCalculator.calculateInterest(deposit.amount, deposit.term, deposit.blockHeight);
-             
              deposits.push(deposit);
            }
          }
@@ -545,7 +543,7 @@ declare var config: {
                if (vin.type == "03") {
                 if (vin.value && vin.value.term) {
                   let withdrawal = new Deposit();
-                  withdrawal.outputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : -1;
+                  withdrawal.globalOutputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
                   if (typeof rawTransaction.height !== 'undefined') withdrawal.blockHeight = rawTransaction.height;
                   if (typeof rawTransaction.hash !== 'undefined') withdrawal.txHash = rawTransaction.hash;
                   if (typeof rawTransaction.ts !== 'undefined') withdrawal.timestamp = rawTransaction.ts;
@@ -561,6 +559,8 @@ declare var config: {
              }
            }
          } 
+
+
 
          // add the withdrawal if it was not yet processed
          if ((!wasAdded) && (vin.type == "03")) {
@@ -579,7 +579,7 @@ declare var config: {
            if (typeof rawTransaction.hash !== 'undefined') withdrawal.txHash = rawTransaction.hash;
            if (typeof rawTransaction.height !== 'undefined') withdrawal.blockHeight = rawTransaction.height;
            if (vin.value && vin.value.amount) withdrawal.amount = parseInt(vin.value?.amount);
-           withdrawal.outputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
+           withdrawal.globalOutputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
            withdrawal.term = (vin.value && vin.value.term) ? vin.value.term : 0;
            withdrawals.push(withdrawal);
            wasAdded = true;
@@ -691,9 +691,9 @@ declare var config: {
      const deposits = wallet.getDepositsCopy();
      const lockedDepositIndexes = deposits
        .filter(deposit => deposit.getStatus(blockchainHeight) === 'Locked')
-       .map(deposit => deposit.outputIndex);
+       .map(deposit => deposit.globalOutputIndex);
 
-     //console.log('Number of locked deposits:', lockedDepositIndexes.length);
+      //console.log('Number of locked deposits:', lockedDepositIndexes.length);
 
      for (let tr of wallet.getAll()) {
        //todo improve to take into account miner tx
@@ -701,7 +701,7 @@ declare var config: {
        if (!tr.isConfirmed(blockchainHeight)) {
          continue;
        }
-       //totalOutputs += tr.outs.length;
+       totalOutputs += tr.outs.length;
        for (let out of tr.outs) {
          // Skip outputs that are locked by deposits
          if (lockedDepositIndexes.includes(out.globalIndex)) {
@@ -748,8 +748,8 @@ declare var config: {
      payment_id: string,
      message: string,
      ttl: number,
-     transactionType: string = "regular",
-     term: number = 0
+     transactionType: string,
+     term: number
    ): Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
      return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>(function (resolve, reject) {
        let signed;
@@ -771,7 +771,7 @@ declare var config: {
            let decomposedOtherDsts = CnTransactions.decompose_tx_destinations(otherDsts, rct);
            
            // Combine back with the deposit destination first
-           splittedDsts = [depositDst].concat(decomposedOtherDsts);
+           splittedDsts = [depositDst].concat(decomposedOtherDsts);  //then we could sort the splittedDsts by amount ?
          } else {
            // Regular transaction - decompose all destinations
            splittedDsts = CnTransactions.decompose_tx_destinations(dsts, rct);
@@ -1007,9 +1007,9 @@ declare var config: {
         let depositOutput: RawOutForTx = {
           keyImage: '', // Not needed for deposit withdrawal
           amount: deposit.amount,
-          public_key: deposit.keys[0], // Source Transaction key from deposit extract from extra
-          index: deposit.outputIndex,
-          global_index: deposit.outputIndex,
+          public_key: deposit.keys[0], // to be corrected 
+          index: deposit.indexInVout,
+          global_index: deposit.globalOutputIndex,
           tx_pub_key: deposit.txPubKey,
           type: "input_to_deposit_key", // Specify this is a deposit key input
           required_signatures: 1, // We know this is a single-signature deposit

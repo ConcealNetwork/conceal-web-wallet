@@ -115,7 +115,8 @@
         "pending": "Ausstehend",
         "unlocked": "Entsperrt",
         "deposited": "Einlagen",
-        "withdrawable": "Auszahlbar"
+        "withdrawable": "Auszahlbar",
+        "futureInterest": "Zukünftiger Zins"
       },
       "historyBlock": {
         "title": "Transaktionshistorie",
@@ -441,6 +442,15 @@
         "creationHeight": "Erstellungshöhe",
         "unlockHeight": "Freigabehöhe",
         "interest": "Zinsen"
+      },
+      "recap": {
+        "title": "Einlagenübersicht",
+        "totalLifetimeDeposit": "Gesamte Einlagen",
+        "totalLifetimeInterest": "Gesamte Zinsen",
+        "totalCashedOutInterest": "Gesamte Ausgezahlte Zinsen",
+        "futureInterestLocked": "Zukünftige Zinsen auf gesperrte Einlagen",
+        "futureInterestUnlocked": "Zukünftige Zinsen auf freie Einlagen",
+        "earliestWithdrawable": "Früheste Freigabe"
       }
     },
     "receivePage": {

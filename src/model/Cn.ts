@@ -761,7 +761,7 @@ export namespace CnNativeBride{
 			try {
 				Module.HEAPU8.set(secretKeyBin, secBuf);
 				if (Module.ccall("sc_check", "number", ["number"], [secBuf]) !== 0) {
-					console.log('Secret key is not a valid scalar');
+					//console.log('Secret key is not a valid scalar');
 					throw new Error('Invalid secret key: not a valid scalar');
 				}
 				// Verify that secret key corresponds to public key
@@ -784,7 +784,7 @@ export namespace CnNativeBride{
 						
 						// Compare calculated public key with provided public key
 						if (calculatedPub !== publicKey) {
-							console.log('Secret key does not correspond to public key');
+							//console.log('Secret key does not correspond to public key');
 							throw new Error('Invalid key pair: secret key does not correspond to public key');
 						}
 					} finally {
@@ -800,7 +800,7 @@ export namespace CnNativeBride{
 			// random k 
 			let k: string;
 			k = CnRandom.random_scalar();
-			console.log('check_scalar', k, 'true');
+			// console.log('check_scalar', k, 'true'); // debug for crypto-test.cpp
 			const kBin = CnUtils.hextobin(k);
 			
 			// Allocate memory for temporary buffers
@@ -832,16 +832,13 @@ export namespace CnNativeBride{
 						Module.ccall("ge_p3_tobytes", "void", ["number", "number"], [buf + HASH_SIZE + KEY_SIZE, tmp3]); // comm
 						
 						const c = Cn.hash_to_scalar(CnUtils.bintohex(Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE)));
-						console.log('hash_to_scalar', CnUtils.bintohex(Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE)) ,c);
-						console.log('Generated challenge scalar c:', c);
-						
+						//console.log('hash_to_scalar', CnUtils.bintohex(Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE)) ,c); // debug for crypto-test.cpp
+												
 						// Calculate response scalar: r = k - (c*sec) mod l
 						const r = CnNativeBride.sc_mulsub(c, secretKey, k);
-						console.log('Generated response scalar r:', r);
-						
+												
 						// Final signature is c || r
 						const finalSignature = c + r;
-						console.log('Final signature:', finalSignature);
 						return finalSignature;
 					} finally {
 						Module._free(buf);
@@ -930,7 +927,7 @@ export namespace CnNativeBride{
             if (signature.length !== STRUCT_SIZES.SIGNATURE * 2 || !CnUtils.valid_hex(signature)) {
                 return false;
             }
-			console.log('check_signature', prefixHash, publicKey, signature, 'true');
+			//console.log('check_signature', prefixHash, publicKey, signature, 'true'); // debug for crypto-test.cpp
             // Split signature into c and r components
             const c = signature.slice(0, 64);
             const r = signature.slice(64, 128);
@@ -955,13 +952,13 @@ export namespace CnNativeBride{
 
                 // Check scalar validity for c
                 if (Module.ccall("sc_check", "number", ["number"], [cBuf]) !== 0) {
-                    console.log('c is not valid scalar');
+                    console.error('c is not valid scalar');
 					return false;
                 }
 
                 // Check scalar validity for r
                 if (Module.ccall("sc_check", "number", ["number"], [rBuf]) !== 0) {
-                    console.log('r is not valid scalar');
+                    console.error('r is not valid scalar');
 					return false;
                 }
 
@@ -1055,34 +1052,26 @@ export namespace CnNativeBride{
 
     export function checkTxProof(prefixHash: string, R: string, A: string, D: string, sig: string): boolean {
         try {
-            console.log('checkTxProof inputs:', {
-                prefixHash,
-                R,
-                A,
-                D,
-                c: sig.slice(0, 64),
-    			r: sig.slice(64, 128)
-            });
 
             // Validate input lengths
             if (prefixHash.length !== HASH_SIZE * 2 || !CnUtils.valid_hex(prefixHash)) {
-                console.log('Invalid prefix hash length or format');
+                console.error('Invalid prefix hash length or format');
                 return false;
             }
             if (R.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(R)) {
-                console.log('Invalid R length or format');
+                console.error('Invalid R length or format');
                 return false;
             }
             if (A.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(A)) {
-                console.log('Invalid A length or format');
+                console.error('Invalid A length or format');
                 return false;
             }
             if (D.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(D)) {
-                console.log('Invalid D length or format');
+                console.error('Invalid D length or format');
                 return false;
             }
             if (sig.length !== STRUCT_SIZES.SIGNATURE * 2 || !CnUtils.valid_hex(sig)) {
-                console.log('Invalid signature length or format');
+                console.error('Invalid signature length or format');
                 return false;
             }
 
@@ -1096,21 +1085,13 @@ export namespace CnNativeBride{
             // Split signature into c and r components
             const cBin = sigBin.slice(0, 32);
             const rBin = sigBin.slice(32, 64);
-            console.log('Signature components:', {
-                c: CnUtils.bintohex(cBin),
-                r: CnUtils.bintohex(rBin)
-            });
-			console.log('Point computation inputs:', {
-				R: CnUtils.bintohex(RBin),
-				A: CnUtils.bintohex(ABin),
-				D: CnUtils.bintohex(DBin)
-			});
+
             // Allocate memory for points
             const tmp3_R = Module._malloc(STRUCT_SIZES.GE_P3);
             const tmp3_A = Module._malloc(STRUCT_SIZES.GE_P3);
             const tmp3_D = Module._malloc(STRUCT_SIZES.GE_P3);
             if (!tmp3_R || !tmp3_A || !tmp3_D) {
-                console.log('Failed to allocate point memory');
+                console.error('Failed to allocate point memory');
                 return false;
             }
 
@@ -1120,7 +1101,7 @@ export namespace CnNativeBride{
                 const ABuf = Module._malloc(KEY_SIZE);
                 const DBuf = Module._malloc(KEY_SIZE);
                 if (!RBuf || !ABuf || !DBuf) {
-                    console.log('Failed to allocate key buffers');
+                    console.error('Failed to allocate key buffers');
                     return false;
                 }
 
@@ -1134,7 +1115,7 @@ export namespace CnNativeBride{
                     const fromBytesResult_D = Module.ccall("ge_frombytes_vartime", "number", ["number", "number"], [tmp3_D, DBuf]);
                     
                     if (fromBytesResult_R !== 0 || fromBytesResult_A !== 0 || fromBytesResult_D !== 0) {
-                        console.log('Failed to convert public keys to points:', {
+                        console.error('Failed to convert public keys to points:', {
                             R: fromBytesResult_R,
                             A: fromBytesResult_A,
                             D: fromBytesResult_D
@@ -1146,7 +1127,7 @@ export namespace CnNativeBride{
                     const tmp2_cR = Module._malloc(STRUCT_SIZES.GE_P2);
                     const tmp2_rA = Module._malloc(STRUCT_SIZES.GE_P2);
                     if (!tmp2_cR || !tmp2_rA) {
-                        console.log('Failed to allocate scalar multiplication memory');
+                        console.error('Failed to allocate scalar multiplication memory');
                         return false;
                     }
 
@@ -1155,7 +1136,7 @@ export namespace CnNativeBride{
                         const cBuf = Module._malloc(KEY_SIZE);
                         const rBuf = Module._malloc(KEY_SIZE);
                         if (!cBuf || !rBuf) {
-                            console.log('Failed to allocate scalar buffers');
+                            console.error('Failed to allocate scalar buffers');
                             return false;
                         }
 
@@ -1173,15 +1154,15 @@ export namespace CnNativeBride{
                                 ["number", "number", "number", "number"], 
                                 [tmp2_rA, cBuf, tmp3_D, rBuf]);
 
-							console.log('Point computation details:', {
+							/*console.log('Point computation details:', {
 								cR: CnUtils.bintohex(Module.HEAPU8.subarray(tmp2_cR, tmp2_cR + STRUCT_SIZES.GE_P2)),
 								rA: CnUtils.bintohex(Module.HEAPU8.subarray(tmp2_rA, tmp2_rA + STRUCT_SIZES.GE_P2))
-							});
+							}); */
                             // Allocate memory for X and Y
                             const XBuf = Module._malloc(KEY_SIZE);
                             const YBuf = Module._malloc(KEY_SIZE);
                             if (!XBuf || !YBuf) {
-                                console.log('Failed to allocate X/Y buffers');
+                                console.error('Failed to allocate X/Y buffers');
                                 return false;
                             }
 
@@ -1193,12 +1174,12 @@ export namespace CnNativeBride{
 
                                 const X = CnUtils.bintohex(Module.HEAPU8.subarray(XBuf, XBuf + KEY_SIZE));
                                 const Y = CnUtils.bintohex(Module.HEAPU8.subarray(YBuf, YBuf + KEY_SIZE));
-                                console.log('Computed points:', { X, Y });
+                                //console.log('Computed points:', { X, Y });
 
                                 // Create buffer for hash input
                                 const buf = Module._malloc(HASH_SIZE + KEY_SIZE + KEY_SIZE + KEY_SIZE);
                                 if (!buf) {
-                                    console.log('Failed to allocate hash buffer');
+                                    console.error('Failed to allocate hash buffer');
                                     return false;
                                 }
 
@@ -1215,19 +1196,8 @@ export namespace CnNativeBride{
                                     
                                     const c2 = Cn.hash_to_scalar(buf_hex);
 									 // Debug logs for hash calculation
-                                    console.log('Hash to scalar details:', {
-                                        input_length: buf_bin.length,
-                                        input_hex: buf_hex,
-                                        hash_result: c2
-                                    });
                                     const original_c = CnUtils.bintohex(cBin);
-                                    
-                                    console.log('Hash comparison:', {
-                                        computed_c2: c2,
-                                        original_c: original_c,
-                                        match: c2 === original_c
-                                    });
-
+ 
                                     // Compare c2 with original c
                                     return c2 === original_c;
                                 } finally {
@@ -1792,12 +1762,12 @@ export namespace CnTransactions{
 
 	export type Vin = {
 		type: string,
-    term?: number,
+    term?: number,						// used for deposits		
 		amount: string,
 		k_image: string,
 		key_offsets: any[],
-    signatures?: number 
-    outputIndex?: number
+    signatures?: number,         		// used for withdrawals
+    outputIndex?: number           		// used for withdrawals
 	};
 
 	export type Vout = {
@@ -1912,9 +1882,9 @@ export namespace CnTransactions{
 				case "input_to_deposit_key":
 					buf += "03";
 					buf += CnUtils.encode_varint(vin.amount);
-					buf += CnUtils.encode_varint(vin.signatures || 1);
+					buf += CnUtils.encode_varint(1); //always 1 for deposits/withdrawals
 					buf += CnUtils.encode_varint(vin.outputIndex || 0);
-					buf += CnUtils.encode_varint_term(vin.term || 0);
+					buf += CnUtils.encode_varint(vin.term || 0);
 					break;
 				default:
 					throw "Unhandled vin type: " + vin.type;
@@ -2588,7 +2558,7 @@ export namespace CnTransactions{
 						k_image: sources[i].key_image, // NOT USED WON'T BE SERIALIZED ANYWAY
 						key_offsets:[],
 						signatures : 1,
-						outputIndex : parseInt(sources[i].outputs[sources[i].real_out].index)
+						outputIndex : sources[i].real_out_in_tx
 					};
 				} else {																									
 					input_to_key = {
@@ -2794,29 +2764,29 @@ export namespace CnTransactions{
 
 					// Step 1: Generate key derivation
 					let derivation = CnNativeBride.generate_key_derivation(
-						sources[i].real_out_tx_key,  // sourceTransactionKey
-						keys.view.sec                // accountKeys.viewSecretKey
+						sources[i].real_out_tx_key,  				// sourceTransactionKey
+						keys.view.sec                				// accountKeys.viewSecretKey
 					);
-					console.log('generate_key_derivation', sources[i].real_out_tx_key, keys.view.sec, 'true', derivation);
+					//console.log('generate_key_derivation', sources[i].real_out_tx_key, keys.view.sec, 'true', derivation); // debug for crypto-test.cpp
 					// Step 2: Derive ephemeral keys
 					let ephemeralPublicKey = CnNativeBride.derive_public_key(
-						derivation,                  // derivation
-						sources[i].real_out_in_tx,   // outputIndex
-						keys.spend.pub               // accountKeys.address.spendPublicKey
+						derivation,                  				// derivation
+						parseInt(sources[i].outputs[i].index),   	// outputIndex
+						keys.spend.pub               				// accountKeys.address.spendPublicKey
 					);
-					console.log('derive_public_key', derivation, sources[i].real_out_in_tx, keys.spend.pub, 'true', ephemeralPublicKey);
+					//console.log('derive_public_key', derivation, parseInt(sources[i].outputs[0].index), keys.spend.pub, 'true', ephemeralPublicKey); // debug for crypto-test.cpp
 
 					let ephemeralSecretKey = CnNativeBride.derive_secret_key(
-						derivation,                // derivation
-						sources[i].real_out_in_tx,   // outputIndex
-						keys.spend.sec               // accountKeys.spendSecretKey
+						derivation,                					// derivation
+						parseInt(sources[i].outputs[i].index),   	// outputIndex
+						keys.spend.sec               				// accountKeys.spendSecretKey
 					);
-					console.log('derive_secret_key', derivation, sources[i].real_out_in_tx, keys.spend.sec, ephemeralSecretKey);
+					//console.log('derive_secret_key', derivation, parseInt(sources[i].outputs[0].index), keys.spend.sec, ephemeralSecretKey); // debug for crypto-test.cpp
 					// Step 3: Generate signature using ephemeral keys
 					let sig = CnNativeBride.generate_signature(
-						txPrefixHash,               // txPrefixHash
-						ephemeralPublicKey,         // ephemeralPublicKey
-						ephemeralSecretKey          // ephemeralSecretKey
+						txPrefixHash,               				// txPrefixHash
+						ephemeralPublicKey,         				// ephemeralPublicKey
+						ephemeralSecretKey          				// ephemeralSecretKey
 					);
 
 					// Verify the signature before adding it
@@ -2830,14 +2800,14 @@ export namespace CnTransactions{
 						throw "Signature verification failed";
 					}
 
-					// 1.  Verify signature as if we were the blockchain
+					// Verify signature from blockchain point of view
 					/*
 					const isValid_2 = CnNativeBride.checkTxProof(
 						txPrefixHash,
-						sources[i].keys[0],  // R: transaction public key
-						ephemeralPublicKey,  // A: ephemeral public key
-						derivation,          // D: key derivation
-						sig                  // signature
+						sources[i].real_out_tx_key,  				// R: transaction public key
+						ephemeralPublicKey,  						// A: ephemeral public key
+						derivation,          						// D: key derivation
+						sig                  						// signature
 					);
 					console.log('Deposit Public key:', sources[i].keys[0]);
 					console.log('Signature verification from Blockchain point of view:', isValid_2);
@@ -2978,15 +2948,15 @@ export namespace CnTransactions{
 				let src : CnTransactions.Source = {
 					outputs: [
 						{
-						index:outputs[i].global_index.toString(),
+						index:outputs[i].index.toString(),           //.index.toString(),
 						key:outputs[i].public_key,
 						commit:''
 					}],
 					amount: '',
 					keys: outputs[i].keys || [],
-					real_out_tx_key: outputs[i].tx_pub_key,  // Set the source transaction key
+					real_out_tx_key: outputs[i].tx_pub_key,  // Set the source transaction key tr.txPubKey
 					real_out: 0,
-					real_out_in_tx: outputs[i].index,  // Set the output index
+					real_out_in_tx: outputs[i].global_index,  // Set the output index will be used to generate_signature()
 					mask: null,
 					key_image: '',
 					in_ephemeral: {

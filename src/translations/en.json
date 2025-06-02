@@ -115,7 +115,8 @@
         "pending": "Pending",
         "unlocked": "Unlocked",
         "deposited": "Deposits",
-        "withdrawable": "Withdrawable"
+        "withdrawable": "Withdrawable",
+        "futureInterest": "Future Interest"
       },
       "historyBlock": {
         "title": "Transaction history",
@@ -441,6 +442,15 @@
         "creationHeight": "Creation height",
         "unlockHeight": "Unlock height",
         "interest": "Interest"
+      },
+      "recap": {
+        "title": "Deposits Recap",
+        "totalLifetimeDeposit": "Total Lifetime Deposit",
+        "totalLifetimeInterest": "Total Lifetime Interest",
+        "totalCashedOutInterest": "Total Cashed Out Interest",
+        "futureInterestLocked": "Future Interest on Locked Deposits",
+        "futureInterestUnlocked": "Future Interest on Withdrawable",
+        "earliestWithdrawable": "Earliest Withdrawable"
       }
     },
     "receivePage": {

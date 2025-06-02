@@ -115,7 +115,8 @@
         "pending": "Pendiente",
         "unlocked": "Desbloqueado",
         "deposited": "Depósitos",
-        "withdrawable": "Retirable"
+        "withdrawable": "Retirable",
+        "futureInterest": "Interés futuro"
       },
       "historyBlock": {
         "title": "Historial de transacciones",
@@ -441,6 +442,15 @@
         "creationHeight": "Creation height",
         "unlockHeight": "Unlock height",
         "interest": "interés"
+      },
+      "recap": {
+        "title": "Resumen de depósitos",
+        "totalLifetimeDeposit": "Total de depósitos",
+        "totalLifetimeInterest": "Total de interés",
+        "totalCashedOutInterest": "Total de interés retirado",
+        "futureInterestLocked": "Interés futuro en depósitos bloqueados",
+        "futureInterestUnlocked": "Interés futuro en depósitos desbloqueados",
+        "earliestWithdrawable": "Fecha de desbloqueo más cercana"
       }
     },
     "receivePage": {

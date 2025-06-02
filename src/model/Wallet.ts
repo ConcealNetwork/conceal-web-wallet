@@ -308,7 +308,7 @@ export class Wallet extends Observable {
 
     for(let i = 0; i < this.deposits.length; ++i) {
       if (this.deposits[i].txHash == deposit.txHash &&                //used to be matcth by amount
-        this.deposits[i].outputIndex == deposit.outputIndex) {    // double check
+        this.deposits[i].globalOutputIndex == deposit.globalOutputIndex) {    // double check
           this.deposits[i]  = deposit;
           foundMatch = true;
           break;
@@ -338,7 +338,7 @@ export class Wallet extends Observable {
     for(let i = 0; i < this.deposits.length; ++i) {
       if (this.deposits[i].withdrawPending === true && 
           this.deposits[i].amount === withdrawal.amount &&
-          this.deposits[i].outputIndex === withdrawal.outputIndex) {
+          this.deposits[i].globalOutputIndex === withdrawal.globalOutputIndex) {
         this.deposits[i].spentTx = withdrawal.txHash;
         this.deposits[i].withdrawPending = false; // Clear the flag
         foundMatchDeposit = true;
@@ -350,7 +350,7 @@ export class Wallet extends Observable {
     if (!foundMatchDeposit) {
       for(let i = 0; i < this.deposits.length; ++i) {
         if (this.deposits[i].amount === withdrawal.amount &&
-            this.deposits[i].outputIndex === withdrawal.outputIndex &&
+            this.deposits[i].globalOutputIndex === withdrawal.globalOutputIndex &&
             !this.deposits[i].spentTx) {
           this.deposits[i].spentTx = withdrawal.txHash;
           foundMatchDeposit = true;
@@ -372,7 +372,7 @@ export class Wallet extends Observable {
     if (!foundMatchWithdrawal) {
       for(let i = 0; i < this.withdrawals.length; ++i) {
         if (this.withdrawals[i].amount === withdrawal.amount &&
-            this.withdrawals[i].outputIndex === withdrawal.outputIndex) {
+            this.withdrawals[i].globalOutputIndex === withdrawal.globalOutputIndex) {
           this.withdrawals[i] = withdrawal;
           foundMatchWithdrawal = true;
           break;
@@ -594,6 +594,47 @@ export class Wallet extends Observable {
 
 		return amount;
   }    
+
+  // Calculate total future interest (from both locked and unlocked deposits)
+  futureDepositInterest = (currHeight: number): {spent: number, locked: number, unlocked: number, total: number} => {
+    let futureLockedInterest = 0;
+    let futureUnlockedInterest = 0;
+    let spentInterest = 0;
+
+    for (let deposit of this.deposits) {
+      const status = deposit.getStatus(currHeight);
+      switch (status) {
+        case 'Locked':
+          futureLockedInterest += deposit.interest;
+          break;
+        case 'Unlocked':
+          futureUnlockedInterest += deposit.interest;
+          break;
+        case 'Spent':
+          spentInterest += deposit.interest;
+          break;
+      }
+    }
+
+    return {
+      spent: spentInterest,
+      locked: futureLockedInterest,
+      unlocked: futureUnlockedInterest,
+      total: futureLockedInterest + futureUnlockedInterest
+    };
+  }
+
+  // Returns the deposit with the earliest unlock date (not spent)
+  earliestUnlockableDeposit = (currHeight: number): Deposit | null => {
+    let earliest: Deposit | null = null;
+    for (const deposit of this.deposits) {
+      if (deposit.isSpent()) continue;
+      if (!earliest || deposit.unlockHeight < earliest.unlockHeight) {
+        earliest = deposit;
+      }
+    }
+    return earliest;
+  }
 
   hasBeenModified = (): Boolean => {
 		return this.modified;
@@ -831,4 +872,5 @@ export class Wallet extends Observable {
     this.signalChanged();
     this.notify();
   }
+
 }

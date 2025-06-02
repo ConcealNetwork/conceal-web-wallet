@@ -41,6 +41,8 @@ class AccountView extends DestructableView{
 	@VueVar(0) unlockedWalletAmount !: number;
 	@VueVar(0) depositedWalletAmount !: number;
 	@VueVar(0) withdrawableWalletAmount !: number;
+  @VueVar(0) futureLockedInterest !: number;
+  @VueVar(0) futureUnlockedInterest !: number;
 	@VueVar(0) allTransactionsCount !: number;
 	@VueVar(0) pagesCount !: number;
 	@VueVar(0) txPerPage !: number;
@@ -55,6 +57,8 @@ class AccountView extends DestructableView{
   	@VueVar(false) optimizeLoading !: boolean;
 	@VueVar(false) isWalletSyncing !: boolean;
 	@VueVar(0) optimizeOutputs !: number;
+  @VueVar(false) showDepositsFuture!: boolean;
+  @VueVar(false) showWithdrawableFuture!: boolean;
 
   @VueVar(false) private isInitialized: boolean = false;
 	@VueVar(0) private messagesCountRecord: number = 0;
@@ -221,6 +225,8 @@ class AccountView extends DestructableView{
       this.depositedWalletAmount = wallet.lockedDeposits(this.currentScanBlock);
       this.withdrawableWalletAmount = wallet.unlockedDeposits(this.currentScanBlock);
       this.lastPending = this.walletAmount - this.unlockedWalletAmount;
+      this.futureLockedInterest = wallet.futureDepositInterest(this.currentScanBlock).locked;
+      this.futureUnlockedInterest = wallet.futureDepositInterest(this.currentScanBlock).unlocked;
 
       if ((this.refreshTimestamp < wallet.modifiedTimestamp()) || forceRedraw || filterChanged) {
         let allTransactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());

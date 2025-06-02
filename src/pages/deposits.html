@@ -18,6 +18,42 @@
 
       <div class="messages">        
 
+        <!-- Recap Panel -->
+        <div class="panel" style="margin-bottom: 1em;">
+          <div class="body">
+          <div class="header-title">{{ $t('depositsPage.recap.title') }}</div>
+          <div class="content balance_content">
+            <div class="wallet_amount amount_total">
+              <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.totalLifetimeDeposit') }}:</div>
+              <div class="walletAmount amount_cell">{{ totalLifetimeDeposit / currencyDivider }} {{ ticker }}</div>
+            </div>
+            <div class="wallet_amount amount_total">
+              <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.totalCashedOutInterest') }}:</div>
+              <div class="walletAmount amount_cell">{{ totalCashedOutInterest / currencyDivider }} {{ ticker }}</div>
+            </div>
+            <div class="wallet_amount amount_pending">
+              <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.futureInterestLocked') }}:</div>
+              <div class="walletAmount amount_cell">{{ futureInterestLocked / currencyDivider }} {{ ticker }}</div>
+            </div>
+            <div class="wallet_amount amount_pending">
+              <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.futureInterestUnlocked') }}:</div>
+              <div class="walletAmount amount_cell">{{ futureInterestUnlocked / currencyDivider }} {{ ticker }}</div>
+            </div>
+            <div class="wallet_amount amount_pending">
+              <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.earliestWithdrawable') }}:</div>
+              <div class="walletAmount amount_cell">
+                <span v-if="earliestUnlockableIsPast" style="color: green;">
+                  {{ earliestUnlockableDate }}
+                </span>
+                <span v-else style="color:  #e2e2e2;">
+                  {{ earliestUnlockableDate }}
+                </span>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+
         <!-- deposits history -->
         <div id="depositHistory" class="panel nopadding tabcontent">
           <div class="body" >
@@ -58,7 +94,7 @@
                              :disabled="isWithdrawDisabled">
                           </i>
                         </td>
-                        <td class="moreInfo depositTxDetails" style="width: 30px; text-align: center;">
+                        <td class="moreInfo depositTxDetails" style="width: 30px; text-align: center; cursor: pointer;">
                           <i class="fa fa-search" aria-hidden="true" @click="moreInfoOnDeposit(deposit)"></i>
                         </td>
                         <td class="lockTimestamp" v-if="deposit.blockHeight > 0" style="width: 18%; text-align: center;">{{$d(new Date(deposit.timestamp * 1000), 'short')}}</td>

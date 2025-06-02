@@ -110,11 +110,13 @@
       },
       "balanceBlock": {
         "title": "کل حساب",
-        "total": "Total",
+        "portfolio": "نمونه کارها",
+        "available": "موجود",
         "pending": "Pending",
         "unlocked": "در دسترس",
         "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "withdrawable": "Withdrawable",
+        "futureInterest": "آینده"
       },
       "historyBlock": {
         "title": "تاریخچه تراکنش ها",
@@ -383,6 +385,12 @@
     },
     "depositsPage": {
       "title": "Deposits",
+      "unlockDate": "باز کردن",
+      "interest": "علاقه",
+      "deposit": "سپردن",
+      "lockHeight": "قفل",
+      "unlockHeight": "باز کردن",
+      "depositDate": "سپردن",
       "syncing": {
         "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
       },
@@ -393,8 +401,33 @@
       "depositsBlock": {
         "title": "Deposits list"
       },
-      "createBlock": {
-        "[]": "تهی"
+      "confirmDeposit": {
+        "title": "تأیید کردن",
+        "message": "وارد کردن",
+        "confirm": "ایجاد کردن",
+        "cancel": "لغو کردن",
+        "passwordRequired": "کیف پول"
+      },
+      "createDeposit": {
+        "title": "ایجاد کردن",
+        "amount": "مقدار",
+        "term": "قفل",
+        "termError": "لطفا",
+        "confirm": "ایجاد کردن",
+        "cancel": "لغو کردن",
+        "createSuccess": "سپردن",
+        "createPending": "شما",
+        "createError": "خطا",
+        "withdrawSuccess": "عقب نشینی",
+        "withdrawPending": "شما",
+        "withdrawError": "خطا",
+        "amountError": "نامعتبر",
+        "amountMustBePositive": "مقدار",
+        "termMustBeValid": "دوره",
+        "insufficientFunds": "ناچیز",
+        "insufficientFundsMessage": "شما",
+        "maxAmount": "حداکثر",
+        "rewardAtTerm": "پاداش"
       },
       "depositDetails": {
         "title": "Deposits details",
@@ -407,7 +440,17 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "unlockHeight": "Unlock height",
+        "interest": "علاقه"
+      },
+      "recap": {
+        "title": "مرور سپرده ها",
+        "totalLifetimeDeposit": "مجموع سپرده ها",
+        "totalLifetimeInterest": "مجموع علاقه ها",
+        "totalCashedOutInterest": "مجموع علاقه های دریافت شده",
+        "futureInterestLocked": "علاقه های آتی سپرده های قفل شده",
+        "futureInterestUnlocked": "علاقه های آتی سپرده های باز شده",
+        "earliestWithdrawable": "سپرده های قابل باز شدن"
       }
     },
     "receivePage": {
@@ -518,7 +561,8 @@
       "parametersBlock": {
         "title": "پارامترها",
         "password": {
-          "label": "رمز عبور جهت محافظت از کیف پول شما"
+          "label": "رمز عبور جهت محافظت از کیف پول شما",
+          "label_input": ""
         },
         "passwordConfirm": {
           "label": "تایید رمز عبور",
@@ -598,7 +642,10 @@
       "walletBlock": {
         "title": "فایل کیف پول",
         "label": "انتخاب کنید",
-        "importButton": "درون ریزی"
+        "importButton": "درون ریزی",
+        "selectFile": "لطفا",
+        "fileSelected": "پرونده",
+        "invalidFile": "در"
       }
     },
     "importFromMnemonicPage": {

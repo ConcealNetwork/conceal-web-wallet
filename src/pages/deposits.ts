@@ -49,7 +49,15 @@ class DepositsView extends DestructableView {
   @VueVar(false) isDepositDisabled !: boolean;
   @VueVar(false) isWithdrawDisabled !: boolean;
 
-  
+  @VueVar(0) totalLifetimeDeposit !: number;
+  @VueVar(0) totalLifetimeInterest !: number;
+  @VueVar(0) totalCashedOutInterest !: number;
+  @VueVar(0) futureInterestLocked !: number;
+  @VueVar(0) futureInterestUnlocked !: number;
+  @VueVar('') earliestUnlockableDate !: string;
+  @VueVar(false) earliestUnlockableIsPast !: boolean;
+  @VueVar(0) ticker !: string;
+
   readonly refreshInterval = 500;
 	private intervalRefresh : NodeJS.Timeout;
   private qrReader: QRReader | null = null;
@@ -77,6 +85,7 @@ class DepositsView extends DestructableView {
     this.isWalletSyncing = true;
     this.isDepositDisabled = true;
     this.isWithdrawDisabled = true;
+    this.ticker = config.coinSymbol;
 		AppState.enableLeftMenu();
 
     // Initialize the modal method here
@@ -222,7 +231,7 @@ class DepositsView extends DestructableView {
           // Clean and validate term
           const cleanTerm = termInput.replace(/[^0-9]/g, '');
           const term = parseInt(cleanTerm);
-          console.log('Available amount:', (this.unlockedWalletAmount - this.coinFee) / this.currencyDivider );
+
           // Validate amount
           if (isNaN(amount) || amount < 1 || !Number.isInteger(amount) || amount > maxAmount) {
             swal({
@@ -248,14 +257,11 @@ class DepositsView extends DestructableView {
             DepositsView.currentInstance.depositAmount = amount;
             DepositsView.currentInstance.depositTerm = term;
           }
-          
-          console.log('Amount:', amount, "Term:", term);
+
           return true;
         }
       }).then((result) => {
-        if (result && result.value) {
-          console.log('Modal confirmed, using values:', this.depositAmount, this.depositTerm);
-          
+        if (result && result.value) {          
           // After initial modal confirmation, show password prompt
           return swal({
             title: i18n.t('depositsPage.confirmDeposit.title'),
@@ -352,6 +358,24 @@ class DepositsView extends DestructableView {
       // Calculate the maximum deposit amount
       this.maxDepositAmount = Math.floor((this.unlockedWalletAmount - config.coinFee) / this.currencyDivider);
 
+      // Recap calculations
+      this.totalLifetimeDeposit = this.deposits.reduce((sum, d) => sum + d.amount, 0);
+      this.totalLifetimeInterest = this.deposits.reduce((sum, d) => sum + d.interest, 0);
+      const future = wallet.futureDepositInterest(this.currentScanBlock);
+      this.totalCashedOutInterest = future.spent;
+      this.futureInterestLocked = future.locked;
+      this.futureInterestUnlocked = future.unlocked;
+      // Earliest unlockable
+      const earliest = wallet.earliestUnlockableDeposit(this.currentScanBlock);
+      if (earliest) {
+        const unlockTimestamp = (earliest.timestamp + (earliest.term * 120)) * 1000;
+        this.earliestUnlockableDate = new Date(unlockTimestamp).toLocaleDateString();
+        const now = Date.now();
+        this.earliestUnlockableIsPast = unlockTimestamp < now;
+      } else {
+        this.earliestUnlockableDate = '-';
+        this.earliestUnlockableIsPast = false;
+      }
     }
 
     this.refreshTimestamp = new Date();
@@ -417,7 +441,7 @@ class DepositsView extends DestructableView {
       // Find deposit by txHash and outputIndex (natural unique identifiers)
       const foundDeposit = this.deposits.find(d => 
         d.txHash === deposit.txHash && 
-        d.outputIndex === deposit.outputIndex
+        d.globalOutputIndex === deposit.globalOutputIndex
       );
       if (!foundDeposit || foundDeposit.withdrawPending || foundDeposit.isSpent()) {
         swal({
@@ -427,19 +451,17 @@ class DepositsView extends DestructableView {
         });
         return;
       }
-
-      console.log("withdrawal of deposit block , tx, amount, output_index TX_PUBKEY, term", foundDeposit.blockHeight, foundDeposit.txHash, foundDeposit.amount, foundDeposit.outputIndex, foundDeposit.txPubKey, foundDeposit.term);
-
       const blockchainHeight = await blockchainExplorer.getHeight();
       
       let mixinToSendWith: number = config.defaultMixin;
 
-        TransactionsExplorer.createWithdrawTx(foundDeposit, wallet, blockchainHeight,
+      TransactionsExplorer.createWithdrawTx(foundDeposit, wallet, blockchainHeight,
           function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
-            return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+            // For withdrawals, we don't need mixins, so return empty array
+            return Promise.resolve([]);
           }
           , function (amount: number, feesAmount: number): Promise<void> {
-            if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
+            if (feesAmount > wallet.availableAmount(blockchainHeight)) {
               swal({
                 type: 'error',
                 title: i18n.t('sendPage.notEnoughMoneyModal.title'),
@@ -453,6 +475,7 @@ class DepositsView extends DestructableView {
             }
 
             return new Promise<void>(function (resolve, reject) {
+              
               setTimeout(function () {//prevent bug with swal when code is too fast
                 swal({
                   title: i18n.t('sendPage.confirmTransactionModal.title'),
@@ -481,13 +504,12 @@ class DepositsView extends DestructableView {
                     resolve();
                   }
                 }).catch(reject);
-              }, 1);
+              }, 500);
             });
           },
           mixinToSendWith, "", "", 0, "withdraw", foundDeposit.term).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
           
-          console.log('Raw transaction data:', rawTxData.raw.raw);
-        
+          //console.log('Raw transaction data:', rawTxData.raw.raw);
 
             blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
               setTimeout(() => {
@@ -546,13 +568,7 @@ class DepositsView extends DestructableView {
           }
         }, 100);
         });
-      
-      // Simulate success
-      swal({
-        type: 'success',
-        title: i18n.t('depositsPage.withdrawSuccess'),
-        text: i18n.t('depositsPage.withdrawPending')
-      });
+
     } catch (error: unknown) {
       console.error('Error withdrawing deposit:', error);
       swal({
@@ -569,7 +585,6 @@ class DepositsView extends DestructableView {
     try {
       this.lockedForm = true;
       const blockchainHeight = await blockchainExplorer.getHeight();
-      console.log('Creating deposit:', { amount, term }, 'at height:', blockchainHeight);
           // Convert amount to atomic units
       const amountToDeposit = new JSBigInt(amount).multiply(new JSBigInt(Math.pow(10, config.coinUnitPlaces)));
       const fee = new JSBigInt(config.coinFee);
@@ -578,12 +593,9 @@ class DepositsView extends DestructableView {
         console.log('Not enough money to deposit');
         return;
       }
-      console.log('Amount to deposit in atomic units:', amountToDeposit);
       const termToDeposit = term > 12 ? 12 * config.depositMinTermBlock : term * config.depositMinTermBlock;
-      console.log('Term to deposit in blocks:', termToDeposit);
       // Use the wallet's own address for deposits
       const destinationAddress = wallet.getPublicAddress();
-      console.log('Destination address:', destinationAddress);
 
       // let mixinToSendWith: number = config.defaultMixin;
 

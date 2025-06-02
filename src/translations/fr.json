@@ -10,7 +10,7 @@
 		"send": "Envoyer",
 		"receive": "Recevoir",
 		"message": "Messages",
-		"deposit": "Deposits",
+		"deposit": "Dépôts",
 		"export": "Exporter",
 		"donate": "Contribuer",
 		"settings": "Paramètres",
@@ -115,7 +115,8 @@
 		  "pending": "En cours",
 		  "unlocked": "Disponible",
 		  "deposited": "Dépots",
-		  "withdrawable": "Retirable"
+		  "withdrawable": "Retirable",
+		  "futureInterest": "Intérêt futur"
 		},
 		"historyBlock": {
 		  "title": "Historique des transactions",
@@ -441,6 +442,15 @@
 		  "creationHeight": "Hauteur de création",
 		  "unlockHeight": "Hauteur de déverouillage",
 		  "interest": "Intérêt"
+		},
+		"recap": {
+		  "title": "Récapitulatif des dépôts",
+		  "totalLifetimeDeposit": "Total des dépôts",
+		  "totalLifetimeInterest": "Total des intérêts",
+		  "totalCashedOutInterest": "Total des intérêts déjà retirés",
+		  "futureInterestLocked": "Intérêt futur sur les dépôts verrouillés",
+		  "futureInterestUnlocked": "Intérêt futur sur les dépôts déverrouillés",
+		  "earliestWithdrawable": "Date de déverouillage la plus proche"
 		}
 	  },
 	  "receivePage": {
