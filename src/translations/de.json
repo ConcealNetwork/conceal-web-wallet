@@ -9,6 +9,8 @@
       "account": "Account",
       "send": "Senden",
       "receive": "Empfangen",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Export",
       "donate": "Spenden",
       "settings": "Einstellungen",
@@ -57,7 +59,11 @@
         "label": "Optimierung",
         "subtitle": "Deine Wallet muss optimiert werden",
         "button": "Jetzt optimieren",
-        "loadingText": "Optimiere, bitte warten..."
+        "loadingText": "Optimiere, bitte warten...",
+        "success": "Fusion Transaktion eingereicht",
+        "error": "Fehler beim Einreichen der Fusion Transaktion",
+        "errorInfo": "Optimierung abgebrochen",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -108,9 +114,13 @@
       },
       "balanceBlock": {
         "title": "Dein Guthaben",
-        "total": "Total",
-        "pending": "Pending",
-        "unlocked": "Entsperrt"
+        "portfolio": "Portfolio",
+        "available": "Verfügbar",
+        "pending": "Ausstehend",
+        "unlocked": "Entsperrt",
+        "deposited": "Einlagen",
+        "withdrawable": "Auszahlbar",
+        "futureInterest": "Zukünftiger Zins"
       },
       "historyBlock": {
         "title": "Transaktionshistorie",
@@ -216,6 +226,7 @@
       "title": "Netzwerkstatus",
       "subtitle": "Einblick ins Marsir Netzwerk",
       "statsBlock": {
+        "connectNode": "Verbunden",
         "hashrate": "Netzwerk Hashrate",
         "height": "Blockchainhöhe",
         "difficulty": "Netzwerkschwierigkeit",
@@ -226,7 +237,7 @@
     "sendPage": {
       "title": "Schicke CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Wallet wird synchronisiert.... Wenn es vollständig synchronisiert ist, können Sie Mittel schicken."
       },
       "sendBlock": {
         "address": {
@@ -305,7 +316,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Wallet wird synchronisiert.... Wenn es vollständig synchronisiert ist, können Sie Nachrichten senden."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -374,6 +385,76 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },
+    "depositsPage": {
+      "title": "Einlagen",
+      "depositDate": "Einzahlungsdatum",
+      "lockHeight": "Sperrfrist",
+      "unlockDate": "Entsperrungsdatum",
+      "unlockHeight": "Entsperrungsfrist",
+      "interest": "Zinsen",
+      "deposit": "Einzahlung",
+      "syncing": {
+        "label": "Synchronisiere Wallet.... Wenn es vollständig synchronisiert ist, können Sie Ihre Einlagen sehen."
+      },
+      "tabs": {
+        "inbox": "Einlagen",
+        "send": "Erstellen"
+      },
+      "depositsBlock": {
+        "title": "Liste der Einzahlungen"
+      },
+      "confirmDeposit": {
+        "title": "Einzahlung Bestätigen",
+        "message": "Geben Sie Ihr Passwort ein um eine Einzahlung von {amount} CCX für {term} Monate zu bestätigen?",
+        "confirm": "Einzahlung Erstellen",
+        "cancel": "Abbrechen",
+        "passwordRequired": "Wallet-Passwort ist erforderlich"
+      },
+      "createDeposit": {
+        "title": "Neue Einlage Erstellen",
+        "amount": "Einzahlungsbetrag",
+        "term": "Sperrfrist (in Monaten)",
+        "termError": "Bitte geben Sie eine ganze Zahl zwischen 1 und 12 Monaten ein",
+        "confirm": "Einlage Erstellen",
+        "cancel": "Abbrechen",
+        "createSuccess": "Einlage an die Blockchain gesendet",
+        "createPending": "Ihre Einlage wird verarbeitet",
+        "createError": "Fehler beim Erstellen der Einlage",
+        "withdrawSuccess": "Auszahlung an die Blockchain gesendet",
+        "withdrawPending": "Ihre Auszahlung wird verarbeitet",
+        "withdrawError": "Fehler bei der Auszahlung der Einlage",
+        "amountError": "Ungültiger Betrag",
+        "amountMustBePositive": "Der Betrag muss positiv sein",
+        "termMustBeValid": "Die Laufzeit muss zwischen 1 und 12 Monaten liegen",
+        "insufficientFunds": "Unzureichende Mittel",
+        "insufficientFundsMessage": "Sie haben nicht genügend Mittel für diese Einlage",
+        "maxAmount": "Maximaler Einlagebetrag: {amount} CCX",
+        "rewardAtTerm": "Belohnung bei Laufzeit: {reward} CCX"
+      },
+      "depositDetails": {
+        "title": "Einlagendetails",
+        "txHash": "Transaktionserstellung",
+        "spendingTx": "Transaktionsausgabe",
+        "status": "Status",
+        "amount": "Betrag",
+        "term": "Laufzeit",
+        "creationTime": "Erstellungsdatum",
+        "spendingTime": "Auszahlungsdatum",
+        "spendingHeight": "Auszahlungshöhe",
+        "creationHeight": "Erstellungshöhe",
+        "unlockHeight": "Freigabehöhe",
+        "interest": "Zinsen"
+      },
+      "recap": {
+        "title": "Einlagenübersicht",
+        "totalLifetimeDeposit": "Gesamte Einlagen",
+        "totalLifetimeInterest": "Gesamte Zinsen",
+        "totalCashedOutInterest": "Gesamte Ausgezahlte Zinsen",
+        "futureInterestLocked": "Zukünftige Zinsen auf gesperrte Einlagen",
+        "futureInterestUnlocked": "Zukünftige Zinsen auf freie Einlagen",
+        "earliestWithdrawable": "Früheste Freigabe"
       }
     },
     "receivePage": {
@@ -448,6 +529,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Ticker Symbol",
+          "full": "Vollständiges Ticker Symbol",
+          "short": "Kurzes Ticker Symbol",
+          "preview": "Vorschau"
         }
       },
       "changePasswordButton": "Ändere mein Wallet Passwort",
@@ -484,7 +571,8 @@
       "parametersBlock": {
         "title": "Parameter",
         "password": {
-          "label": "Passwort zum Schutz deiner Wallet"
+          "label": "Passwort zum Schutz deiner Wallet",
+          "label_input": "Wallet Passwort"
         },
         "passwordConfirm": {
           "label": "Bestätige das Passwort",
@@ -564,7 +652,10 @@
       "walletBlock": {
         "title": "Wallet Datei",
         "label": "Datei auswählen",
-        "importButton": "Importiere"
+        "importButton": "Importiere",
+        "selectFile": "Bitte wähle eine gültige Wallet Datei json aus:",
+        "fileSelected": "Datei ausgewählt",
+        "invalidFile": "Die ausgewählte Datei ist keine gültige Wallet Datei."
       }
     },
     "importFromMnemonicPage": {
@@ -595,8 +686,7 @@
           "label": "Privater Spend Key"
         },
         "privateView": {
-          "label": "Privater View Key",
-          "optional": "(optional)"
+          "label": "Privater View Key"
         },
         "publicKey": {
           "label": "Öffentlicher Schlüssel"

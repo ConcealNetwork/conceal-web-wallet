@@ -9,6 +9,8 @@
       "account": "Огляд",
       "send": "Надіслати",
       "receive": "Отримати",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Експорт",
       "donate": "Пожертвувати",
       "settings": "Налаштування",
@@ -57,7 +59,11 @@
         "label": "Оптимізація",
         "subtitle": "Ваш гаманець потребує оптимізації",
         "button": "Оптимізувати зараз",
-        "loadingText": "Оптимізація, будь ласка, зачекайте..."
+        "loadingText": "Оптимізація, будь ласка, зачекайте...",
+        "success": "Оптимізація пройшла успішно",
+        "error": "Ошибка при оптимизации",
+        "errorInfo": "Оптимизация отменена",
+        "confirmText": "да"
       }
     },
     "bottom": {
@@ -110,7 +116,9 @@
         "title": "Ваш баланс",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Доступно"
+        "unlocked": "Доступно",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Історія транзакцій",
@@ -128,7 +136,7 @@
         "blockHeight": "Висота блоку",
         "paymentId": "Ідентифікатор платежу",
         "txPrivKey": "Секретний ключ транзакції",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -227,7 +235,7 @@
     "sendPage": {
       "title": "Надіслати CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять средства."
       },
       "sendBlock": {
         "address": {
@@ -306,7 +314,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять сообщения."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -375,6 +383,76 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },
+    "depositsPage": {
+      "title": "Депозити",
+      "unlockDate": "Дата розблокування",
+      "interest": "Відсоток",
+      "deposit": "Депозит",
+      "lockHeight": "Висота блокування",
+      "unlockHeight": "Висота розблокування",
+      "depositDate": "Дата депозиту",
+      "syncing": {
+        "label": "Гаманець синхронізується.... Коли синхронізація буде завершена, ви зможете переглядати депозити."
+      },
+      "tabs": {
+        "inbox": "Депозити",
+        "send": "Створити"
+      },
+      "depositsBlock": {
+        "title": "Список депозитів"
+      },
+      "confirmDeposit": {
+        "title": "Підтвердити депозит",
+        "message": "Введіть ваш пароль для підтвердження створення депозиту {amount} CCX на {term} місяців?",
+        "confirm": "Створити депозит",
+        "cancel": "Скасувати",
+        "passwordRequired": "Пароль гаманця є обов'язковим"
+      },
+      "createDeposit": {
+        "title": "Створити новий депозит",
+        "amount": "Сума для депозиту",
+        "term": "Час блокування (в місяцях)",
+        "termError": "Будь ласка введіть ціле число від 1 до 12 місяців",
+        "confirm": "Створити депозит",
+        "cancel": "Скасувати",
+        "createSuccess": "Депозит надісланий на блокчейн",
+        "createPending": "Ваш депозит обробляється",
+        "createError": "Помилка при створенні депозиту",
+        "withdrawSuccess": "Виведення надіслано на блокчейн",
+        "withdrawPending": "Ваше виведення обробляється",
+        "withdrawError": "Помилка при виведенні депозиту",
+        "amountError": "Неправильна сума",
+        "amountMustBePositive": "Сума повинна бути позитивною",
+        "termMustBeValid": "Час повинен бути від 1 до 12 місяців",
+        "insufficientFunds": "Недостатньо коштів",
+        "insufficientFundsMessage": "У вас недостатньо коштів для створення цього депозиту",
+        "maxAmount": "Максимальна сума депозиту: {amount} CCX",
+        "rewardAtTerm": "Нагорода за термін: {reward} CCX"
+      },
+      "depositDetails": {
+        "title": "Деталі депозитів",
+        "txHash": "Транзакція створення",
+        "spendingTx": "Транзакція витрачання",
+        "status": "Статус",
+        "amount": "Сума",
+        "term": "Час блокування",
+        "creationTime": "Час створення",
+        "spendingTime": "Час витрачання",
+        "spendingHeight": "Висота витрачання",
+        "creationHeight": "Висота створення",
+        "unlockHeight": "Висота розблокування",
+        "interest": "Відсоток"
+      },
+      "recap": {
+        "title": "Deposits Recap",
+        "totalLifetimeDeposit": "Total Lifetime Deposit",
+        "totalLifetimeInterest": "Total Lifetime Interest",
+        "totalCashedOutInterest": "Total Cashed Out Interest",
+        "futureInterestLocked": "Future Interest on Locked Deposits",
+        "futureInterestUnlocked": "Future Interest on Withdrawable",
+        "earliestWithdrawable": "Earliest Withdrawable"
       }
     },
     "receivePage": {
@@ -586,8 +664,7 @@
       "subtitle": "Використати приватні ключі для створення гаманця",
       "parametersBlock": {
         "viewOnlyWallet": {
-          "label": "Хочете створити гаманець стеження?",
-          "info": "Зверніть увагу, гаманець стеження призначений тільки для перегляду вхідних платежів, так що баланс може відображатися неправильно!"
+          "label": "Хочете створити гаманець стеження?"
         }
       },
       "keysBlock": {
@@ -597,8 +674,7 @@
           "label": "Приватний ключ витрачання"
         },
         "privateView": {
-          "label": "Приватний ключ стеження",
-          "optional": "(не обов'язково)"
+          "label": "Приватний ключ стеження"
         },
         "publicKey": {
           "label": "Публічний ключ"

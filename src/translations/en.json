@@ -10,6 +10,7 @@
       "send": "Send",
       "receive": "Receive",
       "message": "Messages",
+      "deposit": "Deposits",
       "export": "Export",
       "donate": "Donate",
       "settings": "Settings",
@@ -56,9 +57,13 @@
       },
       "optimize": {
         "label": "Optimization",
-        "subtitle": "Your wallet needs to be optimized",
+        "subtitle": "You might attempt to optimize your wallet",
         "button": "Optimize Now",
-        "loadingText": "Optimizing, please wait..."
+        "loadingText": "Optimizing, please wait...",
+        "success": "Fusion transaction submitted",
+        "error": "Error submitting fusion transaction",
+        "errorInfo": "Optimization aborted",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -109,9 +114,13 @@
       },
       "balanceBlock": {
         "title": "Your balance",
-        "total": "Total",
+        "portfolio": "Portfolio",
+        "available": "Available",
         "pending": "Pending",
-        "unlocked": "Unlocked"
+        "unlocked": "Unlocked",
+        "deposited": "Deposits",
+        "withdrawable": "Withdrawable",
+        "futureInterest": "Future Interest"
       },
       "historyBlock": {
         "title": "Transaction history",
@@ -228,7 +237,7 @@
     "sendPage": {
       "title": "Send CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Wallet is syncing.... When its fully synced you will be able to send funds."
       },
       "sendBlock": {
         "address": {
@@ -249,7 +258,7 @@
         },
         "message": {
           "label": "Message (optional)",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is too long. Max length is 260 characters"
         },
         "mixin": {
           "label": "Privacy Level",
@@ -307,7 +316,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Wallet is syncing.... When its fully synced you will be able to send messages."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -327,7 +336,7 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is too long. Max length is 260 characters"
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -376,6 +385,76 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },    
+    "depositsPage": {
+      "title": "Deposits",
+      "unlockDate": "Unlock Date",
+      "interest": "Interest",
+      "deposit": "Deposit",
+      "lockHeight": "Lock Height",
+      "unlockHeight": "Unlock Height",
+      "depositDate": "Deposit Date",
+      "syncing": {
+        "label": "Wallet is syncing.... When its fully synced you will be able to view deposits."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "confirmDeposit": {
+        "title": "Confirm Deposit",
+        "message": "Enter your Password to confirm creation of a deposit of {amount} CCX for {term} months?",
+        "confirm": "Create Deposit",
+        "cancel": "Cancel",
+        "passwordRequired": "Wallet password is required"
+      },
+      "createDeposit": {
+        "title": "Create New Deposit",
+        "amount": "Amount to deposit",
+        "term": "Lock time (in months)",
+        "termError": "Please enter a whole number between 1 and 12 months",
+        "confirm": "Create Deposit",
+        "cancel": "Cancel",
+        "createSuccess": "Deposit Submitted to Blockchain",
+        "createPending": "Your deposit is being processed",
+        "createError": "Error Creating Deposit",
+        "withdrawSuccess": "Withdrawal Submitted to Blockchain",
+        "withdrawPending": "Your withdrawal is being processed",
+        "withdrawError": "Error Withdrawing Deposit",
+        "amountError": "Invalid Amount",
+        "amountMustBePositive": "Amount must be positive",
+        "termMustBeValid": "Term must be between 1 and 12 months",
+        "insufficientFunds": "Insufficient Funds",
+        "insufficientFundsMessage": "You don't have enough funds to create this deposit",
+        "maxAmount": "Maximum deposit amount: {amount} CCX",
+        "rewardAtTerm": "Reward at Term: {reward} CCX"
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height",
+        "interest": "Interest"
+      },
+      "recap": {
+        "title": "Deposits Recap",
+        "totalLifetimeDeposit": "Total Lifetime Deposit",
+        "totalLifetimeInterest": "Total Lifetime Interest",
+        "totalCashedOutInterest": "Total Cashed Out Interest",
+        "futureInterestLocked": "Future Interest on Locked Deposits",
+        "futureInterestUnlocked": "Future Interest on Withdrawable",
+        "earliestWithdrawable": "Earliest Withdrawable"
       }
     },
     "receivePage": {
@@ -450,6 +529,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Ticker Symbol",
+          "full": "Full Ticker",
+          "short": "Short Ticker",
+          "preview": "Preview"
         }
       },
       "changePasswordButton": "Change my wallet password",
@@ -486,7 +571,8 @@
       "parametersBlock": {
         "title": "Parameters",
         "password": {
-          "label": "Password to protect your wallet"
+          "label": "Password to protect your wallet",
+          "label_input": "Wallet Password"
         },
         "passwordConfirm": {
           "label": "Confirm the password",
@@ -562,11 +648,14 @@
     },
     "importFromFilePage": {
       "title": "Importing wallet from a backup file",
-      "subtitle": "Use your backup file to create a wallet",
+      "subtitle": "Use your backup json file to import a wallet",
       "walletBlock": {
         "title": "Wallet file",
         "label": "Select the file",
-        "importButton": "Import"
+        "importButton": "Import",
+        "selectFile": "Please select a valid wallet json file:",
+        "fileSelected": "File selected",
+        "invalidFile": "The selected file is not a valid wallet file."
       }
     },
     "importFromMnemonicPage": {

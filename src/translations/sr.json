@@ -9,6 +9,8 @@
       "account": "Налог",
       "send": "Пошаљи",
       "receive": "Прими",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Извоз",
       "donate": "Донирај",
       "settings": "Подешавања",
@@ -57,7 +59,11 @@
         "label": "Optimizacija",
         "subtitle": "Vaš novčanik treba da se optimizuje",
         "button": "Optimizuj sada",
-        "loadingText": "Optimizacija u toku, molimo sačekajte..."
+        "loadingText": "Optimizacija u toku, molimo sačekajte...",
+        "success": "Optimizacija uspela",
+        "error": "Greška pri optimizaciji",
+        "errorInfo": "Optimizacija otkazana",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -110,7 +116,9 @@
         "title": "Ваша средства",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Откључано"
+        "unlocked": "Откључано",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Историја ваших трансакција",
@@ -128,7 +136,7 @@
         "blockHeight": "Block height",
         "paymentId": "Payment ID",
         "txPrivKey": "Transaction Private Key",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -138,8 +146,7 @@
         "invalid": "Погрешна лозинка"
       },
       "newPassword": {
-        "label": "Изаберите нову лозинку",
-        "invalid": " Лозинка мора да се састоји из најмање 8 карактера, једног великог слова, једног малог слова, једног броја и једног симбола"
+        "label": "Изаберите нову лозинку"
       },
       "newPasswordConfirm": {
         "label": "Потврдите нову лозинку"
@@ -217,6 +224,7 @@
       "title": "Статистика мреже",
       "subtitle": "Увид у Карбо мрежу",
       "statsBlock": {
+        "connectNode": "Повезано",
         "hashrate": "Хешрејт мреже",
         "height": "Блокчејн висина",
         "difficulty": "Тешкоћа мреже",
@@ -227,7 +235,7 @@
     "sendPage": {
       "title": "Шаљи МСР",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять средства."
       },
       "sendBlock": {
         "address": {
@@ -306,7 +314,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять сообщения."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -375,6 +383,76 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },
+    "depositsPage": {
+      "title": "Депозити",
+      "unlockDate": "Датум разблокирања",
+      "interest": "Камата",
+      "deposit": "Депозит",
+      "lockHeight": "Висина блокирања",
+      "unlockHeight": "Висина разблокирања",
+      "depositDate": "Датум депозита",
+      "syncing": {
+      "label": "Новчаник је синхронизован. Можете да видите депозите."
+      },
+      "tabs": {
+        "inbox": "Депозити",
+        "send": "Креирај"
+      },
+      "depositsBlock": {
+        "title": "Листа депозита"
+      },
+      "confirmDeposit": {
+        "title": "Потврди депозит",
+        "message": "Унесите вашу лозинку да бисте потврдили креирање депозита од {amount} CCX за {term} месеци?",
+        "confirm": "Креирај депозит",
+        "cancel": "Откажи",
+        "passwordRequired": "Лозинка новчаника је обавезна"
+      },
+      "createDeposit": {
+        "title": "Креирај нови депозит",
+        "amount": "Сума за депозит",
+        "term": "Време за блокирање (у месецима)",
+        "termError": "Молимо унесите цео број између 1 и 12 месеци",
+        "confirm": "Креирај депозит",
+        "cancel": "Откажи",
+        "createSuccess": "Депозит послат на блокчејн",
+        "createPending": "Ваш депозит се обрађује",
+        "createError": "Грешка при креирању депозита",
+        "withdrawSuccess": "Издвајање послато на блокчејн",
+        "withdrawPending": "Ваше издвајање се обрађује",
+        "withdrawError": "Грешка при издвајању депозита",
+        "amountError": "Неисправна сума",
+        "amountMustBePositive": "Сума мора бити позитивна",
+        "termMustBeValid": "Време мора бити између 1 и 12 месеци",
+        "insufficientFunds": "Недостаје средстава",
+        "insufficientFundsMessage": "Немате довољно средстава за креирање овог депозита",
+        "maxAmount": "Максимална сума депозита: {amount} CCX",
+        "rewardAtTerm": "Награда на крају: {reward} CCX"
+      },
+      "depositDetails": {
+        "title": "Детаљи депозита",
+        "txHash": "Трансакција креирања",
+        "spendingTx": "Трансакција издвајања",
+        "status": "Статус",
+        "amount": "Сума",
+        "term": "Време",
+        "creationTime": "Време креирања",
+        "spendingTime": "Време издвајања",
+        "spendingHeight": "Висина издвајања",
+        "creationHeight": "Висина креирања",
+        "unlockHeight": "Висина разблокирања",
+        "interest": "Interest"
+      },
+      "recap": {
+        "title": "Рекап",
+        "totalLifetimeDeposit": "Укупна укупна сума депозита",
+        "totalLifetimeInterest": "Укупна укупна камата",
+        "totalCashedOutInterest": "Укупна укупна камата",
+        "futureInterestLocked": "Будућа камата на закључаним депозитетима",
+        "futureInterestUnlocked": "Будућа камата на издвајању",
+        "earliestWithdrawable": "Најраније издвајање"
       }
     },
     "receivePage": {
@@ -584,9 +662,9 @@
     "importFromKeysPage": {
       "title": "Увоз новчаника помоћу кључева",
       "subtitle": "Искористите кључеве за увоз новчаника",
-      "parametersBLock": {
+      "parametersBlock": {
         "viewOnlyWallet": {
-          "label": "Да ли желите новчаник само за преглед (view-only) ?"
+          "label": ""
         }
       },
       "keysBlock": {
@@ -596,8 +674,7 @@
           "label": "Приватни потрошачки кључ"
         },
         "privateView": {
-          "label": "Приватни кључ за преглед",
-          "optional": "(произвољна опција)"
+          "label": "Приватни кључ за преглед"
         },
         "publicKey": {
           "label": "Јавни кључ"

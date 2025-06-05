@@ -23,23 +23,53 @@
 			<div class="body" >
 				<div class="header-title balance_title" >{{ $t("accountPage.balanceBlock.title") }}</div>
 				<div class="content balance_content" >
-          <div class="wallet_amount amount_total">
-		  			<div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.total") }}:</div>
-            <div class="walletAmount amount_cell" >{{ $n(walletAmount / currencyDivider) }} {{ticker}}</div>
+		  <div class="wallet_amount amount_portfolio">
+			<div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.portfolio") }}:</div>
+		    <div class="walletAmount amount_cell" >{{ ($n((walletAmount + depositedWalletAmount + withdrawableWalletAmount) / currencyDivider)) }} {{ticker}}</div>
+		  </div>
+		  <div class="wallet_amount amount_spacer">
+			<div class="amount_cell" >&nbsp;</div>
+			<div class="amount_cell" >&nbsp;</div>
+		  </div>
+		  <div class="wallet_amount amount_total">
+		  	<div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.available") }}:</div>
+            <div class="walletAmount amount_cell" >{{ $n(unlockedWalletAmount / currencyDivider) }} {{ticker}}</div>
           </div>
           <div class="wallet_amount amount_pending">
             <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.pending") }}:</div>
             <div class="walletAmount amount_cell">{{ $n((walletAmount - unlockedWalletAmount) / currencyDivider) }} {{ticker}}</div>
           </div>
-          <div class="wallet_amount amount_unlocked" v-if="unlockedWalletAmount !== walletAmount">
-            <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.unlocked") }}:</div>
-            <div class="walletAmount amount_cell">{{ $n(unlockedWalletAmount / currencyDivider) }} {{ticker}}</div>
+          <div class="wallet_amount amount_pending">
+            <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.deposited") }}:</div>
+            <div class="walletAmount amount_cell hover-amount-cell"
+                 @mouseenter="showDepositsFuture = true"
+                 @mouseleave="showDepositsFuture = false">
+              <span v-if="showDepositsFuture && futureLockedInterest > 0">
+                {{ $n(depositedWalletAmount / currencyDivider) }} {{ticker}} + {{ $t("accountPage.balanceBlock.futureInterest") }} {{ $n(futureLockedInterest / currencyDivider) }} {{ticker}}
+              </span>
+              <span v-else>
+                {{ $n(depositedWalletAmount / currencyDivider) }} {{ticker}}
+              </span>
+            </div>
+          </div>
+          <div class="wallet_amount amount_pending">
+            <div class="walletAmountLabel amount_cell">{{ $t("accountPage.balanceBlock.withdrawable") }}:</div>
+            <div class="walletAmount amount_cell hover-amount-cell"
+                 @mouseenter="showWithdrawableFuture = true"
+                 @mouseleave="showWithdrawableFuture = false">
+              <span v-if="showWithdrawableFuture && futureUnlockedInterest > 0">
+                {{ $n(withdrawableWalletAmount / currencyDivider) }} {{ticker}} + {{ $t("accountPage.balanceBlock.futureInterest") }} {{ $n(futureUnlockedInterest / currencyDivider) }} {{ticker}}
+              </span>
+              <span v-else>
+				{{ $n(withdrawableWalletAmount / currencyDivider) }} {{ticker}}               
+              </span>
+            </div>
           </div>
 				</div>
 			</div>
 		</div>
-
-		<div class="panel" :hidden="!optimizeIsNeeded || isWalletProcessing">
+    
+		<div class="panel" v-if="optimizeIsNeeded && showOptimizePanel && !isWalletProcessing">
 			<div class="body">
 				<div class="header-title">{{ $t("global.optimize.label") }}</div>
 				<div class="subtitle">{{ $t("global.optimize.subtitle") }} ({{optimizeOutputs}})</div>
@@ -56,7 +86,7 @@
         <div class="header-wrapper">
 				  <div class="header-title" >{{ $t("accountPage.historyBlock.title") }} ({{ $n(transactions.length) }} / {{ $n(allTransactionsCount) }})</div>
           <div class="header-filer-wrapper field">
-            <input class="header-filer" type="text" v-model="txFilter" />
+            <input class="header-filer" type="text" placeholder="Search by transaction hash" v-model="txFilter" />
           </div>
         </div>
 				<div class="content" >
@@ -65,9 +95,16 @@
 							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked()">
 								<tr class="transaction" :class="(transaction.blockHeight === 0 ? 'pending' : '')">
 									<td class="direction" >
-										<i v-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
+                    					<i v-if="transaction.isDeposit" class="fa fa-bank tx_deposit" aria-hidden="true"></i>
+										<i v-else-if="transaction.isWithdrawal" class="fa fa-university tx_withdrawal" aria-hidden="true"></i>
+										<i v-else-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
+										<i v-else-if="transaction.fusion" class="fa fa-gear tx_direction_out fusion-gear" aria-hidden="true"></i>
 										<i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
-									</td><!--LEfT-->
+									</td>
+									<td class="direction" >
+										<i v-if="transaction.blockHeight <= 0 " class="fa fa-spinner fa-spin tx_deposit_pending" aria-hidden="true"></i>
+									</td>
+									<!--LEfT-->
 									<td class="timestamp" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp*1000), 'long')}}</td>
 									<td class="timestamp" v-else="">{{ $t("accountPage.historyBlock.pendingTxStatus") }}...</td>
 									<td :class="'amount '+(transaction.getAmount() > 0 ? 'tx_direction_in' : 'tx_direction_out')" >{{ transaction.getAmount() / currencyDivider }}</td>

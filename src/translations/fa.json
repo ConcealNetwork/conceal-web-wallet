@@ -9,6 +9,8 @@
       "account": "حساب",
       "send": "ارسال",
       "receive": "دریافت",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "پشتیبان گیری",
       "donate": "ارسال کادو",
       "settings": "تنظیمات",
@@ -57,11 +59,16 @@
         "label": "بهینه سازی",
         "subtitle": "کیف پول شما باید بهینه سازی شود",
         "button": "هم اکنون بهینه سازی کنید",
-        "loadingText": "در حال بهینه سازی، لطفاً صبر کنید..."
+        "loadingText": "در حال بهینه سازی، لطفاً صبر کنید...",
+        "success": "تراکنش همگام سازی ارسال شد",
+        "error": "خطا در ارسال تراکنش همگام سازی",
+        "errorInfo": "بهینه سازی لغو شد",
+        "confirmText": "تایید"
       }
     },
     "bottom": {
       "termsOfUse": "شرایط استفاده",
+      "privacyPolicy": "حریم خصوصی",
       "support": "پشتیبانی",
       "donate": "ارسال کادو",
       "network": "شبکه",
@@ -107,9 +114,13 @@
       },
       "balanceBlock": {
         "title": "کل حساب",
-        "total": "Total",
+        "portfolio": "نمونه کارها",
+        "available": "موجود",
         "pending": "Pending",
-        "unlocked": "در دسترس"
+        "unlocked": "در دسترس",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable",
+        "futureInterest": "آینده"
       },
       "historyBlock": {
         "title": "تاریخچه تراکنش ها",
@@ -126,7 +137,8 @@
         "feesOnTx": "کارمزد تراکنش",
         "blockHeight": "شماره بلوک",
         "paymentId": "شناسه پرداخت",
-        "message": "Message"        
+        "txPrivKey": "Tx",
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -136,8 +148,7 @@
         "invalid": "رمز عبور اشتباه است"
       },
       "newPassword": {
-        "label": "یک رمز عبور جدید انتخاب کنید",
-        "invalid": " یک رمز عبور قوی باید حداقل شامل هشت کاراکتر باشد ، بهمراه حروف بزرگ و کوچک و سمبل ها"
+        "label": "یک رمز عبور جدید انتخاب کنید"
       },
       "newPasswordConfirm": {
         "label": "رمز عبور جدید خود را تایید کنید"
@@ -215,6 +226,7 @@
       "title": "وضعیت شبکه",
       "subtitle": "داخل شبکه ی کربو",
       "statsBlock": {
+        "connectNode": "متصل شد",
         "hashrate": "هش ریت شبکه",
         "height": "ارتفاع زنجیره بلوکی",
         "difficulty": "سختی شبکه",
@@ -225,11 +237,12 @@
     "sendPage": {
       "title": "ارسال کربو",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "کیف پول شما در حال همگام سازی است.... هنگامی که همگام شد، میتوانید پول ارسال کنید."
       },
       "sendBlock": {
         "address": {
           "label": "ارسال به آدرس",
+          "placeholder": "",
           "invalid": "آدرس اشتباه است",
           "fundsTo": "کربو ها به این آدرس ارسال میشوند",
           "receiver": "دریافت کننده",
@@ -303,7 +316,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "کیف پول شما در حال همگام سازی است.... هنگامی که همگام شد، میتوانید پول ارسال کنید."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -374,6 +387,76 @@
         "content": "Bring closer to the other device"
       }
     },
+    "depositsPage": {
+      "title": "Deposits",
+      "unlockDate": "باز کردن",
+      "interest": "علاقه",
+      "deposit": "سپردن",
+      "lockHeight": "قفل",
+      "unlockHeight": "باز کردن",
+      "depositDate": "سپردن",
+      "syncing": {
+        "label": "کیف پول شما در حال همگام سازی است.... هنگامی که همگام شد، میتوانید پول ارسال کنید."
+      },
+      "tabs": {
+        "inbox": "Deposits",
+        "send": "Create"
+      },
+      "depositsBlock": {
+        "title": "Deposits list"
+      },
+      "confirmDeposit": {
+        "title": "تأیید کردن",
+        "message": "وارد کردن",
+        "confirm": "ایجاد کردن",
+        "cancel": "لغو کردن",
+        "passwordRequired": "کیف پول"
+      },
+      "createDeposit": {
+        "title": "ایجاد کردن",
+        "amount": "مقدار",
+        "term": "قفل",
+        "termError": "لطفا",
+        "confirm": "ایجاد کردن",
+        "cancel": "لغو کردن",
+        "createSuccess": "سپردن",
+        "createPending": "شما",
+        "createError": "خطا",
+        "withdrawSuccess": "عقب نشینی",
+        "withdrawPending": "شما",
+        "withdrawError": "خطا",
+        "amountError": "نامعتبر",
+        "amountMustBePositive": "مقدار",
+        "termMustBeValid": "دوره",
+        "insufficientFunds": "ناچیز",
+        "insufficientFundsMessage": "شما",
+        "maxAmount": "حداکثر",
+        "rewardAtTerm": "پاداش"
+      },
+      "depositDetails": {
+        "title": "Deposits details",
+        "txHash": "Creation tx",
+        "spendingTx": "Spending tx",
+        "status": "Status",
+        "amount": "Amount",
+        "term": "Term",
+        "creationTime": "Creation time",
+        "spendingTime": "Spending time",
+        "spendingHeight": "Spending height",
+        "creationHeight": "Creation height",
+        "unlockHeight": "Unlock height",
+        "interest": "علاقه"
+      },
+      "recap": {
+        "title": "مرور سپرده ها",
+        "totalLifetimeDeposit": "مجموع سپرده ها",
+        "totalLifetimeInterest": "مجموع علاقه ها",
+        "totalCashedOutInterest": "مجموع علاقه های دریافت شده",
+        "futureInterestLocked": "علاقه های آتی سپرده های قفل شده",
+        "futureInterestUnlocked": "علاقه های آتی سپرده های باز شده",
+        "earliestWithdrawable": "سپرده های قابل باز شدن"
+      }
+    },
     "receivePage": {
       "title": "دریافت کربو",
       "receiveBlock": {
@@ -404,10 +487,20 @@
     "miningPage": {
       "title": "اطلاعات استخراج",
       "subtitle": "با استخراج شبکه کربو را بهبود بخشیده و به عنوان جایزه کربو دریافت کنید",
-      "contentBlock": {
-        "title": "چگونه شروع به استخراج کنید",
-        "intro": "استخراج به شبکه کربو بسیار کمک میکند و برای شما به عنوان جایزه کربو ارسال میشود ، شما به تجهیزات خاصی جهت استخراج نیاز ندارید",
-        "linkText": "برای خواندن راهنما اینجا کلیک کنید"
+      "parameterBlock": {
+        "title": "پارامترها",
+        "labelDestinationAddress": "کیف پول",
+        "labelThreads": "شماره",
+        "start": "شروع کنید",
+        "stop": "توقف کنید"
+      },
+      "statisticsBlocks": {
+        "title": "آمار",
+        "validShares": "معتبر است",
+        "hashrate": "hashrate",
+        "maxHashrate": "حداکثر",
+        "dedicatedHardware": "با",
+        "miningHandledBy": "این"
       }
     },
     "settingsPage": {
@@ -436,6 +529,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "سیمبل",
+          "full": "سیمبل کامل",
+          "short": "سیمبل کوتاه",
+          "preview": "پیش نمایش"
         }
       },
       "changePasswordButton": "تغییر رمز عبور کیف پول",
@@ -454,7 +553,7 @@
         "title": "حذف کیف پول نسخه محلی",
         "content": "آیا مطمین هستید که میخواهید کیف پول خود را حذف نمایید؟",
         "confirmText": "بله مطمینم",
-        "cancelButtonText": "لغو"
+        "cancelText": "لغو کنید"
       },
       "resetWalletModal": {
         "title": "Reset My Wallet (local copy)",
@@ -472,7 +571,8 @@
       "parametersBlock": {
         "title": "پارامترها",
         "password": {
-          "label": "رمز عبور جهت محافظت از کیف پول شما"
+          "label": "رمز عبور جهت محافظت از کیف پول شما",
+          "label_input": ""
         },
         "passwordConfirm": {
           "label": "تایید رمز عبور",
@@ -542,13 +642,20 @@
       "title": "شرایط استفاده",
       "subtitle": "لطفا با دقت مطالعه نمایید"
     },
+    "privacyPolicyPage": {
+      "title": "حریم خصوصی",
+      "subtitle": "لطفا"
+    },
     "importFromFilePage": {
       "title": "دزون ریزی کیف پول با استفاده از فایل",
       "subtitle": "از فایل دانلود شده قبل در همین کیف پول استفاده کنید",
       "walletBlock": {
         "title": "فایل کیف پول",
         "label": "انتخاب کنید",
-        "importButton": "درون ریزی"
+        "importButton": "درون ریزی",
+        "selectFile": "لطفا",
+        "fileSelected": "پرونده",
+        "invalidFile": "در"
       }
     },
     "importFromMnemonicPage": {
@@ -567,10 +674,9 @@
     "importFromKeysPage": {
       "title": "درون ریزی کیف پول با کلید ها",
       "subtitle": "از کلید های شخصی برای درون ریزی کیف پول خود استفاده کنید",
-      "parametersBLock": {
+      "parametersBlock": {
         "viewOnlyWallet": {
-          "label": "آیا تنها یک کیف پول صرفا قابل مشاهده میخواهید ؟",
-          "info": "لطفا توجه کنید که کیف پول های صرفا برای مشاهده تنها موجودی کیف پول شما را نشان میدهند و نمیتوانید کوین ارسال کنید"
+          "label": ""
         }
       },
       "keysBlock": {
@@ -580,8 +686,7 @@
           "label": "کلید شخصی شما"
         },
         "privateView": {
-          "label": "کلید شخصی برای مشاهده",
-          "optional": "دلبخواه"
+          "label": "کلید شخصی برای مشاهده"
         },
         "publicKey": {
           "label": "کلید عمومی"

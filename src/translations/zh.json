@@ -9,6 +9,8 @@
       "account": "帐户",
       "send": "发送",
       "receive": "接收",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "导出",
       "donate": "捐助",
       "settings": "设置",
@@ -57,7 +59,11 @@
         "label": "优化",
         "subtitle": "您的钱包需要优化",
         "button": "立即优化",
-        "loadingText": "正在优化，请稍候..."
+        "loadingText": "正在优化，请稍候...",
+        "success": "优化成功",
+        "error": "优化失败",
+        "errorInfo": "优化失败",
+        "confirmText": "确认"
       }
     },
     "bottom": {
@@ -110,7 +116,9 @@
         "title": "您的余额",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "解锁"
+        "unlocked": "解锁",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "交易记录",
@@ -127,10 +135,8 @@
         "feesOnTx": "手续费",
         "blockHeight": "区块高度",
         "paymentId": "付款ID",
-        "unlockStatus": "状态",
-        "unlockConfirm": "确认数",
         "txPrivKey": "交易私钥",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -229,7 +235,7 @@
     "sendPage": {
       "title": "发送CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "钱包正在同步.... 当它完全同步时，您将能够发送资金。"
       },
       "sendBlock": {
         "address": {
@@ -308,7 +314,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "钱包正在同步.... 当它完全同步时，您将能够发送消息。"
       },
       "tabs": {
         "inbox": "Inbox",
@@ -379,6 +385,71 @@
         "content": "Bring closer to the other device"
       }
     },
+    "depositsPage": {
+      "title": "Deposits",
+      "unlockDate": "解锁日期",
+      "interest": "利息",
+      "deposit": "存款",
+      "lockHeight": "锁定高度",
+      "unlockHeight": "解锁高度",
+      "depositDate": "存款日期",
+      "syncing": {
+        "label": "钱包正在同步.... 当它完全同步时，您将能够查看存款。"
+      },
+      "tabs": {
+        "inbox": "存款",
+        "send": "创建"
+      },
+      "depositsBlock": {
+        "title": "存款列表"
+      },
+      "createDeposit": {
+        "title": "创建存款",
+        "amount": "金额",
+        "term": "期限",
+        "termError": "请输入一个1到12个月之间的整数",
+        "confirm": "创建存款",
+        "cancel": "取消",
+        "createSuccess": "存款已提交到区块链",
+        "createPending": "您的存款正在处理",
+        "createError": "创建存款失败",
+        "withdrawSuccess": "提款已提交到区块链",
+        "withdrawPending": "您的提款正在处理",
+        "withdrawError": "提款失败",
+        "amountError": "金额无效",
+        "amountMustBePositive": "金额必须为正",
+        "termMustBePositive": "期限必须为正",
+        "termMustBeValid": "期限必须在1到12个月之间",
+        "insufficientFunds": "资金不足",
+        "insufficientFundsMessage": "您没有足够的资金来创建此存款",
+        "maxAmount": "最大存款金额: {amount} CCX",
+        "rewardAtTerm": "Reward at Term: {reward} CCX"
+        
+      },
+      "depositDetails": {
+        "title": "存款详情",
+        "txHash": "创建交易",
+        "spendingTx": "消费交易",
+        "status": "状态",
+        "amount": "金额",
+        "term": "期限",
+        "creationTime": "创建时间",
+        "spendingTime": "消费时间",
+        "spendingHeight": "消费高度",
+        "creationHeight": "创建高度",
+        "unlockHeight": "解锁高度",
+        "interest": "利息"
+      },
+      "recap": {
+        "title": "存款总结",
+        "totalLifetimeDeposit": "总存款",
+        "totalLifetimeInterest": "总利息",
+        "totalCashedOutInterest": "已提取利息",
+        "futureInterestLocked": "未来锁定利息",
+        "futureInterestUnlocked": "未来可提取利息",
+        "earliestWithdrawable": "最早可提取"
+      }
+    },
     "receivePage": {
       "title": "收到CCX",
       "receiveBlock": {
@@ -442,9 +513,6 @@
         },
         "language": {
           "label": "语言"
-        },
-        "currency": {
-          "label": "本国货币"
         },
         "readMinerTx": {
           "label": "读取挖矿交易信息（仅适用于Solo挖矿）"
@@ -601,8 +669,7 @@
           "label": "私人消费钥匙"
         },
         "privateView": {
-          "label": "私人视图密钥",
-          "optional": "（可选的)"
+          "label": "私人视图密钥"
         },
         "publicKey": {
           "label": "公钥"

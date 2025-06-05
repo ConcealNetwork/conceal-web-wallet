@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -24,7 +24,7 @@ import {Constants} from "../model/Constants";
 import {Wallet} from "../model/Wallet";
 import {AppState} from "../model/AppState";
 import {Storage} from "../model/Storage";
-import {Translations} from "../model/Translations";
+import {Translations, tickerStore} from "../model/Translations";
 import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
 import {BlockchainExplorer, RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {WalletWatchdog} from "../model/WalletWatchdog";
@@ -52,6 +52,12 @@ class SettingsView extends DestructableView{
   @VueVar(false) optimizeIsNeeded !: boolean;
   @VueVar(false) optimizeLoading !: boolean;
 
+	@VueVar(false) useShortTicker !: boolean;
+	@VueVar('') currentTicker !: string;
+	@VueVar(config) config !: any;
+
+	private unsubscribeTicker: (() => void) | null = null;
+
 	constructor(container : string) {
 		super(container);
 		let self = this;
@@ -63,6 +69,18 @@ class SettingsView extends DestructableView{
 
 		this.creationHeight = wallet.creationHeight;
 		this.scanHeight = wallet.lastHeight;
+
+		// Initialize ticker from store
+		tickerStore.initialize().then(() => {
+			this.useShortTicker = tickerStore.useShortTicker;
+			this.currentTicker = tickerStore.currentTicker;
+			
+			// Subscribe to ticker changes
+			this.unsubscribeTicker = tickerStore.subscribe((useShortTicker) => {
+				this.useShortTicker = useShortTicker;
+				this.currentTicker = tickerStore.currentTicker;
+			});
+		});
 
 		this.checkOptimization();
 
@@ -144,7 +162,7 @@ class SettingsView extends DestructableView{
       let optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
 
       if (optimizeInfo.isNeeded) {
-        wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
+        wallet.createFusionTransaction(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
           function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
             return blockchainExplorer.getRandomOuts(amounts, numberOuts);
           }).then((processedOuts: number) => {
@@ -192,6 +210,11 @@ class SettingsView extends DestructableView{
 		if(this.scanHeight > this.maxHeight && this.maxHeight !== -1)this.scanHeight = this.maxHeight;
 	}
 
+	@VueWatched()
+	useShortTickerWatch() {
+		tickerStore.setTickerPreference(this.useShortTicker);
+	}
+
 	private updateWalletOptions() {
 		let options = wallet.options;
 		options.readSpeed = this.readSpeed;
@@ -223,6 +246,14 @@ class SettingsView extends DestructableView{
 
     // reset the node connection workers with new values
     BlockchainExplorerProvider.getInstance().resetNodes();
+	}
+
+	destruct = (): Promise<void> => {
+		// Cleanup ticker subscription
+		if (this.unsubscribeTicker) {
+			this.unsubscribeTicker();
+		}
+		return super.destruct();
 	}
 }
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -20,11 +20,22 @@ import {CnTransactions} from "../Cn";
 
 export type RawDaemon_Transaction = {
     extra: string,
-    vout: CnTransactions.Vout[],
+    vout: {
+        amount: number,
+        target:{
+            type: string,
+            data: {
+	            key?: string,
+              keys?: string[],
+              required_signatures?: number,
+              term?: number
+            }
+        }
+    }[],
     vin: {
         type: string,
         value?: CnTransactions.Vin,
-        gen?: { height: number },
+        gen?: { height: number }
     }[],
     rct_signatures: CnTransactions.RctSignature,
     unlock_time: number,
@@ -61,6 +72,10 @@ export type RawDaemon_Out = {
 export interface BlockchainExplorer {
     resolveOpenAlias(str: string): Promise<{ address: string, name: string | null }>;
 
+    isInitialized(): boolean;
+
+    initialize(): Promise<boolean>;
+  
     getHeight(): Promise<number>;
 
     getScannedHeight(): number;

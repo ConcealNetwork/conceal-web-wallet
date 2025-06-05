@@ -31,7 +31,7 @@
 
 import {Wallet} from "./Wallet";
 import {BlockchainExplorer, RawDaemon_Transaction} from "./blockchain/BlockchainExplorer";
-import {Transaction} from "./Transaction";
+import {Transaction, TransactionData, Deposit} from "./Transaction";
 import {TransactionsExplorer} from "./TransactionsExplorer";
 
 interface IBlockRange {
@@ -53,6 +53,7 @@ class TxQueue {
   private wallet: Wallet;
   private isReady: boolean;
   private isRunning: boolean;
+  private countAdded: number;
   private workerProcess: Worker;
   private countProcessed: number;
   private processingQueue: ITxQueueItem[];
@@ -62,6 +63,7 @@ class TxQueue {
     this.wallet = wallet;
     this.isReady = false;
     this.isRunning = false;
+    this.countAdded = 0;
     this.countProcessed = 0;
     this.processingQueue = [];
     this.workerProcess = this.initWorker();
@@ -84,14 +86,22 @@ class TxQueue {
         if (message.type === 'readyWallet') {
           this.setIsReady(true);
         } else if (message.type === 'processed') {
-          this.isRunning = false;
-
           if (message.transactions.length > 0) {
-            for (let tx of message.transactions) {
-              this.wallet.addNew(Transaction.fromRaw(tx));
+            for (let txData of message.transactions) {
+              let txDataObject = TransactionData.fromRaw(txData);
+
+              this.wallet.addNew(txDataObject.transaction);
+              this.wallet.addDeposits(txDataObject.deposits);
+              this.wallet.addWithdrawals(txDataObject.withdrawals);
             }
+
+            // increase the number of transactions we actually added to wallet
+            this.countAdded = this.countAdded + message.transactions.length;
+            //console.log(`Added ${message.transactions.length} transactions to wallet. All count ${this.countAdded}`);
           }
 
+          // we processed all
+          this.isRunning = false;
           // signall progress and start next loop now
           this.processingCallback(message.maxHeight);
           this.runProcessLoop();
@@ -104,31 +114,41 @@ class TxQueue {
 
   runProcessLoop = (): void => {
     if (this.isReady) {
+      //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
+      //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
+      if (this.countProcessed >= 5 * 1000) {
+        logDebugMsg('Recreated parseWorker..');
+        this.restartWorker();
+        setTimeout(() => {
+          this.runProcessLoop();
+        }, 1000); 
+        return;
+      }
+
       if (!this.isRunning) {      
+        this.isRunning = true;
+        // dequeue one item form the processing queue and check if its valid
         let txQueueItem: ITxQueueItem | null = this.processingQueue.shift()!;
 
-        if (txQueueItem) {
-          //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
-          //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
-          if (this.countProcessed >= 5 * 1000) {
-            logDebugMsg('Recreated parseWorker..');
-            this.restartWorker();
-            setTimeout(() => {
-              this.runProcessLoop();
-            }, 1000); 
-            return;
-          }
-                  
-          this.isRunning = true;
+        if (txQueueItem) {                  
           // increase the number of transactions we actually processed
           this.countProcessed = this.countProcessed + txQueueItem.transactions.length;
 
-          this.workerProcess.postMessage({
-            wallet: txQueueItem.transactions.length > 0 ? this.wallet.exportToRaw() : null,
-            transactions: txQueueItem.transactions,
-            maxBlock: txQueueItem.maxBlockNum,
-            type: 'process'
-          });
+          if (txQueueItem.transactions.length > 0) {
+            //console.log(`sending ${txQueueItem.transactions.length} transactions to process. Last block ${txQueueItem.maxBlockNum}. All count ${this.countProcessed}`);
+            this.workerProcess.postMessage({
+              transactions: txQueueItem.transactions,
+              maxBlock: txQueueItem.maxBlockNum,
+              wallet: this.wallet.exportToRaw(),
+              type: 'process'
+            });
+          } else {
+            this.isRunning = false;
+            this.processingCallback(txQueueItem.maxBlockNum);
+            this.runProcessLoop();  
+          }
+        } else {
+          this.isRunning = false;
         }
       }
     } else {
@@ -433,6 +453,7 @@ export class WalletWatchdog {
   private transactionsToProcess: ITransacationQueue[] = [];
 
   constructor(wallet: Wallet, explorer: BlockchainExplorer) {
+    console.log('WalletWatchdog');
     // by default we use all cores but limited up to config.maxWorkerCores
     this.maxCpuCores = Math.min(window.navigator.hardwareConcurrency ? (Math.max(window.navigator.hardwareConcurrency - 1, 1)) : 1, config.maxWorkerCores);
 
@@ -545,9 +566,10 @@ export class WalletWatchdog {
     this.explorer.getTransactionPool().then((pool: any) => {
       if (typeof pool !== 'undefined') {
         for (let rawTx of pool) {
-          let tx = TransactionsExplorer.parse(rawTx, this.wallet);
-          if (tx !== null) {
-            this.wallet.addNewMemTx(tx);
+          let txData = TransactionsExplorer.parse(rawTx, this.wallet);
+
+          if ((txData !== null) && (txData.transaction !== null)) {
+            this.wallet.addNewMemTx(txData.transaction);
           }
         }
       }
@@ -678,7 +700,7 @@ export class WalletWatchdog {
               endBlock = idleRange.endBlock;
             }  else if (self.lastBlockLoading < height) {
               // check if block range list is to big
-              if (self.blockList.getSize() > config.maxBlockQueue) {
+              if (self.blockList.getSize() >= config.maxBlockQueue) {
                 logDebugMsg('Block range list is to big', self.blockList.getSize());
                 await new Promise(r => setTimeout(r, 500));
                 continue;

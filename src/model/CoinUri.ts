@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -17,8 +17,9 @@
 
 export class CoinUri{
 
-	static coinTxPrefix = 'conceal:';
-	static coinWalletPrefix = 'conceal:';
+	static coinTxPrefix = 'conceal.';							//legacy, used to be 'conceal:', but the char ':' was creating scanning issue
+	static coinAddressPrefix = 'ccx7';							//coin Address prefix, to check address , without using coinTxPrefix
+	static coinWalletPrefix = 'conceal.';						//legacy, used to be 'conceal:'
 	static coinAddressLength = 98;
 
 	static decodeTx(str : string) : {
@@ -28,8 +29,8 @@ export class CoinUri{
 		amount?:string,
 		description?:string,
 	}|null {
-		if(str.indexOf(CoinUri.coinTxPrefix) === 0){
-			let data = str.replace(this.coinTxPrefix,'');
+		if(str.startsWith(CoinUri.coinAddressPrefix)){			// legacy code use to check .coinTxPrefix
+			let data = str 										//legacy .replace(this.coinTxPrefix,'');
 			let temp = data.replace(/&/g, '?').trim();
 			let exploded = temp.split('?');
 
@@ -86,7 +87,7 @@ export class CoinUri{
 	}
 
 	static encodeTx(address : string, paymentId:string|null = null, amount : string|null=null, recipientName:string|null = null, description : string|null=null) : string{
-		let encoded = this.coinTxPrefix + address;
+		let encoded = address;					//legacy this.coinTxPrefix + address;
 		if(address.length !== this.coinAddressLength)
 			throw 'invalid_address_length';
 
@@ -106,7 +107,7 @@ export class CoinUri{
 		nonce?:string,
 		encryptMethod?:string
 	}{
-		if(str.indexOf(CoinUri.coinWalletPrefix) === 0){
+		if(str.startsWith(CoinUri.coinWalletPrefix)){
 			let data = str.replace(this.coinWalletPrefix,'').trim();
 			let exploded = data.split('?');
 

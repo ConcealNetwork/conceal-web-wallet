@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -182,6 +182,14 @@ export class WalletRepository {
 			size:300,
 		});
 
+		let importQrCode = kjua({
+			render: 'canvas',
+			text: "conceal." + wallet.getPublicAddress() + 
+                      "?spend_key=" + wallet.keys.priv.spend + 
+                      "?view_key=" + wallet.keys.priv.view,
+			size:300,
+		});
+
 		let doc = new jsPDF('landscape');
 
 		//creating background
@@ -192,6 +200,7 @@ export class WalletRepository {
 		doc.setFillColor(255,255,255);
 		doc.rect(108,10,80,80, 'F');
 		doc.rect(10,115,80,80, 'F');
+		doc.rect(210,10,80,80, 'F');
 
 		//blue blocks
 		doc.setFillColor(0, 160, 227);
@@ -200,13 +209,15 @@ export class WalletRepository {
 		//blue background for texts
 		doc.setFillColor(0, 160, 227);
 
-		doc.rect(108,15,80,20, 'F');
-		doc.rect(10,120,80,20, 'F');
+		doc.rect(108,15,80,20, 'F');	//Private key
+		doc.rect(10,120,80,20, 'F');	//Public address
+		doc.rect(210,15,80,20, 'F');	//QR code for Import
 
 		doc.setTextColor(255, 255, 255);
 		doc.setFontSize(30);
 		doc.text(15, 135, "Public address");
 		doc.text(123,30, "Private key");
+		doc.text(213,30, "Import from QR");
 
 		//lines
 		doc.setDrawColor(255,255,255);
@@ -218,28 +229,45 @@ export class WalletRepository {
 		//adding qr codes
 		doc.addImage(publicQrCode.toDataURL(), 'JPEG', 28, 145, 45, 45);
 		doc.addImage(privateSpendQrCode.toDataURL(), 'JPEG', 126, 40, 45, 45);
+		doc.addImage(importQrCode.toDataURL(), 'JPEG', 226, 40, 45, 45);
+
 
 		//wallet help
 		doc.setTextColor(255, 255, 255);
 		doc.setFontSize(10);
-		doc.text(110, 120, "To deposit funds to this paper wallet, send ");
-		doc.text(110, 125, "Conceal Network to the public address");
+		doc.text(110, 120, "To deposit funds to this paper wallet, send CCX");
+		doc.text(110, 125, "over the Conceal Network to the public address.");
 
-		doc.text(110, 135, "DO NOT REVEAL THE PRIVATE KEY");
+		doc.text(115, 132, "DO NOT REVEAL THE PRIVATE KEY");
 
-		//adding Conceal Network logo
+		//adding Conceal Network logos
 		let c : HTMLCanvasElement|null = <HTMLCanvasElement>document.getElementById('canvasExport');
 		if(c !== null) {
 			let ctx = c.getContext("2d");
-			let img: ImageBitmap | null = <ImageBitmap | null>document.getElementById("verticalLogo");
-			if (ctx !== null && img !== null) {
-				c.width = img.width;
-				c.height = img.height;
-				ctx.drawImage(img, 0, 0);
+			
+			// First logo (vertical)
+			let verticalLogo: ImageBitmap | null = <ImageBitmap | null>document.getElementById("verticalLogo");
+			if (ctx !== null && verticalLogo !== null) {
+				c.width = verticalLogo.width;
+				c.height = verticalLogo.height;
+				ctx.drawImage(verticalLogo, 0, 0);
 
-				let ratio = img.width/45;
-				let smallHeight = img.height/ratio;
+				let ratio = verticalLogo.width/45;
+				let smallHeight = verticalLogo.height/ratio;
 				doc.addImage(c.toDataURL(), 'JPEG', 224, 106+(100-smallHeight)/2, 45, smallHeight);
+			}
+
+			// Second logo (cham)
+			let chamLogo: ImageBitmap | null = <ImageBitmap | null>document.getElementById("chamLogo");
+			if (ctx !== null && chamLogo !== null) {
+				c.width = chamLogo.width;
+				c.height = chamLogo.height;
+				ctx.clearRect(0, 0, c.width, c.height); // Clear previous logo
+				ctx.drawImage(chamLogo, 0, 0);
+
+				let ratio = chamLogo.width/60;
+				let smallHeight = chamLogo.height/ratio;
+				doc.addImage(c.toDataURL(), 'JPEG', 120, 104+(120-smallHeight)/2, 60, smallHeight);
 			}
 		}
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -22,6 +22,7 @@ import {VueClass, VueVar, VueWatched} from "./lib/numbersLab/VueAnnotate";
 import {Storage} from "./model/Storage";
 import {Translations} from "./model/Translations";
 import {Transaction} from "./model/Transaction";
+import { initializeMessageMenu } from "./lib/numbersLab/messageClick";
 
 //========================================================
 //bridge for cnUtil with the new mnemonic class
@@ -43,11 +44,14 @@ let browserUserLang = ''+(navigator.language || (<any>navigator).userLanguage);
 browserUserLang = browserUserLang.toLowerCase().split('-')[0];
 
 Storage.getItem('user-lang', browserUserLang).then(function(userLang : string) {
-	Translations.loadLangTranslation(userLang).catch(err => {
-		Translations.loadLangTranslation('en').catch(err => {
-      console.error("Failed to load 'en' language", err);
-    });
-	});
+	if (userLang) {
+		Translations.loadLangTranslation(userLang).catch(err => {
+			console.error(`Failed to load '${userLang}' language`, err);
+			return Translations.loadLangTranslation('en');
+		}).catch(err => {
+			console.error("Failed to load 'en' language", err);
+		});
+	}
 });
 
 
@@ -104,13 +108,12 @@ $(window).click(function() {
 
 //mobile swipe
 let pageWidth = window.innerWidth || document.body.clientWidth;
-let treshold = Math.max(1,Math.floor(0.01 * (pageWidth)));
+let treshold = Math.max(1,Math.floor(0.2 * (pageWidth)));
 let touchstartX = 0;
 let touchstartY = 0;
 let touchendX = 0;
 let touchendY = 0;
 
-const limit = Math.tan(45 * 1.5 / 180 * Math.PI);
 const gestureZone : HTMLElement= $('body')[0];
 
 gestureZone.addEventListener('touchstart', function(event : TouchEvent) {
@@ -124,12 +127,14 @@ gestureZone.addEventListener('touchend', function(event : TouchEvent) {
 	handleGesture(event);
 }, false);
 
+const limit = 0.8; // Add this constant before handleGesture function
+
 function handleGesture(e : Event) {
 	let x = touchendX - touchstartX;
 	let y = touchendY - touchstartY;
 	let xy = Math.abs(x / y);
 	let yx = Math.abs(y / x);
-	if (Math.abs(x) > treshold || Math.abs(y) > treshold) {
+	if (Math.abs(x) > treshold) {   // || Math.abs(y) > treshold      ----- >   do we care about y other than a big diagonal swipe already taken into account by xy and yx ?
 		if (yx <= limit) {
 			if (x < 0) {
 				//left
@@ -152,6 +157,37 @@ function handleGesture(e : Event) {
 		//tap
 	}
 }
+//Collapse the menu after clicking on a menu item
+function navigateToPage(page: string) {
+	window.location.hash = `!${page}`;
+  }
+
+function isMobileDevice() {
+	return window.innerWidth <= 600; // Adjust this breakpoint as needed
+  }
+  
+  // Select all menu items
+  const menuItems = document.querySelectorAll('#menu a[href^="#!"]');
+  
+  menuItems.forEach(item => {
+	item.addEventListener('click', (event) => {
+	  // Prevent the default action
+	  event.preventDefault();
+  
+	  const target = (event.currentTarget as HTMLAnchorElement).getAttribute('href');
+  
+	  if (target) {
+		// Remove the "#!" from the beginning of the href
+		const page = target.substring(2);
+		navigateToPage(page);
+  
+		// Toggle the menu off only on mobile devices
+		if (isMobileDevice() && !menuView.isMenuHidden) {
+		  menuView.toggle();
+		}
+	  }
+	});
+  });
 
 
 
@@ -221,6 +257,9 @@ promiseLoadingReady.then(function(){
 	window.onhashchange = function () {
 		router.changePageFromHash();
 	};
+	
+	// Initialize message menu after the page is ready
+	initializeMessageMenu();
 });
 
 //========================================================

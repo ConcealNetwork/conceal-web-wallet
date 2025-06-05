@@ -47,7 +47,6 @@ onmessage = function (data: MessageEvent) {
               // parse the transaction to see if we need to include it in the wallet
               if (TransactionsExplorer.ownsTx(rawTransaction, currentWallet)) {              
                 transactions.push(rawTransaction);
-                logDebugMsg(`pushed tx to transactions[]`);
               }
             } catch(err) {
               console.error('Failed to process ownsTx for tx:', rawTransaction);

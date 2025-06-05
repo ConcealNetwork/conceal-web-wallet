@@ -9,6 +9,8 @@
       "account": "Аккаунт",
       "send": "Отправить",
       "receive": "Получить",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Экспорт",
       "donate": "Пожертвовать",
       "settings": "Настройки",
@@ -57,7 +59,11 @@
         "label": "Оптимизация",
         "subtitle": "Ваш кошелек нуждается в оптимизации",
         "button": "Оптимизировать сейчас",
-        "loadingText": "Оптимизация, пожалуйста, подождите..."
+        "loadingText": "Оптимизация, пожалуйста, подождите...",
+        "success": "Оптимизация прошла успешно",
+        "error": "Ошибка при оптимизации",
+        "errorInfo": "Оптимизация отменена",
+        "confirmText": "да"
       }
     },
     "bottom": {
@@ -110,7 +116,9 @@
         "title": "Ваш баланс",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Доступно"
+        "unlocked": "Доступно",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "История транзакций",
@@ -128,7 +136,7 @@
         "blockHeight": "Высота блока",
         "paymentId": "Идентификатор платежа",
         "txPrivKey": "Секретный ключ транзакции",
-        "message": "Message"        
+        "message": "Message"
       }
     },
     "changeWalletPasswordPage": {
@@ -227,7 +235,7 @@
     "sendPage": {
       "title": "Отправить CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять средства."
       },
       "sendBlock": {
         "address": {
@@ -306,7 +314,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+      "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять сообщения."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -375,6 +383,76 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },
+    "depositsPage": {
+      "title": "Депозиты",
+      "unlockDate": "Дата разблокировки",
+      "interest": "Процент",
+      "deposit": "Депозит",
+      "lockHeight": "Высота блокировки",
+      "unlockHeight": "Высота разблокировки",
+      "depositDate": "Дата депозита",
+      "syncing": {
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете просматривать депозиты."
+      },
+      "tabs": {
+        "inbox": "Депозиты",
+        "send": "Создать"
+      },
+      "depositsBlock": {
+        "title": "Список депозитов"
+      },
+      "confirmDeposit": {
+        "title": "Подтвердить депозит",
+        "message": "Введите ваш пароль для подтверждения создания депозита {amount} CCX на {term} месяцев?",
+        "confirm": "Создать депозит",
+        "cancel": "Отменить",
+        "passwordRequired": "Пароль кошелька обязателен"
+      },
+      "createDeposit": {
+        "title": "Создать новый депозит",
+        "amount": "Сумма для депозита",
+        "term": "Срок депозита (в месяцах)",
+        "termError": "Пожалуйста, введите целое число от 1 до 12 месяцев",
+        "confirm": "Создать депозит",
+        "cancel": "Отменить",
+        "createSuccess": "Депозит отправлен на блокчейн",
+        "createPending": "Ваш депозит обрабатывается",
+        "createError": "Ошибка при создании депозита",
+        "withdrawSuccess": "Вывод отправлен на блокчейн",
+        "withdrawPending": "Ваш вывод обрабатывается",
+        "withdrawError": "Ошибка при выводе депозита",
+        "amountError": "Неверная сумма",
+        "amountMustBePositive": "Сумма должна быть положительной",
+        "termMustBeValid": "Срок должен быть от 1 до 12 месяцев",
+        "insufficientFunds": "Недостаточно средств",
+        "insufficientFundsMessage": "У вас недостаточно средств для создания этого депозита",
+        "maxAmount": "Максимальная сумма депозита: {amount} CCX",
+        "rewardAtTerm": "Награда за срок: {reward} CCX"
+      },
+      "depositDetails": {
+        "title": "Депозиты",
+        "txHash": "Транзакция создания",
+        "spendingTx": "Транзакция вывода",
+        "status": "Статус",
+        "amount": "Сумма",
+        "term": "Срок",
+        "creationTime": "Время создания",
+        "spendingTime": "Время вывода",
+        "spendingHeight": "Высота вывода",
+        "creationHeight": "Высота создания",
+        "unlockHeight": "Высота разблокировки",
+        "interest": "Процент"
+      },
+      "recap": {
+        "title": "Рекап",
+        "totalLifetimeDeposit": "Общая сумма депозитов",
+        "totalLifetimeInterest": "Общая сумма процентов",
+        "totalCashedOutInterest": "Общая сумма выведенных процентов",
+        "futureInterestLocked": "Будущие проценты на заблокированных депозитах",
+        "futureInterestUnlocked": "Будущие проценты на выводимых депозитах",
+        "earliestWithdrawable": "Раньше выводимые"
       }
     },
     "receivePage": {
@@ -586,8 +664,7 @@
       "subtitle": "Использовать приватные ключи для создания кошелька",
       "parametersBlock": {
         "viewOnlyWallet": {
-          "label": "Хотите создать кошелек слежения?",
-          "info": "Обратите внимание, кошелек слежения предназначен только для просмотра входящих платежей, так что баланс может отображаться неправильно!"
+          "label": "Хотите создать кошелек слежения?"
         }
       },
       "keysBlock": {
@@ -597,8 +674,7 @@
           "label": "Приватный ключ расходования"
         },
         "privateView": {
-          "label": "Приватный ключ слежения",
-          "optional": "(необязательно)"
+          "label": "Приватный ключ слежения"
         },
         "publicKey": {
           "label": "Публичный ключ"

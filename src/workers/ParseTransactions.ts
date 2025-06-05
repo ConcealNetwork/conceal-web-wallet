@@ -1,6 +1,7 @@
 import {Constants} from "../model/Constants";
 import {Transaction} from "../model/Transaction";
 import {Wallet, WalletOptions} from "../model/Wallet";
+import {TransactionData} from "../model/Transaction";
 import {TransactionsExplorer} from "../model/TransactionsExplorer";
 import {RawDaemon_Transaction} from "../model/blockchain/BlockchainExplorer";
 
@@ -39,12 +40,11 @@ onmessage = function (data: MessageEvent) {
 
               try {
                 // parse the raw transaction to include it into the wallet
-                let transaction = TransactionsExplorer.parse(rawTransaction, currentWallet);
+                let txData = TransactionsExplorer.parse(rawTransaction, currentWallet);
 
-                if (transaction) {              
-                  currentWallet.addNew(transaction);
-                  transactions.push(transaction.export());
-                  logDebugMsg(`pushed tx to transactions[]`);
+                if (txData && txData.transaction) {              
+                  currentWallet.addNew(txData.transaction);
+                  transactions.push(txData.export());
                 }
               } catch(err) {
                 console.error('Failed to parse tx:', rawTransaction);  

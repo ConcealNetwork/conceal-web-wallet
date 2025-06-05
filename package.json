@@ -1,7 +1,10 @@
 {
-  "name": "ConcealWebWallet",
-  "version": "1.1.1",
+  "name": "conceal-web-wallet",
+  "version": "1.2.0",
   "description": "Fully client-side web-wallet for Conceal Network",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "serve .\\src\\",
     "build": "node ./node_modules/typescript/bin/tsc --project tsconfig.prod.json && node build.js && serve .\\src\\",
@@ -9,10 +12,13 @@
   },
   "main": "index.js",
   "dependencies": {
-    "typescript": "^5.4.5",
-    "workbox-build": "^7.0.0"
+
+    "@types/node": "^22.15.20",
+
+    "dotenv": "^16.5.0",
+    "typescript": "^5.8.3",
+    "workbox-build": "^7.3.0"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ConcealNetwork/conceal-web-wallet.git"
@@ -22,5 +28,10 @@
   "bugs": {
     "url": "https://github.com/ConcealNetwork/conceal-web-wallet/issues"
   },
-  "homepage": "https://github.com/ConcealNetwork/conceal-web-wallet#readme"
+  "homepage": "https://github.com/ConcealNetwork/conceal-web-wallet#readme",
+  "devDependencies": {
+
+    "@types/node": "^22.15.20"
+
+  }
 }

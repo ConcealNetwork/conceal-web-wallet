@@ -37,6 +37,8 @@ class ImportView extends DestructableView{
 	@VueVar('') password2 !: string;
 	@VueVar(false) insecurePassword !: boolean;
 	@VueVar(false) forceInsecurePassword !: boolean;
+	@VueVar(false) fileSelected !: boolean;
+	@VueVar('') fileName !: string;
 
 	rawFile : any = null;
 	invalidRawFile : boolean = false;
@@ -63,9 +65,11 @@ class ImportView extends DestructableView{
 		let self = this;
 		let element = $('<input type="file">');
 		self.invalidRawFile = true;
+		self.fileSelected = false;
 		element.on('change', function(event : Event){
 			let files :File[] = (<any>event.target).files; // FileList object
 			if(files.length > 0) {
+				self.fileName = files[0].name;
 				let fileReader = new FileReader();
 				fileReader.onload = function () {
 					try {
@@ -73,8 +77,16 @@ class ImportView extends DestructableView{
 							self.rawFile = JSON.parse(fileReader.result);
 						}
 						self.invalidRawFile = false;
+						self.fileSelected = true;
 					}catch (e) {
 						self.invalidRawFile = true;
+						self.fileSelected = false;
+						swal({
+							type: 'error',
+							title: i18n.t('global.error'),
+							text: i18n.t('importFromFilePage.walletBlock.invalidFile'),
+							confirmButtonText: i18n.t('global.ok'),
+						});
 					}
 				};
 
@@ -86,25 +98,34 @@ class ImportView extends DestructableView{
 
 	importWallet(){
 		let self = this;
-		blockchainExplorer.getHeight().then(function(currentHeight){
-			setTimeout(function(){
-				let newWallet = WalletRepository.decodeWithPassword(self.rawFile,self.password);
-				if(newWallet !== null) {
-					newWallet.recalculateIfNotViewOnly();
-					AppState.openWallet(newWallet, self.password);
-					window.location.href = '#account';
-				}else{
-					swal({
-						type: 'error',
-						title: i18n.t('global.invalidPasswordModal.title'),
-						text: i18n.t('global.invalidPasswordModal.content'),
-						confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
-					});
-				}
-			},1);
+    $("#appLoader").addClass("appLoaderVisible");
 
-		});
-	}
+    blockchainExplorer.initialize().then(success => {
+      blockchainExplorer.getHeight().then(function(currentHeight){
+        $("#appLoader").removeClass("appLoaderVisible");
+        
+        setTimeout(function(){
+          let newWallet = WalletRepository.decodeWithPassword(self.rawFile,self.password);
+          if(newWallet !== null) {
+            newWallet.recalculateIfNotViewOnly();
+            AppState.openWallet(newWallet, self.password);
+            window.location.href = '#account';
+          }else{
+            swal({
+              type: 'error',
+              title: i18n.t('global.invalidPasswordModal.title'),
+              text: i18n.t('global.invalidPasswordModal.content'),
+              confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
+            });
+          }
+        },1);
+     }).catch(err => {
+        console.log(err);
+      });
+    }).catch(err => {
+      console.log(err);
+    });  
+  }
 
 	@VueWatched()
 	passwordWatch(){

@@ -69,6 +69,7 @@ class NodeWorker {
         this._isWorking = false;        
         resolve(raw);
       }).fail((data: any, textStatus: string) => {
+        console.log("makeRequest failed", textStatus);
         this._isWorking = false;        
         this.increaseErrors();
         reject(data);
@@ -186,7 +187,8 @@ class NodeWorkersList {
       
           while (currWorker) {
             try {
-              let resultData = await currWorker.makeRequest(method, path, body);
+              // Fix: Remove 'let' to use outer resultData variable
+              resultData = await currWorker.makeRequest(method, path, body);
               currWorker = null;
               // return the data
               resolve(resultData);
@@ -224,7 +226,8 @@ class NodeWorkersList {
       
           while (currWorker) {
             try {
-              let resultData = await currWorker.makeRpcRequest(method, params);
+              // Fix: Remove 'let' to use outer resultData variable
+              resultData = await currWorker.makeRpcRequest(method, params);
               currWorker = null;
               // return the data
               resolve(resultData);
@@ -294,16 +297,17 @@ export type DaemonResponseGetNodeFeeInfo = {
 
 export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
   private nodeWorkers: NodeWorkersList;
+  private initialized: boolean = false;
   private lastTimeRetrieveHeight = 0;
   private lastTimeRetrieveInfo = 0;
   private scannedHeight: number = 0;
-  private cacheHeight: number = 0;
+  private cacheHeight: number = 0;  
   private cacheInfo: any = null;
 
 
   constructor() {
+    console.log('BlockchainExplorerRpcDaemon');
     this.nodeWorkers = new NodeWorkersList();
-    this.resetNodes();
   }
 
   getInfo = (): Promise<DaemonResponseGetInfo> => {
@@ -339,12 +343,73 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     Storage.getItem('customNodeUrl', null).then(customNodeUrl => {
       this.nodeWorkers.stop();
 
+      function shuffle(array: any) {
+        let currentIndex = array.length;
+      
+        // While there remain elements to shuffle...
+        while (currentIndex != 0) {
+      
+          // Pick a remaining element...
+          let randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex--;
+      
+          // And swap it with the current element.
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+        }
+      }    
+      
       if (customNodeUrl) {
         this.nodeWorkers.start([customNodeUrl]);
       } else {
+        shuffle(config.nodeList);
         this.nodeWorkers.start(config.nodeList);
       }  
+    }).catch(err => {
+      console.log("resetNodes failed", err);
     });
+  }
+  
+  isInitialized = (): boolean => {
+    return this.initialized;
+  }
+
+  initialize = (): Promise<boolean> => {     
+    const doesMatch = (toCheck: string) => {
+      return (element: string) => {
+          return element.toLowerCase() === toCheck.toLowerCase();
+      }
+    }
+
+    if (this.initialized) {
+      return Promise.resolve(true);
+    } else {
+      if (config.publicNodes) {
+        return $.ajax({
+          method: 'GET',
+          timeout: 10 * 1000,
+          url: config.publicNodes + '/list?hasSSL=true'
+        }).done((result: any) => {
+          if (result.success && (result.list.length > 0)) {
+            for (let i = 0; i < result.list.length; ++i) {
+              let finalUrl = "https://" + result.list[i].url.host + "/";
+  
+              if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
+                config.nodeList.push(finalUrl);
+              }
+            }
+          }
+          
+          this.initialized = true;
+          this.resetNodes();
+          return true;
+        }).fail((data: any, textStatus: string) => {        
+          return false;
+        });
+      } else {
+        return Promise.resolve(true);
+      }  
+    }   
   }
 
   start = (wallet: Wallet): WalletWatchdog => {
@@ -454,9 +519,9 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
       outs: { global_index: number, public_key: string }[]
     }) => {
       if (response.status !== 'OK') throw 'invalid_getrandom_outs_answer';
-      if (response.outs.length > 0) {
-        logDebugMsg(response.outs);
-      }
+      // if (response.outs.length > 0) {
+      //   logDebugMsg(response.outs);
+      // }
 
       return response.outs;
     });
@@ -520,3 +585,4 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     });
   }
 }
+

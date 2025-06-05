@@ -1,0 +1,141 @@
+<div id="app" class="body-root messageTab" v-cloak="">
+
+  <div id="appContent">
+
+    <div class="body-header">
+      <div class="header-title">
+        <i class="fa fa-bank" aria-hidden="true"></i> {{ $t("depositsPage.title") }}
+      </div>
+    </div>
+
+    <div class="body-content">
+
+      <div class="panel inline" v-if="isWalletSyncing" >
+        <div class="syncProgressContainer">
+          <label class="syncProgressLabel">{{ $t("depositsPage.syncing.label") }}</label>
+        </div>
+      </div>
+
+      <div class="messages">        
+
+        <!-- Recap Panel -->
+        <div class="panel" style="margin-bottom: 1em;">
+          <div class="body">
+          <div class="header-title">{{ $t('depositsPage.recap.title') }}</div>
+          <div class="content balance_content">
+            <div class="wallet_amount amount_total">
+              <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.totalLifetimeDeposit') }}:</div>
+              <div class="walletAmount amount_cell">{{ totalLifetimeDeposit / currencyDivider }} {{ ticker }}</div>
+            </div>
+            <div class="wallet_amount amount_total" v-if="totalCashedOutInterest > 0">
+              <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.totalCashedOutInterest') }}:</div>
+              <div class="walletAmount amount_cell">{{ totalCashedOutInterest / currencyDivider }} {{ ticker }}</div>
+            </div>
+            <div class="wallet_amount amount_pending" v-if="futureInterestLocked > 0">
+              <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.futureInterestLocked') }}:</div>
+              <div class="walletAmount amount_cell">{{ futureInterestLocked / currencyDivider }} {{ ticker }}</div>
+            </div>
+            <div class="wallet_amount amount_pending" v-if="futureInterestUnlocked > 0">
+              <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.futureInterestUnlocked') }}:</div>
+              <div class="walletAmount amount_cell">{{ futureInterestUnlocked / currencyDivider }} {{ ticker }}</div>
+            </div>
+            <div class="wallet_amount amount_pending">
+              <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.earliestWithdrawable') }}:</div>
+              <div class="walletAmount amount_cell">
+                <span v-if="earliestUnlockableIsPast" style="color: green;">
+                  {{ earliestUnlockableDate }}
+                </span>
+                <span v-else style="color:  #e2e2e2;">
+                  {{ earliestUnlockableDate }}
+                </span>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+
+        <!-- deposits history -->
+        <div id="depositHistory" class="panel nopadding tabcontent">
+          <div class="body" >
+            <div class="header-wrapper">
+              <div class="header-title">{{ $t("depositsPage.depositsBlock.title") }}</div>
+            </div>
+            <div class="content" >
+              <div class="deposits" id="accountDeposits">              
+                <div style="overflow: hidden;">
+                  <table v-if="deposits.length > 0" id="depositHistoryTable" style="width: 100%; table-layout: fixed;">
+                    <tr>
+                      <th class="depositsListHeader" style="width: 30px; text-align: center;"></th>
+                      <th class="depositsListHeader" style="width: 30px; text-align: center;"></th>
+                      <th class="depositsListHeader" style="width: 18%; text-align: center;">{{ $t('depositsPage.depositDate') }}</th>
+                      <th class="depositsListHeader" style="width: 15%; text-align: center;">{{ $t('depositsPage.lockHeight') }}</th>
+                      <th class="depositsListHeader" style="width: 18%; text-align: center;">{{ $t('depositsPage.unlockDate') }}</th>
+                      <th class="depositsListHeader" style="width: 15%; text-align: center;">{{ $t('depositsPage.unlockHeight') }}</th>
+                      <th class="depositsListHeader" style="width: 12%; text-align: center;">{{ $t('depositsPage.deposit')}}</th>
+                      <th class="depositsListHeader" style="width: 12%; text-align: center;">{{ $t('depositsPage.interest') }}</th>
+                    </tr>
+                  </table>
+                </div>
+                <div :style="{ 
+                  maxHeight: deposits.length > 12 ? '460px' : 'auto',
+                  overflowY: deposits.length > 12 ? 'auto' : 'visible'
+                }">
+                  <table style="width: 100%; table-layout: fixed;">
+                    <template v-for="deposit of deposits">
+                      <tr class="deposit" :class="(deposit.blockHeight === 0 ? 'pending' : '')">
+                        <td class="direction" style="width: 30px; text-align: center;">
+                          <i v-if="(deposit.blockHeight + deposit.term) > blockchainHeight" class="fa fa-lock tx_deposit_locked" aria-hidden="true"></i>
+                          <i v-else-if="((deposit.blockHeight + deposit.term) <= blockchainHeight) && (deposit.spentTx)" class="fa fa fa-money tx_deposit_spent" aria-hidden="true"></i>                        
+                          <i v-else-if="deposit.withdrawPending" class="fa fa-spinner fa-spin tx_deposit_pending" aria-hidden="true"></i>
+                          <i v-else 
+                             class="fa fa-unlock tx_deposit_unlocked" :class="{'disabled-icon': isDepositDisabled}" aria-hidden="true" 
+                             @click="!isWithdrawDisabled && withdrawDeposit(deposit)" 
+                             :style="{'cursor': isWithdrawDisabled ? 'not-allowed' : 'pointer'}"
+                             :disabled="isWithdrawDisabled">
+                          </i>
+                        </td>
+                        <td class="moreInfo depositTxDetails" style="width: 30px; text-align: center; cursor: pointer;">
+                          <i class="fa fa-search" aria-hidden="true" @click="moreInfoOnDeposit(deposit)"></i>
+                        </td>
+                        <td class="lockTimestamp" v-if="deposit.blockHeight > 0" style="width: 18%; text-align: center;">{{$d(new Date(deposit.timestamp * 1000), 'short')}}</td>
+                        <td class="lockTimestamp" v-else="" style="width: 18%; text-align: center;">...</td>
+                        <td class="lockHeight" style="width: 15%; text-align: center;">{{deposit.blockHeight}}</td>
+                        <td class="unlockTimestamp" style="width: 18%; text-align: center;">{{$d(new Date((deposit.timestamp + (deposit.term * 120)) * 1000), 'short')}}</td>
+                        <td class="unlockHeight" style="width: 15%; text-align: center;">{{deposit.blockHeight + deposit.term}}</td>
+                        <td class="depositAmount" style="width: 12%; text-align: center;">{{deposit.amount / currencyDivider}}</td>
+                        <td class="interest" style="width: 12%; text-align: center;">{{deposit.interest / currencyDivider}}</td>
+                      </tr>
+                    </template>
+                  </table>
+                </div>
+              </div>
+            </div>  
+          </div>
+        </div>
+
+        <!-- Add Create Deposit button at bottom -->
+        <div class="create-deposit-button">
+          <button v-if="showCreateDepositModal" @click="showCreateDepositModal" class="btn btn-primary" :disabled="isDepositDisabled">
+            {{ $t("depositsPage.createDeposit.title") }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openMessagesTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+</script>

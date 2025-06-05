@@ -51,4 +51,4 @@ Read [the translations guide](TRANSLATIONS.md) to get instructions on how to do 
 - Report bugs & ideas to help us improve the web wallet by opening an [issue](https://github.com/ConcealNetwork/conceal-web-wallet/issues/new)
 
 # Copyright
-© 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+© 2018-2025 Conceal Community, Conceal.Network & Conceal Devs

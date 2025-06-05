@@ -66,7 +66,8 @@
 	<a href="#!account" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-tachometer" aria-hidden="true"></i></span> {{ $t("menu.account") }}</a>
 	<a href="#!send" class="onlyWhenConnected notViewOnlyWallet"><span class="icon" ><i class="fa fa-paper-plane" aria-hidden="true"></i></span> {{ $t("menu.send") }}</a>
 	<a href="#!receive" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-inbox" aria-hidden="true"></i></span> {{ $t("menu.receive") }}</a>
-	<a href="#!messages" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-comments" aria-hidden="true"></i></span> {{ $t("menu.message") }}</a>
+	<a href="#!messages" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-comments" aria-hidden="true"></i></span><span> {{ $t("menu.message") }}</span></a>
+	<a href="#!deposits" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-bank" aria-hidden="true"></i></span> {{ $t("menu.deposit") }}</a>
 	<a href="#!export" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-download" aria-hidden="true"></i></span> {{ $t("menu.export") }}</a>
 	<a href="#!settings" class="onlyWhenConnected"><span class="icon" ><i class="fa fa-cog" aria-hidden="true"></i></span> {{ $t("menu.settings") }}</a>
 	<a href="#!donate" ><span class="icon" ><i class="fa fa-heart" aria-hidden="true"></i></span> {{ $t("menu.donate") }}</a>
@@ -82,7 +83,7 @@
 <div id="page" ></div>
 
 <div id="copyright" v-cloak="">
-	<div>© 2018-2023 Conceal.Network</div>
+	<div>© 2018-2025 Conceal.Network</div>
 	<div class="links">
 		<a href="#!termsOfUse" >{{ $t("bottom.termsOfUse") }}</a>
 		<a href="#!privacyPolicy" >{{ $t("bottom.privacyPolicy") }}</a>
@@ -105,7 +106,7 @@
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js" ></script>-->
 <script src="lib/vue.min.js" ></script>
 <script src="lib/vue-i18n.js" ></script>
-<script src="lib/jquery-3.2.1.min.js"></script>
+<script src="lib/jquery-3.7.1.min.js"></script>
 <script src="lib/sweetalert2.js"></script>
 <script src="lib/sha3.js"></script>
 <script src="lib/crypto.js"></script>
@@ -121,6 +122,7 @@
 <script src="lib/cn_utils_native.js"></script>
 <script src="lib/FileSaver.min.js"></script>
 <script data-main="index.js" src="lib/require.js"></script>
+
 
 </body>
 </html>

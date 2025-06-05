@@ -1,29 +1,55 @@
 {
   "name": "Conceal Web Wallet",
   "short_name": "Conceal Wallet",
+  "description": "Secure cryptocurrency wallet for managing your Conceal (CCX) assets on the go",
   "icons": [{
 	"src": "assets/img/icons/icon-128x128.png",
 	"sizes": "128x128",
-	"type": "image/png"
+	"type": "image/png",
+	"purpose": "any maskable"
   }, {
 	"src": "assets/img/icons/icon-144x144.png",
 	"sizes": "144x144",
-	"type": "image/png"
+	"type": "image/png",
+	"purpose": "any maskable"
   }, {
 	"src": "assets/img/icons/icon-152x152.png",
 	"sizes": "152x152",
-	"type": "image/png"
+	"type": "image/png",
+	"purpose": "any maskable"
   }, {
 	"src": "assets/img/icons/icon-192x192.png",
 	"sizes": "192x192",
-	"type": "image/png"
+	"type": "image/png",
+	"purpose": "any maskable"
   }, {
 	"src": "assets/img/icons/icon-256x256.png",
 	"sizes": "256x256",
-	"type": "image/png"
+	"type": "image/png",
+	"purpose": "any maskable"
   }],
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#363636",
-  "theme_color": "#363636"
+  "theme_color": "#363636",
+  "orientation": "portrait",
+  "scope": "/",
+  "categories": ["finance", "utilities"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Send ₡CCX",
+      "short_name": "Send",
+      "description": "Send CCX to another address",
+      "url": "/#!send",
+      "icons": [{ "src": "assets/img/icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Receive ₡CCX",
+      "short_name": "Receive",
+      "description": "View your address to receive CCX",
+      "url": "/#!receive",
+      "icons": [{ "src": "assets/img/icons/icon-96x96.png", "sizes": "96x96" }]
+    }
+  ]
 }

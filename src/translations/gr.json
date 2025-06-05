@@ -9,6 +9,8 @@
       "account": "Λογαριασμός",
       "send": "Αποστολή",
       "receive": "Λήψη",
+      "message": "Messages",
+      "deposit": "Deposits",
       "export": "Εξαγωγή",
       "donate": "Δωρεά",
       "settings": "Ρυθμίσεις",
@@ -57,7 +59,11 @@
         "label": "Βελτιστοποίηση",
         "subtitle": "Το πορτοφόλι σας χρειάζεται βελτιστοποίηση",
         "button": "Βελτιστοποίηση Τώρα",
-        "loadingText": "Βελτιστοποίηση, παρακαλώ περιμένετε..."
+        "loadingText": "Βελτιστοποίηση, παρακαλώ περιμένετε...",
+        "success": "Η συναλλαγή συγχρονισμού στάλθηκε",
+        "error": "Προέκυψε σφάλμα κατά την αποστολή της συναλλαγής συγχρονισμού",
+        "errorInfo": "Η βελτιστοποίηση ακυρώθηκε",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -110,7 +116,9 @@
         "title": "Το υπόλοιπό σας",
         "total": "Total",
         "pending": "Pending",
-        "unlocked": "Ξεκλείδωτο"
+        "unlocked": "Ξεκλείδωτο",
+        "deposited": "Locked Deposits",
+        "withdrawable": "Withdrawable"
       },
       "historyBlock": {
         "title": "Ιστορικό συναλλαγών",
@@ -191,9 +199,9 @@
         "title": "Webwallet",
         "content": "Αυτό το πορτοφόλι ιστού αναπτύχθηκε από τον Gnock στον ελεύθερό του χρόνο.<br/> Εαν θέλετε να βοηθήσετε στην ανάπτυξη, να συνεισφέρετε στα έξοδα των διακομιστών και σας αρέσει αυτή η εφαρμογή, παρακαλώ σκεφτείτε να κάνετε μια δωρεά: <br/><br/>"
       },
-      "ConcealFundBlock": {
-        "title": "Conceal Dev fund",
-        "content": "Για να βοηθήσετε το Conceal, μπορείτε να κάνετε δωρεά στις παρακάτω διευθύνσεις"
+      "devFundBlock": {
+        "title": "Conceal",
+        "content": "To"
       }
     },
     "supportPage": {
@@ -216,6 +224,7 @@
       "title": "Στατιστικά Δικτύου΄",
       "subtitle": "Επισκόπηση τπυ δικτύου Conceal",
       "statsBlock": {
+        "connectNode": "Connected",
         "hashrate": "Network hashrate",
         "height": "Blockchain height",
         "difficulty": "Network difficulty",
@@ -226,7 +235,7 @@
     "sendPage": {
       "title": "Στείλτε CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Το πορτοφόλι σας συγχρονίζεται.... Όταν ολοκληρωθεί η συγχρονισμός θα μπορείτε να στείλετε χρήματα."
       },
       "sendBlock": {
         "address": {
@@ -305,7 +314,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Το πορτοφόλι σας συγχρονίζεται.... Όταν ολοκληρωθεί η συγχρονισμός θα μπορείτε να στείλετε μηνύματα."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -374,6 +383,76 @@
       "waitingNfcModal": {
         "title": "Waiting Nfc",
         "content": "Bring closer to the other device"
+      }
+    },
+    "depositsPage": {
+      "title": "Βελτιστοποιήστε το πορτοφόλι σας",
+      "unlockDate": "Ημερομηνία αποκλεισμού",
+      "interest": "Πρόστιμο",
+      "deposit": "Βελτιστοποίηση",
+      "lockHeight": "Ύψος αποκλεισμού",
+      "unlockHeight": "Ύψος αποκλεισμού",
+      "depositDate": "Ημερομηνία αποθέσεως",
+      "syncing": {
+        "label": "Το πορτοφόλι σας συγχρονίζεται.... Όταν ολοκληρωθεί η συγχρονισμός θα μπορείτε να δείτε τις αποθέσεις."
+      },
+      "tabs": {
+        "inbox": "Αποθέσεις",
+        "send": "Δημιουργία"
+      },
+      "depositsBlock": {
+        "title": "Λίστα αποθέσεων"
+      },
+      "confirmDeposit": {
+        "title": "Επιβεβαίωση αποθέσεως",
+        "message": "Εισάγετε τον κωδικό προστασίας σας για να επιβεβαιώσετε την δημιουργία αποθέσεως {amount} CCX για {term} μήνες?",
+        "confirm": "Δημιουργία αποθέσεως",
+        "cancel": "Ακύρωση",
+        "passwordRequired": "Ο κωδικός προστασίας του πορτοφολιού είναι υποχρεωτικός"
+      },
+      "createDeposit": {
+        "title": "Δημιουργία νέας αποθέσεως",
+        "amount": "Ποσό προς αποθέσεως",
+        "term": "Χρόνος αποθέσεως (σε μήνες)",
+        "termError": "Παρακαλώ εισάγετε ένα ακέραιο αριθμό μεταξύ 1 και 12 μήνες",
+        "confirm": "Δημιουργία αποθέσεως",
+        "cancel": "Ακύρωση",
+        "createSuccess": "Αποθέσεως αποστολή στο blockchain",
+        "createPending": "Η αποθέσεως σας επεξεργάζεται",
+        "createError": "Σφάλμα δημιουργίας αποθέσεως",
+        "withdrawSuccess": "Αποθέσεως αποστολή στο blockchain",
+        "withdrawPending": "Η αποθέσεως σας επεξεργάζεται",
+        "withdrawError": "Σφάλμα αποθέσεως αποστολής",
+        "amountError": "Άκυρο ποσό",
+        "amountMustBePositive": "Το ποσό πρέπει να είναι θετικό",
+        "termMustBeValid": "Ο χρόνος πρέπει να είναι μεταξύ 1 και 12 μήνες",
+        "insufficientFunds": "Ανεπαρκή χρήματα",
+        "insufficientFundsMessage": "Δεν έχετε αρκετά χρήματα για να δημιουργήσετε αυτή την αποθέσεως",
+        "maxAmount": "Μέγιστο ποσό αποθέσεως: {amount} CCX",
+        "rewardAtTerm": "Αμοιβή στο τέλος του χρόνου: {reward} CCX"
+      },
+      "depositDetails": {
+        "title": "Λεπτομέρειες αποθέσεως",
+        "txHash": "Συναλλαγή δημιουργίας",
+        "spendingTx": "Συναλλαγή αποθέσεως",
+        "status": "Κατάσταση",
+        "amount": "Ποσό",
+        "term": "Χρόνος",
+        "creationTime": "Ημερομηνία δημιουργίας",
+        "spendingTime": "Ημερομηνία αποθέσεως",
+        "spendingHeight": "Ύψος αποθέσεως",
+        "creationHeight": "Ύψος δημιουργίας",
+        "unlockHeight": "Ύψος αποκλεισμού",
+        "interest": "Πρόστιμο"
+      },
+      "recap": {
+        "title": "Ανακεφαλαίωση αποθέσεων",
+        "totalLifetimeDeposit": "Συνολικό ποσό αποθέσεων",
+        "totalLifetimeInterest": "Συνολικό πρόστιμο",
+        "totalCashedOutInterest": "Συνολικό πρόστιμο που έχει αποσυνταχθεί",
+        "futureInterestLocked": "Πρόστιμο σε αποθέσεις που δεν έχουν αποκλειστεί",
+        "futureInterestUnlocked": "Πρόστιμο σε αποθέσεις που έχουν αποκλειστεί",
+        "earliestWithdrawable": "Πρώτη αποθέσεως που μπορεί να αποσυνταχθεί"
       }
     },
     "receivePage": {
@@ -595,8 +674,7 @@
           "label": "Ιδιωτικό κλειδί πληρωμής"
         },
         "privateView": {
-          "label": "Ιδιωτικό κλειδί προβολής",
-          "optional": "(προαιρετικό)"
+          "label": "Ιδιωτικό κλειδί προβολής"
         },
         "publicKey": {
           "label": "Δημόσιο Κλειδί"
