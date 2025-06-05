@@ -11,7 +11,7 @@
 import {Logger} from "./Logger";
 import {DestructableView} from "./DestructableView";
 import {Context} from "./Context";
-import { isAllowedPage } from '../config/allowedPages';
+import { isAllowedPage, isAllowedException, validateExceptionsIntegrity } from '../config/allowedPages';
 
 export class Router {
 	currentPage: string | null = null;
@@ -25,6 +25,7 @@ export class Router {
 		let self = this;
 		this.routerBaseHtmlRelativity = routerBaseHtmlRelativity;
 		this.routerBaseJsRelativity = routerBaseRelativity;
+		
 		this.changePage(Router.extractPageFromUrl());
 	}
 
@@ -51,7 +52,7 @@ export class Router {
 	 * Update the browser history
 	 * @param {string} completeNewPageName
 	 */
-	changePage(completeNewPageName: string, replaceState: boolean = false) {
+	async changePage(completeNewPageName: string, replaceState: boolean = false) {
 		let self = this;
 		
 		// Extract the base page name without query parameters
@@ -60,13 +61,24 @@ export class Router {
 			newPageName = newPageName.slice(0, newPageName.indexOf('?'));
 		}
 
-
-		// Validate page name against whitelist
-		if (!isAllowedPage(newPageName)) {
+		// If it's an exception, validate its integrity
+		if (isAllowedException(completeNewPageName)) {
+			const isValid = await validateExceptionsIntegrity();
+			Logger.debug(this, 'Exception validation - URL: {url}, Is Valid: {isValid}', {
+				url: completeNewPageName,
+				isValid: isValid
+			});
+			if (!isValid) {
+				Logger.error(this, 'Exceptions integrity check failed');
+				this.changePage('index', true);
+				return;
+			}
+		}
+		// For regular pages, just check if they're allowed
+		else if (!isAllowedPage(newPageName)) {
 			Logger.error(this, 'Attempted to access unauthorized page: {page}', {
 				page: newPageName
 			});
-			// Redirect to 404 or home page
 			this.changePage('index', true);
 			return;
 		}
@@ -77,7 +89,6 @@ export class Router {
 		});
 
 		$('#pageLoading').show();
-
 
 		let currentView = DestructableView.getCurrentAppView();
 		let promiseDestruct: Promise<void>;
@@ -95,16 +106,21 @@ export class Router {
 
 			Logger.debug(self, 'Changing to page '+self.currentPage);
 
-			let promiseContent = self.loadContent(self.routerBaseHtmlRelativity+'pages/' + newPageName + '.html');
-			let jsContentPath = self.routerBaseJsRelativity+'pages/' + newPageName + '.js';
+			// If it's an allowed exception, use the decoded page name for loading content
+			let pageToLoad = newPageName;
+			if (isAllowedException(completeNewPageName)) {
+				const decodedHash = decodeURIComponent(window.location.hash);
+				pageToLoad = decodedHash.split('?')[0].replace('#', '');
+			}
+
+			let promiseContent = self.loadContent(self.routerBaseHtmlRelativity+'pages/' + pageToLoad + '.html');
+			let jsContentPath = self.routerBaseJsRelativity+'pages/' + pageToLoad + '.js';
 
 			Promise.all([promiseContent]).then(function (data: string[]) {
 				let content = data[0];
 				self.injectNewPage(content, jsContentPath);
 			}).catch(function (error) {
-				//console.log(error);
 				$('#pageLoading').hide();
-				// self.changePage('errors/404', true);
 			});
 		});
 	}
@@ -118,11 +134,18 @@ export class Router {
 		// Double-check security - validate jsContentPath
 		if (jsContentPath !== null) {
 			const pageName = jsContentPath.split('/').pop()?.replace('.js', '');
-			if (!pageName || !isAllowedPage(pageName)) {
+			if (!pageName || (!isAllowedPage(pageName) && !isAllowedException(window.location.hash))) {
 				Logger.error(this, 'Attempted to inject unauthorized page: {page}', {
 					page: pageName
 				});
 				return;
+			} else if (isAllowedException(window.location.hash)) {
+				// For allowed exceptions, decode the URL but keep the query parameters
+				const decodedHash = decodeURIComponent(window.location.hash);
+				const actualPageName = decodedHash.split('?')[0].replace('#', '');
+				// Keep the original hash with query parameters for the page to use
+				window.location.hash = decodedHash;
+				jsContentPath = this.routerBaseJsRelativity + 'pages/' + actualPageName + '.js';
 			}
 		}
 
@@ -134,7 +157,6 @@ export class Router {
 				$('#page').show();
 				$('#pageLoading').hide();
 			}, function (err) {
-				//console.log(err);
 				$('#page').show();
 				$('#pageLoading').hide();
 			});
