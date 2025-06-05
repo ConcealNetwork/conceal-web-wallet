@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "La contraseña necesita al menos 8 caracteres - 1 letra mayúscula, 1 letra minúscula, un número y un carácter especial",
       "passwordConfirmationNotMatching": "La contraseña no coincide con la primera contraseña que escribió",
       "download": "Descargar",
+      "confirmText": "OK",
+      "error": "Error",
       "newVersionModal": {
         "title": "Hay una nueva version disponible",
         "content": "¿Quieres recargar la nueva version?",

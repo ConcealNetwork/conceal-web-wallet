@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "The password needs at least 8 characters - 1 upper case letter, 1 lower case letter, one number, and one special character",
       "passwordConfirmationNotMatching": "The password does not match the first password you wrote",
       "download": "Download",
+      "confirmText": "OK",
+      "error": "Error",
       "newVersionModal": {
         "title": "A new version is available",
         "content": "Do you want to reload to load the new version?",

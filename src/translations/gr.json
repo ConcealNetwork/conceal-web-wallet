@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "Ο κωδικός πρέπει να αποτελείται από τουλάχιστο 8 χαρακτήρες - 1 κεφαλαίο, 1 πεζό, 1 αριθμό και 1 σύμβολο",
       "passwordConfirmationNotMatching": "Οι κωδικοί δεν ταιριάζουν μεταξύ τους",
       "download": "Λήψη",
+      "confirmText": "OK",
+      "error": "Σφάλμα",
       "newVersionModal": {
         "title": "Μια νέα έκδοση είναι διαθέσιμη",
         "content": "Θέλετε να φορτώσετε τη νέα έκδοση;",

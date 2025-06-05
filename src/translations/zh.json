@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "密码长度需要大于8位 - 至少包含1个大写字母，1个小写字母，1个数字，以及1个特殊字符。",
       "passwordConfirmationNotMatching": "两次输入的密码不匹配",
       "download": "下载",
+      "confirmText": "确认",
+      "error": "错误",
       "newVersionModal": {
         "title": "有新版本可以更新",
         "content": "要重新加载新版本吗？",

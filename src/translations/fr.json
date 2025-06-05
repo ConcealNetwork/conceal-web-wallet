@@ -24,6 +24,8 @@
 		"passwordInvalidRequirements": "Le mot de passe doit avoir au moins 8 caractères, 1 lettre majuscule, 1 mettre minuscule, un chiffre et un caractère spécial",
 		"passwordConfirmationNotMatching": "Le mot de passe ne correspond pas au premier écrit",
 		"download": "Télécharger",
+		"confirmText": "OK",
+		"error": "Erreur",
 		"newVersionModal": {
 		  "title": "Une nouvelle version est disponible",
 		  "content": "Voulez vous recharger pour passer à la nouvelle version ?",

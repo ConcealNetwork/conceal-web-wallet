@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "یک رمز عبور قوی باید حداقل شامل هشت حرف با حروف بزرگ ، کوچک و سمبل باشد",
       "passwordConfirmationNotMatching": "رمز عبور شما مطابقت ندارد",
       "download": "دریافت",
+      "confirmText": "تایید",
+      "error": "خطا",
       "newVersionModal": {
         "title": "نسخه ی جدیدی موجود است",
         "content": "آیا مایل به بارگذاری مجدد صفحه و دریافت بروز رسانی میباشید ؟",

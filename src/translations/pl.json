@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "Hasło musi mieć co najmniej 8 znaków - 1 wielką literę, 1 małą literę, jedną cyfrę i jeden znak specjalny",
       "passwordConfirmationNotMatching": "Hasło nie pasuje do pierwszego wpisanego hasła",
       "download": "Pobierz",
+      "confirmText": "OK",
+      "error": "Błąd",
       "newVersionModal": {
         "title": "Nowa wersja jest dostepna",
         "content": "Czy chcesz ponownie załadować, aby uzyskać nową wersję?",

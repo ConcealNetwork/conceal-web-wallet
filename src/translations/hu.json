@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "A jelszónak legalább 8 karakterből kell állnia és tartalmaznia kell egy nagybetűt, egy kisbetűt, egy számot és egy különleges karaktert",
       "passwordConfirmationNotMatching": "A megadott jelszavak nem egyeznek",
       "download": "Letöltés",
+      "confirmText": "OK",
+      "error": "Hiba",
       "newVersionModal": {
         "title": "Elérhető egy új verzió",
         "content": "Szeretnéd újratölteni az oldalt az új verzió használatához?",
