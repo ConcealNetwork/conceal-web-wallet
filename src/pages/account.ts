@@ -66,7 +66,9 @@ class AccountView extends DestructableView{
 	@VueVar(0) private messagesCountRecord: number = 0;
 
   readonly refreshInterval = 500;
+
 	private intervalRefresh : NodeJS.Timeout;
+
   private refreshTimestamp: Date;
   private oldTxFilter: string;
   private lastPending: number;
@@ -114,12 +116,14 @@ class AccountView extends DestructableView{
 	}
 
 	destruct = (): Promise<void> => {
+
     // Cleanup ticker subscription
     if (this.unsubscribeTicker) {
       this.unsubscribeTicker();
     }
     if (this.optimizePanelTimeout) clearTimeout(this.optimizePanelTimeout);
     clearInterval(this.intervalRefresh);
+
 		return super.destruct();
   }
 

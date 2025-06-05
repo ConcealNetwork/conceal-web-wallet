@@ -54,7 +54,9 @@ class MessagesView extends DestructableView {
   @Autowire(Nfc.name) nfc !: Nfc;
 
   readonly refreshInterval = 500;
+
 	private intervalRefresh : NodeJS.Timeout;
+
   private qrReader: QRReader | null = null;
   private timeoutResolveAlias = 0;
   private redirectUrlAfterSend: string | null = null;

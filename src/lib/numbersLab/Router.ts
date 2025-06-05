@@ -60,6 +60,7 @@ export class Router {
 			newPageName = newPageName.slice(0, newPageName.indexOf('?'));
 		}
 
+
 		// Validate page name against whitelist
 		if (!isAllowedPage(newPageName)) {
 			Logger.error(this, 'Attempted to access unauthorized page: {page}', {
@@ -76,6 +77,7 @@ export class Router {
 		});
 
 		$('#pageLoading').show();
+
 
 		let currentView = DestructableView.getCurrentAppView();
 		let promiseDestruct: Promise<void>;

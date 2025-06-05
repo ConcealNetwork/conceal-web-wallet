@@ -36,7 +36,9 @@ const generateIntegrityHash = (filePath) => {
 	}
 };
 
+
 // Generate integrity hash for api.html and update the .env file
+
 const updateApiIntegrityHash = () => {
 	const apiHtmlPath = path.join(__dirname, 'src', 'api.html');
 	
