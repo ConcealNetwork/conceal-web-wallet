@@ -59,7 +59,11 @@
         "label": "최적화",
         "subtitle": "지갑을 최적화해야합니다",
         "button": "지금 최적화",
-        "loadingText": "최적화 중입니다. 잠시만 기다려주세요..."
+        "loadingText": "최적화 중입니다. 잠시만 기다려주세요...",
+        "success": "최적화 성공",
+        "error": "최적화 실패",
+        "errorInfo": "최적화 실패",
+        "confirmText": "확인"
       }
     },
     "bottom": {
@@ -231,7 +235,7 @@
     "sendPage": {
       "title": "카르보 코인 보내기",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "지갑 동기화중입니다.... 완전히 동기화되면 자금을 보낼 수 있습니다."
       },
       "sendBlock": {
         "address": {
@@ -310,7 +314,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "지갑 동기화중입니다.... 완전히 동기화되면 메시지를 보낼 수 있습니다."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -382,32 +386,76 @@
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "예금",
+      "unlockDate": "해제 날짜",
+      "interest": "이자",
+      "deposit": "예금",
+      "lockHeight": "잠금 높이",
+      "unlockHeight": "해제 높이",
+      "depositDate": "예금 날짜",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      "label": "지갑 동기화중입니다.... 완전히 동기화되면 예금을 볼 수 있습니다."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "예금",
+        "send": "생성"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "예금 목록"
       },
       "createBlock": {
 
       },
+      "confirmDeposit": {
+        "title": "예금 확인",
+        "message": "비밀번호를 입력하여 {amount} CCX를 {term}개월 예금을 생성하는 것을 확인하세요",
+        "confirm": "예금 생성",
+        "cancel": "취소",
+        "passwordRequired": "지갑 비밀번호가 필요합니다"
+      },
+      "createDeposit": {
+        "title": "새로운 예금 생성",
+        "amount": "예금 금액",
+        "term": "예금 기간 (개월)",
+        "termError": "1개월에서 12개월 사이의 정수를 입력해주세요",
+        "confirm": "예금 생성",
+        "cancel": "취소",
+        "createSuccess": "예금 제출 완료",
+        "createPending": "예금 처리중",
+        "createError": "예금 생성 오류",
+        "withdrawSuccess": "출금 제출 완료",
+        "withdrawPending": "출금 처리중",
+        "withdrawError": "출금 오류",
+        "amountError": "잘못된 금액",
+        "amountMustBePositive": "금액은 양수여야 합니다",
+        "termMustBeValid": "기간은 1개월에서 12개월 사이여야 합니다",
+        "insufficientFunds": "잔액 부족",
+        "insufficientFundsMessage": "예금을 생성할 충분한 잔액이 없습니다",
+        "maxAmount": "최대 예금 금액: {amount} CCX",
+        "rewardAtTerm": "기간 보상: {reward} CCX"
+      },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
-        "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "title": "예금 상세",
+        "txHash": "생성 트랜잭션",
+        "spendingTx": "소비 트랜잭션",
+        "status": "상태",
+        "amount": "금액",
+        "term": "용어",
+        "creationTime": "생성 시간",
+        "spendingTime": "소비 시간",
+        "spendingHeight": "소비 높이",
+        "creationHeight": "생성 높이",
+        "unlockHeight": "해제 높이",
+        "interest": "이자"
+      },
+      "recap": {
+        "title": "예금 요약",
+        "totalLifetimeDeposit": "총 생명 주기 예금",
+        "totalLifetimeInterest": "총 생명 주기 이자",
+        "totalCashedOutInterest": "총 출금 이자",
+        "futureInterestLocked": "미래 이자 잠금",
+        "futureInterestUnlocked": "미래 이자 해제",
+        "earliestWithdrawable": "최초 출금 가능"
       }
     },
     "receivePage": {

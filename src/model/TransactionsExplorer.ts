@@ -5,8 +5,8 @@
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
  *     Copyright (c) 2022, The Karbo Developers
- *     Copyright (c) 2022, Conceal Devs
- *     Copyright (c) 2022, Conceal Network
+ *     Copyright (c) 2022 - 2025, Conceal Devs
+ *     Copyright (c) 2022 - 2025, Conceal Network
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -66,6 +66,7 @@ declare var config: {
  import {RawDaemon_Transaction, RawDaemon_Out} from "./blockchain/BlockchainExplorer";
  import {Transaction, TransactionData, Deposit, TransactionIn, TransactionOut} from "./Transaction";
  import {InterestCalculator} from "./Interest";
+ import { Currency } from "./Currency";
 
  export const TX_EXTRA_PADDING_MAX_COUNT = 255;
  export const TX_EXTRA_NONCE_MAX_COUNT = 255;
@@ -646,7 +647,14 @@ declare var config: {
        } else {
          transaction.fees = rawTransaction.fee;
        }
-
+       
+       transaction.fusion = ((rawTransaction.vin.length > Currency.fusionTxMinInputCount) && 
+       (rawTransaction.vout.length <= config.maxFusionOutputs) &&
+       ((rawTransaction.vin.length / rawTransaction.vout.length) > config.fusionTxMinInOutCountRatio) && 
+       (rawTransaction.vin.some(vin => vin.type != "03")) &&
+       (rawTransaction.vout.some(vout => vout.target.type != "03"))) &&
+       (transaction.fees === 0 || transaction.fees === parseInt(config.minimumFee_V2));
+       
        // fill the transaction info
        transaction.outs = outs;
        transaction.ins = ins;

@@ -11,13 +11,19 @@ declare var config : {
 	testnetExplorerUrlBlock: string,
 	testnet: boolean,
 	coinUnitPlaces: number,
+	//fusion
   optimizeOutputs: number,
   optimizeThreshold: number,
+  minimumFee_V2: number,
+  fusionTxMinInOutCountRatio: number,
+  maxFusionOutputs: number,
+	//message
   messageTxAmount: any,
   maxMessageSize: number,
 	txMinConfirms: number,         // corresponds to CRYPTONOTE_DEFAULT_TX_SPENDABLE_AGE in Monero
 	txCoinbaseMinConfirms: number, // corresponds to CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW in Monero
 	coinSymbol: string,
+	coinSymbolShort: string,
 	openAliasPrefix: string,
 	coinName: string,
 	coinUriPrefix: string,
@@ -40,9 +46,14 @@ declare var config : {
 	maxBlockNumber: number,
 	avgBlockTime: number,
 	coinFee: typeof JSBigInt,
+	//deposit
 	depositMinAmountCoin: number,
 	depositMinTermMonth: number,
 	depositMinTermBlock: number,
 	depositMaxTermMonth: number,
 	depositRateV3: number[],
+	//Height references
+	UPGRADE_HEIGHT_V4: number,
+	//PRETTY_AMOUNTS
+	PRETTY_AMOUNTS: number[],
 };

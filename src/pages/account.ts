@@ -15,7 +15,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {VueClass, VueRequireFilter, VueVar} from "../lib/numbersLab/VueAnnotate";
+import {VueClass, VueRequireFilter, VueVar, VueWatched} from "../lib/numbersLab/VueAnnotate";
 import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
 import {Wallet} from "../model/Wallet";
 import {DestructableView} from "../lib/numbersLab/DestructableView";
@@ -25,6 +25,7 @@ import {Transaction, TransactionIn} from "../model/Transaction";
 import {RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {WalletWatchdog} from "../model/WalletWatchdog";
 import {CnUtils} from "../model/Cn";
+import {Translations, tickerStore} from "../model/Translations";
 
 
 let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name,'default', false);
@@ -46,7 +47,8 @@ class AccountView extends DestructableView{
 	@VueVar(0) allTransactionsCount !: number;
 	@VueVar(0) pagesCount !: number;
 	@VueVar(0) txPerPage !: number;
-	@VueVar(0) ticker !: string;
+	@VueVar('') ticker !: string;
+	@VueVar(false) private useShortTicker !: boolean;
 
 	@VueVar(0) currentScanBlock !: number;
 	@VueVar(0) blockchainHeight !: number;
@@ -70,18 +72,34 @@ class AccountView extends DestructableView{
   private lastPending: number;
   private initMessagesCount: number = wallet.txsMem.concat(wallet.getTransactionsCopy()).filter(tx => tx.message).length;
 
+	private unsubscribeTicker: (() => void) | null = null;
+
+	@VueVar(false) showOptimizePanel!: boolean;
+	private optimizePanelTimeout: NodeJS.Timeout | null = null;
+
 	constructor(container : string) {
 		super(container);
 
     this.refreshTimestamp = new Date(0);
-    this.ticker = config.coinSymbol;
+
     this.lastPending = 0;
     this.pagesCount = 1;
     this.txPerPage = 200;
     this.oldTxFilter = '';
     this.txFilter = '';
 
-  	this.checkOptimization();
+    // Initialize ticker from store
+    tickerStore.initialize().then(() => {
+      this.useShortTicker = tickerStore.useShortTicker;
+      this.ticker = tickerStore.currentTicker;
+      
+      // Subscribe to ticker changes
+      this.unsubscribeTicker = tickerStore.subscribe((useShortTicker) => {
+        this.useShortTicker = useShortTicker;
+        this.ticker = tickerStore.currentTicker;
+      });
+    });
+    this.checkOptimization();
 		AppState.enableLeftMenu();
 
 		this.intervalRefresh = setInterval(() => {
@@ -90,10 +108,17 @@ class AccountView extends DestructableView{
 
 		this.refresh();
 
+		this.showOptimizePanel = false;
+
 		(window as any).accountView = this;
 	}
 
 	destruct = (): Promise<void> => {
+    // Cleanup ticker subscription
+    if (this.unsubscribeTicker) {
+      this.unsubscribeTicker();
+    }
+    if (this.optimizePanelTimeout) clearTimeout(this.optimizePanelTimeout);
     clearInterval(this.intervalRefresh);
 		return super.destruct();
   }
@@ -113,22 +138,39 @@ class AccountView extends DestructableView{
   }
 
 	checkOptimization = () => {
-    blockchainExplorer.getHeight().then((blockchainHeight: number) => {
-      let optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
-      this.optimizeIsNeeded = optimizeInfo.isNeeded;
-      if(optimizeInfo.isNeeded) {
-        this.optimizeOutputs = optimizeInfo.numOutputs;
-      }
-    }).catch((err: any) => {
-      console.error("Error in checkOptimization", err);
-    });
+    blockchainExplorer.getHeight()
+      .then((blockchainHeight: number) => {
+        try {
+          let optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
+          
+          this.optimizeIsNeeded = optimizeInfo.isNeeded;
+          if(optimizeInfo.isNeeded) {
+            this.optimizeOutputs = optimizeInfo.numOutputs;
+            this.showOptimizePanel = true;
+            if (this.optimizePanelTimeout) clearTimeout(this.optimizePanelTimeout);
+            this.optimizePanelTimeout = setTimeout(() => {
+              this.showOptimizePanel = false;
+            }, 20000);
+          } else {
+            this.showOptimizePanel = false;
+            if (this.optimizePanelTimeout) clearTimeout(this.optimizePanelTimeout);
+          }
+        } catch (innerError) {
+          if (innerError === null) return;
+          throw innerError;
+        }
+      })
+      .catch((err: any) => {
+        if (err === null) return;
+        console.error("Error in checkOptimization:", err);
+      });
   }
 
   optimizeWallet = () => {
     this.optimizeLoading = true; // set loading state to true
 
     blockchainExplorer.getHeight().then((blockchainHeight: number) => {
-      wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
+      wallet.createFusionTransaction(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
         function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
           return blockchainExplorer.getRandomOuts(amounts, numberOuts);
         }).then((processedOuts: number) => {
@@ -190,6 +232,7 @@ class AccountView extends DestructableView{
           `+feesHtml+`
           `+txPrivKeyMessage+`
           <div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.blockHeight')+`</span>:<span class="txDetailsValue"><a href="`+explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)+`" target="_blank">`+transaction.blockHeight+`</a></span></div>
+          `+(transaction.fusion ? '<div><span class="txDetailsLabel">Fusion:</span><span class="txDetailsValue">true</span></div>' : '')+`
           `+messageText+`          
         </div>`
 		});

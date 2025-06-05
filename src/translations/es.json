@@ -59,7 +59,11 @@
         "label": "Optimización",
         "subtitle": "Su billetera necesita ser optimizada",
         "button": "Optimizar ahora",
-        "loadingText": "Optimizando, por favor espere..."
+        "loadingText": "Optimizando, por favor espere...",
+        "success": "Transacción de fusión enviada",
+        "error": "Error al enviar la transacción de fusión",
+        "errorInfo": "Optimización cancelada",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -525,6 +529,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Símbolo Ticker",
+          "full": "Símbolo Ticker Completo",
+          "short": "Símbolo Ticker Corto",
+          "preview": "Vista previa"
         }
       },
       "changePasswordButton": "Cambiar mi contraseña de billetera",

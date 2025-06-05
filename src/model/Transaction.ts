@@ -4,6 +4,8 @@
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
  *     Copyright (c) 2014-2018, MyMonero.com
+ *     Copyright (c) 2022 - 2025, Conceal Devs
+ *     Copyright (c) 2022 - 2025, Conceal Network
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -31,6 +33,7 @@
  *     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import { Currency } from './Currency';
 export class TransactionOut {
   amount: number = 0;
   keyImage: string = '';
@@ -154,7 +157,7 @@ export class Transaction {
   timestamp: number = 0;
   paymentId: string = '';
   fees: number = 0;
-
+  fusion: boolean = false;
   message: string = '';
   
   static fromRaw = (raw: any) => {
@@ -180,6 +183,7 @@ export class Transaction {
     if (typeof raw.fees !== 'undefined') transac.fees = raw.fees;
     if (typeof raw.hash !== 'undefined') transac.hash = raw.hash;
     if (typeof raw.message !== 'undefined') transac.message = raw.message;
+    if (typeof raw.fusion !== 'undefined') transac.fusion = raw.fusion;
     return transac;
   }
 
@@ -207,6 +211,8 @@ export class Transaction {
     if (this.paymentId !== '') data.paymentId = this.paymentId;
     if (this.message !== '') data.message = this.message;
     if (this.fees !== 0) data.fees = this.fees;
+    if (this.fusion) data.fusion = this.fusion;
+     
     return data;
   }
 
@@ -242,12 +248,21 @@ export class Transaction {
   }
 
   isFullyChecked = () => {
-    if (this.getAmount() === 0) return false; //fusion
-    for (let input of this.ins) {
-      if (input.amount < 0)
+    console.log("getAmount", this.getAmount());
+    if (this.getAmount() === 0 || this.getAmount() === (-1 * config.minimumFee_V2)) {
+      if (this.isFusion) {
+        return true;
+      } else {
         return false;
+      }
+    } else {
+      for (let input of this.ins) {
+        if (input.amount < 0) {
+          return false;
+        }
+      }
+      return true;
     }
-    return true;
   }
 
   get isDeposit() {
@@ -260,6 +275,15 @@ export class Transaction {
     return this.ins.some(input => input.type === "03");
   }
 
+  get isFusion() {
+    let outputsCount = this.outs.length;
+    let inputsCount = this.ins.length;
+    if (this.outs.some(out => out.type === "03") || this.ins.some(input => input.type === "03")) {
+      return false;
+    }
+    return (((inputsCount > Currency.fusionTxMinInputCount) && ((inputsCount / outputsCount) > config.fusionTxMinInOutCountRatio)) || this.fusion);
+  }
+
   copy = () => { 
     let aCopy = new Transaction();
 
@@ -270,7 +294,8 @@ export class Transaction {
     aCopy.paymentId = this.paymentId;
     aCopy.fees = this.fees;
     aCopy.message = this.message;
-      
+    aCopy.fusion = this.fusion;
+
     for (let nin of this.ins) {
       aCopy.ins.push(nin.copy());
     }

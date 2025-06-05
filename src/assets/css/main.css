@@ -2,8 +2,8 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
- * Copyright (c) 2022, Conceal Network
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2022-2025 Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -15,6 +15,68 @@
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+/* Color Variables */
+:root {
+	/* Brand Colors */
+	--color-primary: #faa933;          /* Main orange */
+	--color-primary-hover: #f79b11;    /* Darker orange for hover states */
+	--color-primary-light: rgba(250, 169, 51, 0.5);  /* Light orange for backgrounds */
+	--color-primary-dark: #e67e00;     /* Dark orange for active states */
+  
+	/* Background Colors */
+	--color-bg-main: rgba(52, 58, 64, 0.95);    /* Main panel background */
+	--color-bg-hover: rgba(52, 58, 64, 0.88);   /* Panel hover background */
+	--color-bg-dark: #212529;          /* Dark background (footer, menu) */
+	--color-bg-darker: #282d31;        /* Darker background (top bar and menu) */
+	--color-bg-darker-menu-hidden: rgb(40, 45, 49, 0.99);        /* Darker background (menu hidden) */
+	--color-bg-darker-menu-hidden-lighter: rgb(40, 45, 49, 0.95); /* Darker background (menu hidden) */
+	--color-bg-light: #eeeeee;         /* Light background (inputs) */
+	--color-bg-disabled: #ccc;         /* Disabled state background */
+	--color-bg-tab: #212529;			/* Tab background */
+	
+	/* Text Colors */
+	--color-text-primary: #fff;        /* Primary text color */
+	--color-text-secondary: #ccc;      /* Secondary text color */
+	--color-text-tertiary: #e2e2e2;      /* Tertiary text color */
+	--color-text-muted: rgba(255, 255, 255, 0.7);  /* Muted text color */
+	--color-text-dark: #000;           /* Dark text color */
+	--color-text-dark-muted: rgba(0, 0, 0, 0.7);   /* Muted dark text */
+  
+	/* Border Colors */
+	--color-border-light: #D9DCE7;     /* Light border color */
+	--color-border-dark: rgba(0, 0, 0, 0.1);  /* Dark border color */
+	--color-border-panel: rgba(66, 66, 66, 0.918);   /* Panel border color */
+  
+	/* Status Colors */
+	--color-success: #6bc534;          /* Success green */
+	--color-error: #e57373;            /* Error red */
+	--color-warning: #ff9900;          /* Warning orange */
+	--color-info: #146DBD;             /* Info blue */
+  
+	/* Transaction Colors */
+	--color-tx-in: #6bc534;            /* Incoming transaction */
+	--color-tx-out: #FF0000;           /* Outgoing transaction */
+	--color-tx-deposit: #ed0505;       /* Deposit transaction */
+	--color-tx-withdrawal: #6bc534;    /* Withdrawal transaction */
+  
+	/* Scrollbar Colors */
+	--color-scrollbar-track: rgba(255, 255, 255, 0.05);
+	--color-scrollbar-thumb: rgba(255, 165, 0, 0.5);
+	--color-scrollbar-thumb-hover: rgba(255, 165, 0, 1);
+  
+	/* Overlay Colors */
+	--color-overlay: rgba(255, 255, 255, 0.6);
+	--color-overlay-dark: rgba(0, 0, 0, 0.9);
+	--color-overlay-light: rgba(62, 62, 62, 0.5);
+  
+	/* Shadow Colors */
+	--color-shadow-light: rgba(0, 0, 0, 0.1);
+	--color-shadow-medium: rgba(0, 0, 0, 0.2);
+	--color-shadow-dark: rgba(0, 0, 0, 0.3);
+  }
+
+
 
 @font-face {
 	font-family: "Poppins";
@@ -223,7 +285,7 @@ body.native .hideOnNonNative {
 	line-height: 34px;
 	position: fixed;
 	top: 0;
-	background: #363636;
+	background: var(--color-bg-darker);
 	color: white;
 	font-size: 16px;
 	font-weight: bold;
@@ -292,7 +354,7 @@ body.menuHidden #menu {
 #menu {
 	color: white;
 	padding: 10px 15px;
-	background: linear-gradient(to right, rgba(54, 54, 54, 0.99) 90%, rgba(54, 54, 54, 0.95));
+	background: linear-gradient(to right, var(--color-bg-darker-menu-hidden) 90%, var(--color-bg-darker-menu-hidden-lighter));
 	border-right: 1px solid rgba(0, 0, 0, 0.1);
 	transition: all 0.3s ease;
 }
@@ -324,7 +386,7 @@ body.menuHidden #menu {
 }
 
 #menu a:not(#menu_logo):hover .icon {
-	color: #faa933;
+	color: var(--color-primary);
 	transform: scale(1.1);
 }
 
@@ -333,7 +395,7 @@ body.menuHidden #menu {
 }
 
 #menu a:not(#menu_logo):hover span {
-	color: #faa933;
+	color: var(--color-primary);
 	text-shadow: 0 0 8px rgba(250, 169, 51, 0.3);
 }
 
@@ -480,8 +542,8 @@ body.menuDisabled #page {
 	position: fixed;
 	bottom: 0%;
 	padding: 15px 0;
-	background: #212121;
-	color: #ffffffb3;
+	background: var(--color-bg-dark);
+	color: var(--color-text-tertiary);
 	font-size: 14px;
 	padding-left: 280px;
 	text-align: center;
@@ -548,7 +610,7 @@ body.transparent #copyright {
 }
 
 .transactions .transaction {
-	border-top: 1px solid #E2E2E2;
+	border-top: 1px solid var(--color-text-tertiary);
 }
 
 .transactions table tr:first-child {
@@ -898,7 +960,7 @@ body.native .indexTab .mainBlock {
 
 .indexTab .mainBlock>.actions {
 	text-align: left;
-	background: #212121;
+	background: var(--color-bg-dark);
 	color: #ffffffb3;
 	padding: 1.5rem 1.5rem;
 	height: 75px;
@@ -992,7 +1054,7 @@ body.native .indexTab .mainBlock>.actions {
 
 .indexTab .block i {
 	font-size: 40px;
-	color: #faa933;
+	color: var(--color-primary);
 }
 
 .indexTab .block h3 {
@@ -1168,7 +1230,7 @@ body {
 }
 
 .panel {
-	background: rgba(66, 66, 66, 0.95);
+	background: var(--color-bg-main);
 	border-radius: 5px;
 	padding: 1rem 1.1rem 1rem 1.1rem;
 	margin-bottom: 1.8rem;
@@ -1178,7 +1240,7 @@ body {
 }
 
 .panel:hover {
-	background: rgba(66, 66, 66, 0.88);
+	background: var(--color-bg-hover);
 	box-shadow: 0 6px 10px -1px #0003, 0 12px 20px #00000024, 0 2px 36px #0000001f;
 }
 
@@ -1432,7 +1494,7 @@ body {
 	padding: 17px 16px 15px;
 	width: 100%;
 	color: rgba(71, 78, 93, 0.7);
-	background: #eeeeee;
+	background: var(--color-bg-light);
 }
 
 .field input:read-only,
@@ -1703,7 +1765,7 @@ body {
 	font-weight: bold;
 	color: orange;
 	padding: 0.2em 0 0 0;
-	border-bottom: 1px solid #e2e2e2 !important;
+	border-bottom: 1px solid var(--color-text-tertiary) !important;
 }
 
 .amount_cell {
@@ -1722,6 +1784,10 @@ body {
 
 .tx_direction_in {
   color: #6bc534;
+}
+
+.fusion-gear {
+  color: var(--color-text-secondary) !important; /* Using the neutral color */
 }
 
 .progress-container {
@@ -1885,7 +1951,7 @@ body {
   margin-top: 2em;
   overflow: hidden;
   border: 1px solid #424242ea;
-  background-color: #333;
+  background-color: var(--color-bg-tab);
 }
 
 /* Style the buttons inside the tab */
@@ -2048,6 +2114,90 @@ body {
 .selected-filename {
   font-size: 1.2em;
   font-weight: bold;
-  color: #e2e2e2;
+  color: var(--color-text-tertiary);
   margin-left: 5px;
+}
+
+/* Radio button and ticker styles */
+.radio-group, .ticker-option {
+    margin: 10px 23px;
+}
+
+.radio-option, .ticker-option {
+    display: block;
+    cursor: pointer;
+    user-select: none;
+    text-align: left;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.radio-option input[type="radio"], .ticker-option input[type="radio"] {
+    display: none;
+}
+
+.radio-option label, .ticker-option label {
+    display: inline-block;
+    position: relative;
+    padding-left: 28px;
+    color: var(--color-text-primary);
+    font-size: 1em;
+    line-height: 1.2;
+    cursor: pointer;
+    margin: 0;
+    padding-top: 2px;
+}
+
+.radio-option label:before, .ticker-option label:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--color-primary);
+    background: var(--color-bg-main);
+    transition: border-color 0.2s;
+}
+
+.radio-option label:after, .ticker-option label:after {
+    content: '';
+    display: block;
+    width: 12px;
+    height: 12px;
+    background: var(--color-primary);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    transform: translate(-50%, -50%) scale(0,0);
+    border-radius: 50%;
+    opacity: 0;
+    transition: all .2s cubic-bezier(0.64, 0.57, 0.67, 1.53);
+}
+
+.radio-option input[type="radio"]:checked + label:after,
+.ticker-option input[type="radio"]:checked + label:after {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1,1);
+}
+
+.radio-option input[type="radio"]:focus + label:before,
+.ticker-option input[type="radio"]:focus + label:before {
+    border-color: var(--color-primary-hover);
+}
+
+.radio-option label:hover:before,
+.ticker-option label:hover:before {
+    border-color: var(--color-primary-hover);
+}
+.ticker-preview {
+    margin-top: 12px;
+    padding: 8px;
+    background-color: var(--color-bg-main);
+    border-radius: 4px;
+    font-weight: 500;
+    color: #fff;
+    font-size: 1.3em;
 }

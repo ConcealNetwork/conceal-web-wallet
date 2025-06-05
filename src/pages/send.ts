@@ -4,8 +4,8 @@
  * Copyright (c) 2018-2020 The Karbo developers
  * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
  * Copyright (c) 2022, The Karbo Developers
- * Copyright (c) 2022, Conceal Devs
- * Copyright (c) 2022, Conceal Network
+ * Copyright (c) 2022 - 2025, Conceal Devs
+ * Copyright (c) 2022 - 2025, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -65,6 +65,10 @@ class SendView extends DestructableView {
   @VueVar(false) optimizeLoading !: boolean;
 	@VueVar(false) isWalletSyncing !: boolean;
 	@VueVar(0) optimizeOutputs !: number;
+
+  @VueVar('0') amountPlaceholder!: string;
+
+  @VueVar(null) showOptimizePanel !: boolean | null;
 
   @Autowire(Nfc.name) nfc !: Nfc;
 
@@ -425,10 +429,15 @@ class SendView extends DestructableView {
       logDebugMsg("optimizeInfo.numOutputs", optimizeInfo.numOutputs);
       logDebugMsg('optimizeInfo.isNeeded', optimizeInfo.isNeeded);
       this.optimizeIsNeeded = optimizeInfo.isNeeded;
-      if(optimizeInfo.isNeeded) {
+      this.showOptimizePanel = optimizeInfo.isNeeded;
+      if (optimizeInfo.isNeeded) {
         this.optimizeOutputs = optimizeInfo.numOutputs;
+        // Hide the panel after 20 seconds
+        setTimeout(() => {
+          this.showOptimizePanel = false;
+        }, 20000);
       }
-		}).catch((err: any) => {
+    }).catch((err: any) => {
       console.error("Error in checkOptimization, calling getHeight", err);
     });
   }
@@ -436,7 +445,7 @@ class SendView extends DestructableView {
   optimizeWallet = () => {
     this.optimizeLoading = true; // set loading state to true
     blockchainExplorer.getHeight().then((blockchainHeight: number) => {
-      wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
+      wallet.createFusionTransaction(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
         function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
           return blockchainExplorer.getRandomOuts(amounts, numberOuts);
         }).then((processedOuts: number) => {
@@ -450,7 +459,7 @@ class SendView extends DestructableView {
           setTimeout(() => {
             this.checkOptimization(); // check if optimization is still needed
           }, 1000);  
-        }).catch((err) => {
+        }).catch((err: any) => {
           console.log(err);
           this.optimizeLoading = false; // set loading state to false
           setTimeout(() => {
@@ -502,6 +511,8 @@ class SendView extends DestructableView {
 
   @VueWatched()
   amountToSendWatch() {
+    // Allow only numbers and at most one dot
+    this.amountToSend = this.amountToSend.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1');
     try {
       this.amountToSendValid = !isNaN(parseFloat(this.amountToSend));
     } catch (e) {
@@ -542,6 +553,16 @@ class SendView extends DestructableView {
     } catch (e) {
       this.mixinIsValid = false;
     }
+  }
+
+  onAmountFocus() {
+    this.amountPlaceholder = '';
+    if (this.amountToSend === '0') this.amountToSend = '';
+  }
+
+  onAmountBlur() {
+    if (this.amountToSend === '') this.amountToSend = '0';
+    this.amountPlaceholder = '0';
   }
 }
 

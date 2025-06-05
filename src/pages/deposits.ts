@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2022, Conceal Network
+ * Copyright (c) 2022 - 2025, Conceal Devs
+ * Copyright (c) 2022 - 2025, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -29,6 +30,7 @@ import {Cn} from "../model/Cn";
 import {WalletWatchdog} from "../model/WalletWatchdog";
 import {WalletRepository} from "../model/WalletRepository";
 import {InterestCalculator} from "../model/Interest";
+import {Translations, tickerStore} from "../model/Translations";
 
 let wallet: Wallet = DependencyInjectorInstance().getInstance(Wallet.name, 'default', false);
 let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
@@ -56,7 +58,7 @@ class DepositsView extends DestructableView {
   @VueVar(0) futureInterestUnlocked !: number;
   @VueVar('') earliestUnlockableDate !: string;
   @VueVar(false) earliestUnlockableIsPast !: boolean;
-  @VueVar(0) ticker !: string;
+  @VueVar('') ticker !: string;
 
   readonly refreshInterval = 500;
 	private intervalRefresh : NodeJS.Timeout;
@@ -75,6 +77,8 @@ class DepositsView extends DestructableView {
   @VueVar(1) depositTerm !: number;
   @VueVar(new JSBigInt((<any>window).config.coinFee)) coinFee !: typeof JSBigInt;
   @VueVar() showCreateDepositModal !: () => void;
+
+  private unsubscribeTicker: (() => void) | null = null;
 
   constructor(container : string) {
 		super(container);
@@ -324,9 +328,23 @@ class DepositsView extends DestructableView {
 		}, 3 * 1000);
 
 		this.refresh();
+
+    // Initialize ticker from store
+    tickerStore.initialize().then(() => {
+      this.ticker = tickerStore.currentTicker;
+      
+      // Subscribe to ticker changes
+      this.unsubscribeTicker = tickerStore.subscribe(() => {
+        this.ticker = tickerStore.currentTicker;
+      });
+    });
 	}
 
 	destruct = (): Promise<void> => {
+		// Cleanup ticker subscription
+		if (this.unsubscribeTicker) {
+			this.unsubscribeTicker();
+		}
 		clearInterval(this.intervalRefresh);
 		return super.destruct();
 	}

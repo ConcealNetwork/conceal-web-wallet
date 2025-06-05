@@ -17,6 +17,61 @@
 
 import {Storage} from "./Storage";
 
+
+// Ticker store class to manage ticker state
+export class TickerStore {
+	private static instance: TickerStore;
+	private _useShortTicker: boolean = false;
+	private listeners: Set<(useShortTicker: boolean) => void> = new Set();
+
+	private constructor() {
+		// Private constructor for singleton
+	}
+
+	static getInstance(): TickerStore {
+		if (!TickerStore.instance) {
+			TickerStore.instance = new TickerStore();
+		}
+		return TickerStore.instance;
+	}
+
+	// Initialize the store
+	async initialize(): Promise<void> {
+		this._useShortTicker = await Storage.getItem('useShortTicker', false);
+	}
+
+	// Get current ticker preference
+	get useShortTicker(): boolean {
+		return this._useShortTicker;
+	}
+
+	// Get current ticker symbol
+	get currentTicker(): string {
+		return this._useShortTicker ? config.coinSymbolShort : config.coinSymbol;
+	}
+
+	// Set ticker preference and notify listeners
+	async setTickerPreference(useShortTicker: boolean): Promise<void> {
+		this._useShortTicker = useShortTicker;
+		await Storage.setItem('useShortTicker', useShortTicker);
+		this.notifyListeners();
+	}
+
+	// Subscribe to ticker changes
+	subscribe(listener: (useShortTicker: boolean) => void): () => void {
+		this.listeners.add(listener);
+		// Return unsubscribe function
+		return () => this.listeners.delete(listener);
+	}
+
+	private notifyListeners(): void {
+		this.listeners.forEach(listener => listener(this._useShortTicker));
+	}
+}
+
+// Export singleton instance
+export const tickerStore = TickerStore.getInstance();
+
 export class Translations{
 
 	static getBrowserLang() : string{
@@ -31,6 +86,18 @@ export class Translations{
 
 	static setBrowserLang(lang : string){
 		Storage.setItem('user-lang', lang);
+	}
+
+	static getTickerPreference(): Promise<boolean> {
+		return tickerStore.initialize().then(() => tickerStore.useShortTicker);
+	}
+
+	static setTickerPreference(useShortTicker: boolean) {
+		return tickerStore.setTickerPreference(useShortTicker);
+	}
+
+	static getCurrentTicker(): string {
+		return tickerStore.currentTicker;
 	}
 
 	static storedTranslations : any = {};

@@ -59,7 +59,11 @@
 		  "label": "Optimisation",
 		  "subtitle": "Votre portefeuille doit être optimisé",
 		  "button": "Optimiser maintenant",
-		  "loadingText": "Optimisation en cours, veuillez patienter..."
+		  "loadingText": "Optimisation en cours, veuillez patienter...",
+		  "success": "Transfert envoyé avec succès!",
+		  "error": "Une erreur est survenue.",
+		  "errorInfo": "Optimisation annulée",
+		  "confirmText": "OK"
 		}
 	  },
 	  "bottom": {
@@ -525,6 +529,12 @@
 		  },
 		  "nodeUrl": {
 			"label": "Node URL"
+		  },
+		  "ticker": {
+			"label": "Symbole",
+			"full": "Symbole Complet",
+			"short": "Symbole Court",
+			"preview": "Aperçu"
 		  }
 		},
 		"changePasswordButton": "Changer le mot de passe de mon portefeuille",

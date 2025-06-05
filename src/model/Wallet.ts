@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -24,6 +24,7 @@ import {Observable} from "../lib/numbersLab/Observable";
 import {Cn, CnNativeBride, CnTransactions} from "./Cn";
 import {Constants} from "./Constants";
 import {MathUtil} from "./MathUtil";
+import { Currency } from "./Currency";
 
 type RawOutForTx = {
 	keyImage: string,
@@ -267,12 +268,15 @@ export class Wallet extends Observable {
 
       if (!exist || replace) {
         if (!exist) {
+          
           this.keyLookupMap.set(transaction.txPubKey, transaction);
           this.txLookupMap.set(transaction.hash, transaction);
           this.transactions.push(transaction);
         } else {
           for(let tr = 0; tr < this.transactions.length; ++tr) {
             if(this.transactions[tr].txPubKey === transaction.txPubKey) {
+              // Preserve fusion flag when replacing
+              transaction.fusion = this.transactions[tr].fusion;
               this.keyLookupMap.set(transaction.txPubKey, transaction);
               this.txLookupMap.set(transaction.hash, transaction);
               this.transactions[tr] = transaction;
@@ -280,9 +284,11 @@ export class Wallet extends Observable {
           }
         }
 
-        // remove from unconfirmed
+        // remove from unconfirmed and preserve fusion flag
         let existMem = this.findMemWithTxPubKey(transaction.txPubKey);
         if (existMem) {
+          // Preserve fusion flag from mempool
+          transaction.fusion = existMem.fusion;
           let trIndex = this.txsMem.indexOf(existMem);
           if(trIndex != -1) {
             this.txsMem.splice(trIndex, 1);
@@ -452,6 +458,13 @@ export class Wallet extends Observable {
 
 	addTxPrivateKeyWithTxHash = (txHash : string, txPrivKey : string): void => {
 		this.txPrivateKeys[txHash] = txPrivKey;
+    this.signalChanged();
+	}
+
+  addTxPrivateKeyWithTxHashAndFusion = (txHash : string, txPrivKey : string, fusion : boolean): void => {
+		this.txPrivateKeys[txHash] = txPrivKey;
+    const tx = this.transactions.find(tx => tx.hash === txHash);
+    if (tx) tx.fusion = fusion;
     this.signalChanged();
 	}
 
@@ -719,142 +732,288 @@ export class Wallet extends Observable {
 		}
 	}
 
-  optimizationNeeded = (blockchainHeight: number, threshhold: typeof JSBigInt): IOptimizeInfo => {
+/**
+ * Estimates the fusion readiness of the wallet.
+ * @param threshold The threshold amount for fusion.
+ * @param blockchainHeight The current blockchain height.
+ * @returns { unspentOutsCount: number, fusionReadyCount: number }
+ */
+  estimateFusionReadyness = (
+    threshold: number,
+    blockchainHeight: number
+  ): { unspentOutsCount: number; fusionReadyCount: number } => {
+    // Number of buckets: 20 (uint64_t has 19 digits + 1)
+    const NUM_BUCKETS = 20;
+    const bucketSizes = new Array<number>(NUM_BUCKETS).fill(0);
+
+    // Use unspent outputs only
     let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(this, blockchainHeight);
-    let counter: number = 0;    
+    let unspentOutsCount = unspentOuts.length;
 
-    // first sort the outs in ascending order
-    unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
-    logDebugMsg("unspentOuts", unspentOuts.length);
-
-    for (let i = 0; i < unspentOuts.length; i++) {
-      let amount = new JSBigInt(unspentOuts[i].amount);
-      if ((amount.compare(threshhold) < 0) && (counter < config.optimizeOutputs)) {
-        counter++;
-      } else {
-        break;
+    for (const out of unspentOuts) {
+      const result = Currency.isAmountApplicableInFusionTransactionInput(
+        out.amount,
+        threshold,
+        blockchainHeight
+      );
+      if (result.applicable && typeof result.amountPowerOfTen === 'number') {
+        if (result.amountPowerOfTen < NUM_BUCKETS) {
+          bucketSizes[result.amountPowerOfTen]++;
+        }
       }
-    }  
+    }
+
+    let fusionReadyCount = 0;
+    for (const bucketSize of bucketSizes) {
+      if (bucketSize >= config.optimizeOutputs) {
+        fusionReadyCount += bucketSize;
+      }
+    }
 
     return {
-      numOutputs: unspentOuts.length,
-      isNeeded: counter >= config.optimizeOutputs 
-    }
+      unspentOutsCount,
+      fusionReadyCount,
+    };
   }
 
-  optimize = (blockchainHeight: number, threshhold: number, blockchainExplorer: BlockchainExplorer, obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>) => {
-		return new Promise<number>((resolve, reject) => {
-			let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(this, blockchainHeight);
-      let stillData = unspentOuts.length >= config.optimizeOutputs;
-			let neededFee = new JSBigInt((<any>window).config.coinFee);
-      let iteration = 0;
+ 
 
-      //selecting outputs to fit the desired amount (totalAmount);
-      function pop_random_value(list: any[]) {
-        if (list.length === 0) {
-          return null;
+  pickRandomFusionInputs = (
+    threshold: number, 
+    blockchainHeight: number,
+    minInputCount: number = Currency.fusionTxMinInputCount,
+    maxInputCount: number
+  ): RawOutForTx[] => {
+    const NUM_BUCKETS = 20;
+    const bucketSizes = new Array<number>(NUM_BUCKETS).fill(0);
+
+    // Use unspent outputs only
+    let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(this, blockchainHeight);
+    let allFusionReadyOuts: RawOutForTx[] = [];
+    
+    // First pass: collect all fusion-ready outputs and count bucket sizes
+    for (let out of unspentOuts) {
+      let result = Currency.isAmountApplicableInFusionTransactionInput(out.amount, threshold, blockchainHeight);
+      if(result.applicable) {
+        allFusionReadyOuts.push(out);
+        const powerOfTen = result.amountPowerOfTen || 0;
+        if (powerOfTen < NUM_BUCKETS) {
+          bucketSizes[powerOfTen]++;
         }
-        let idx = Math.floor(MathUtil.randomFloat() * list.length);
-        let val = list[idx];
-        list.splice(idx, 1);
-        return val;
+      }
+    }
+
+    // Create and shuffle bucket numbers
+    let bucketNumbers = Array.from({length: NUM_BUCKETS}, (_, i) => i);
+    const bucketGenerator = new ShuffleGenerator(NUM_BUCKETS);
+    let shuffledBucketNumbers: number[] = [];
+    for (let i = 0; i < NUM_BUCKETS; i++) {
+      shuffledBucketNumbers.push(bucketNumbers[bucketGenerator.next()]);
+    }
+
+    // Find first bucket with enough inputs
+    let selectedBucket = shuffledBucketNumbers.find(bucket => bucketSizes[bucket] >= minInputCount);
+    if (selectedBucket === undefined) {
+      return [];
+    }
+
+    // Calculate bounds for selected bucket
+    let lowerBound = 1;
+    for (let i = 0; i < selectedBucket; ++i) {
+      lowerBound *= 10;
+    }
+    let upperBound = selectedBucket === NUM_BUCKETS - 1 ? Number.MAX_SAFE_INTEGER : lowerBound * 10;
+
+    // Select outputs within bounds
+    let selectedOuts = allFusionReadyOuts.filter(out => 
+      out.amount >= lowerBound && out.amount < upperBound
+    );
+    // Ensure we have enough outputs for fusion
+    if (selectedOuts.length < minInputCount) {
+      return [];
+    }
+    // Sort by amount
+    selectedOuts.sort((a, b) => a.amount - b.amount);
+
+    // If we have more outputs than maxInputCount, randomly select maxInputCount outputs
+    if (selectedOuts.length > maxInputCount) {
+      const generator = new ShuffleGenerator(selectedOuts.length);
+      let trimmedSelectedOuts: RawOutForTx[] = [];
+      for (let i = 0; i < maxInputCount; ++i) {
+        trimmedSelectedOuts.push(selectedOuts[generator.next()]);
+      }
+      trimmedSelectedOuts.sort((a, b) => a.amount - b.amount);
+      return trimmedSelectedOuts;
+    }
+
+    return selectedOuts;
+  }
+
+  optimizationNeeded = (blockchainHeight: number, threshold: number): IOptimizeInfo => {
+    let unspentOuts: RawOutForTx[] = TransactionsExplorer.formatWalletOutsForTx(this, blockchainHeight);
+    let unspentOutsCount = unspentOuts.length;
+    let isNeeded = false;
+      if (unspentOutsCount < config.optimizeOutputs) {
+        return {
+          numOutputs: unspentOutsCount,
+          isNeeded: false
+        }
+      };
+      let balance = this.availableAmount(blockchainHeight);
+      //threshold = config.optimizeThreshold;
+      let fusionReady = false;
+      while (threshold <= balance && !fusionReady) {  
+        let estimation = this.estimateFusionReadyness(threshold, blockchainHeight);
+        if (estimation.fusionReadyCount > (config.optimizeOutputs / 2)) {
+          fusionReady = true;
+          break;
+        } else {
+          threshold = 10 * threshold;
+        }
+      }
+      if (fusionReady) {
+        isNeeded = true;
+      } else {
+        logDebugMsg("Nothing to optimize, unspentOutsCount", unspentOutsCount);
+      }
+      return {
+        numOutputs: unspentOutsCount,
+        isNeeded: isNeeded
+      }
+  }
+
+
+createFusionTransaction = (
+  blockchainHeight: number,
+  threshold: number,
+  blockchainExplorer: BlockchainExplorer, 
+  obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>
+) => { 
+  return new Promise<number>(async (resolve, reject) => {
+    try {
+      let MAX_FUSION_OUTPUTS = config.maxFusionOutputs;
+      let fusionThreshold = config.dustThreshold;
+      let neededFee = config.minimumFee_V2;
+      if (threshold <= fusionThreshold) {
+        throw new Error("Threshold is too low");
+      }
+      const destinationAddress = this.getPublicAddress();
+      if (destinationAddress === '') {  
+        throw new Error("Destination address is not set");
+      }
+      let estimateFusionInputsCount = Currency.getApproximateMaximumInputCount(Currency.fusionTxMaxSize, MAX_FUSION_OUTPUTS, config.defaultMixin);
+      if (estimateFusionInputsCount < Currency.fusionTxMinInputCount) {
+        throw new Error("Mixin count is too big");
+      }
+      let fusionInputs = this.pickRandomFusionInputs(threshold, blockchainHeight, Currency.fusionTxMinInputCount, estimateFusionInputsCount);
+      if (fusionInputs.length < Currency.fusionTxMinInputCount) {
+        throw new Error("Nothing to optimize");
       }
 
-      (async () => {
-        // first sort the outs in ascending order only once
-        unspentOuts.sort((a,b) => (a.amount > b.amount) ? 1 : ((b.amount > a.amount) ? -1 : 0));
-        let processedOuts = 0;
 
-        while ((stillData && ((iteration * config.optimizeOutputs) < unspentOuts.length)) && (iteration < 5)) {
-          let dsts: { address: string, amount: number }[] = [];
-          let totalAmountWithoutFee = new JSBigInt(0);
-          let counter = 0;
-          
-          for (let i = iteration * config.optimizeOutputs; i < unspentOuts.length; i++) {
-            if ((unspentOuts[i].amount < (threshhold * Math.pow(10, config.coinUnitPlaces))) && (counter < config.optimizeOutputs)) {
-              processedOuts++;
-              counter++;
-            } else {
-              stillData = counter >= config.optimizeOutputs;
-              break;
-            }
-          }
-          //console.log('Found', counter, 'outputs to process in this iteration');
+      let fusionTransaction: any = null;
+      let transactionSize = 0;
+      let round = 0;
 
-          if (stillData) {
-            let usingOuts: RawOutForTx[] = [];
-            let usingOuts_amount = new JSBigInt(0);
-            let unusedOuts = unspentOuts.slice(iteration * config.optimizeOutputs, (iteration * config.optimizeOutputs) + counter);
-            
-            // Sort outputs by amount in ascending order to prioritize small outputs
-            unusedOuts.sort((a, b) => a.amount - b.amount);
-
-            for (let i = 0; i < unusedOuts.length; i++) {
-              totalAmountWithoutFee = totalAmountWithoutFee.add(unusedOuts[i].amount);  // confusing naming of variable
-            }  
-            //console.log('Total amount without fee:', totalAmountWithoutFee.toString());
-        
-            if (totalAmountWithoutFee < this.availableAmount(blockchainHeight)) {
-              // totalAmountWithoutFee already includes the fee, so we don't need to add it again
-              let totalAmount = totalAmountWithoutFee;
-              //console.log('Total amount (including fee):', totalAmount.toString());
-
-              if (totalAmount > 0) {
-                dsts.push({
-                  address: this.getPublicAddress(),
-                  amount: new JSBigInt(totalAmount)
-                });
-
-                while ((usingOuts_amount.compare(totalAmount) < 0) && (unusedOuts.length > 0)) {
-                  let out = pop_random_value(unusedOuts);
-                  if (out === null) break;
-                  
-                  // Double check this output hasn't been used
-                  if (usingOuts.some(usedOut => usedOut.keyImage === out.keyImage)) {
-                    console.log('Warning: Attempted to use same output twice, skipping');
-                    continue;
-                  }
-                  
-                  usingOuts.push(out);
-                  usingOuts_amount = usingOuts_amount.add(out.amount);
-                  console.log('Added output:', {
-                    amount: out.amount,
-                    currentTotal: usingOuts_amount.toString(),
-                    targetAmount: totalAmount.toString(),
-                    remaining: unusedOuts.length
-                  });
-                }
-                                
-                let amounts: number[] = [];
-                for (let l = 0; l < usingOuts.length; l++) {
-                  amounts.push(usingOuts[l].amount);
-                }      
-
-                let nbOutsNeeded: number = config.defaultMixin + 1;
-                let lotsMixOuts: any[] = await obtainMixOutsCallback(amounts, nbOutsNeeded);
-
-                let data = await TransactionsExplorer.createRawTx(dsts, this, false, usingOuts, false, lotsMixOuts, config.defaultMixin, neededFee, '', '', 0, 'regular', 0);
-                await blockchainExplorer.sendRawTx(data.raw.raw);
-                this.addTxPrivateKeyWithTxHash(data.raw.hash, data.raw.prvkey);
-                logDebugMsg('optimization done', processedOuts);
-                iteration++;
-              }
-            } else {
-              stillData = false;
-            }
-          }
+      do {
+        if (round !== 0) {
+          fusionInputs.pop();
         }
 
-        // we modifed the wallet, mark it
-        this.signalChanged();
+        // Calculate input amounts array for this iteration
+        let inputAmounts = fusionInputs.map(input => input.amount);
+        
+        // Get mixin outputs for current inputs (with +1 for the current input)
+        let mixinResult: RawDaemon_Out[] = [];
+        if (config.defaultMixin !== 0) {
+          mixinResult = await obtainMixOutsCallback(inputAmounts, config.defaultMixin + 1);
+        }
 
-        // finished here
-        resolve(processedOuts);
-      })().catch(err => {
-        reject(err);
+        // Calculate total input amount (equivalent to std::accumulate)
+        let inputsAmount = fusionInputs.reduce((sum, input) => sum + input.amount, 0);
+
+        // Create destination (equivalent to decomposeFusionOutputs)
+        let dsts = [{
+          address: destinationAddress,
+          amount: (inputsAmount - neededFee)
+        }];
+
+        let data = await TransactionsExplorer.createRawTx(
+          dsts,
+          this,
+          false,
+          fusionInputs,
+          false,
+          mixinResult,
+          config.defaultMixin,
+          neededFee,
+          '',
+          '',
+          0,
+          'regular',
+          0
+        );
+
+        transactionSize = Currency.getApproximateTransactionSize(
+          data.signed.vin.length,
+            data.signed.vout.length,
+            config.defaultMixin
+        );
+        fusionTransaction = data;
+
+        round++;
+
+      } while (transactionSize > Currency.fusionTxMaxSize && fusionInputs.length >= Currency.fusionTxMinInputCount);
+      
+      // Final validation
+      if (fusionInputs.length < Currency.fusionTxMinInputCount) {
+        throw new Error("Minimum input count not met");
+      }
+      if (!fusionTransaction || fusionTransaction.signed.vout.length === 0) {
+        throw new Error("Transaction has no outputs");
+      }
+      if (fusionTransaction.signed.vout.length > MAX_FUSION_OUTPUTS) {
+        throw new Error("Maximum output count exceeded");
+      }
+      if (fusionTransaction.signed.vout.length > MAX_FUSION_OUTPUTS) {
+        throw new Error("Maximum output count exceeded");
+      }
+      // Send transaction and add to mempool
+      await blockchainExplorer.sendRawTx(fusionTransaction.raw.raw)
+        .then(() => {
+          // Save the transaction private key
+          this.addTxPrivateKeyWithTxHashAndFusion(fusionTransaction.raw.hash, fusionTransaction.raw.prvkey, true);
+
+          return swal({
+            type: 'success',
+              title: i18n.t('global.optimize.success'),
+              confirmButtonText: i18n.t('global.optimize.confirmText')
+          });
+        })
+        .then(() => {
+          resolve(round);
+        })
+        .catch((error: Error) => {
+          reject(error);
+          return swal({
+            type: 'error',
+            title: i18n.t('global.optimize.error'),
+            text: error.message,
+            confirmButtonText: i18n.t('global.optimize.confirmText')
+          });
+        });
+    } catch (error: any) {
+      reject(error);
+      return swal({
+        type: 'info',
+        title: i18n.t('global.optimize.errorInfo'),
+        text: error.message,
+        confirmButtonText: i18n.t('global.optimize.confirmText')
       });
-    });
-  }
+    }
+  });
+}
+  
 
   clearTransactions = () => {
     this.txsMem = [];
@@ -873,4 +1032,31 @@ export class Wallet extends Observable {
     this.notify();
   }
 
+
+}
+ // Add this helper class for random number generation
+ class ShuffleGenerator {
+  private indices: number[];
+  private currentIndex: number;
+
+  constructor(size: number) {
+    this.indices = Array.from({length: size}, (_, i) => i);
+    this.currentIndex = size;
+    this.shuffle();
+  }
+
+  private shuffle() {
+    for (let i = this.indices.length - 1; i > 0; i--) {
+      const j = Math.floor(MathUtil.randomFloat() * (i + 1));
+      [this.indices[i], this.indices[j]] = [this.indices[j], this.indices[i]];
+    }
+  }
+
+  next(): number {
+    if (this.currentIndex === 0) {
+      this.shuffle();
+      this.currentIndex = this.indices.length;
+    }
+    return this.indices[--this.currentIndex];
+  }
 }

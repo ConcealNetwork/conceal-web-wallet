@@ -57,9 +57,13 @@
       },
       "optimize": {
         "label": "Optimization",
-        "subtitle": "Your wallet needs to be optimized",
+        "subtitle": "You might attempt to optimize your wallet",
         "button": "Optimize Now",
-        "loadingText": "Optimizing, please wait..."
+        "loadingText": "Optimizing, please wait...",
+        "success": "Fusion transaction submitted",
+        "error": "Error submitting fusion transaction",
+        "errorInfo": "Optimization aborted",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -525,6 +529,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Ticker Symbol",
+          "full": "Full Ticker",
+          "short": "Short Ticker",
+          "preview": "Preview"
         }
       },
       "changePasswordButton": "Change my wallet password",

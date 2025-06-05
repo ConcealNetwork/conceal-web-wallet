@@ -69,7 +69,7 @@
 			</div>
 		</div>
     
-		<div class="panel" :hidden="!optimizeIsNeeded || isWalletProcessing">
+		<div class="panel" v-if="optimizeIsNeeded && showOptimizePanel && !isWalletProcessing">
 			<div class="body">
 				<div class="header-title">{{ $t("global.optimize.label") }}</div>
 				<div class="subtitle">{{ $t("global.optimize.subtitle") }} ({{optimizeOutputs}})</div>
@@ -98,8 +98,13 @@
                     					<i v-if="transaction.isDeposit" class="fa fa-bank tx_deposit" aria-hidden="true"></i>
 										<i v-else-if="transaction.isWithdrawal" class="fa fa-university tx_withdrawal" aria-hidden="true"></i>
 										<i v-else-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
+										<i v-else-if="transaction.fusion" class="fa fa-gear tx_direction_out fusion-gear" aria-hidden="true"></i>
 										<i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
-									</td><!--LEfT-->
+									</td>
+									<td class="direction" >
+										<i v-if="transaction.blockHeight <= 0 " class="fa fa-spinner fa-spin tx_deposit_pending" aria-hidden="true"></i>
+									</td>
+									<!--LEfT-->
 									<td class="timestamp" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp*1000), 'long')}}</td>
 									<td class="timestamp" v-else="">{{ $t("accountPage.historyBlock.pendingTxStatus") }}...</td>
 									<td :class="'amount '+(transaction.getAmount() > 0 ? 'tx_direction_in' : 'tx_direction_out')" >{{ transaction.getAmount() / currencyDivider }}</td>

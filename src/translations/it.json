@@ -59,7 +59,11 @@
         "label": "Ottimizzazione",
         "subtitle": "Il tuo portafoglio ha bisogno di essere ottimizzato",
         "button": "Ottimizza ora",
-        "loadingText": "Ottimizzazione in corso, attendere..."
+        "loadingText": "Ottimizzazione in corso, attendere...",
+        "success": "Transazione di fusione inviata",
+        "error": "Errore durante l'invio della transazione di fusione",
+        "errorInfo": "Ottimizzazione annullata",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -231,7 +235,7 @@
     "sendPage": {
       "title": "Invia CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Il tuo portafoglio è in fase di sincronizzazione.... Quando sarà completamente sincronizzato, potrai inviare fondi."
       },
       "sendBlock": {
         "address": {
@@ -310,7 +314,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Il tuo portafoglio è in fase di sincronizzazione.... Quando sarà completamente sincronizzato, potrai inviare messaggi."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -382,32 +386,73 @@
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Depositi",
+      "unlockDate": "Data di sblocco",
+      "interest": "Interesse",
+      "deposit": "Deposito",
+      "lockHeight": "Altezza di blocco",
+      "unlockHeight": "Altezza di sblocco",
+      "depositDate": "Data di deposito",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "Il tuo portafoglio è in fase di sincronizzazione.... Quando sarà completamente sincronizzato, potrai visualizzare i depositi."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Depositi",
+        "send": "Crea"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Lista depositi"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Conferma deposito",
+        "message": "Inserisci la tua password per confermare la creazione di un deposito di {amount} CCX per {term} mesi?",
+        "confirm": "Crea deposito",
+        "cancel": "Annulla",
+        "passwordRequired": "Password del portafoglio richiesta"
+      },
+      "createDeposit": {
+        "title": "Crea nuovo deposito",
+        "amount": "Importo da deposito",
+        "term": "Tempo di blocco (in mesi)",
+        "termError": "Inserisci un numero intero tra 1 e 12 mesi",
+        "confirm": "Crea deposito",
+        "cancel": "Annulla",
+        "createSuccess": "Deposito inviato al blockchain",
+        "createPending": "Il tuo deposito è in fase di elaborazione",
+        "createError": "Errore nella creazione del deposito",
+        "withdrawSuccess": "Prelevato inviato al blockchain",
+        "withdrawPending": "Il tuo prelevato è in fase di elaborazione",
+        "withdrawError": "Errore nel prelevato del deposito",
+        "amountError": "Importo non valido",
+        "amountMustBePositive": "Importo deve essere positivo",
+        "termMustBeValid": "Tempo deve essere tra 1 e 12 mesi",
+        "insufficientFunds": "Fondi insufficienti",
+        "insufficientFundsMessage": "Non hai abbastanza fondi per creare questo deposito",
+        "maxAmount": "Importo massimo di deposito: {amount} CCX",
+        "rewardAtTerm": "Ricompensa al termine: {reward} CCX"
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
-        "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "title": "Dettagli depositi",
+        "txHash": "Transazione di creazione",
+        "spendingTx": "Transazione di prelevato",
+        "status": "Stato",
+        "amount": "Importo",
+        "term": "Tempo",
+        "creationTime": "Tempo di creazione",
+        "spendingTime": "Tempo di prelevato",
+        "spendingHeight": "Altezza di prelevato",
+        "creationHeight": "Altezza di creazione",
+        "unlockHeight": "Altezza di sblocco",
+        "interest": "Interesse"
+      },
+      "recap": {
+        "title": "Depositi Recap",
+        "totalLifetimeDeposit": "Totale deposito",
+        "totalLifetimeInterest": "Totale interesse",
+        "totalCashedOutInterest": "Totale interesse prelevato",
+        "futureInterestLocked": "Interesse futuro su depositi bloccati",
+        "futureInterestUnlocked": "Interesse futuro su depositi prelevabili",
+        "earliestWithdrawable": "Prelevabile più presto"
       }
     },
     "receivePage": {

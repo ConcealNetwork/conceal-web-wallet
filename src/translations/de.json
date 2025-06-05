@@ -59,7 +59,11 @@
         "label": "Optimierung",
         "subtitle": "Deine Wallet muss optimiert werden",
         "button": "Jetzt optimieren",
-        "loadingText": "Optimiere, bitte warten..."
+        "loadingText": "Optimiere, bitte warten...",
+        "success": "Fusion Transaktion eingereicht",
+        "error": "Fehler beim Einreichen der Fusion Transaktion",
+        "errorInfo": "Optimierung abgebrochen",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -525,6 +529,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Ticker Symbol",
+          "full": "Vollständiges Ticker Symbol",
+          "short": "Kurzes Ticker Symbol",
+          "preview": "Vorschau"
         }
       },
       "changePasswordButton": "Ändere mein Wallet Passwort",

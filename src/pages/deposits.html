@@ -27,15 +27,15 @@
               <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.totalLifetimeDeposit') }}:</div>
               <div class="walletAmount amount_cell">{{ totalLifetimeDeposit / currencyDivider }} {{ ticker }}</div>
             </div>
-            <div class="wallet_amount amount_total">
+            <div class="wallet_amount amount_total" v-if="totalCashedOutInterest > 0">
               <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.totalCashedOutInterest') }}:</div>
               <div class="walletAmount amount_cell">{{ totalCashedOutInterest / currencyDivider }} {{ ticker }}</div>
             </div>
-            <div class="wallet_amount amount_pending">
+            <div class="wallet_amount amount_pending" v-if="futureInterestLocked > 0">
               <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.futureInterestLocked') }}:</div>
               <div class="walletAmount amount_cell">{{ futureInterestLocked / currencyDivider }} {{ ticker }}</div>
             </div>
-            <div class="wallet_amount amount_pending">
+            <div class="wallet_amount amount_pending" v-if="futureInterestUnlocked > 0">
               <div class="walletAmountLabel amount_cell">{{ $t('depositsPage.recap.futureInterestUnlocked') }}:</div>
               <div class="walletAmount amount_cell">{{ futureInterestUnlocked / currencyDivider }} {{ ticker }}</div>
             </div>

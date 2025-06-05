@@ -59,7 +59,11 @@
         "label": "Optimalizálás",
         "subtitle": "A tárca optimalizálásra szorul",
         "button": "Optimalizálás most",
-        "loadingText": "Optimalizálás folyamatban, kis türelmet..."
+        "loadingText": "Optimalizálás folyamatban, kis türelmet...",
+        "success": "Optimalizálás sikeres",
+        "error": "Optimalizálás sikertelen",
+        "errorInfo": "Optimalizálás sikertelen",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -231,7 +235,7 @@
     "sendPage": {
       "title": "CCX küldése",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "A tárca szinkronizálása folyamatban.... Amikor teljesen szinkronizálva van, küldhet pénzt."
       },
       "sendBlock": {
         "address": {
@@ -310,7 +314,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "A tárca szinkronizálása folyamatban.... Amikor teljesen szinkronizálva van, küldhet üzenetet."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -382,32 +386,73 @@
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Deposztok",
+      "unlockDate": "Befektetés lekötési időpontja",
+      "interest": "Kamat",
+      "deposit": "Deposit",
+      "lockHeight": "Befektetés blokklánchossza",
+      "unlockHeight": "Befektetés lekötési blokklánchossza",
+      "depositDate": "Befektetés dátuma",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "A tárca szinkronizálása.... Amikor teljesen szinkronizálva van, láthatod a befektetéseket."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Befektetések",
+        "send": "Létrehozás"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Befektetések listája"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Befektetés megerősítése",
+        "message": "Írd be a jelszavadat a befektetés létrehozásának megerősítéséhez {amount} CCX {term} hónapra?",
+        "confirm": "Befektetés létrehozása",
+        "cancel": "Mégsem",
+        "passwordRequired": "A tárcajelszó megadása szükséges"
+      },
+      "createDeposit": {
+        "title": "Create New Deposit",
+        "amount": "Befektetendő összeg",
+        "term": "Befektetés időtartama (hónapban)",
+        "termError": "Kérlek, adj meg egy egész számot 1 és 12 hónap között",
+        "confirm": "Befektetés létrehozása",
+        "cancel": "Mégsem",
+        "createSuccess": "Befektetés elküldve a blokkláncra",
+        "createPending": "A befektetésedet feldolgozzák",
+        "createError": "Befektetés létrehozási hiba",
+        "withdrawSuccess": "Befektetés kifizetése elküldve a blokkláncra",
+        "withdrawPending": "A kifizetésedet feldolgozzák",
+        "withdrawError": "Befektetés kifizetési hiba",
+        "amountError": "Érvénytelen összeg",
+        "amountMustBePositive": "Az összegnek pozitívnak kell lennie",
+        "termMustBeValid": "A befektetés időtartama 1 és 12 hónap között kell legyen",
+        "insufficientFunds": "Nincs elegendő pénz",
+        "insufficientFundsMessage": "Nincs elegendő pénz a befektetés létrehozásához",
+        "maxAmount": "Maximum befektetés összege: {amount} CCX",
+        "rewardAtTerm": "Befektetés jutalma: {reward} CCX"
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
-        "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "title": "Befektetés részletei",
+        "txHash": "Befektetés tranzakciója",
+        "spendingTx": "Kifizetés tranzakciója",
+        "status": "Állapot",
+        "amount": "Összeg",
+        "term": "Időtartam",
+        "creationTime": "Létrehozás ideje",
+        "spendingTime": "Kifizetés ideje",
+        "spendingHeight": "Kifizetés blokklánchossza",
+        "creationHeight": "Befektetés blokklánchossza",
+        "unlockHeight": "Befektetés lekötési blokklánchossza",
+        "interest": "Kamat"
+      },
+      "recap": {
+        "title": "Befektetések összefoglalója",
+        "totalLifetimeDeposit": "Összes életbeli befektetés",
+        "totalLifetimeInterest": "Összes életbeli kamat",
+        "totalCashedOutInterest": "Összes kifizetett kamat",
+        "futureInterestLocked": "Jövőbeli kamat a lekötött befektetéseken",
+        "futureInterestUnlocked": "Jövőbeli kamat a kifizethető befektetéseken",
+        "earliestWithdrawable": "Legkorábbi kifizethető"
       }
     },
     "receivePage": {

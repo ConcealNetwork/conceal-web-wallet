@@ -59,7 +59,11 @@
         "label": "Optymalizacja",
         "subtitle": "Twój portfel wymaga optymalizacji",
         "button": "Optymalizuj teraz",
-        "loadingText": "Optymalizowanie, proszę czekać..."
+        "loadingText": "Optymalizowanie, proszę czekać...",
+        "success": "Transakcja optymalizacji wysłana",
+        "error": "Wystąpił błąd podczas wysyłania transakcji optymalizacji",
+        "errorInfo": "Optymalizacja anulowana",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -231,7 +235,7 @@
     "sendPage": {
       "title": "Wyślij CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Portfel jest synchronizowany.... Gdy będzie pełnie synchronizowany, będziesz mógł wysyłać fundusze."
       },
       "sendBlock": {
         "address": {
@@ -310,7 +314,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Portfel jest synchronizowany.... Gdy będzie pełnie synchronizowany, będziesz mógł wysyłać wiadomości."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -382,32 +386,76 @@
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Depozyty",
+      "unlockDate": "Data odblokowania",
+      "interest": "Procent",
+      "deposit": "Depozyt",
+      "lockHeight": "Wysokość blokowania",
+      "unlockHeight": "Wysokość odblokowania",
+      "depositDate": "Data depozytu",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "Portfel jest synchronizowany.... Gdy będzie pełnie synchronizowany, będziesz mógł zobaczyć depozyty."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Depozyty",
+        "send": "Utwórz"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Lista depozytów"
       },
       "createBlock": {
 
       },
+      "confirmDeposit": {
+        "title": "Potwierdź depozyt",
+        "message": "Wprowadź swoje hasło, aby potwierdzić utworzenie depozytu {amount} CCX na {term} miesięcy?",
+        "confirm": "Utwórz depozyt",
+        "cancel": "Anuluj",
+        "passwordRequired": "Hasło portfela jest wymagane"
+      },
+      "createDeposit": {
+        "title": "Utwórz nowy depozyt",
+        "amount": "Kwota do depozytu",
+        "term": "Czas blokowania (w miesiącach)",
+        "termError": "Proszę wprowadzić liczbę całkowitą między 1 a 12 miesięcy",
+        "confirm": "Utwórz depozyt",
+        "cancel": "Anuluj",
+        "createSuccess": "Depozyt został wysłany do blockchain",
+        "createPending": "Twój depozyt jest przetwarzany",
+        "createError": "Błąd podczas tworzenia depozytu",
+        "withdrawSuccess": "Wypłata została wysłana do blockchain",
+        "withdrawPending": "Twója wypłata jest przetwarzana",
+        "withdrawError": "Błąd podczas wypłaty depozytu",
+        "amountError": "Nieprawidłowa kwota",
+        "amountMustBePositive": "Kwota musi być dodatnia",
+        "termMustBeValid": "Czas musi być między 1 a 12 miesięcy",
+        "insufficientFunds": "Niewystarczające środki",
+        "insufficientFundsMessage": "Nie masz wystarczających środków, aby utworzyć ten depozyt",
+        "maxAmount": "Maksymalna kwota depozytu: {amount} CCX",
+        "rewardAtTerm": "Nagroda przy zakończeniu: {reward} CCX"
+      },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
+        "title": "Szczegóły depozytu",
+        "txHash": "Transakcja utworzenia",
+        "spendingTx": "Transakcja wypłaty",
         "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "amount": "Kwota",
+        "term": "Czas",
+        "creationTime": "Czas utworzenia",
+        "spendingTime": "Czas wypłaty",
+        "spendingHeight": "Wysokość wypłaty",
+        "creationHeight": "Wysokość utworzenia",
+        "unlockHeight": "Wysokość odblokowania",
+        "interest": "Procent"
+      },
+      "recap": {
+        "title": "Podsumowanie depozytów",
+        "totalLifetimeDeposit": "Łączna kwota depozytów",
+        "totalLifetimeInterest": "Łączna kwota odsetek",
+        "totalCashedOutInterest": "Łączna kwota wypłat odsetek",
+        "futureInterestLocked": "Przyszłe odsetki na zablokowanych depozytach",
+        "futureInterestUnlocked": "Przyszłe odsetki na wypłacanych depozytach",
+        "earliestWithdrawable": "Najwcześniejsze wypłacalne"
       }
     },
     "receivePage": {

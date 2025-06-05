@@ -59,7 +59,11 @@
         "label": "بهینه سازی",
         "subtitle": "کیف پول شما باید بهینه سازی شود",
         "button": "هم اکنون بهینه سازی کنید",
-        "loadingText": "در حال بهینه سازی، لطفاً صبر کنید..."
+        "loadingText": "در حال بهینه سازی، لطفاً صبر کنید...",
+        "success": "تراکنش همگام سازی ارسال شد",
+        "error": "خطا در ارسال تراکنش همگام سازی",
+        "errorInfo": "بهینه سازی لغو شد",
+        "confirmText": "تایید"
       }
     },
     "bottom": {
@@ -233,7 +237,7 @@
     "sendPage": {
       "title": "ارسال کربو",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "کیف پول شما در حال همگام سازی است.... هنگامی که همگام شد، میتوانید پول ارسال کنید."
       },
       "sendBlock": {
         "address": {
@@ -312,7 +316,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "کیف پول شما در حال همگام سازی است.... هنگامی که همگام شد، میتوانید پول ارسال کنید."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -392,7 +396,7 @@
       "unlockHeight": "باز کردن",
       "depositDate": "سپردن",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "کیف پول شما در حال همگام سازی است.... هنگامی که همگام شد، میتوانید پول ارسال کنید."
       },
       "tabs": {
         "inbox": "Deposits",
@@ -525,6 +529,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "سیمبل",
+          "full": "سیمبل کامل",
+          "short": "سیمبل کوتاه",
+          "preview": "پیش نمایش"
         }
       },
       "changePasswordButton": "تغییر رمز عبور کیف پول",
