@@ -109,7 +109,15 @@
 									<td class="timestamp" v-else="">{{ $t("accountPage.historyBlock.pendingTxStatus") }}...</td>
 									<td :class="'amount '+(transaction.getAmount() > 0 ? 'tx_direction_in' : 'tx_direction_out')" >{{ transaction.getAmount() / currencyDivider }}</td>
 									<td class="moreInfo">
-										<i class="fa fa-search" aria-hidden="true" @click="moreInfoOnTx(transaction)"></i>
+										<i v-if="transaction.hasMessage() && !transaction.messageViewed" 
+                                           class="fa fa-envelope"
+                                           aria-hidden="true" 
+                                           @click="moreInfoOnTx(transaction)"></i>
+										<i v-else-if="transaction.hasMessage() && transaction.messageViewed"
+                                           class="fa fa-envelope-open"
+                                           aria-hidden="true" 
+                                           @click="moreInfoOnTx(transaction)"></i>
+										<i v-else class="fa fa-search" aria-hidden="true" @click="moreInfoOnTx(transaction)"></i>
 									</td>
 								</tr>
 								<tr v-if="transaction.paymentId !== ''">

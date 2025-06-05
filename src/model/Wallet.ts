@@ -268,7 +268,6 @@ export class Wallet extends Observable {
 
       if (!exist || replace) {
         if (!exist) {
-          
           this.keyLookupMap.set(transaction.txPubKey, transaction);
           this.txLookupMap.set(transaction.hash, transaction);
           this.transactions.push(transaction);
@@ -277,6 +276,8 @@ export class Wallet extends Observable {
             if(this.transactions[tr].txPubKey === transaction.txPubKey) {
               // Preserve fusion flag when replacing
               transaction.fusion = this.transactions[tr].fusion;
+              // Preserve messageViewed flag when replacing
+              transaction.messageViewed = this.transactions[tr].messageViewed || transaction.messageViewed;
               this.keyLookupMap.set(transaction.txPubKey, transaction);
               this.txLookupMap.set(transaction.hash, transaction);
               this.transactions[tr] = transaction;
@@ -289,6 +290,8 @@ export class Wallet extends Observable {
         if (existMem) {
           // Preserve fusion flag from mempool
           transaction.fusion = existMem.fusion;
+          // Preserve messageViewed flag from mempool
+          transaction.messageViewed = existMem.messageViewed || transaction.messageViewed;
           let trIndex = this.txsMem.indexOf(existMem);
           if(trIndex != -1) {
             this.txsMem.splice(trIndex, 1);

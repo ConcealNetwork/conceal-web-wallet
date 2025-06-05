@@ -209,37 +209,48 @@ class AccountView extends DestructableView{
 		let explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
 		let feesHtml = '';
 		if (transaction.fees > 0) {
-			feesHtml = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.feesOnTx')+`</span>:<span class="txDetailsValue">`+(transaction.fees / Math.pow(10, config.coinUnitPlaces))+`</a></span></div>`;
+			feesHtml = `<div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.feesOnTx')}</span>:<span class="txDetailsValue">${(transaction.fees / Math.pow(10, config.coinUnitPlaces))}</a></span></div>`;
     }
 		let paymentId = '';
 		if (transaction.paymentId) {
-			paymentId = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.paymentId')+`</span>:<span class="txDetailsValue">`+transaction.paymentId+`</a></span></div>`;
+			paymentId = `<div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.paymentId')}</span>:<span class="txDetailsValue">${transaction.paymentId}</a></span></div>`;
 		}
 
 		let txPrivKeyMessage = '';
 		let txPrivKey = wallet.findTxPrivateKeyWithHash(transaction.hash);
 		if (txPrivKey) {
-			txPrivKeyMessage = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.txPrivKey')+`</span>:<span class="txDetailsValue">`+txPrivKey+`</a></span></div>`;
+			txPrivKeyMessage = `<div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.txPrivKey')}</span>:<span class="txDetailsValue">${txPrivKey}</a></span></div>`;
 		}
     let messageText = '';
     if (transaction.message) {
-      messageText = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.message')+`</span>:<span class="txDetailsValue">` + transaction.message + `</span>`;
+      messageText = `<div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.message')}</span>:<div style="color: #e2e2e2; border: 1px solid #212529; border-radius: 4px; background-color: #343a40; padding: 8px; margin-top: 4px;"><span class="txDetailsValue">${transaction.message}</span></div></div>`;
+      // Set message as viewed and update the transaction in wallet
+      transaction.messageViewed = true;
+      wallet.addNew(transaction);
     }
 
-		swal({
-			title:i18n.t('accountPage.txDetails.title'),
-      customClass:'swal-wide',
-			html:`
-        <div class="tl" >
-          <div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.txHash')+`</span>:<span class="txDetailsValue"><a href="`+explorerUrlHash.replace('{ID}', transaction.hash)+`" target="_blank">`+transaction.hash+`</a></span></div>
-          `+paymentId+`
-          `+feesHtml+`
-          `+txPrivKeyMessage+`
-          <div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.blockHeight')+`</span>:<span class="txDetailsValue"><a href="`+explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)+`" target="_blank">`+transaction.blockHeight+`</a></span></div>
-          `+(transaction.fusion ? '<div><span class="txDetailsLabel">Fusion:</span><span class="txDetailsValue">true</span></div>' : '')+`
-          `+messageText+`          
-        </div>`
-		});
+    new Promise((resolve) => {
+      setTimeout(() => {
+        swal({
+          title:i18n.t('accountPage.txDetails.title'),
+          customClass:'swal-wide',
+          html:`
+            <div class="tl" >
+              <div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.txHash')}</span>:<span class="txDetailsValue"><a href="${explorerUrlHash.replace('{ID}', transaction.hash)}" target="_blank">${transaction.hash}</a></span></div>
+              ${paymentId}
+              ${feesHtml}
+              ${txPrivKeyMessage}
+              <div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.blockHeight')}</span>:<span class="txDetailsValue"><a href="${explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)}" target="_blank">${transaction.blockHeight}</a></span></div>
+              ${transaction.fusion ? '<div><span class="txDetailsLabel">Fusion:</span><span class="txDetailsValue">true</span></div>' : ''}
+              ${messageText}
+            </div>`
+        });
+        resolve(true);
+        // Force UI update after the modal is shown
+        this.refreshWallet(true);
+      }, 500);
+    });
+
 	}
 
 	refreshWallet = (forceRedraw: boolean = false) => {
