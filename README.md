@@ -20,17 +20,19 @@ If you find a potential security issue, please contact us via [Discord] (https:/
 - Network Stats
 
 # Contributors
+Maintainer:
+- [Acktarius](https://github.com/Acktarius) (current maintainer)
 Developers:
-- [Gnock](https://github.com/gnock) (main)
-- [Cryptochangements](https://github.com/cryptochangements34)
+- [Gnock](https://github.com/gnock) (author & main typescript codebase)
+- [Cryptochangements](https://github.com/cryptochangements34) (some improvements)
 - [DaveLong](https://github.com/DaveLong) (initial adaptation of PHP Api for Bytecoin based coins)
 - [Aiwe](https://github.com/aivve) (adapted for Bytecoin/CryptoNote from Monero codebase)
-- [Krypt0x](https://github.com/krypt0x) (fixes, enhancements and forking to CN-CCX)
+- [Krypt0x](https://github.com/krypt0x) (forking to CNv2 CCX, bug fixes and security patches)
 - [Taegus](https://github.com/taeguscromis) (fixes, improved sync speed, gui improvements)
 
 # Translations:
 - Chinese: [mainframer](https://github.com/mainframer), [Alex Nnian](https://github.com/nnian)
-- English: too many people
+- English: a lot of people
 - French: [gnock](https://github.com/gnock)
 - German: [F0sching](https://github.com/F0sching)
 - Greek: [GeraltOfTrivia](https://github.com/GeraltOfTrivia)
