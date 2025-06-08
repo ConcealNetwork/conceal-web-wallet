@@ -582,7 +582,8 @@
       "qrCodeBlock": {
         "title": "QR-kód",
         "startScanButton": "Beolvasás",
-        "importButton": "Importálás"
+        "importButton": "Importálás",
+        "scanSuccess": "QR-kód sikeresen beolvasva"
       },
       "qrScanningBlock": {
         "title": "Mutasd be a QR-kódot"

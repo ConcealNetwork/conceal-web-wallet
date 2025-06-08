@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -53,6 +53,15 @@ class QRReader{
 		this.webcam = document.querySelector("#cameraVideoFluxForDelivery");
 
 		this.setCanvas();
+		
+		// Optimize canvas size for QR detection - using square dimensions
+		if (this.canvas !== null) {
+			// Use square dimensions for better QR code scanning
+			const size = 1024;  // Square size that's good for QR detection
+			this.canvas.width = size;
+			this.canvas.height = size;
+		}
+
 		this.decoder = new Worker(baseUrl + "decoder.min.js");
 
 		if(this.canvas === null || this.webcam === null)
@@ -70,16 +79,31 @@ class QRReader{
 			}, false);
 		}
 		else {*/
-		this.canvas.width = window.innerWidth;
-		this.canvas.height = window.innerHeight;
+		//this.canvas.width = window.innerWidth;
+		//this.canvas.height = window.innerHeight;
 		// }
 
 
 		function startCapture(constraints : MediaStreamConstraints) {
-			navigator.mediaDevices.getUserMedia(constraints)
+			// Enhanced constraints for better QR detection
+			const enhancedConstraints: MediaStreamConstraints = {
+				audio: false,
+				video: {
+					facingMode: 'environment',
+					width: { ideal: 1920 },  // High square resolution
+					height: { ideal: 1920 }, // High square resolution
+					...(constraints.video as MediaTrackConstraints)  // Merge with any existing constraints
+				}
+			};
+
+			navigator.mediaDevices.getUserMedia(enhancedConstraints)
 				.then(function (stream) {
-					if(self.webcam !== null)
+					if(self.webcam !== null) {
 						self.webcam.srcObject = stream;
+						// Set video element properties for better quality
+						self.webcam.setAttribute('playsinline', 'true');  // Important for iOS
+						self.webcam.setAttribute('autoplay', 'true');
+					}
 				})
 				.catch(function(err) {
 					showErrorMsg(err);
@@ -87,29 +111,27 @@ class QRReader{
 		}
 
 		navigator.mediaDevices.enumerateDevices().then(function (devices) {
-      //console.log(devices);
-      let supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
-      //console.log(supportedConstraints);
-      let device = devices.filter(function(device) {
-        let deviceLabel = device.label.split(',')[1];
-        if (device.kind == "videoinput") {
-          return device;
-        }
-      });
+			let supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
+			let device = devices.filter(function(device) {
+				let deviceLabel = device.label.split(',')[1];
+				if (device.kind == "videoinput") {
+					return device;
+				}
+			});
 
-      if (device.length) {
-        startCapture({
-          audio: false,
-          video: {
-            facingMode: 'environment'
-          }
-        });
-      } else {
-        startCapture({video:true});
-      }      
-    }).catch(function (error) {
-      showErrorMsg(error);
-    });
+			if (device.length) {
+				startCapture({
+					audio: false,
+					video: {
+						facingMode: 'environment'
+					}
+				});
+			} else {
+				startCapture({video:true});
+			}      
+		}).catch(function (error) {
+			showErrorMsg(error);
+		});
 
 		function showErrorMsg(error : string) {
 			if(''+error === 'DOMException: Permission denied'){
@@ -138,31 +160,49 @@ class QRReader{
 			return;
 		let self = this;
 
+		// Add frame rate control for better performance
+		let lastFrameTime = 0;
+		const targetFrameRate = 30; // 30 FPS
+		const frameInterval = 1000 / targetFrameRate;
+
 		// Start QR-decoder
 		function newDecoderFrame() {
+			const now = performance.now();
+			if (now - lastFrameTime < frameInterval) {
+				requestAnimationFrame(newDecoderFrame);
+				return;
+			}
+			lastFrameTime = now;
+
 			if(self.ctx === null || self.webcam === null || self.canvas === null || self.decoder === null)
 				return;
 
-//			//console.log('new frame');
-			if (!self.active) return;
 			try {
-				self.ctx.drawImage(self.webcam, 0, 0, self.canvas.width, self.canvas.height);
+				// Draw the video frame to the canvas
+				const videoWidth = self.webcam.videoWidth;
+				const videoHeight = self.webcam.videoHeight;
+				const size = Math.min(videoWidth, videoHeight); // largest possible square
+
+				const sx = (videoWidth - size) / 2;
+				const sy = (videoHeight - size) / 2;
+
+				// Draw the centered square from the video to the square canvas
+				self.ctx.drawImage(self.webcam, sx, sy, size, size, 0, 0, self.canvas.width, self.canvas.height);
 				let imgData = self.ctx.getImageData(0, 0, self.canvas.width, self.canvas.height);
 
 				if (imgData.data) {
 					self.decoder.postMessage(imgData);
 				}
 			} catch(e) {
-          let errorName = "";
-
-          if (e instanceof Error) {
-            errorName = e.name;
-          }
-      
+				let errorName = "";
+				if (e instanceof Error) {
+					errorName = e.name;
+				}
+				
 				// Try-Catch to circumvent Firefox Bug #879717
 				if (errorName == "NS_ERROR_NOT_AVAILABLE") {
-          setTimeout(newDecoderFrame, 0);
-        }
+					setTimeout(newDecoderFrame, 0);
+				}
 			}
 		}
 

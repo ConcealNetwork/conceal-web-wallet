@@ -591,7 +591,8 @@
       "qrCodeBlock": {
         "title": "کد کیو آر",
         "startScanButton": "شروع اسکن",
-        "importButton": "درون ریزی"
+        "importButton": "درون ریزی",
+        "scanSuccess": "کد کیو آر با موفقیت اسکن شد"
       },
       "qrScanningBlock": {
         "title": "متصل کردن کد کیو آر"

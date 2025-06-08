@@ -857,6 +857,45 @@ body.transparent #copyright {
 	border: 2px solid black;
 }
 
+.videoContainer {
+	position: relative;
+	display: inline-block;
+}
+
+.aimingSquare {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 200px;
+	height: 200px;
+	border: 2px solid var(--color-info);
+	box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+	pointer-events: none;
+}
+
+.aimingSquare::before,
+.aimingSquare::after {
+	content: '';
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-color: var(--color-info);
+	border-style: solid;
+}
+
+.aimingSquare::before {
+	top: -2px;
+	left: -2px;
+	border-width: 2px 0 0 2px;
+}
+
+.aimingSquare::after {
+	bottom: -2px;
+	right: -2px;
+	border-width: 0 2px 2px 0;
+}
+
 /*
 .button{
 	display: inline-block;

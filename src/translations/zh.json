@@ -577,7 +577,8 @@
       "qrCodeBlock": {
         "title": "二维码",
         "startScanButton": "开始扫描",
-        "importButton": "导入"
+        "importButton": "导入",
+        "scanSuccess": "二维码扫描成功"
       },
       "qrScanningBlock": {
         "title": "展示二维码"

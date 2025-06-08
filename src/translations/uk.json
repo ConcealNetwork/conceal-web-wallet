@@ -582,7 +582,8 @@
       "qrCodeBlock": {
         "title": "QR код",
         "startScanButton": "Почати сканування",
-        "importButton": "Імпортувати"
+        "importButton": "Імпортувати",
+        "scanSuccess": "QR код успішно скенований"
       },
       "qrScanningBlock": {
         "title": "Наведіть на QR код"

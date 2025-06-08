@@ -577,21 +577,22 @@
       }
     },
     "importFromQrPage": {
-      "title": "Εισαγωγή πορτοφολιού από QR code",
-      "subtitle": "Εισαγωγή πορτοφολιού από εφεδρικό αντίγραφο εκτός σύνδεσης",
+      "title": "Εισαγωγή από QR",
+      "subtitle": "Εισαγωγή πορτοφολιού από QR κώδικα",
       "qrCodeBlock": {
-        "title": "QR code",
+        "title": "QR κώδικας",
         "startScanButton": "Έναρξη σάρωσης",
-        "importButton": "Εισαγωγή"
+        "importButton": "Εισαγωγή",
+        "scanSuccess": "QR κώδικας σαρώθηκε με επιτυχία"
       },
       "qrScanningBlock": {
-        "title": "Δείξτε το QR code"
+        "title": "Σάρωση QR κώδικα"
       }
     },
     "exportPage": {
-      "title": "Backup your credentials",
+      "title": "Δημιουργήστε αντίγραφο ασφαλείας των διαπιστευτηρίων σας",
       "publicAddressBlock": {
-        "title": "Your public address"
+        "title": "Η διεύθυνση που θα χρησιμοποιηθεί για την αποθήκευση των χρημάτων σας"
       },
       "pdfBlock": {
         "title": "PDF Backup",

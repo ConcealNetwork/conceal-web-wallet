@@ -585,7 +585,8 @@
       "qrCodeBlock": {
         "title": "QR 코드",
         "startScanButton": "스캔시작",
-        "importButton": "불러오기"
+        "importButton": "불러오기",
+        "scanSuccess": "QR 코드 스캔 성공"
       },
       "qrScanningBlock": {
         "title": "QR 코드를 보여주세요."
