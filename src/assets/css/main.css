@@ -27,10 +27,12 @@
 	/* Background Colors */
 	--color-bg-main: rgba(52, 58, 64, 0.95);    /* Main panel background */
 	--color-bg-hover: rgba(52, 58, 64, 0.88);   /* Panel hover background */
+	--color-bg-special: rgba(52, 58, 64, 1);   /* Panel in line - Warning with border no hover */
 	--color-bg-dark: #212529;          /* Dark background (footer, menu) */
 	--color-bg-darker: #282d31;        /* Darker background (top bar and menu) */
 	--color-bg-darker-menu-hidden: rgb(40, 45, 49, 0.99);        /* Darker background (menu hidden) */
 	--color-bg-darker-menu-hidden-lighter: rgb(40, 45, 49, 0.95); /* Darker background (menu hidden) */
+	--color-bg-darker-top: rgba(52, 58, 64, 0.98); /* lighter background for table headers */
 	--color-bg-light: #eeeeee;         /* Light background (inputs) */
 	--color-bg-disabled: #ccc;         /* Disabled state background */
 	--color-bg-tab: #212529;			/* Tab background */
@@ -1292,7 +1294,7 @@ body {
 }
 
 .panel.inline {
-	background: #424242ea;
+	background: var(--color-bg-special);
 	padding: 40px 40px 32px 40px;
 	border: 1px solid orange;
 	box-shadow: none;
@@ -1890,6 +1892,8 @@ body {
   display: flex;
   align-items: center;
   flex-direction: row;
+  background-color: var(--color-bg-darker-top);
+  border-radius: 5px 5px 0 0;
 }
 
 .header-filer-wrapper {
@@ -1991,6 +1995,7 @@ body {
   overflow: hidden;
   border: 1px solid #424242ea;
   background-color: var(--color-bg-tab);
+  border-radius: 5px;
 }
 
 /* Style the buttons inside the tab */
@@ -2052,6 +2057,7 @@ body {
   max-width: 1200px;
   font-size: 18px;  
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 #accountDeposits tr {
@@ -2061,6 +2067,7 @@ body {
 #depositHistoryTable {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 #accountDeposits .depositsListHeader {
@@ -2099,6 +2106,18 @@ body {
 #accountDeposits .tx_deposit_locked {
   color: red;
   font-size: 22px;  
+}
+
+@media (max-width: 600px) {
+	#depositHistoryTable, #depositHistoryTableBody {
+	  white-space: nowrap;
+	  overflow-x: auto;
+	}
+
+	#depositHistoryTable th,
+	#depositHistoryTableBody th {
+	  white-space: normal !important;
+	}
 }
 
 .depositTxDetails {
@@ -2239,4 +2258,73 @@ body {
     font-weight: 500;
     color: #fff;
     font-size: 1.3em;
+}
+
+/* Table Column Width Classes - Desktop */
+.col-direction {
+  width: 5%;
+  text-align: center;
+}
+
+.col-txdetails {
+  width: 5%;
+  text-align: center;
+}
+
+.col-lockTimestamp {
+  width: 18%;
+  text-align: center;
+}
+
+.col-lockHeight {
+  width: 15%;
+  text-align: center;
+}
+
+.col-unlockTimestamp {
+  width: 18%;
+  text-align: center;
+}
+
+.col-unlockHeight {
+  width: 15%;
+  text-align: center;
+}
+
+.col-depositAmount {
+  width: 12%;
+  text-align: center;
+}
+
+.col-interest {
+  width: 12%;
+  text-align: center;
+}
+
+/* Mobile Responsive Table Styles */
+@media (max-width: 600px) {
+  #accountDeposits {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+	table-layout: fixed;
+  }
+  #accountDeposits .depositsListHeader {
+	font-size: 1em;
+  }
+
+  #depositHistoryTable {
+    width: 700px;
+  }
+
+  /* Mobile Column Widths */
+  .col-lockTimestamp,
+  .col-lockHeight,
+   .col-unlockHeight {
+    display: none;
+  }
+
+  .col-unlockHeight, .col-depositAmount, .col-interest {
+	font-size: 0.8em;
+  }
+
 }

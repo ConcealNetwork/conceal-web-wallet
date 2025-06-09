@@ -65,14 +65,14 @@
                 <div style="overflow: hidden;">
                   <table v-if="deposits.length > 0" id="depositHistoryTable" style="width: 100%; table-layout: fixed;">
                     <tr>
-                      <th class="depositsListHeader" style="width: 30px; text-align: center;"></th>
-                      <th class="depositsListHeader" style="width: 30px; text-align: center;"></th>
-                      <th class="depositsListHeader" style="width: 18%; text-align: center;">{{ $t('depositsPage.depositDate') }}</th>
-                      <th class="depositsListHeader" style="width: 15%; text-align: center;">{{ $t('depositsPage.lockHeight') }}</th>
-                      <th class="depositsListHeader" style="width: 18%; text-align: center;">{{ $t('depositsPage.unlockDate') }}</th>
-                      <th class="depositsListHeader" style="width: 15%; text-align: center;">{{ $t('depositsPage.unlockHeight') }}</th>
-                      <th class="depositsListHeader" style="width: 12%; text-align: center;">{{ $t('depositsPage.deposit')}}</th>
-                      <th class="depositsListHeader" style="width: 12%; text-align: center;">{{ $t('depositsPage.interest') }}</th>
+                      <th class="depositsListHeader col-direction"></th>
+                      <th class="depositsListHeader col-txdetails"></th>
+                      <th class="depositsListHeader col-lockTimestamp">{{ $t('depositsPage.depositDate') }}</th>
+                      <th class="depositsListHeader col-lockHeight">{{ $t('depositsPage.lockHeight') }}</th>
+                      <th class="depositsListHeader col-unlockTimestamp">{{ $t('depositsPage.unlockDate') }}</th>
+                      <th class="depositsListHeader col-unlockHeight">{{ $t('depositsPage.unlockHeight') }}</th>
+                      <th class="depositsListHeader col-depositAmount">{{ $t('depositsPage.deposit')}}</th>
+                      <th class="depositsListHeader col-interest">{{ $t('depositsPage.interest') }}</th>
                     </tr>
                   </table>
                 </div>
@@ -83,7 +83,7 @@
                   <table style="width: 100%; table-layout: fixed;">
                     <template v-for="deposit of deposits">
                       <tr class="deposit" :class="(deposit.blockHeight === 0 ? 'pending' : '')">
-                        <td class="direction" style="width: 30px; text-align: center;">
+                        <td class="direction col-direction">
                           <i v-if="(deposit.blockHeight + deposit.term) > blockchainHeight" class="fa fa-lock tx_deposit_locked" aria-hidden="true"></i>
                           <i v-else-if="((deposit.blockHeight + deposit.term) <= blockchainHeight) && (deposit.spentTx)" class="fa fa fa-money tx_deposit_spent" aria-hidden="true"></i>                        
                           <i v-else-if="deposit.withdrawPending" class="fa fa-spinner fa-spin tx_deposit_pending" aria-hidden="true"></i>
@@ -94,16 +94,16 @@
                              :disabled="isWithdrawDisabled">
                           </i>
                         </td>
-                        <td class="moreInfo depositTxDetails" style="width: 30px; text-align: center; cursor: pointer;">
+                        <td class="moreInfo depositTxDetails col-txdetails">
                           <i class="fa fa-search" aria-hidden="true" @click="moreInfoOnDeposit(deposit)"></i>
                         </td>
-                        <td class="lockTimestamp" v-if="deposit.blockHeight > 0" style="width: 18%; text-align: center;">{{$d(new Date(deposit.timestamp * 1000), 'short')}}</td>
-                        <td class="lockTimestamp" v-else="" style="width: 18%; text-align: center;">...</td>
-                        <td class="lockHeight" style="width: 15%; text-align: center;">{{deposit.blockHeight}}</td>
-                        <td class="unlockTimestamp" style="width: 18%; text-align: center;">{{$d(new Date((deposit.timestamp + (deposit.term * 120)) * 1000), 'short')}}</td>
-                        <td class="unlockHeight" style="width: 15%; text-align: center;">{{deposit.blockHeight + deposit.term}}</td>
-                        <td class="depositAmount" style="width: 12%; text-align: center;">{{deposit.amount / currencyDivider}}</td>
-                        <td class="interest" style="width: 12%; text-align: center;">{{deposit.interest / currencyDivider}}</td>
+                        <td class="lockTimestamp col-lockTimestamp" v-if="deposit.blockHeight > 0">{{$d(new Date(deposit.timestamp * 1000), 'short')}}</td>
+                        <td class="lockTimestamp col-lockTimestamp" v-else>...</td>
+                        <td class="lockHeight col-lockHeight">{{deposit.blockHeight}}</td>
+                        <td class="unlockTimestamp col-unlockTimestamp">{{$d(new Date((deposit.timestamp + (deposit.term * 120)) * 1000), 'short')}}</td>
+                        <td class="unlockHeight col-unlockHeight">{{deposit.blockHeight + deposit.term}}</td>
+                        <td class="depositAmount col-depositAmount">{{deposit.amount / currencyDivider}}</td>
+                        <td class="interest col-interest">{{deposit.interest / currencyDivider}}</td>
                       </tr>
                     </template>
                   </table>
