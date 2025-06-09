@@ -220,21 +220,75 @@ export class WalletRepository {
 		doc.setTextColor(255, 255, 255);
 		doc.setFontSize(30);
 		doc.text(15, 128, "Public address");
-		doc.text(123,23, "Private key");
-		doc.text(213,23, "Import from QR");
-		doc.setTextColor(0, 0, 0);
+		doc.text(123,19, "Private key");
+		doc.text(225,19, "Private key");
 		doc.setFontSize(10);
 		doc.setFontStyle('italic');
+		doc.text(125, 26, "(to import from QR feature)");
+		doc.text(228, 26, "(to import from QR feature)");
+		doc.setTextColor(0, 0, 0);
 		doc.text(118, 96, "(height included, regular scan quality)");
 		doc.text(220, 96, "(height not included, high scan quality)");
 		doc.text(28, 201, "(QR code to scan to receive)");
 
-		//lines
+		// Draw safe-like frame (outer square)
+		doc.setDrawColor(0, 0, 0);
+		doc.setLineWidth(1);
+		// Outer square (safe frame)
+		const outerSize = 80; // Size of outer square
+		const outerX = 208;    // X position of outer square
+		const outerY = 116;    // Y position of outer square
+		const radius = 5;     // Corner radius
+
+		// Fill and draw outer square with rounded corners
+		doc.setFillColor(240, 240, 240); // Light gray fill for outer square
+		doc.roundedRect(outerX, outerY, outerSize, outerSize, radius, radius, 'FD'); // 'FD' means Fill and Draw
+
+		// Inner square (safe door)
+		const innerSize = 68;  // Size of inner square
+		const innerX = outerX + (outerSize - innerSize) / 2;  // Center inner square
+		const innerY = outerY + (outerSize - innerSize) / 2;  // Center inner square
+		const innerRadius = 3; // Slightly smaller radius for inner square
+
+		// Fill and draw inner square with rounded corners
+		doc.setFillColor(220, 220, 220); // Slightly darker gray for inner square
+		doc.roundedRect(innerX, innerY, innerSize, innerSize, innerRadius, innerRadius, 'FD'); // 'FD' means Fill and Draw
+
+		// Add a combination lock dial to the safe door
+		const handleX = innerX + innerSize - 9;
+		const handleY = innerY + innerSize/2;
+		const handleRadius = 3;
+		
+		// Draw the outer handle circle (dial)
+		doc.setFillColor(180, 180, 180); // Darker gray for handle
+		doc.circle(handleX, handleY, handleRadius, 'F'); // Fill the handle
+		doc.setDrawColor(0, 0, 0); // Black outline
+		doc.circle(handleX, handleY, handleRadius, 'S'); // Draw handle outline
+
+		// Draw the inner circle of the dial
+		const innerHandleRadius = 1.5;
+		doc.setFillColor(220, 220, 220); // Lighter gray for inner circle
+		doc.circle(handleX, handleY, innerHandleRadius, 'F');
+		doc.circle(handleX, handleY, innerHandleRadius, 'S');
+
+		// Add dial markings (small lines around the dial)
+		const markingLength = 0.5;
+		const markingDistance = handleRadius + 0.2;
+		for (let i = 0; i < 12; i++) { // 12 markings like a clock
+			const angle = (i * 30) * (Math.PI / 180); // Convert degrees to radians
+			const startX = handleX + Math.cos(angle) * markingDistance;
+			const startY = handleY + Math.sin(angle) * markingDistance;
+			const endX = handleX + Math.cos(angle) * (markingDistance + markingLength);
+			const endY = handleY + Math.sin(angle) * (markingDistance + markingLength);
+			doc.line(startX, startY, endX, endY);
+		}
+
+		//white lines
 		doc.setDrawColor(255,255,255);
 		doc.setLineWidth(1);
-		doc.line(99,0,99,210);
-		doc.line(198,0,198,210);
-		doc.line(0,105,297,105);
+		doc.line(99,0,99,210);  //left line
+		doc.line(198,0,198,210);  //right line
+		doc.line(0,105,297,105);  //middle line
 
 		//adding qr codes
 		doc.addImage(publicQrCode.toDataURL(), 'JPEG', 28, 143, 45, 45);
