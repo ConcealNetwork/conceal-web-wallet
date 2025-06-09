@@ -50,7 +50,7 @@ class DepositsView extends DestructableView {
   @VueVar(0) maxDepositAmount !: number;
   @VueVar(false) isDepositDisabled !: boolean;
   @VueVar(false) isWithdrawDisabled !: boolean;
-
+  @VueVar(false) depositPending !: boolean;
   @VueVar(0) totalLifetimeDeposit !: number;
   @VueVar(0) totalLifetimeInterest !: number;
   @VueVar(0) totalCashedOutInterest !: number;
@@ -383,6 +383,7 @@ class DepositsView extends DestructableView {
       this.totalCashedOutInterest = future.spent;
       this.futureInterestLocked = future.locked;
       this.futureInterestUnlocked = future.unlocked;
+      this.depositPending = wallet.hasPendingDeposit;
       // Earliest unlockable
       const earliest = wallet.earliestUnlockableDeposit(this.currentScanBlock);
       if (earliest) {
@@ -509,8 +510,7 @@ class DepositsView extends DestructableView {
                   if (result.dismiss) {
                     reject('');
                   } else {
-                    foundDeposit.withdrawPending = true;   
-                    wallet.addDeposit(foundDeposit); // Update the deposit in the wallet
+                    wallet.updateDepositFlags(foundDeposit.txHash, {withdrawPending: true}); // Update the deposit in the wallet
 
                     swal({
                       title: i18n.t('sendPage.finalizingTransferModal.title'),
@@ -554,8 +554,7 @@ class DepositsView extends DestructableView {
               }, 5);
             }).catch(function (data: any) {
               setTimeout(() => {
-                foundDeposit.withdrawPending = false;   
-                wallet.addDeposit(foundDeposit);
+                wallet.updateDepositFlags(foundDeposit.txHash, {withdrawPending: false});
               swal({
                 type: 'error',
                 title: i18n.t('sendPage.transferExceptionModal.title'),

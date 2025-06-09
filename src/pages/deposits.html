@@ -65,7 +65,9 @@
                 <div style="overflow: hidden;">
                   <table v-if="deposits.length > 0" id="depositHistoryTable" style="width: 100%; table-layout: fixed;">
                     <tr>
-                      <th class="depositsListHeader col-direction"></th>
+                      <th class="depositsListHeader col-direction">
+                        <i v-if="depositPending" class="fa fa-spinner fa-spin" style="margin-right: 0.5em;"></i>
+                      </th>
                       <th class="depositsListHeader col-txdetails"></th>
                       <th class="depositsListHeader col-lockTimestamp">{{ $t('depositsPage.depositDate') }}</th>
                       <th class="depositsListHeader col-lockHeight">{{ $t('depositsPage.lockHeight') }}</th>

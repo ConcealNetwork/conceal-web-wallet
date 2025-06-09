@@ -225,8 +225,7 @@ class AccountView extends DestructableView{
     if (transaction.message) {
       messageText = `<div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.message')}</span>:<div style="color: #e2e2e2; border: 1px solid #212529; border-radius: 4px; background-color: #343a40; padding: 8px; margin-top: 4px;"><span class="txDetailsValue">${transaction.message}</span></div></div>`;
       // Set message as viewed and update the transaction in wallet
-      transaction.messageViewed = true;
-      wallet.addNew(transaction);
+      wallet.updateTransactionFlags(transaction.hash, {messageViewed: true});
     }
 
     new Promise((resolve) => {
@@ -264,7 +263,6 @@ class AccountView extends DestructableView{
 
     this.isWalletSyncing = (wallet.lastHeight + 2) < this.blockchainHeight;
     this.isWalletProcessing = this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().hasData());
-    
     if (oldIsWalletSyncing && !this.isWalletSyncing) {
       this.checkOptimization();
     }
@@ -285,7 +283,7 @@ class AccountView extends DestructableView{
       this.lastPending = this.walletAmount - this.unlockedWalletAmount;
       this.futureLockedInterest = wallet.futureDepositInterest(this.currentScanBlock).locked;
       this.futureUnlockedInterest = wallet.futureDepositInterest(this.currentScanBlock).unlocked;
-
+      
       if ((this.refreshTimestamp < wallet.modifiedTimestamp()) || forceRedraw || filterChanged) {
         let allTransactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
 
