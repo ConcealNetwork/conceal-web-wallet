@@ -51,6 +51,8 @@ class MessagesView extends DestructableView {
   @VueVar(false) qrScanning !: boolean;
   @VueVar(false) nfcAvailable !: boolean;
 
+  @VueVar(false) formatMessage !: boolean;
+  @VueVar('messageHistory') activeTab !: 'messageHistory' | 'sendMessage';
   @Autowire(Nfc.name) nfc !: Nfc;
 
   readonly refreshInterval = 500;
@@ -60,7 +62,7 @@ class MessagesView extends DestructableView {
   private qrReader: QRReader | null = null;
   private timeoutResolveAlias = 0;
   private redirectUrlAfterSend: string | null = null;
-
+  
   ndefListener : ((data: NdefMessage)=>void)|null = null;
 
   constructor(container : string) {
@@ -232,7 +234,6 @@ class MessagesView extends DestructableView {
   send = () => {
     let self = this;
     blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
-      let amount = 0.0001;
 
       if (self.destinationAddress !== null) {
         let destinationAddress = self.destinationAddress;
@@ -406,6 +407,26 @@ class MessagesView extends DestructableView {
       this.messageValid = (this.message.length === 0) || (this.message.length <= config.maxMessageSize);
     } catch (e) {
       this.messageValid = false;
+    }
+  }
+
+  formatMessageText(text: string): string {
+    if (!text) return '';
+    // Replace **text** with <b>text</b> (bold) - no spaces between asterisks and text
+    let formatted = text.replace(/\*\*([^*\s][^*]*[^*\s])\*\*/g, '<b>$1</b>');
+    // Replace *text* with <i>text</i> (italic) - no spaces between asterisks and text
+    formatted = formatted.replace(/\*([^*\s][^*]*[^*\s])\*/g, '<i>$1</i>');
+    // Replace "* " with bullet point
+    formatted = formatted.replace(/\*\s/g, '&nbsp;&nbsp•&nbsp');
+    // Replace any two spaces with <br>
+    formatted = formatted.replace(/  /g, '<br>');
+    
+    return formatted;
+  }
+
+  markMessageSeen(txHash: string) {
+    if (this.transactions.find(tx => tx.hash === txHash)?.messageViewed === false) {
+      wallet.updateTransactionFlags(txHash, {messageViewed: true});
     }
   }
 }

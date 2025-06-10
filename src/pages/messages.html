@@ -26,12 +26,25 @@
       <div class="messages">        
 
         <div class="tab">
-          <button class="tablinks active" onclick="openMessagesTab(event, 'messageHistory')"><i aria-hidden="true" class="fa fa-inbox"><span>{{ $t("messagesPage.tabs.inbox") }}</span></i></button>
-          <button class="tablinks" onclick="openMessagesTab(event, 'sendMessage')"><i aria-hidden="true" class="fa fa-paper-plane"></i><span>{{ $t("messagesPage.tabs.send") }}</span></button>
+          <div class="tab-left">
+            <button class="tablinks" :class="{ active: activeTab === 'messageHistory' }" @click="activeTab = 'messageHistory'">
+              <i aria-hidden="true" class="fa fa-inbox"></i>
+              <span>{{ $t("messagesPage.tabs.inbox") }}</span>
+            </button>
+            <button class="tablinks" :class="{ active: activeTab === 'sendMessage' }" @click="activeTab = 'sendMessage'">
+              <i aria-hidden="true" class="fa fa-paper-plane"></i>
+              <span>{{ $t("messagesPage.tabs.send") }}</span>
+            </button>
+          </div>
+        
+          <button v-if="activeTab === 'messageHistory'" class="tablinks format-toggle" @click="formatMessage = !formatMessage">
+            <i aria-hidden="true" :class="formatMessage ? 'fa fa-font' : 'fa fa-code'"></i>
+            <span>{{ formatMessage ? 'Format' : 'Raw' }}</span>
+          </button>
         </div>
 
         <!-- message history -->
-        <div id="messageHistory" class="panel nopadding messageHistory tabcontent">
+        <div id="messageHistory" class="panel nopadding messageHistory tabcontent" v-show="activeTab === 'messageHistory'">
           <div class="body" >
             <div class="header-wrapper">
               <div class="header-title">{{ $t("messagesPage.inboxBlock.title") }}</div>
@@ -44,11 +57,14 @@
                       <td class="direction" >
                         <i v-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
                         <i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
+                        <i :class="['message-status-dot', transaction.messageViewed ? 'fa fa-envelope-open' : 'fa fa-envelope']" 
+                           aria-hidden="true" 
+                           @click="markMessageSeen(transaction.hash); $event.target.className = 'message-status-dot fa fa-envelope-open'"></i>
                       </td><!--LEfT-->
                       <td class="timestamp" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp * 1000), 'short')}}</td>
                       <td class="timestamp" v-else="">...</td>
                       <td class="blockHeight">{{transaction.blockHeight}}</td>
-                      <td class="messageText">{{transaction.message}}</td>
+                      <td class="messageText" v-html="formatMessage ? formatMessageText(transaction.message) : transaction.message"></td>
                     </tr>
                     <tr v-if="transaction.paymentId !== ''">
                       <td colspan="4" class="paymentId" >{{transaction.paymentId}}</td><!--UNDER-->
@@ -61,7 +77,7 @@
         </div>
 
         <!-- Send a new message -->
-        <div id="sendMessage" class="panel sendMessage tabcontent">
+        <div id="sendMessage" class="panel sendMessage tabcontent" v-show="activeTab === 'sendMessage'">
           <div class="body">
             <div class="field action">
               <label>{{ $t("messagesPage.sendBlock.address.label") }}</label>
@@ -116,19 +132,3 @@
   
   </div>
 </div>
-
-<script>
-  function openMessagesTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-  }
-</script>

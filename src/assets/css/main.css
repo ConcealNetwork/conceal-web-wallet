@@ -295,6 +295,8 @@ body.native .hideOnNonNative {
 	z-index: 20;
 	left: 280px;
 	display: none;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
 }
 
 #topBar a.toggleMenu {
@@ -302,6 +304,7 @@ body.native .hideOnNonNative {
 	display: inline-block;
 	height: 100%;
 	padding: 0 15px;
+	border-radius: 0, 3px, 3px, 0;
 }
 
 #main_logo img {
@@ -659,6 +662,17 @@ body.transparent #copyright {
   padding-right: 1em;
 }
 
+
+.message-status-dot {
+	font-size: 0.8em;
+	margin-left: 10px;
+	cursor: pointer;
+}
+.message-status-dot.viewed {
+    cursor: default;
+}
+
+
 .transactions .transaction .amount {
 	font-size: 20px;
 	width: 42%;
@@ -723,8 +737,17 @@ body.transparent #copyright {
 
 
 .tab {
-	display: block;
-	padding: 10px 5px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.tab-left {
+	display: flex;
+}
+
+.format-toggle {
+	margin-left: auto;  /* This pushes the button to the right */
 }
 
 .tab .button {
@@ -2023,7 +2046,6 @@ body {
 }
 
 .sendMessage {
-  display: none;
   color: white;
 }
 
