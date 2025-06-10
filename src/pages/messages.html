@@ -48,11 +48,14 @@
           <div class="body" >
             <div class="header-wrapper">
               <div class="header-title">{{ $t("messagesPage.inboxBlock.title") }}</div>
+              <div class="header-filter-wrapper field">
+                <input class="header-filter" type="text" placeholder="Search by text" v-model="messageFilter" />
+              </div>
             </div>
             <div class="content" >
               <div class="transactions" id="accountTransactions">              
                 <table>
-                  <template v-for="transaction of transactions">
+                  <template v-for="transaction of filteredTransactions">
                     <tr class="transaction" :class="(transaction.blockHeight === 0 ? 'pending' : '')">
                       <td class="direction" >
                         <i v-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>

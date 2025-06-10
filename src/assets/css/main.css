@@ -380,7 +380,7 @@ body.menuHidden #menu {
 
 #menu a:not(#menu_logo):hover {
 	border-right: 5px solid white;
-	color: #faa933;
+	color: var(--color-primary);
 }
 
 #menu a:not(#menu_logo) .icon {
@@ -672,6 +672,39 @@ body.transparent #copyright {
     cursor: default;
 }
 
+.messageHistory .header-wrapper {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+  }
+  
+  .messageHistory .header-filter-wrapper {
+	width: 45%;
+	margin-left: auto;
+	margin-right: 1rem;
+  }
+  
+  .messageHistory .header-filter {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid var(--color-text-dark);
+	border-radius: 4px;
+	background-color: var(--color-bg-light);
+	color: var(--color-text);
+	font-size: 14px;
+  }
+  
+  .messageHistory .header-filter:focus {
+	outline: none;
+	border-color: var(--color-primary);
+  }
+  
+  @media screen and (max-width: 600px) {
+	.messageHistory .header-filter-wrapper {
+	  width: 100%;
+	  margin-left: 0;
+	}
+  }
 
 .transactions .transaction .amount {
 	font-size: 20px;
@@ -2019,6 +2052,7 @@ body {
   border: 1px solid #424242ea;
   background-color: var(--color-bg-tab);
   border-radius: 5px;
+  margin-bottom: 1px;
 }
 
 /* Style the buttons inside the tab */
@@ -2032,11 +2066,15 @@ body {
   padding: 14px 16px;
   transition: 0.3s;
   font-size: 17px;
+  border-bottom: 2px solid transparent;
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
-  background-color: #ccc;
+  /* background-color: #ccc; */
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  text-shadow: 0 0 8px rgba(250, 169, 51, 0.3);
 }
 
 /* Create an active/current tablink class */

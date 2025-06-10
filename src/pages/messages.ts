@@ -33,6 +33,7 @@ let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInsta
 
 class MessagesView extends DestructableView {
   @VueVar([]) transactions !: Transaction[];
+  @VueVar('') messageFilter !: string;
   @VueVar(0) blockchainHeight !: number;
   @VueVar('') destinationAddressUser !: string;
   @VueVar('') destinationAddress !: string;
@@ -428,6 +429,17 @@ class MessagesView extends DestructableView {
     if (this.transactions.find(tx => tx.hash === txHash)?.messageViewed === false) {
       wallet.updateTransactionFlags(txHash, {messageViewed: true});
     }
+  }
+
+  get filteredTransactions(): Transaction[] {
+    if (!this.messageFilter) {
+      return this.transactions;
+    }
+    
+    const searchText = this.messageFilter.toLowerCase();
+    return this.transactions.filter(tx => 
+      tx.message && tx.message.toLowerCase().includes(searchText)
+    );
   }
 }
 
