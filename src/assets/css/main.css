@@ -57,10 +57,11 @@
 	--color-info: #146DBD;             /* Info blue */
   
 	/* Transaction Colors */
-	--color-tx-in: #6bc534;            /* Incoming transaction */
-	--color-tx-out: #FF0000;           /* Outgoing transaction */
-	--color-tx-deposit: #ed0505;       /* Deposit transaction */
-	--color-tx-withdrawal: #6bc534;    /* Withdrawal transaction */
+	--color-tx-in: rgba(85,204,114,0.9);            /* Incoming transaction */
+	--color-tx-out: rgba(245, 96, 96, 0.9);           /* Outgoing transaction */
+	--color-tx-withdrawal: rgba(85,204,114,0.9) ;     /* Withdrawal transaction */
+	--color-tx-deposit: rgba(245, 96, 96, 0.9);        /* Deposit transaction */
+
   
 	/* Scrollbar Colors */
 	--color-scrollbar-track: rgba(255, 255, 255, 0.05);

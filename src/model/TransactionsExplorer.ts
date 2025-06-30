@@ -679,7 +679,8 @@ declare var config: {
    }
 
    static formatWalletOutsForTx(wallet: Wallet, blockchainHeight: number): RawOutForTx[] {
-     let unspentOuts = [];
+    let allOuts = []; 
+    let unspentOuts = [];
 
      //rct=rct_outpk + rct_mask + rct_amount
      // {"amount"          , out.amount},
@@ -694,29 +695,21 @@ declare var config: {
      // {"timestamp"       , static_cast<uint64_t>(out.timestamp)},
      // {"height"          , tx.height},
      // {"spend_key_images", json::array()}
-    let totalOutputs = 0;
-     // Get all deposits from the wallet and filter out locked ones
-     const deposits = wallet.getDepositsCopy();
-     const lockedDepositIndexes = deposits
-       .filter(deposit => deposit.getStatus(blockchainHeight) === 'Locked')
-       .map(deposit => deposit.globalOutputIndex);
-
-      //console.log('Number of locked deposits:', lockedDepositIndexes.length);
-
+     
      for (let tr of wallet.getAll()) {
-       //todo improve to take into account miner tx
+       //todo improve to take into account miner tx ... well, if the user is smart enough to mine, he should be able to toggle the "Read miner tx" option in settings.
        //only add outs unlocked
-       if (!tr.isConfirmed(blockchainHeight)) {
+       if (!tr.isConfirmed(blockchainHeight - 2)) { // -2 extra buffer
          continue;
        }
-       totalOutputs += tr.outs.length;
        for (let out of tr.outs) {
-         // Skip outputs that are locked by deposits
-         if (lockedDepositIndexes.includes(out.globalIndex)) {
+         // Skip type "03" outputs (deposit outputs) for regular transactions
+         // These should only be used for withdrawals, not regular sends
+         if (out.type === "03") {
            continue;
          }
 
-         unspentOuts.push({
+         allOuts.push({
            keyImage: out.keyImage,
            amount: out.amount,
            public_key: out.pubKey,
@@ -727,20 +720,17 @@ declare var config: {
          });
        }
      }
-     //console.log('Total outputs before filtering:', totalOutputs);
-     //console.log('Unspent outputs after filtering:', unspentOuts.length);
-
+     // Create a set of all key images that have been spent (used as inputs)
+     const spentKeyImages = new Set<string>();
      for (let tr of wallet.getAll().concat(wallet.txsMem)) {
        for (let i of tr.ins) {
-         for (let iOut = 0; iOut < unspentOuts.length; ++iOut) {
-           if (unspentOuts[iOut].keyImage === i.keyImage) {
-             unspentOuts.splice(iOut, 1);
-             break;
-           }
+         if (i.keyImage) {
+           spentKeyImages.add(i.keyImage);
          }
        }
      }
-
+     // Filter out outputs that have already been spent
+     unspentOuts = allOuts.filter(out => !spentKeyImages.has(out.keyImage));     
      return unspentOuts;
    }
 
@@ -955,12 +945,26 @@ declare var config: {
          }
          let nbOutsNeeded: number = mixin + 1;
 
-         obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts: any[]) {
+         // Request nbOutsNeeded mixouts for each output (including duplicates)
+         let nbOutsRequested: number = nbOutsNeeded + 3 // Request 3 more to account for potentialduplicates
+         obtainMixOutsCallback(amounts, nbOutsRequested).then(function (lotsMixOuts: any[]) {
            logDebugMsg('------------------------------mix_outs');
            logDebugMsg('amounts', amounts);
            logDebugMsg('lots_mix_outs', lotsMixOuts);
+           // 1. Check for duplicates and remove them
+           const removedDuplicateMixOuts = TransactionsExplorer.removeDuplicateMixOuts(lotsMixOuts);
 
-           TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId, message, ttl, transactionType, term).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+           // 2. Shuffle and select exactly nbOutsNeeded mixouts per amount
+           const selectedMixOuts = TransactionsExplorer.selectMixOuts(removedDuplicateMixOuts, usingOuts, nbOutsNeeded);
+
+           // 3. Validate that we have enough mixouts for each input
+           const validation = TransactionsExplorer.validateMixOutsForInputs(usingOuts, selectedMixOuts, mixin);
+           if (!validation.valid) {
+             reject(new Error(validation.reason));
+             return;
+           }
+
+           TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, selectedMixOuts, mixin, neededFee, paymentId, message, ttl, transactionType, term).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
              resolve(data);
            }).catch(function (e) {
              reject(e);
@@ -1076,5 +1080,164 @@ declare var config: {
     });
   }
 
+  /**
+   * Validates that we have enough valid decoys for each input
+   * This ensures we have the required number of mixins (default 5) for each input
+   */
+  static validateMixOutsForInputs(
+    usingOuts: RawOutForTx[], 
+    mixOuts: any[], // Full mix_outs structure from daemon
+    mixin: number
+  ): { valid: boolean, reason: string } {
+    
+    // Check that we have one mixout group per output
+    if (mixOuts.length !== usingOuts.length) {
+      return {
+        valid: false,
+        reason: 'Wrong number of mixout groups provided'
+      };
+    }
+    
+    // Check each output has enough mixouts
+    for (let i = 0; i < usingOuts.length; i++) {
+      const out = usingOuts[i];
+      const mixOutGroup = mixOuts[i];
+      
+      
+      if (!mixOutGroup || mixOutGroup.amount !== out.amount) {
+        return {
+          valid: false,
+          reason: 'Mixout group mismatch'
+        };
+      }
+      
+      const availableMixouts = mixOutGroup.outs.length;
+      const requiredMixouts = mixin + 1;
+      
+      
+      if (availableMixouts < requiredMixouts) {
+        return {
+          valid: false,
+          reason: 'Not enough mixouts available, try smaller amount'
+        };
+      }
+    }
+    
+    return {
+      valid: true,
+      reason: 'All outputs have sufficient mixouts'
+    };
+  }
+
+  /**
+   * Selects the required number of mixouts for each input from the daemon-provided mixouts
+   * Shuffles the available mixouts for additional entropy before selection
+   */
+  static selectMixOuts(
+    mixOuts: any[],
+    usingOuts: RawOutForTx[],
+    nbOutsNeeded: number
+  ): any[] {
+    const selectedMixOuts: any[] = [];
+    const usedGlobalIndices: Set<number> = new Set();
+    
+    // Process outputs in order, using the corresponding mixout group for each
+    for (let i = 0; i < usingOuts.length; i++) {
+      const out = usingOuts[i];
+      const mixOutGroup = mixOuts[i]; // Use the mixout group at the same index
+      
+      if (mixOutGroup && mixOutGroup.amount === out.amount && mixOutGroup.outs.length > 0) {
+        // Filter out already used global indices to ensure uniqueness
+        const availableMixouts = mixOutGroup.outs.filter((mixout: any) => !usedGlobalIndices.has(mixout.global_index));
+        
+        if (availableMixouts.length < nbOutsNeeded) {
+          console.log(`Warning: Not enough unique mixouts for output ${i} (amount ${out.amount}). Need ${nbOutsNeeded}, have ${availableMixouts.length}`);
+        }
+        
+        // Shuffle the available mixouts for additional entropy
+        const shuffledMixouts = [...availableMixouts];
+        for (let j = shuffledMixouts.length - 1; j > 0; j--) {
+          const k = Math.floor(MathUtil.randomFloat() * (j + 1));
+          [shuffledMixouts[j], shuffledMixouts[k]] = [shuffledMixouts[k], shuffledMixouts[j]];
+        }
+        
+        // Select the first nbOutsNeeded mixouts from the shuffled array
+        const selectedMixouts = shuffledMixouts.slice(0, nbOutsNeeded);
+        
+        // Mark these global indices as used
+        for (const mixout of selectedMixouts) {
+          usedGlobalIndices.add(mixout.global_index);
+        }
+        
+        // Add to selected mixouts (one entry per output)
+        selectedMixOuts.push({
+          amount: out.amount,
+          outs: selectedMixouts
+        });
+      } else {
+        console.error(`Error: No valid mixout group found for output ${i} (amount ${out.amount})`);
+      }
+    }
+    
+    return selectedMixOuts;
+  }
+
+  static removeDuplicateMixOuts(mixOuts: any[]): any[] {
+    // First loop: remove duplicates within each object
+    for (let i = 0; i < mixOuts.length; i++) {
+      const group = mixOuts[i];
+      const seenInThisGroup: Set<number> = new Set();
+      const uniqueOuts: any[] = [];
+      
+      for (const mixout of group.outs) {
+        if (!seenInThisGroup.has(mixout.global_index)) {
+          seenInThisGroup.add(mixout.global_index);
+          uniqueOuts.push(mixout);
+        }
+      }
+      
+      mixOuts[i] = {
+        amount: group.amount,
+        outs: uniqueOuts
+      };
+    }
+    
+    // Second loop: if a global index appears in multiple objects, remove it from the object with more mixouts
+    const globalIndexCounts: Map<number, number[]> = new Map();
+    
+    // Count which objects contain each global index
+    for (let i = 0; i < mixOuts.length; i++) {
+      for (const mixout of mixOuts[i].outs) {
+        if (!globalIndexCounts.has(mixout.global_index)) {
+          globalIndexCounts.set(mixout.global_index, []);
+        }
+        globalIndexCounts.get(mixout.global_index)!.push(i);
+      }
+    }
+    
+    // Remove duplicates across objects
+    for (const [globalIndex, objectIndices] of Array.from(globalIndexCounts.entries())) {
+      if (objectIndices.length > 1) {
+        // Find the object with the most mixouts
+        let maxMixouts = 0;
+        let objectToRemoveFrom = objectIndices[0];
+        
+        for (const objectIndex of objectIndices) {
+          if (mixOuts[objectIndex].outs.length > maxMixouts) {
+            maxMixouts = mixOuts[objectIndex].outs.length;
+            objectToRemoveFrom = objectIndex;
+          }
+        }
+        
+        // Remove this global index from the object with MORE mixouts
+        // This leaves the duplicate in the object with fewer mixouts
+        mixOuts[objectToRemoveFrom].outs = mixOuts[objectToRemoveFrom].outs.filter(
+          (mixout: any) => mixout.global_index !== globalIndex
+        );
+      }
+    }
+    
+    return mixOuts;
+  }
 
  }

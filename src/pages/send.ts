@@ -347,7 +347,7 @@ class SendView extends DestructableView {
 
           blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
             //save the tx private key
-            wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
+            wallet.addTxPrivateKeyWithTxHashAndFusion(rawTxData.raw.hash, rawTxData.raw.prvkey, false);
 
             //force a mempool check so the user is up to date
             let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
@@ -382,32 +382,49 @@ class SendView extends DestructableView {
                 window.location.href = window.encodeURIComponent(self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash));
               }
             });
-          }).catch(function (data: any) {
-            swal({
-              type: 'error',
-              title: i18n.t('sendPage.transferExceptionModal.title'),
-              html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(data)}),
-              confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-            });
+          }).catch(function (error: any) {
+            //console.log(error);
+            if (error && error !== '') {
+              let errorMessage = '';
+              let errorTitle = i18n.t('sendPage.transferExceptionModal.title');
+              
+              if (typeof error === 'string') {
+                errorMessage = error;
+              } else if (error instanceof Error) {
+                errorMessage = error.message;
+              } else {
+                errorMessage = JSON.stringify(error);
+              }
+              
+              swal({
+                type: 'error',
+                title: errorTitle,
+                html: i18n.t('sendPage.transferExceptionModal.content', {details: errorMessage}),
+                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+              });
+            }
           });
           swal.close();
         }).catch(function (error: any) {
           //console.log(error);
           if (error && error !== '') {
-            if (typeof error === 'string')
-              swal({
-                type: 'error',
-                title: i18n.t('sendPage.transferExceptionModal.title'),
-                html: i18n.t('sendPage.transferExceptionModal.content', {details: error}),
-                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-              });
-            else
-              swal({
-                type: 'error',
-                title: i18n.t('sendPage.transferExceptionModal.title'),
-                html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(error)}),
-                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-              });
+            let errorMessage = '';
+            let errorTitle = i18n.t('sendPage.transferExceptionModal.title');
+            
+            if (typeof error === 'string') {
+              errorMessage = error;
+            } else if (error instanceof Error) {
+              errorMessage = error.message;
+            } else {
+              errorMessage = JSON.stringify(error);
+            }
+            
+            swal({
+              type: 'error',
+              title: errorTitle,
+              html: i18n.t('sendPage.transferExceptionModal.content', {details: errorMessage}),
+              confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+            });
           }
         });
       } else {
