@@ -93,7 +93,7 @@ const updateIntegrityHashes = () => {
 		.trim();              // Final trim
 		
 	const exceptionsHash = generateAllowedExceptionsHash([exceptionsContent]);
-	console.log('Generated hash:', exceptionsHash);
+	// console.log('Generated hash:', exceptionsHash);
 	
 	// Update the hash in the compiled JS file
 	const allowedPagesJsPath = path.join(__dirname, 'src', 'lib', 'config', 'allowedPages.js');

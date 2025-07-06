@@ -339,7 +339,11 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is to long. Max length is 260 characters",
+          "preview": "Vista previa"
+        },
+        "ttl": {
+          "info": "La transacción TTL solo existirá en el mempool y se autodestruirá después de {ttl}(Horas:Minutos). No se incluirá en los bloques. Por lo tanto, el monto cargado se devolverá a la billetera."
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"

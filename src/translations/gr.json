@@ -116,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "Το υπόλοιπό σας",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "Πορτοφόλι",
+        "available": "Απόθεμα",
+        "pending": "Εκκρεμεί",
         "unlocked": "Ξεκλείδωτο",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "Κλειδωμένο",
+        "withdrawable": "Προσφερόμενο",
+        "futureInterest": "Μελλοντικό επιτόκιο"
       },
       "historyBlock": {
         "title": "Ιστορικό συναλλαγών",
@@ -129,7 +131,7 @@
         "waitSync": "Παρακαλώ περιμένετε μέχρι να ανανεωθεί το πορτοφόλι",
         "beReallyPatient": "Η αρχική ρύθμιση μπορεί να διαρκέσει λίγη ώρα...",
         "getCoinAddress": "Λήψη CCX",
-        "loadMoreBtn": "Load more"
+        "loadMoreBtn": "Περισσότερα"
       },
       "txDetails": {
         "title": "Λεπτομέρειες συναλλαγής",
@@ -138,7 +140,7 @@
         "blockHeight": "Block height",
         "paymentId": "Payment ID",
         "txPrivKey": "Ιδιωτικό κλειδί συναλλαγής",
-        "message": "Message"
+        "message": "Μήνυμα"
       }
     },
     "changeWalletPasswordPage": {
@@ -337,7 +339,11 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is to long. Max length is 260 characters",
+          "preview": "Προεπισκόπηση"
+        },
+        "ttl": {
+          "info": "Η TTL συναλλαγή θα υπάρχει μόνο στο mempool και θα αυτοκαταστραφεί μετά το {ttl}(Ώρες:Λεπτά). Δεν θα ενσωματωθεί σε blocks. Επομένως, το ποσό που θα χρεωθεί θα επιστραφεί στο πορτοφόλι."
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -530,6 +536,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Σύμβολο",
+          "full": "Πλήρες σύμβολο",
+          "short": "Συντομογραφία",
+          "preview": "Προεπισκόπηση"
         }
       },
       "changePasswordButton": "Άλλαξε τον κωδικό του πορτοφολιού μου",

@@ -339,7 +339,11 @@
 		  },
 		  "message": {
 			"label": "Message",
-			"invalid": "Le message est trop long. Maximum 260 characteres"
+			"invalid": "Le message est trop long. Maximum 260 characteres",
+			"preview": "Aperçu"
+		  },
+		  "ttl": {
+			"info": "La transaction TTL ne sera pas incluse dans les blocs et sera automatiquement détruite après {ttl}(Heures:Minutes). Le montant facturé sera remboursé."
 		  },
 		  "sendButton": "Envoyer",
 		  "cancelButton": "Annuler"

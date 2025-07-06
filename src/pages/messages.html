@@ -115,7 +115,7 @@
               </div>
             </div>
             <div v-if="showPreview">
-              <span class="message-preview-label">Preview</span>
+              <span class="message-preview-label">{{ $t("messagesPage.sendBlock.message.preview") }}</span>
             </div>
             <div v-if="showPreview" class="message-preview">
               <div v-html="formatMessageText(message)" class="preview-content"></div>
@@ -140,7 +140,7 @@
                 </div>
               </div>
               <div class="message info" v-if="ttl > 0">
-                <i class="fa fa-info-circle"></i> TTL transactions exist only in mempool and auto-destruct after {{ formatTTL(ttl) }}. They are never mined into blocks. Therefore, the amount charged will be returned to the wallet.
+                <i class="fa fa-info-circle"></i> {{ $t("messagesPage.sendBlock.ttl.info", { ttl: formatTTL(ttl) }) }}
               </div>
             </div>
   

@@ -2500,5 +2500,6 @@ body {
 .preview-content {
   color: var(--color-text-dark-muted);
   white-space: pre-line;
+  line-height: 1rem;
 }
 

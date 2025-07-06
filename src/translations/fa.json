@@ -339,7 +339,11 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is to long. Max length is 260 characters",
+          "preview": "پیش نمایش"
+        },
+        "ttl": {
+          "info": "تراکنش TTL فقط در mempool وجود خواهد داشت و به طور خودکار به پایان رسیده پس از {ttl}(ساعت:دقیقه). آن در بلوکها معدود نمیشود. بنابراین، مقدار قابل بازگشت خواهد بود."
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
