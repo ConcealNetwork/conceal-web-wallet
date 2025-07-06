@@ -67,6 +67,7 @@ declare var config: {
  import {Transaction, TransactionData, Deposit, TransactionIn, TransactionOut} from "./Transaction";
  import {InterestCalculator} from "./Interest";
  import { Currency } from "./Currency";
+ import { decode as varintDecode } from "./Varint";
 
  export const TX_EXTRA_PADDING_MAX_COUNT = 255;
  export const TX_EXTRA_NONCE_MAX_COUNT = 255;
@@ -355,6 +356,7 @@ declare var config: {
      let tx_pub_key = '';
      let paymentId: string | null = null;
      let rawMessage: string = '';
+     let ttl: number = 0;
 
      let txExtras = [];
      try {
@@ -408,6 +410,7 @@ declare var config: {
          }
        }
        else if (extra.type === TX_EXTRA_MESSAGE_TAG) {
+          // TODO: Only extract message if not a remote node fee transaction
          for (let i = 0; i < extra.data.length; ++i) {
            rawMessage += String.fromCharCode(extra.data[i]);
          }
@@ -420,8 +423,7 @@ declare var config: {
 			   }
 				 let ttlStr = CnUtils.bintohex(rawTTL);
 				 let uint8Array = CnUtils.hextobin(ttlStr);
-         let Varint: any;
-				 let ttl = Varint.decode(uint8Array);
+         ttl = varintDecode(uint8Array);         
 			 }
        extraIndex++;
      }
@@ -674,7 +676,9 @@ declare var config: {
          }
        }
      }
-
+     if (transaction && typeof ttl !== 'undefined') {
+      transaction.ttl = ttl;
+     }
      return transactionData;
    }
 
@@ -913,6 +917,9 @@ declare var config: {
            return;
          } else if (usingOuts_amount.compare(totalAmount) > 0) {
            let changeAmount = usingOuts_amount.subtract(totalAmount);
+           if (ttl > 0) {
+             changeAmount = changeAmount.add(neededFee);
+           }
            //add entire change for rct
            logDebugMsg("1) Sending change of " + Cn.formatMoneySymbol(changeAmount)
              + " to " + wallet.getPublicAddress());

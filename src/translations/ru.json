@@ -257,8 +257,8 @@
           "invalid": "Идентификатор платежа неверный. Длина должна быть 16 или 64 символа"
         },
         "message": {
-          "label": "Message (optional)",
-          "invalid": "The message is to long. Max length is 255 characters"
+          "label": "Сообщение (необязательно)",
+          "invalid": "Сообщение слишком длинное. Максимальная длина 255 символов"
         },
         "mixin": {
           "label": "Конфиденциальность",
@@ -306,7 +306,8 @@
         "title": "Подтвердить перевод?",
         "content": "Сумма: {amount}<br/>Комиссии: {fees}<br/>Всего: {total}",
         "confirmText": "Подтвердить",
-        "cancelText": "Отменить"
+        "cancelText": "Отменить",
+        "remoteNodeFee": "Комиссия удаленного узла {fee} {symbol} добавлена к сумме"
       },
       "waitingNfcModal": {
         "title": "Ожидание Nfc",
@@ -314,16 +315,16 @@
       }
     },
     "messagesPage": {
-      "title": "Messages",
+      "title": "Сообщения",
       "syncing": {
       "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять сообщения."
       },
       "tabs": {
-        "inbox": "Inbox",
-        "send": "Send"
+        "inbox": "Входящие",
+        "send": "Отправить"
       },
       "inboxBlock": {
-        "title": "Messages Inbox"
+        "title": "Входящие сообщения"
       },
       "sendBlock": {
         "address": {
@@ -342,45 +343,45 @@
         "cancelButton": "Cancel"
       },
       "qrCodeScanning": {
-        "explication": "Present the QR code"
+        "explication": "Показать QR код"
       },
       "notEnoughMoneyModal": {
-        "title": "Oops...",
-        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "title": "Ой...",
+        "content": "В кошельке недостаточно средств для совершения этого перевода",
         "confirmText": "OK"
       },
       "thankYouDonationModal": {
-        "title": "Thank you for your donation!",
-        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "title": "Спасибо за ваше пожертвование!",
+        "content": "Ваша помощь оценена. Это пожертвование поможет сделать Conceal лучше",
         "confirmText": "OK"
       },
       "transferSentModal": {
-        "title": "Message sent successfully!",
+        "title": "Сообщение отправлено успешно!",
         "confirmText": "OK"
       },
       "transferExceptionModal": {
-        "title": "Oops...",
-        "content": "An error occurred. Please report this error: {details}",
+        "title": "Ой...",
+        "content": "Произошла ошибка. Пожалуйста сообщите об этой ошибке: {details}",
         "confirmText": "OK"
       },
       "invalidAmountModal": {
-        "title": "Oops...",
-        "content": "Invalid amount",
+        "title": "Ой...",
+        "content": "Неверная сумма",
         "confirmText": "OK"
       },
       "creatingTransferModal": {
-        "title": "Creating transfer ...",
-        "content": "Please wait..."
+        "title": "Создание перевода ...",
+        "content": "Пожалуйста подождите..."
       },
       "finalizingTransferModal": {
-        "title": "Finalizing transfer ...",
-        "content": "Please wait..."
+        "title": "Завершение перевода ...",
+        "content": "Пожалуйста подождите..."
       },
       "confirmTransactionModal": {
-        "title": "Confirm transfer?",
-        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
-        "confirmText": "Confirm",
-        "cancelText": "Cancel"
+        "title": "Подтвердить перевод?",
+        "content": "Сумма: {amount}<br/>Комиссии: {fees}<br/>Всего: {total}",
+        "confirmText": "Подтвердить",
+        "cancelText": "Отменить"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",
@@ -525,15 +526,15 @@
           "label": "Считывать транзакции майнинга (только для соло майнинга)"
         },
         "customNode": {
-          "label": "Use custom node"
+          "label": "Использовать собственный узел"
         },
         "nodeUrl": {
-          "label": "Node URL"
+          "label": "URL узла"
         }
       },
       "changePasswordButton": "Изменть пароль моего кошелька",
       "deleteWalletButton": "Удалить мой кошелек (локальную копию)",
-      "resetWalletButton": "Reset and rescan wallet",
+      "resetWalletButton": "Сбросить и пересканировать кошелек",
       "walletSettings": {
         "creationHeight": {
           "label": "Высота создания кошелька"
@@ -550,14 +551,14 @@
         "cancelText": "Отменить"
       },
       "resetWalletModal": {
-        "title": "Reset My Wallet (local copy)",
-        "content": "Are you sure you really want to reset your wallet?",
-        "confirmText": "Yes I'm sure",
-        "cancelText": "Cancel"
+        "title": "Сбросить мой кошелек (локальная копия)",
+        "content": "Вы ДЕЙСТВИТЕЛЬНО уверены что хотите сбросить свой кошелек?",
+        "confirmText": "Да, я знаю что делаю",
+        "cancelText": "Отменить"
       },
       "optimizeWalletModal": {
-        "title": "Nothing to do...",
-        "content": "Your wallet is already optimized.",
+        "title": "Ничего не делать...",
+        "content": "Ваш кошелек уже оптимизирован.",
         "confirmText": "OK"
       }
     },

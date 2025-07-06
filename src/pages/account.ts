@@ -350,6 +350,31 @@ class AccountView extends DestructableView{
     }
   }
 
+  getTTLCountdown(transaction: Transaction): string {
+    if (!transaction.ttl || transaction.ttl === 0 || transaction.blockHeight !== 0) {
+      return '';
+    }
+    
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const remainingSeconds = transaction.ttl - currentTimestamp;
+    
+    if (remainingSeconds <= 0) {
+      return 'Expired';
+    }
+    
+    const hours = Math.floor(remainingSeconds / 3600);
+    const minutes = Math.floor((remainingSeconds % 3600) / 60);
+    const seconds = remainingSeconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${seconds}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
+    } else {
+      return `${seconds}s`;
+    }
+  }
+
 }
 
 if (wallet !== null && blockchainExplorer !== null)

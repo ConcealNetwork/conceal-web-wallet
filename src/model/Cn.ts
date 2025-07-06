@@ -2706,6 +2706,7 @@ export namespace CnTransactions{
       for (let i = 0; i < dsts.length; i++) {
         if (dsts[i].address !== senderAddress) {
           messageAddress = dsts[i].address;
+          break; // Break after finding the first non-sender destination
         }
       }
 
@@ -2740,7 +2741,10 @@ export namespace CnTransactions{
       }
 		}
 		if (ttl !== 0) {
-			let ttlStr = CnUtils.encode_varint(ttl);
+			// Convert TTL from minutes to absolute UNIX timestamp in seconds
+			const currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
+			const ttlTimestamp = currentTimestamp + (ttl * 60); // Add TTL minutes converted to seconds
+			let ttlStr = CnUtils.encode_varint(ttlTimestamp);
 			let ttlSize = CnUtils.encode_varint(ttlStr.length / 2);
 			tx.extra = tx.extra + TX_EXTRA_TAGS.TTL_TAG + ttlSize + ttlStr;
 		}

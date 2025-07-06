@@ -306,7 +306,8 @@
         "title": "Αποδοχή συναλλαγής;",
         "content": "Ποσό: {amount}<br/>Τέλη: {fees}<br/>Total: {total}",
         "confirmText": "Αποδοχή",
-        "cancelText": "Ακύρωση"
+        "cancelText": "Ακύρωση",
+        "remoteNodeFee": "Τέλη του απομακρυσμένου κόμβου {fee} {symbol} προστέθηκαν στο ποσό"
       },
       "waitingNfcModal": {
         "title": "Αναμονή NFC",

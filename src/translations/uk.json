@@ -306,7 +306,8 @@
         "title": "Підтвердити переказ?",
         "content": "Сума: {amount}<br/>Комісії: {fees}<br/>Всього: {total}",
         "confirmText": "Підтвердити",
-        "cancelText": "Скасувати"
+        "cancelText": "Скасувати",
+        "remoteNodeFee": "Комісія вузла віддаленої мережі {fee} {symbol} додана до суми"
       },
       "waitingNfcModal": {
         "title": "Очікування Nfc",

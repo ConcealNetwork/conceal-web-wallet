@@ -306,7 +306,8 @@
         "title": "다음과 같이 송금 하시겠습니까?",
         "content": "금액: {amount}<br/>비용: {fees}<br/>총액: {total}",
         "confirmText": "확인",
-        "cancelText": "취소"
+        "cancelText": "취소",
+        "remoteNodeFee": "원격 노드 수수료 {fee} {symbol} 금액에 추가되었습니다."
       },
       "waitingNfcModal": {
         "title": "NFC 통신 대기중",

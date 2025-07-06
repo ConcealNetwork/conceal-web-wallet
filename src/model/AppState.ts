@@ -75,6 +75,10 @@ export class AppState {
 			walletWatchdog.stop();
     }
 
+    // Clean up the blockchain explorer session to ensure fresh node selection on next connection
+    let blockchainExplorer = BlockchainExplorerProvider.getInstance();
+    blockchainExplorer.cleanupSession();
+
 		DependencyInjectorInstance().register(Wallet.name, undefined, 'default');
 		DependencyInjectorInstance().register(WalletWorker.name, undefined, 'default');
 		DependencyInjectorInstance().register(WalletWatchdog.name, undefined, 'default');

@@ -67,10 +67,14 @@
                       <td class="timestamp" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp * 1000), 'short')}}</td>
                       <td class="timestamp" v-else="">...</td>
                       <td class="blockHeight">{{transaction.blockHeight}}</td>
+                      <td class="ttl-countdown" v-if="transaction.blockHeight === 0 && transaction.ttl > 0">
+                        <span class="ttl-timer">{{ getTTLCountdown(transaction) }}</span>
+                      </td>
+                      <td class="ttl-countdown" v-else=""></td>
                       <td class="messageText" v-html="formatMessage ? formatMessageText(transaction.message) : transaction.message"></td>
                     </tr>
                     <tr v-if="transaction.paymentId !== ''">
-                      <td colspan="4" class="paymentId" >{{transaction.paymentId}}</td><!--UNDER-->
+                      <td colspan="6" class="paymentId" >{{transaction.paymentId}}</td><!--UNDER-->
                     </tr>
                   </template>
                 </table>
@@ -108,6 +112,35 @@
               <textarea aria-label="messageInput" class="messageInput" id="messageTextArea" type="text" :maxlength="maxMessageSize" v-model="message" placeholder="" :readonly="lockedForm" :disabled="isWalletSyncing"></textarea>
               <div v-if="!messageValid" class="message error">
                 {{ $t("messagesPage.sendBlock.message.invalid") }}
+              </div>
+            </div>
+            <div v-if="showPreview">
+              <span class="message-preview-label">Preview</span>
+            </div>
+            <div v-if="showPreview" class="message-preview">
+              <div v-html="formatMessageText(message)" class="preview-content"></div>
+            </div>
+
+            <div class="field" >
+              <label>Time To Live (TTL): {{ formatTTL(ttl) }}</label>
+              <div class="ttl-slider-container">
+                <input 
+                  type="range" 
+                  min="0" 
+                  :max="cryptonoteMemPoolTxLifetime / 60" 
+                  step="5"
+                  v-model="ttl" 
+                  class="ttl-slider" 
+                  :disabled="isWalletSyncing"
+                  :readonly="lockedForm"
+                />
+                <div class="ttl-labels">
+                  <span>00:00 (no TTL)</span>
+                  <span>{{ formatTTL(cryptonoteMemPoolTxLifetime / 60) }}</span>
+                </div>
+              </div>
+              <div class="message info" v-if="ttl > 0">
+                <i class="fa fa-info-circle"></i> TTL transactions exist only in mempool and auto-destruct after {{ formatTTL(ttl) }}. They are never mined into blocks. Therefore, the amount charged will be returned to the wallet.
               </div>
             </div>
   

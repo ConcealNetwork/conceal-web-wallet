@@ -306,7 +306,8 @@
         "title": "Потврди трансфер?",
         "content": "'Количина: {amount}<br/>Провизија: {fees}<br/>Укупно: {total}",
         "confirmText": "Потврди",
-        "cancelText": "Откажи"
+        "cancelText": "Откажи",
+        "remoteNodeFee": "Провизија за удаљени чвор {fee} {symbol} додана на износ"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",

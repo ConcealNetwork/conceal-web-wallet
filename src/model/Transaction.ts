@@ -160,6 +160,7 @@ export class Transaction {
   fusion: boolean = false;
   message: string = '';
   messageViewed: boolean = false;
+  ttl: number = 0; // TTL timestamp (absolute UNIX timestamp in seconds)
   
   static fromRaw = (raw: any) => {
     let transac = new Transaction();
@@ -186,6 +187,7 @@ export class Transaction {
     if (typeof raw.message !== 'undefined') transac.message = raw.message;
     if (typeof raw.fusion !== 'undefined') transac.fusion = raw.fusion;
     if (typeof raw.messageViewed !== 'undefined') transac.messageViewed = raw.messageViewed;
+    if (typeof raw.ttl !== 'undefined') transac.ttl = raw.ttl;
     return transac;
   }
 
@@ -215,7 +217,7 @@ export class Transaction {
     if (this.fees !== 0) data.fees = this.fees;
     if (this.fusion) data.fusion = this.fusion;
     if (this.messageViewed) data.messageViewed = this.messageViewed;
-     
+    if (this.ttl !== 0) data.ttl = this.ttl;
     return data;
   }
 
@@ -254,6 +256,8 @@ export class Transaction {
     if (this.getAmount() === 0 || this.getAmount() === (-1 * config.minimumFee_V2)) {
       if (this.isFusion) {
         return true;
+      } else if (this.ttl > 0) {
+        return true;
       } else {
         return false;
       }
@@ -268,7 +272,8 @@ export class Transaction {
   }
 
   hasMessage = () => {
-    return (this.message !== '') && (this.getAmount() > 0);
+    let txAmount = this.getAmount();
+    return (this.message !== '') && (txAmount > 0) && (txAmount !== (1 * config.remoteNodeFee)) && (txAmount !== (10 * config.remoteNodeFee)); // no envelope for a suspectedremote node fee transaction
   }
 
   get isDeposit() {
@@ -302,6 +307,7 @@ export class Transaction {
     aCopy.message = this.message;
     aCopy.fusion = this.fusion;
     aCopy.messageViewed = this.messageViewed;
+    aCopy.ttl = this.ttl;
 
     for (let nin of this.ins) {
       aCopy.ins.push(nin.copy());

@@ -69,7 +69,7 @@ class NodeWorker {
         this._isWorking = false;        
         resolve(raw);
       }).fail((data: any, textStatus: string) => {
-        console.log("makeRequest failed", textStatus);
+        console.error(`Node ${this._url} makeRequest failed: ${textStatus} (errors: ${this._errors + 1})`);
         this._isWorking = false;        
         this.increaseErrors();
         reject(data);
@@ -131,7 +131,7 @@ class NodeWorker {
 
   increaseErrors = () => {
     ++this._errors;  
-    ++this._allErrors;  
+    ++this._allErrors;
   }
 
   hasToManyErrors = () => {
@@ -153,99 +153,150 @@ class NodeWorker {
 
 class NodeWorkersList {
   private nodes: NodeWorker[];
+  private sessionNode: NodeWorker | null = null;
+  private sessionStartTime: number = 0;
+  private readonly sessionDuration = 30 * 60 * 1000; // 30 minutes
+  private readonly maxSessionErrors = 3;
+  private sessionErrorCount: number = 0;
+  private usedNodeUrls: Set<string> = new Set(); // Track used nodes to avoid re-picking
 
   constructor() {
     this.nodes = [];
   }
 
-  private acquireWorker = (): NodeWorker | null => {
-    const shuffledNodes: NodeWorker[] = [...this.nodes].sort((a, b) => 0.5 - Math.random());
+  initializeSession(): void {
+    // Pick a random node for the session
+    this.sessionNode = this.pickRandomNode();
+    this.sessionStartTime = Date.now();
+    this.sessionErrorCount = 0;
+    if (this.sessionNode) {
+      this.usedNodeUrls.add(this.sessionNode.url);
+    }
+  }
 
-    for (let i = 0; i < shuffledNodes.length; i++) {
-      if (!shuffledNodes[i].isWorking && !shuffledNodes[i].hasToManyErrors()) {
-        return shuffledNodes[i];
+  cleanupSession(): void {
+    // Clean up the session when wallet closes
+    this.sessionNode = null;
+    this.sessionStartTime = 0;
+    this.sessionErrorCount = 0;
+    this.usedNodeUrls.clear(); // Clear used nodes to allow fresh random selection
+  }
+
+  private isSessionExpired(): boolean {
+    return (Date.now() - this.sessionStartTime) > this.sessionDuration;
+  }
+
+  private pickRandomNode(): NodeWorker | null {
+    let availableNodes = this.nodes.filter(node => 
+      !node.hasToManyErrors() && !this.usedNodeUrls.has(node.url)
+    );
+
+    if (availableNodes.length === 0) {
+      // If all nodes have been used, reset and try again
+      this.usedNodeUrls.clear();
+      availableNodes = this.nodes.filter(node => !node.hasToManyErrors());
+      
+      if (availableNodes.length === 0) {
+        // Last resort: try any node, even if it has errors
+        availableNodes = this.nodes;
+        if (availableNodes.length === 0) {
+          return null; // No nodes at all
+        }
+        
+        // Filter out nodes with excessive errors even in last resort
+        const lastResortNodes = availableNodes.filter(node => node.allErrors < node.maxAllErrors);
+        if (lastResortNodes.length > 0) {
+          availableNodes = lastResortNodes;
+        }
       }
     }
+    
+    // Shuffle the available nodes for better randomization
+    const shuffledNodes = [...availableNodes].sort(() => Math.random() - 0.5);
+    const selectedNode = shuffledNodes[0];
+    this.usedNodeUrls.add(selectedNode.url);
+    return selectedNode;
+  }
 
-    return null;
+  private getSessionNode(): NodeWorker | null {
+    if (!this.sessionNode || this.isSessionExpired() || this.sessionErrorCount >= this.maxSessionErrors) {
+      // Need to pick a new node
+      this.sessionNode = this.pickRandomNode();
+      this.sessionStartTime = Date.now();
+      this.sessionErrorCount = 0;
+      if (this.sessionNode) {
+        console.log(`New session node selected: ${this.sessionNode.url}`);
+      } else {
+        console.log('No available nodes found');
+      }
+    }
+    return this.sessionNode;
+  }
+
+  // Get the current session node's fee address
+  getSessionNodeFeeAddress(): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      // Use the session failover system instead of direct node calls
+      this.executeWithSessionFailover(async (sessionNode) => {
+        try {
+          const response = await sessionNode.makeRequest('GET', 'feeaddress');
+          if (response.status !== 'OK') {
+            throw new Error('Invalid fee address response');
+          }
+          return response.fee_address || '';
+        } catch (error) {
+          // If feeaddress endpoint fails, try getinfo as fallback
+          try {
+            const info = await sessionNode.makeRequest('GET', 'getinfo');
+            return info.fee_address || '';
+          } catch (fallbackError) {
+            // If both fail, return empty string (will use donation address)
+            return '';
+          }
+        }
+      }).then(resolve).catch(reject);
+    });
   }
 
   makeRequest = (method: 'GET' | 'POST', path: string, body: any = undefined): Promise<any> => {
-    return new Promise<any>((resolve, reject) => {
-      (async function(self) {
-        let waitCounter: number = 0;
+    return this.executeWithSessionFailover((node) => node.makeRequest(method, path, body));
+  }
 
-        while ((self.nodes.length === 0) && (waitCounter < 5)) {
-          await new Promise(r => setTimeout(r, 1000));
-          ++waitCounter; 
+  private executeWithSessionFailover = async <T>(operation: (node: NodeWorker) => Promise<T>): Promise<T> => {
+    let lastError: any;
+    
+    for (let attempts = 0; attempts < 3; attempts++) {
+      try {
+        const sessionNode = this.getSessionNode();
+        if (!sessionNode) {
+          throw new Error('No available nodes');
         }
-
-        // first check if nodes are available already
-        if (self.nodes.length > 0) {
-          let currWorker: NodeWorker | null = self.acquireWorker();
-          let resultData: any = null;
-      
-          while (currWorker) {
-            try {
-              // Fix: Remove 'let' to use outer resultData variable
-              resultData = await currWorker.makeRequest(method, path, body);
-              currWorker = null;
-              // return the data
-              resolve(resultData);
-            } catch(data) {
-              currWorker = self.acquireWorker();
-              resultData = data;
-            }
+        return await operation(sessionNode);
+      } catch (error) {
+        lastError = error;
+        this.sessionErrorCount++;
+        
+        // If we've reached max session errors, reset the session to pick a new node
+        if (this.sessionErrorCount >= this.maxSessionErrors) {
+          this.sessionNode = null;
+          this.sessionErrorCount = 0;
+          
+          // Only clear used nodes if we've used most of the available nodes
+          // This prevents immediately re-selecting the same failed node
+          if (this.usedNodeUrls.size >= Math.max(1, this.nodes.length - 1)) {
+            this.usedNodeUrls.clear();
+          } else {
+            console.log(`Keeping used nodes list (${this.usedNodeUrls.size}/${this.nodes.length} used)`);
           }
-      
-          // if we are here we failed
-          if (!currWorker) {
-            reject(resultData);
-          }
-        } else {
-          reject(null);
-        }  
-      })(this);          
-    });
-  } 
+        }
+      }
+    }
+    
+    throw lastError;
+  }
 
   makeRpcRequest = (method: string, params: any = {}): Promise<any> => {
-    return new Promise<any>((resolve, reject) => {
-      (async function(self) {
-        let waitCounter: number = 0;
-
-        while ((self.nodes.length === 0) && (waitCounter < 5)) {
-          await new Promise(r => setTimeout(r, 1000));
-          ++waitCounter; 
-        }
-
-        // first check if nodes are available already
-        if (self.nodes.length > 0) {
-          let currWorker: NodeWorker | null = self.acquireWorker();
-          let resultData: any = null;
-      
-          while (currWorker) {
-            try {
-              // Fix: Remove 'let' to use outer resultData variable
-              resultData = await currWorker.makeRpcRequest(method, params);
-              currWorker = null;
-              // return the data
-              resolve(resultData);
-            } catch(data) {
-              currWorker = self.acquireWorker();
-              resultData = data;
-            }
-          }
-      
-          // if we are here we failed
-          if (!currWorker) {
-            reject(resultData);
-          }
-        } else {
-          reject(null);
-        }
-      })(this);    
-    });
+    return this.executeWithSessionFailover((node) => node.makeRpcRequest(method, params));
   }
 
   getNodes = () => {
@@ -256,6 +307,8 @@ class NodeWorkersList {
     for (let i = 0; i < nodes.length; i++) {
       this.nodes.push(new NodeWorker(nodes[i]));      
     }
+    // Initialize session when nodes are available
+    this.initializeSession();
   }
 
   stop = () => {
@@ -341,6 +394,8 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
 
   resetNodes = () => {
     Storage.getItem('customNodeUrl', null).then(customNodeUrl => {
+      // Clean up current session before changing nodes
+      this.nodeWorkers.cleanupSession();
       this.nodeWorkers.stop();
 
       function shuffle(array: any) {
@@ -364,9 +419,12 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
       } else {
         shuffle(config.nodeList);
         this.nodeWorkers.start(config.nodeList);
-      }  
+      }
+      
+      // Initialize new session with the updated node configuration
+      this.nodeWorkers.initializeSession();
     }).catch(err => {
-      console.log("resetNodes failed", err);
+      console.error("resetNodes failed", err);
     });
   }
   
@@ -583,6 +641,22 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
         'status': info['status']
       }
     });
+  }
+
+  // Session management methods
+  initializeSession(): void {
+    // Initialize the node session when wallet opens
+    this.nodeWorkers.initializeSession();
+  }
+
+  cleanupSession(): void {
+    // Clean up the node session when wallet closes
+    this.nodeWorkers.cleanupSession();
+  }
+
+  // Get the current session node's fee address
+  getSessionNodeFeeAddress(): Promise<string> {
+    return this.nodeWorkers.getSessionNodeFeeAddress();
   }
 }
 

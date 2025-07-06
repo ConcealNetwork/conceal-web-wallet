@@ -42,7 +42,8 @@ class MessagesView extends DestructableView {
   @VueVar(true) messageValid !: boolean;
   @VueVar(false) lockedForm !: boolean;
   @VueVar(0) maxMessageSize !: number;
-
+  @VueVar(0) ttl !: number;
+  @VueVar(0) cryptonoteMemPoolTxLifetime !: number;
   @VueVar(null) domainAliasAddress !: string | null;
   @VueVar(null) txDestinationName !: string | null;
   @VueVar(null) txDescription !: string | null;
@@ -71,6 +72,7 @@ class MessagesView extends DestructableView {
 
     this.maxMessageSize = config.maxMessageSize;
     this.isWalletSyncing = true;
+    this.cryptonoteMemPoolTxLifetime = config.cryptonoteMemPoolTxLifetime;
 		AppState.enableLeftMenu();
 
     this.nfcAvailable = this.nfc.has;
@@ -114,6 +116,8 @@ class MessagesView extends DestructableView {
     this.domainAliasAddress = null;
     this.txDestinationName = null;
     this.txDescription = null;
+    this.ttl = 0;
+    this.message = '';
 
     this.stopScan();
   }
@@ -235,11 +239,12 @@ class MessagesView extends DestructableView {
   send = () => {
     let self = this;
     blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
-
       if (self.destinationAddress !== null) {
         let destinationAddress = self.destinationAddress;
         let amountToSend = config.messageTxAmount;
-
+    
+        
+        let ttl = self.ttl ? self.ttl : 0;
         swal({
           title: i18n.t('sendPage.creatingTransferModal.title'),
           html: i18n.t('sendPage.creatingTransferModal.content'),
@@ -250,106 +255,132 @@ class MessagesView extends DestructableView {
 
         let mixinToSendWith: number = config.defaultMixin;
 
-        TransactionsExplorer.createTx([{address: destinationAddress, amount: amountToSend}], '', wallet, blockchainHeight,
-          function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
-            return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+        let destination: any [] = [{address: destinationAddress, amount: amountToSend}];
+        
+        // Get fee address from session node for remote node fee
+        blockchainExplorer.getSessionNodeFeeAddress().then((remoteFeeAddress: string) => {
+          if (remoteFeeAddress !== wallet.getPublicAddress() && ttl === 0) {
+            if (remoteFeeAddress !== '') {
+              destination.push({address: remoteFeeAddress, amount: config.remoteNodeFee});
+            } 
+            // it is your lucky day !
+            /* else {
+              destination.push({address: config.donationAddress, amount: config.remoteNodeFee});
+            } */
           }
-          , function (amount: number, feesAmount: number): Promise<void> {
-            if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
-              swal({
-                type: 'error',
-                title: i18n.t('sendPage.notEnoughMoneyModal.title'),
-                text: i18n.t('sendPage.notEnoughMoneyModal.content'),
-                confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
-                onOpen: () => {
-                  swal.hideLoading();
+
+          TransactionsExplorer.createTx(destination, '', wallet, blockchainHeight,
+            function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
+              return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+            }
+            , function (amount: number, feesAmount: number): Promise<void> {
+              if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
+                swal({
+                  type: 'error',
+                  title: i18n.t('sendPage.notEnoughMoneyModal.title'),
+                  text: i18n.t('sendPage.notEnoughMoneyModal.content'),
+                  confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
+                  onOpen: () => {
+                    swal.hideLoading();
+                  }
+                });
+                throw '';
+              }
+
+              return new Promise<void>(function (resolve, reject) {
+                setTimeout(function () {//prevent bug with swal when code is too fast
+                  let feeInfo = '';
+                  if (remoteFeeAddress !== '' && remoteFeeAddress !== wallet.getPublicAddress() && ttl === 0) {
+                    feeInfo = '<br><br><span style="font-size: 0.9em; color: #666;">' + i18n.t('sendPage.confirmTransactionModal.remoteNodeFee', {
+                      fee: config.remoteNodeFee / Math.pow(10, config.coinUnitPlaces),
+                      symbol: config.coinSymbol
+                    }) + '</span>';
+                  }
+                  
+                  swal({
+                    title: i18n.t('sendPage.confirmTransactionModal.title'),
+                    html: i18n.t('sendPage.confirmTransactionModal.content', {
+                      amount:amount / Math.pow(10, config.coinUnitPlaces),
+                      fees:feesAmount / Math.pow(10, config.coinUnitPlaces),
+                      total:(amount+feesAmount) / Math.pow(10, config.coinUnitPlaces),
+                    }) + feeInfo,
+                    showCancelButton: true,
+                    confirmButtonText: i18n.t('sendPage.confirmTransactionModal.confirmText'),
+                    cancelButtonText: i18n.t('sendPage.confirmTransactionModal.cancelText'),
+                  }).then(function (result: any) {
+                    if (result.dismiss) {
+                      reject('');
+                    } else {
+                      swal({
+                        title: i18n.t('sendPage.finalizingTransferModal.title'),
+                        html: i18n.t('sendPage.finalizingTransferModal.content'),
+                        onOpen: () => {
+                          swal.showLoading();
+                        }
+                      });
+                      resolve();
+                    }
+                  }).catch(reject);
+                }, 1);
+              });
+            },
+            mixinToSendWith, self.message, ttl).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+
+            blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
+              //save the tx private key
+              wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
+
+              //force a mempool check so the user is up to date
+              let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
+              if (watchdog !== null)
+                watchdog.checkMempool();
+
+              let promise = Promise.resolve();
+              promise = swal({
+                type: 'success',
+                title: i18n.t('sendPage.transferSentModal.title'),
+                confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
+                onClose: () => {
+                  window.location.href = '#!account';
                 }
               });
-              throw '';
-            }
 
-            return new Promise<void>(function (resolve, reject) {
-              setTimeout(function () {//prevent bug with swal when code is too fast
+              promise.then(function () {
+                if (self.redirectUrlAfterSend !== null) {
+                  window.location.href = self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash);
+                }
+              });
+            }).catch(function (data: any) {
+              swal({
+                type: 'error',
+                title: i18n.t('sendPage.transferExceptionModal.title'),
+                html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(data)}),
+                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+              });
+            });
+            swal.close();
+          }).catch(function (error: any) {
+            //console.log(error);
+            if (error && error !== '') {
+              if (typeof error === 'string')
                 swal({
-                  title: i18n.t('sendPage.confirmTransactionModal.title'),
-                  html: i18n.t('sendPage.confirmTransactionModal.content', {
-                    amount:amount / Math.pow(10, config.coinUnitPlaces),
-                    fees:feesAmount / Math.pow(10, config.coinUnitPlaces),
-                    total:(amount+feesAmount) / Math.pow(10, config.coinUnitPlaces),
-                  }),
-                  showCancelButton: true,
-                  confirmButtonText: i18n.t('sendPage.confirmTransactionModal.confirmText'),
-                  cancelButtonText: i18n.t('sendPage.confirmTransactionModal.cancelText'),
-                }).then(function (result: any) {
-                  if (result.dismiss) {
-                    reject('');
-                  } else {
-                    swal({
-                      title: i18n.t('sendPage.finalizingTransferModal.title'),
-                      html: i18n.t('sendPage.finalizingTransferModal.content'),
-                      onOpen: () => {
-                        swal.showLoading();
-                      }
-                    });
-                    resolve();
-                  }
-                }).catch(reject);
-              }, 1);
-            });
-          },
-          mixinToSendWith, self.message, 0).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
-
-          blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
-            //save the tx private key
-            wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
-
-            //force a mempool check so the user is up to date
-            let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
-            if (watchdog !== null)
-              watchdog.checkMempool();
-
-            let promise = Promise.resolve();
-            promise = swal({
-              type: 'success',
-              title: i18n.t('sendPage.transferSentModal.title'),
-              confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
-              onClose: () => {
-                window.location.href = '#!account';
-              }
-            });
-
-            promise.then(function () {
-              if (self.redirectUrlAfterSend !== null) {
-                window.location.href = self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash);
-              }
-            });
-          }).catch(function (data: any) {
-            swal({
-              type: 'error',
-              title: i18n.t('sendPage.transferExceptionModal.title'),
-              html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(data)}),
-              confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-            });
+                  type: 'error',
+                  title: i18n.t('sendPage.transferExceptionModal.title'),
+                  html: i18n.t('sendPage.transferExceptionModal.content', {details: error}),
+                  confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                });
+              else
+                swal({
+                  type: 'error',
+                  title: i18n.t('sendPage.transferExceptionModal.title'),
+                  html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(error)}),
+                  confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                });
+            }
           });
-          swal.close();
-        }).catch(function (error: any) {
-          //console.log(error);
-          if (error && error !== '') {
-            if (typeof error === 'string')
-              swal({
-                type: 'error',
-                title: i18n.t('sendPage.transferExceptionModal.title'),
-                html: i18n.t('sendPage.transferExceptionModal.content', {details: error}),
-                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-              });
-            else
-              swal({
-                type: 'error',
-                title: i18n.t('sendPage.transferExceptionModal.title'),
-                html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(error)}),
-                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-              });
-          }
+        }).catch((err: any) => {
+          console.error("Error getting session node fee address", err);
+         
         });
       } else {
         swal({
@@ -411,6 +442,14 @@ class MessagesView extends DestructableView {
     }
   }
 
+  @VueWatched()
+  activeTabWatch() {
+    // Reset TTL to 0 when switching to sendMessage tab
+    if (this.activeTab === 'sendMessage') {
+      this.ttl = 0;
+    }
+  }
+
   formatMessageText(text: string): string {
     if (!text) return '';
     // Replace **text** with <b>text</b> (bold) - no spaces between asterisks and text
@@ -425,6 +464,42 @@ class MessagesView extends DestructableView {
     return formatted;
   }
 
+  formatTTL(minutes: number): string {
+    if (minutes === 0) {
+      return '00:00 (no TTL)';
+    }
+    
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    
+    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+  }
+
+  getTTLCountdown(transaction: Transaction): string {
+    if (!transaction.ttl || transaction.ttl === 0 || transaction.blockHeight !== 0) {
+      return '';
+    }
+    
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const remainingSeconds = transaction.ttl - currentTimestamp;
+    
+    if (remainingSeconds <= 0) {
+      return 'Expired';
+    }
+    
+    const hours = Math.floor(remainingSeconds / 3600);
+    const minutes = Math.floor((remainingSeconds % 3600) / 60);
+    const seconds = remainingSeconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${seconds}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
+    } else {
+      return `${seconds}s`;
+    }
+  }
+
   markMessageSeen(txHash: string) {
     if (this.transactions.find(tx => tx.hash === txHash)?.messageViewed === false) {
       wallet.updateTransactionFlags(txHash, {messageViewed: true});
@@ -432,14 +507,30 @@ class MessagesView extends DestructableView {
   }
 
   get filteredTransactions(): Transaction[] {
+    let filtered = this.transactions;
+    
+    // Filter out expired TTL transactions
+    filtered = filtered.filter(tx => {
+      if (tx.ttl > 0) {
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        return currentTimestamp < tx.ttl; // Keep only non-expired TTL transactions
+      }
+      return true; // Keep non-TTL transactions
+    });
+    
+    // Apply message filter if set
     if (!this.messageFilter) {
-      return this.transactions;
+      return filtered;
     }
     
     const searchText = this.messageFilter.toLowerCase();
-    return this.transactions.filter(tx => 
+    return filtered.filter(tx => 
       tx.message && tx.message.toLowerCase().includes(searchText)
     );
+  }
+
+  get showPreview(): boolean {
+    return this.message.includes('  ') || this.message.includes('*');
   }
 }
 

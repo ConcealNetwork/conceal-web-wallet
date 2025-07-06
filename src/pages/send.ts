@@ -268,7 +268,7 @@ class SendView extends DestructableView {
 
   send = () => {
     let self = this;
-    blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
+    blockchainExplorer.getHeight().then(async function (blockchainHeight: number) {
       let amount = parseFloat(self.amountToSend);
       if (self.destinationAddress !== null) {
         //todo use BigInteger
@@ -295,8 +295,22 @@ class SendView extends DestructableView {
         });
 
         let mixinToSendWith: number = config.defaultMixin;
+        
+        let destination: any [] = [{address: destinationAddress, amount: amountToSend}];
+        
+         // Get fee address from session node for remote node fee
+         blockchainExplorer.getSessionNodeFeeAddress().then((remoteFeeAddress: string) => {
+          if (remoteFeeAddress !== wallet.getPublicAddress()) {
+            if (remoteFeeAddress !== '') {
+              destination.push({address: remoteFeeAddress, amount: config.remoteNodeFee});
+            } 
+            // it is your lucky day !
+            /* else {
+              destination.push({address: config.donationAddress, amount: config.remoteNodeFee});
+            } */
+          }
 
-        TransactionsExplorer.createTx([{address: destinationAddress, amount: amountToSend}], self.paymentId, wallet, blockchainHeight,
+        TransactionsExplorer.createTx(destination, self.paymentId, wallet, blockchainHeight,
           function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
             return blockchainExplorer.getRandomOuts(amounts, numberOuts);
           }
@@ -316,13 +330,21 @@ class SendView extends DestructableView {
 
             return new Promise<void>(function (resolve, reject) {
               setTimeout(function () {//prevent bug with swal when code is too fast
+                let feeInfo = '';
+                if (remoteFeeAddress !== '' && remoteFeeAddress !== wallet.getPublicAddress()) {
+                  feeInfo = '<br><br><span style="font-size: 0.9em; color: #666;">' + i18n.t('sendPage.confirmTransactionModal.remoteNodeFee', {
+                    fee: config.remoteNodeFee / Math.pow(10, config.coinUnitPlaces),
+                    symbol: config.coinSymbol
+                  }) + '</span>';
+                }
+                
                 swal({
                   title: i18n.t('sendPage.confirmTransactionModal.title'),
                   html: i18n.t('sendPage.confirmTransactionModal.content', {
                     amount:amount / Math.pow(10, config.coinUnitPlaces),
                     fees:feesAmount / Math.pow(10, config.coinUnitPlaces),
                     total:(amount+feesAmount) / Math.pow(10, config.coinUnitPlaces),
-                  }),
+                  }) + feeInfo,
                   showCancelButton: true,
                   confirmButtonText: i18n.t('sendPage.confirmTransactionModal.confirmText'),
                   cancelButtonText: i18n.t('sendPage.confirmTransactionModal.cancelText'),
@@ -427,6 +449,10 @@ class SendView extends DestructableView {
             });
           }
         });
+      }).catch((err: any) => {
+        console.error("Error getting session node fee address", err);
+       
+      });
       } else {
         swal({
           type: 'error',

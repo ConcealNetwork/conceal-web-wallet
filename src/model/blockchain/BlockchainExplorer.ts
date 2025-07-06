@@ -95,4 +95,12 @@ export interface BlockchainExplorer {
     getNetworkInfo(): Promise<NetworkInfo>;
 
     getRemoteNodeInformation(): Promise<RemoteNodeInformation>;
+
+    // Session management methods
+    initializeSession(): void;
+    
+    cleanupSession(): void;
+
+    // Get the current session node's fee address
+    getSessionNodeFeeAddress(): Promise<string>;
 }

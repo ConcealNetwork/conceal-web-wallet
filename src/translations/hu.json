@@ -306,7 +306,8 @@
         "title": "Megerősíted a tranzakciót?",
         "content": "Mennyiség: {amount}<br/>Díj: {fees}<br/>Összesen: {total}",
         "confirmText": "Megerősítés",
-        "cancelText": "Mégsem"
+        "cancelText": "Mégsem",
+        "remoteNodeFee": "A tárca díja {fee} {symbol} hozzáadva a mennyiséghez"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",

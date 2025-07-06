@@ -306,7 +306,8 @@
         "title": "确认转账？",
         "content": "数量: {amount}<br/>交易费: {fees}<br/>总额: {total}",
         "confirmText": "确认",
-        "cancelText": "取消"
+        "cancelText": "取消",
+        "remoteNodeFee": "远程节点费用 {fee} {symbol} 已添加到金额"
       },
       "waitingNfcModal": {
         "title": "等待Nfc",

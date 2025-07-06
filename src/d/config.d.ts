@@ -11,6 +11,10 @@ declare var config : {
 	testnetExplorerUrlBlock: string,
 	testnet: boolean,
 	coinUnitPlaces: number,
+	//fee
+	coinFee: typeof JSBigInt,
+	remoteNodeFee: typeof JSBigInt,
+	donationAddress: string,
 	//fusion
   optimizeOutputs: number,
   optimizeThreshold: number,
@@ -45,7 +49,7 @@ declare var config : {
   maxWorkerCores: number,
 	maxBlockNumber: number,
 	avgBlockTime: number,
-	coinFee: typeof JSBigInt,
+	cryptonoteMemPoolTxLifetime: number,
 	//deposit
 	depositMinAmountCoin: number,
 	depositMinTermMonth: number,

@@ -308,7 +308,8 @@
         "title": "آیا تراکنش را تایید میکنید",
         "content": "'مقدار : {amount}<br/>کارمزد : {fees}<br/>مقدار کل : {total}",
         "confirmText": "تایید",
-        "cancelText": "لغو"
+        "cancelText": "لغو",
+        "remoteNodeFee": "کارمزد نود رمزگذاری {fee} {symbol} به مقدار اضافه شده است"
       },
       "waitingNfcModal": {
         "title": "در انتظار ان اف سی",

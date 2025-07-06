@@ -306,7 +306,8 @@
         "title": "Confermare transferimento?",
         "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
         "confirmText": "Conferma",
-        "cancelText": "Annulla"
+        "cancelText": "Annulla",
+        "remoteNodeFee": "La commissione del nodo remoto {fee} {symbol} è stata aggiunta al montante"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",

@@ -308,7 +308,8 @@
         "title": "Transfer bestätigen ?",
         "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
         "confirmText": "Bestätigen",
-        "cancelText": "Abbrechen"
+        "cancelText": "Abbrechen",
+        "remoteNodeFee": "Remote Node Gebühr {fee} {symbol} wurde zum Betrag hinzugefügt"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",

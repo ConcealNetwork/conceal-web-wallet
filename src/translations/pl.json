@@ -306,7 +306,8 @@
         "title": "Potwierdz transfer?",
         "content": "Ilość: {amount}<br/>Opłata transakcyjna: {fees}<br/>W całości: {total}",
         "confirmText": "Potwierdź",
-        "cancelText": "Przerwij"
+        "cancelText": "Przerwij",
+        "remoteNodeFee": "Opłata za węzeł zdalny {fee} {symbol} została dodana do kwoty"
       },
       "waitingNfcModal": {
         "title": "oczekiwanie na NFC",
