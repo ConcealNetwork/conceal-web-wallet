@@ -60,8 +60,16 @@ There are four ways to import your wallet:
   - Custom amount QR for easy mobile payments
 
 ### Messages Page 💬
-- View received messages
+- View received messages  
+click on the envelop to mark as viewed.  
 - Send new messages
+  - Use markdown formatting:  
+  - 2 spaces to go to next line
+  - in between * for *italic*
+  - in between ** for **bold**
+  - in between \` for `code`
+
+Slide the TTL bar to create a self destruct message.
 
 ### Deposit Page 🏦
 - View all your deposits

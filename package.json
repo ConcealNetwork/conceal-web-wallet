@@ -15,7 +15,7 @@
 
     "@types/node": "^22.15.20",
 
-    "dotenv": "^17.00",
+    "dotenv": "^17.0.0",
     "typescript": "^5.8.3",
     "workbox-build": "^7.3.0"
   },
