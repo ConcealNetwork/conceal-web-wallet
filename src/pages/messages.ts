@@ -262,11 +262,9 @@ class MessagesView extends DestructableView {
           if (remoteFeeAddress !== wallet.getPublicAddress() && ttl === 0) {
             if (remoteFeeAddress !== '') {
               destination.push({address: remoteFeeAddress, amount: config.remoteNodeFee});
-            } 
-            // it is your lucky day !
-            /* else {
+            } else {
               destination.push({address: config.donationAddress, amount: config.remoteNodeFee});
-            } */
+            } 
           }
 
           TransactionsExplorer.createTx(destination, '', wallet, blockchainHeight,
@@ -452,12 +450,18 @@ class MessagesView extends DestructableView {
 
   formatMessageText(text: string): string {
     if (!text) return '';
+    
+    // Define colors based on active tab
+    const codeColors = this.activeTab === 'messageHistory' 
+      ? { bg: '#2d3748', textCode: '#fafafa', textBold: '#fafafa', border: '#D9DCE7' }  // Dark theme for history
+      : { bg: '#424242', textCode: '#fafafa', textBold: '#2d3748', border: '#000' }; // Light theme for send message
+    
     // Replace **text** with <b>text</b> (bold) - no spaces between asterisks and text
-    let formatted = text.replace(/\*\*([^*\s][^*]*[^*\s])\*\*/g, '<span style="font-weight: bold; color: #000; text-shadow: 0px 0px 1px rgba(0,0,0);">$1</span>');
+    let formatted = text.replace(/\*\*([^*\s][^*]*[^*\s])\*\*/g, `<span style="font-weight: bold; color: ${codeColors.textBold}; text-shadow: 0px 0px 1px ${codeColors.textBold}">$1</span>`);
     // Replace *text* with <i>text</i> (italic) - no spaces between asterisks and text
     formatted = formatted.replace(/\*([^*\s][^*]*[^*\s])\*/g, '<i>$1</i>');
-    // Replace `text` with inverted styling - allows phrases and sentences
-    formatted = formatted.replace(/`([^`]+)`/g, '<span style="background-color: #333; color: #fff; padding: 1px 3px; border-radius: 3px; font-family: monospace; font-size: 0.9em;">$1</span>');
+    // Replace `text` with variable styling based on active tab
+    formatted = formatted.replace(/`([^`]+)`/g, `<span style="background-color: ${codeColors.bg}; color: ${codeColors.textCode}; padding: 1px 3px; border-radius: 3px; border: 1px solid ${codeColors.border}; font-family: monospace; font-size: 0.9em;">$1</span>`);
     // Replace "* " with bullet point
     formatted = formatted.replace(/\*\s/g, '&nbsp;&nbsp•&nbsp');
     // Replace any two spaces with <br>

@@ -303,11 +303,9 @@ class SendView extends DestructableView {
           if (remoteFeeAddress !== wallet.getPublicAddress()) {
             if (remoteFeeAddress !== '') {
               destination.push({address: remoteFeeAddress, amount: config.remoteNodeFee});
-            } 
-            // it is your lucky day !
-            /* else {
+            } else {
               destination.push({address: config.donationAddress, amount: config.remoteNodeFee});
-            } */
+            } 
           }
 
         TransactionsExplorer.createTx(destination, self.paymentId, wallet, blockchainHeight,
