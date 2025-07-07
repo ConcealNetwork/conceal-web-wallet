@@ -329,11 +329,11 @@ class SendView extends DestructableView {
             return new Promise<void>(function (resolve, reject) {
               setTimeout(function () {//prevent bug with swal when code is too fast
                 let feeInfo = '';
-                if (remoteFeeAddress !== '' && remoteFeeAddress !== wallet.getPublicAddress()) {
-                  feeInfo = '<br><br><span style="font-size: 0.9em; color: #666;">' + i18n.t('sendPage.confirmTransactionModal.remoteNodeFee', {
+                if (remoteFeeAddress !== wallet.getPublicAddress()) {
+                  feeInfo = '<br><br><span style="font-size: 0.8em; font-style: italic; color: #666;">' + '(' +i18n.t('sendPage.confirmTransactionModal.remoteNodeFee', {
                     fee: config.remoteNodeFee / Math.pow(10, config.coinUnitPlaces),
                     symbol: config.coinSymbol
-                  }) + '</span>';
+                  }) + ')'+ '</span>';
                 }
                 
                 swal({
