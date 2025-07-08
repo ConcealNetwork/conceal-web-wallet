@@ -57,24 +57,27 @@
                 <table>
                   <template v-for="transaction of filteredTransactions">
                     <tr class="transaction" :class="(transaction.blockHeight === 0 ? 'pending' : '')">
-                      <td class="direction" >
-                        <i v-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
-                        <i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
-                        <i :class="['message-status-dot', transaction.messageViewed ? 'fa fa-envelope-open' : 'fa fa-envelope']" 
-                           aria-hidden="true" 
-                           @click="markMessageSeen(transaction.hash); $event.target.className = 'message-status-dot fa fa-envelope-open'"></i>
-                      </td><!--LEfT-->
-                      <td class="timestamp" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp * 1000), 'short')}}</td>
-                      <td class="timestamp" v-else="">...</td>
+                      <td class="direction">
+                        <div class="meta-top">
+                          <i v-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
+                          <i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
+                          <i :class="['message-status-dot', transaction.messageViewed ? 'fa fa-envelope-open' : 'fa fa-envelope']" 
+                             aria-hidden="true" 
+                             @click="markMessageSeen(transaction.hash); $event.target.className = 'message-status-dot fa fa-envelope-open'"></i>
+                          <span class="date" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp * 1000), 'short')}}</span>
+                          <span class="date" v-else>...</span>
+                        </div>
+                      </td>
                       <td class="blockHeight">{{transaction.blockHeight}}</td>
                       <td class="ttl-countdown" v-if="transaction.blockHeight === 0 && transaction.ttl > 0">
+                        <i class="fa fa-stopwatch"></i>
                         <span class="ttl-timer">{{ getTTLCountdown(transaction) }}</span>
                       </td>
                       <td class="ttl-countdown" v-else=""></td>
                       <td class="messageText" v-html="formatMessage ? formatMessageText(transaction.message) : transaction.message"></td>
                     </tr>
-                    <tr v-if="transaction.paymentId !== ''">
-                      <td colspan="6" class="paymentId" >{{transaction.paymentId}}</td><!--UNDER-->
+                    <tr v-if="transaction.paymentId !== ''" class="payment-id-row">
+                      <td colspan="6" class="paymentId" >{{transaction.paymentId}}</td>
                     </tr>
                   </template>
                 </table>

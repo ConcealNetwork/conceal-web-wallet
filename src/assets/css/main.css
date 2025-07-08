@@ -647,6 +647,9 @@ body.transparent #copyright {
 	font-size: 18px;
 }
 
+/* Old desktop-specific message history styles removed - now using grid layout for all screens */
+
+/* 
 .messageHistory .transactions .trnsaction .timestamp {
 	width: 20%;
 	font-size: 18px;
@@ -662,7 +665,7 @@ body.transparent #copyright {
 	font-size: 18px;
   padding-right: 1em;
 }
-
+*/
 
 .message-status-dot {
 	font-size: 0.8em;
@@ -680,7 +683,7 @@ body.transparent #copyright {
   }
   
   .messageHistory .header-filter-wrapper {
-	width: 45%;
+	width: 65%;
 	margin-left: auto;
 	margin-right: 1rem;
   }
@@ -2501,5 +2504,193 @@ body {
   color: var(--color-text-dark-muted);
   white-space: pre-line;
   line-height: 1rem;
+}
+
+/* Responsive 2-line layout for message history - applies to all screen sizes */
+/* This replaces the old table-based layout with a modern grid system that provides better space utilization */
+.messageHistory .transactions table {
+  table-layout: auto;
+}
+
+.messageHistory .transactions .transaction {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto auto auto;
+  gap: 0.5rem;
+  padding: 0.8rem 0.3rem;
+  border-bottom: 1px solid var(--color-text-tertiary);
+}
+
+.messageHistory .transactions .transaction td {
+  padding: 0.2rem;
+  border: none;
+}
+
+/* Left column - status and date on first row, block height on second row, TTL on third row */
+.messageHistory .transactions .transaction .direction {
+  grid-column: 1;
+  grid-row: 1;
+  width: auto;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.messageHistory .transactions .transaction .timestamp {
+  grid-column: 1;
+  grid-row: 1;
+  width: auto;
+  font-size: 14px;
+  text-align: center;
+  align-self: center;
+  margin-left: 0;
+  justify-content: center;
+  display: flex;
+}
+
+.messageHistory .transactions .transaction .blockHeight {
+  grid-column: 1;
+  grid-row: 2;
+  width: auto;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 0.2rem;
+  background: var(--color-bg-tab);
+  border-radius: 3px;
+  max-width: 160px;
+}
+
+.messageHistory .transactions .transaction .ttl-countdown {
+  grid-column: 1;
+  grid-row: 3;
+  width: auto;
+  font-size: 12px;
+  text-align: center;
+  padding: 0.2rem;
+  color: var(--color-warning);
+  font-weight: bold;
+  background: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  min-width: 140px;
+  max-width: 160px;
+}
+
+.messageHistory .transactions .transaction .ttl-countdown i.fa {
+  font-size: 1em;
+  margin-right: 0.2em;
+  color: var(--color-warning);
+  transition: color 0.3s ease;
+}
+.messageHistory .transactions .transaction .ttl-countdown:not(:empty) {
+  color: white;
+}
+
+/* Right column - message text spans all rows */
+.messageHistory .transactions .transaction .messageText {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  width: auto;
+  font-size: 16px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Payment ID row styling */
+.messageHistory .transactions .payment-id-row {
+  display: block;
+  margin-top: 0.2rem;
+  padding: 0.3rem;
+  background: var(--color-bg-tab);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  border-radius: 3px;
+}
+
+.messageHistory .transactions .payment-id-row td {
+  padding: 0.2rem;
+  border: none;
+  text-align: center;
+}
+
+/* Adjust message status dot positioning */
+.messageHistory .transactions .transaction .message-status-dot {
+  font-size: 1em;
+  margin-left: 0;
+}
+
+/* Ensure proper spacing for direction icons */
+.messageHistory .transactions .transaction .direction i {
+  margin-right: 0.3rem;
+}
+
+/* Responsive adjustments for different screen sizes */
+@media screen and (max-width: 768px) {
+  .messageHistory .transactions .transaction {
+    gap: 0.5rem;
+    padding: 0.8rem 0.3rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .messageHistory .transactions .transaction {
+    grid-template-columns: 0.8fr 2.2fr;
+    gap: 0.3rem;
+    padding: 0.6rem 0.2rem;
+  }
+  
+  .messageHistory .transactions .transaction .messageText {
+    font-size: 15px;
+  }
+  
+  .messageHistory .transactions .transaction .timestamp {
+    font-size: 13px;
+  }
+  
+  .messageHistory .transactions .transaction .blockHeight {
+    font-size: 11px;
+	max-height: 1.6rem;
+  }
+  
+  .messageHistory .transactions .transaction .ttl-countdown {
+    font-size: 11px;
+  }
+}
+
+/* Ensure .timestamp is centered and not inside a flex container */
+.messageHistory .transactions .transaction .timestamp {
+  text-align: center;
+  margin-left: 0.5em;
+  display: block;
+}
+
+@media screen and (max-width: 600px) {
+  .messageHistory .transactions .transaction .timestamp {
+    margin-left: 0.3em;
+    font-size: 13px;
+  }
+}
+
+.messageHistory .transactions .transaction .meta-top {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.messageHistory .transactions .transaction .meta-top .date {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
