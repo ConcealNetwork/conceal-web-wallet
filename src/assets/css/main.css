@@ -2585,16 +2585,18 @@ body {
   font-size: 1em;
   margin-right: 0.2em;
   color: var(--color-warning);
-  transition: color 0.3s ease;
+  display: inline-block;
+  width: auto;
+  height: auto;
+  line-height: 1;
 }
-.messageHistory .transactions .transaction .ttl-countdown:not(:empty) {
-  color: white;
-}
+
+/* Removed the :not(:empty) rule that was causing color conflicts */
 
 /* Right column - message text spans all rows */
 .messageHistory .transactions .transaction .messageText {
   grid-column: 2;
-  grid-row: 1 / span 3;
+  grid-row: 1 / -1; /* Span from first to last row automatically */
   width: auto;
   font-size: 16px;
   line-height: 1.4;

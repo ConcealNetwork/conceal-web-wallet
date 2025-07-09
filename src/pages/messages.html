@@ -70,10 +70,9 @@
                       </td>
                       <td class="blockHeight">{{transaction.blockHeight}}</td>
                       <td class="ttl-countdown" v-if="transaction.blockHeight === 0 && transaction.ttl > 0">
-                        <i class="fa fa-stopwatch"></i>
+                        <i class="fa fa-clock-o"></i>
                         <span class="ttl-timer">{{ getTTLCountdown(transaction) }}</span>
                       </td>
-                      <td class="ttl-countdown" v-else=""></td>
                       <td class="messageText" v-html="formatMessage ? formatMessageText(transaction.message) : transaction.message"></td>
                     </tr>
                     <tr v-if="transaction.paymentId !== ''" class="payment-id-row">
