@@ -43,16 +43,31 @@ const i18n = new VueI18n({
 let browserUserLang = ''+(navigator.language || (<any>navigator).userLanguage);
 browserUserLang = browserUserLang.toLowerCase().split('-')[0];
 
-Storage.getItem('user-lang', browserUserLang).then(function(userLang : string) {
-	if (userLang) {
-		Translations.loadLangTranslation(userLang).catch(err => {
-			console.error(`Failed to load '${userLang}' language`, err);
-			return Translations.loadLangTranslation('en');
-		}).catch(err => {
-			console.error("Failed to load 'en' language", err);
-		});
-	}
+// Create a promise that resolves when i18n is ready
+const i18nReadyPromise = new Promise<void>((resolve) => {
+	Storage.getItem('user-lang', browserUserLang).then(function(userLang : string) {
+		if (userLang) {
+			Translations.loadLangTranslation(userLang).catch(err => {
+				console.error(`Failed to load '${userLang}' language`, err);
+				return Translations.loadLangTranslation('en');
+			
+			}).catch(err => {
+				console.error("Failed to load 'en' language", err);
+			}).finally(() => {
+				resolve();
+			});
+		} else {
+			resolve();
+		}
+	});
 });
+
+(window as any).i18nReadyPromise = i18nReadyPromise;
+(window as any).safeSwal = function(options: any) {
+	return i18nReadyPromise.then(() => {
+		return swal(options);
+	});
+};
 
 
 //========================================================
@@ -283,9 +298,18 @@ Y88b  d88P Y88b.  Y88..88P 888 d88P         scam and will give them access to yo
 IA Self-XSS scam tricks you into compromising your wallet by claiming to provide a way to log into someone else's wallet, or some other kind of reward, after pasting a special code or link into your web browser.`, "font-family:monospace")
 
 if (!isCordovaApp && 'serviceWorker' in navigator) {
+	// Flag to prevent showing the same update multiple times
+	let updateModalShown = false;
+	
 	const showRefreshUI = function(registration : any){
-		//console.log(registration);
-		swal({
+		// Prevent showing the same update multiple times
+		if (updateModalShown) {
+			return;
+		}
+		updateModalShown = true;
+		
+		// Use safeSwal which automatically waits for i18n
+		(window as any).safeSwal({
 			type:'info',
 			title:i18n.t('global.newVersionModal.title'),
 			html:i18n.t('global.newVersionModal.content'),
@@ -295,6 +319,9 @@ if (!isCordovaApp && 'serviceWorker' in navigator) {
 		}).then(function(value : any){
 			if(!value.dismiss){
 				registration.waiting.postMessage('force-activate');
+			} else {
+				// Reset flag when user cancels so they can see it again later
+				updateModalShown = false;
 			}
 		});
 	};
