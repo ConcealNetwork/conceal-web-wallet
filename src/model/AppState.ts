@@ -111,10 +111,10 @@ export class AppState {
 				confirmButtonText: i18n.t('global.openWalletModal.confirmText'),
 				cancelButtonText: i18n.t('global.openWalletModal.cancelText'),
 			}).then((result: any) => {
-				$("#appLoader").addClass("appLoaderVisible");
+				$('#pageLoading').show();
 
 				BlockchainExplorerProvider.getInstance().initialize().then(success => {
-					$("#appLoader").removeClass("appLoaderVisible");
+					$('#pageLoading').hide();
 					
 					setTimeout(() => { //for async
 						if (result.value) {
@@ -156,8 +156,16 @@ export class AppState {
 							reject();
 						}
 					}, 1);
-				}).catch(reject);
-			}).catch(reject);
+				}).catch(err => {
+					console.log(err);
+					$('#pageLoading').hide();
+					reject(err);
+				});
+			}).catch(err => {
+				console.log(err);
+				$('#pageLoading').hide();
+				reject(err);
+			});
 		});
 	}
 }

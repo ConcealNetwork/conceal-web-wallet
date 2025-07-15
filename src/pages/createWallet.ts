@@ -56,11 +56,11 @@ class CreateViewWallet extends DestructableView{
 	generateWallet(){
 		let self = this;
 		setTimeout(function(){
-      $("#appLoader").addClass("appLoaderVisible");
+      		$('#pageLoading').show();
 
       blockchainExplorer.initialize().then(success => {    
         blockchainExplorer.getHeight().then(function(currentHeight){
-          $("#appLoader").removeClass("appLoaderVisible");
+          		$('#pageLoading').hide();
           
           let seed = CnNativeBride.sc_reduce32(CnRandom.rand_32());
           let keys = Cn.create_address(seed);
@@ -93,9 +93,11 @@ class CreateViewWallet extends DestructableView{
           }, 2000);
         }).catch(err => {
           console.log(err);
+		  $('#pageLoading').hide();
         });
       }).catch(err => {
         console.log(err);
+		$('#pageLoading').hide();
       });  
 		},0);
 	}

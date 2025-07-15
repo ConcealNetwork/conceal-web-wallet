@@ -34,7 +34,6 @@ if(wallet !== null){
 class IndexView extends DestructableView{
 	@VueVar(false) hasLocalWallet !: boolean;
 	@VueVar(false) isWalletLoaded !: boolean;
-
 	constructor(container : string){
 		super(container);
 

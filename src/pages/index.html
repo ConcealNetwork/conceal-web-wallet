@@ -8,10 +8,10 @@
 				<h1>{{ $t("homepage.mainTitle") }}</h1>
 				<h2>{{ $t("homepage.tagLine") }}</h2>
 			</div>
-			<div class="callToAction tc">
-				<a href="#" @click="loadWallet()" v-if="hasLocalWallet" class="btn primary">{{ $t("homepage.actions.loadWallet") }}</a>
-				<a href="#!createWallet" class="btn primary" v-if="!hasLocalWallet">{{ $t("homepage.actions.createWallet") }}</a>
-				<a href="#!import" class="btn mini" v-if="!hasLocalWallet">{{ $t("homepage.actions.importWallet") }}</a>
+			<div class="home callToAction tc">
+				<a href="#" @click="loadWallet()" v-if="hasLocalWallet" class="btn basic">{{ $t("homepage.actions.loadWallet") }}</a>
+				<a href="#!createWallet" class="btn primary">{{ $t("homepage.actions.createWallet") }}</a>
+				<a href="#!import" class="btn primary">{{ $t("homepage.actions.importWallet") }}</a>
 			</div>
 		</div>
 	</div>

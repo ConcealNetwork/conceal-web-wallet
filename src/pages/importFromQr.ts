@@ -67,11 +67,11 @@ class ImportView extends DestructableView{
 
 	importWallet(){
 		let self = this;
-    $("#appLoader").addClass("appLoaderVisible");
+    $('#pageLoading').show();
 
     blockchainExplorer.initialize().then(success => {    
       blockchainExplorer.getHeight().then(function(currentHeight){
-        $("#appLoader").removeClass("appLoaderVisible");
+        $('#pageLoading').hide();
         let newWallet = new Wallet();
 
         if(self.mnemonicSeed !== null) {
@@ -133,12 +133,27 @@ class ImportView extends DestructableView{
         newWallet.creationHeight = newWallet.lastHeight;
 
         AppState.openWallet(newWallet, self.password);
+
         window.location.href = '#account';
      }).catch(err => {
         console.log(err);
+        $('#pageLoading').hide();
+        swal({
+          type: 'error',
+          title: i18n.t('global.errorModal.title'),
+          text: i18n.t('global.errorModal.importFailed'),
+          confirmButtonText: i18n.t('global.errorModal.confirmText'),
+        });
       });
     }).catch(err => {
       console.log(err);
+      $('#pageLoading').hide();
+      swal({
+        type: 'error',
+        title: i18n.t('global.errorModal.title'),
+        text: i18n.t('global.errorModal.networkError'),
+        confirmButtonText: i18n.t('global.errorModal.confirmText'),
+      });
     });  
 	}
 

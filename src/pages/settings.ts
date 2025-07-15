@@ -109,7 +109,7 @@ class SettingsView extends DestructableView{
     }).catch((err: any) => {
       console.error("Error trying to get user language", err);
     });
-
+// in case cordova.js got loaded, and app-version-plugin was installed ... => that won't happen in a web view redirect scenario. Need to rethink that if we really want to display those infor in Native context.
 		if(typeof (<any>window).cordova !== 'undefined' && typeof (<any>window).cordova.getAppVersion !== 'undefined') {
 			(<any>window).cordova.getAppVersion.getVersionNumber().then((version : string) => {
 				this.nativeVersionNumber = version;
