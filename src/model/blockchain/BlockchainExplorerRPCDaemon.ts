@@ -245,11 +245,13 @@ class NodeWorkersList {
           }
           return response.fee_address || '';
         } catch (error) {
+          console.warn(`Fee address endpoint failed for node ${sessionNode.url}:`, error);
           // If feeaddress endpoint fails, try getinfo as fallback
           try {
             const info = await sessionNode.makeRequest('GET', 'getinfo');
             return info.fee_address || '';
           } catch (fallbackError) {
+            console.warn(`Getinfo fallback also failed for node ${sessionNode.url}:`, fallbackError);
             // If both fail, return empty string (will use donation address)
             return '';
           }
