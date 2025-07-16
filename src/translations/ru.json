@@ -600,6 +600,12 @@
       },
       "qrScanningBlock": {
         "title": "Покажите QR код"
+      },
+      "error": {
+        "title": "Ошибка",
+        "connection": "Ошибка соединения, попробуйте еще раз",
+        "init": "Ошибка инициализации, попробуйте еще раз",
+        "confirmText": "OK"
       }
     },
     "exportPage": {

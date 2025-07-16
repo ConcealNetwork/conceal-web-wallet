@@ -603,6 +603,12 @@
       },
       "qrScanningBlock": {
         "title": "Pokarz kod QR"
+      },
+      "error": {
+        "title": "Błąd",
+        "connection": "Błąd połączenia, spróbuj ponownie",
+        "init": "Błąd inicjalizacji, spróbuj ponownie",
+        "confirmText": "OK"
       }
     },
     "exportPage": {

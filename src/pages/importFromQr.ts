@@ -140,9 +140,9 @@ class ImportView extends DestructableView{
         $('#pageLoading').hide();
         swal({
           type: 'error',
-          title: i18n.t('global.errorModal.title'),
-          text: i18n.t('global.errorModal.importFailed'),
-          confirmButtonText: i18n.t('global.errorModal.confirmText'),
+          title: i18n.t('importFromQrPage.error.title'),
+          text: i18n.t('importFromQrPage.error.connection'),
+          confirmButtonText: i18n.t('importFromQrPage.error.confirmText'),
         });
       });
     }).catch(err => {
@@ -150,9 +150,9 @@ class ImportView extends DestructableView{
       $('#pageLoading').hide();
       swal({
         type: 'error',
-        title: i18n.t('global.errorModal.title'),
-        text: i18n.t('global.errorModal.networkError'),
-        confirmButtonText: i18n.t('global.errorModal.confirmText'),
+        title: i18n.t('importFromQrPage.error.title'),
+        text: i18n.t('importFromQrPage.error.init'),
+        confirmButtonText: i18n.t('importFromQrPage.error.confirmText'),
       });
     });  
 	}

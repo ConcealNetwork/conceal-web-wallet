@@ -600,6 +600,12 @@
       },
       "qrScanningBlock": {
         "title": "Наведіть на QR код"
+      },
+      "error": {
+        "title": "Помилка",
+        "connection": "Помилка з'єднання, спробуйте знову",
+        "init": "Помилка ініціалізації, спробуйте знову",
+        "confirmText": "OK"
       }
     },
     "exportPage": {

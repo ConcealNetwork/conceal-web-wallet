@@ -2707,3 +2707,17 @@ body {
   text-overflow: ellipsis;
 }
 
+.version-info {
+	position: fixed;
+	bottom: 10%;
+	left: 50%;
+	transform: translateX(-50%);
+	text-align: center;
+	font-size: 12px;
+	color: #888;
+	line-height: 1.4;
+}
+
+.version-info div {
+	margin: 2px 0;
+}

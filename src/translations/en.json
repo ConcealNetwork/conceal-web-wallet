@@ -601,6 +601,12 @@
       },
       "qrScanningBlock": {
         "title": "Present the QR code"
+      },
+      "error": {
+        "title": "Error",
+        "connection": "Connection error, give it an other try",
+        "init": "Initialization error, give it an other try",
+        "confirmText": "OK"
       }
     },
     "exportPage": {

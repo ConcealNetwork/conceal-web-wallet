@@ -603,6 +603,12 @@
       },
       "qrScanningBlock": {
         "title": "QR 코드를 보여주세요."
+      },
+      "error": {
+        "title": "오류",
+        "connection": "연결 오류, 다시 시도해주세요",
+        "init": "초기화 오류, 다시 시도해주세요",
+        "confirmText": "확인"
       }
     },
     "exportPage": {

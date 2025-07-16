@@ -595,6 +595,12 @@
       },
       "qrScanningBlock": {
         "title": "展示二维码"
+      },
+      "error": {
+        "title": "错误",
+        "connection": "连接错误，请重试",
+        "init": "初始化错误，请重试",
+        "confirmText": "确认"
       }
     },
     "exportPage": {

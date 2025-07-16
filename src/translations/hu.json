@@ -600,6 +600,12 @@
       },
       "qrScanningBlock": {
         "title": "Mutasd be a QR-kódot"
+      },
+      "error": {
+        "title": "Hiba",
+        "connection": "Kapcsolódási hiba, próbáld újra",
+        "init": "Inicializálási hiba, próbáld újra",
+        "confirmText": "OK"
       }
     },
     "exportPage": {
