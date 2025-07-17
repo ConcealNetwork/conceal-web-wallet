@@ -639,6 +639,13 @@ class DepositsView extends DestructableView {
                 }
               });
               throw '';
+            } else if (amount < config.depositMinAmountCoin * Math.pow(10, config.coinUnitPlaces)) {
+              swal({
+                type: 'error',
+                title: i18n.t('depositsPage.createDeposit.amountError'),
+                confirmButtonText: 'OK'
+              });
+              throw '';
             }
             return Promise.resolve();
           },

@@ -592,8 +592,22 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
       tx_as_hex: rawTx,
       do_not_relay: false
     }).then((transactions: any) => {
-      if (!transactions.status || transactions.status !== 'OK')
-        throw transactions;
+      if (!transactions.status || transactions.status !== 'OK') {
+        // Create a meaningful error message from the status
+        let errorMessage = 'Failed to send raw transaction';
+        
+        if (transactions.status) {
+          errorMessage += `: ${transactions.status}`;
+        }
+        
+        // Create and throw a proper Error object
+        const error = new Error(errorMessage);
+        // Attach the original response for debugging if needed
+        (error as any).originalResponse = transactions;
+        throw error;
+      }
+      
+      return transactions;
     });
   }
 
