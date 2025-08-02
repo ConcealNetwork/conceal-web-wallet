@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "The password needs at least 8 characters - 1 upper case letter, 1 lower case letter, one number, and one special character",
       "passwordConfirmationNotMatching": "The password does not match the first password you wrote",
       "download": "Download",
+      "confirmText": "OK",
+      "error": "Error",
       "newVersionModal": {
         "title": "A new version is available",
         "content": "Do you want to reload to load the new version?",
@@ -306,7 +308,8 @@
         "title": "Confirm transfer?",
         "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
         "confirmText": "Confirm",
-        "cancelText": "Cancel"
+        "cancelText": "Cancel",
+        "remoteNodeFee": "Remote Node fee {fee} {symbol} has been added to amount"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",
@@ -336,7 +339,11 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is too long. Max length is 260 characters"
+          "invalid": "The message is too long. Max length is 260 characters",
+          "preview": "Preview"
+        },
+        "ttl": {
+          "info": "TTL transaction will only exist in mempool and auto-destruct after {ttl}(Hours:Minutes). It won't be mined into blocks. Therefore, the amount charged will be returned to the wallet."
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -589,10 +596,17 @@
       "qrCodeBlock": {
         "title": "QR code",
         "startScanButton": "Start the scan",
-        "importButton": "Import"
+        "importButton": "Import",
+        "scanSuccess": "QR code scanned successfully"
       },
       "qrScanningBlock": {
         "title": "Present the QR code"
+      },
+      "error": {
+        "title": "Error",
+        "connection": "Connection error, give it an other try",
+        "init": "Initialization error, give it an other try",
+        "confirmText": "OK"
       }
     },
     "exportPage": {

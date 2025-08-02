@@ -159,6 +159,8 @@ export class Transaction {
   fees: number = 0;
   fusion: boolean = false;
   message: string = '';
+  messageViewed: boolean = false;
+  ttl: number = 0; // TTL timestamp (absolute UNIX timestamp in seconds)
   
   static fromRaw = (raw: any) => {
     let transac = new Transaction();
@@ -184,6 +186,8 @@ export class Transaction {
     if (typeof raw.hash !== 'undefined') transac.hash = raw.hash;
     if (typeof raw.message !== 'undefined') transac.message = raw.message;
     if (typeof raw.fusion !== 'undefined') transac.fusion = raw.fusion;
+    if (typeof raw.messageViewed !== 'undefined') transac.messageViewed = raw.messageViewed;
+    if (typeof raw.ttl !== 'undefined') transac.ttl = raw.ttl;
     return transac;
   }
 
@@ -212,7 +216,8 @@ export class Transaction {
     if (this.message !== '') data.message = this.message;
     if (this.fees !== 0) data.fees = this.fees;
     if (this.fusion) data.fusion = this.fusion;
-     
+    if (this.messageViewed) data.messageViewed = this.messageViewed;
+    if (this.ttl !== 0) data.ttl = this.ttl;
     return data;
   }
 
@@ -248,9 +253,10 @@ export class Transaction {
   }
 
   isFullyChecked = () => {
-    console.log("getAmount", this.getAmount());
     if (this.getAmount() === 0 || this.getAmount() === (-1 * config.minimumFee_V2)) {
       if (this.isFusion) {
+        return true;
+      } else if (this.ttl > 0) {
         return true;
       } else {
         return false;
@@ -263,6 +269,11 @@ export class Transaction {
       }
       return true;
     }
+  }
+
+  hasMessage = () => {
+    let txAmount = this.getAmount();
+    return (this.message !== '') && (txAmount > 0) && (txAmount !== (1 * config.remoteNodeFee)) && (txAmount !== (10 * config.remoteNodeFee)); // no envelope for a suspectedremote node fee transaction
   }
 
   get isDeposit() {
@@ -295,6 +306,8 @@ export class Transaction {
     aCopy.fees = this.fees;
     aCopy.message = this.message;
     aCopy.fusion = this.fusion;
+    aCopy.messageViewed = this.messageViewed;
+    aCopy.ttl = this.ttl;
 
     for (let nin of this.ins) {
       aCopy.ins.push(nin.copy());
@@ -382,11 +395,12 @@ export class Deposit extends BaseBanking {
     deposit.spentTx = raw.spentTx; 
     deposit.timestamp = raw.timestamp;
     deposit.blockHeight = raw.blockHeight;
-    deposit.globalOutputIndex = raw.globalOutputIndex;
-    deposit.indexInVout = raw.indexInVout;
+    deposit.globalOutputIndex = raw.globalOutputIndex;      //used to build Multisig input for withdrawals
+    deposit.indexInVout = raw.indexInVout;                  //used to generate_signature for withdrawals
     deposit.txPubKey = raw.txPubKey;
     deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
     deposit.keys = raw.keys || [];
+    deposit.withdrawPending = raw.withdrawPending;
     return deposit;
   }
 

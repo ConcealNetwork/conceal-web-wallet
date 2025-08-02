@@ -27,10 +27,12 @@
 	/* Background Colors */
 	--color-bg-main: rgba(52, 58, 64, 0.95);    /* Main panel background */
 	--color-bg-hover: rgba(52, 58, 64, 0.88);   /* Panel hover background */
+	--color-bg-special: rgba(52, 58, 64, 1);   /* Panel in line - Warning with border no hover */
 	--color-bg-dark: #212529;          /* Dark background (footer, menu) */
 	--color-bg-darker: #282d31;        /* Darker background (top bar and menu) */
 	--color-bg-darker-menu-hidden: rgb(40, 45, 49, 0.99);        /* Darker background (menu hidden) */
 	--color-bg-darker-menu-hidden-lighter: rgb(40, 45, 49, 0.95); /* Darker background (menu hidden) */
+	--color-bg-darker-top: rgba(52, 58, 64, 0.98); /* lighter background for table headers */
 	--color-bg-light: #eeeeee;         /* Light background (inputs) */
 	--color-bg-disabled: #ccc;         /* Disabled state background */
 	--color-bg-tab: #212529;			/* Tab background */
@@ -55,10 +57,11 @@
 	--color-info: #146DBD;             /* Info blue */
   
 	/* Transaction Colors */
-	--color-tx-in: #6bc534;            /* Incoming transaction */
-	--color-tx-out: #FF0000;           /* Outgoing transaction */
-	--color-tx-deposit: #ed0505;       /* Deposit transaction */
-	--color-tx-withdrawal: #6bc534;    /* Withdrawal transaction */
+	--color-tx-in: rgba(85,204,114,0.9);            /* Incoming transaction */
+	--color-tx-out: rgba(245, 96, 96, 0.9);           /* Outgoing transaction */
+	--color-tx-withdrawal: rgba(85,204,114,0.9) ;     /* Withdrawal transaction */
+	--color-tx-deposit: rgba(245, 96, 96, 0.9);        /* Deposit transaction */
+
   
 	/* Scrollbar Colors */
 	--color-scrollbar-track: rgba(255, 255, 255, 0.05);
@@ -293,6 +296,8 @@ body.native .hideOnNonNative {
 	z-index: 20;
 	left: 280px;
 	display: none;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
 }
 
 #topBar a.toggleMenu {
@@ -300,6 +305,7 @@ body.native .hideOnNonNative {
 	display: inline-block;
 	height: 100%;
 	padding: 0 15px;
+	border-radius: 0, 3px, 3px, 0;
 }
 
 #main_logo img {
@@ -375,7 +381,7 @@ body.menuHidden #menu {
 
 #menu a:not(#menu_logo):hover {
 	border-right: 5px solid white;
-	color: #faa933;
+	color: var(--color-primary);
 }
 
 #menu a:not(#menu_logo) .icon {
@@ -413,7 +419,7 @@ body.menuHidden #menu {
 
 #pageLoading {
 	position: fixed;
-	left: 60%;
+	left: 0;
 	top: 0;
 	bottom: 0;
 	width: 100%;
@@ -421,6 +427,7 @@ body.menuHidden #menu {
 	z-index: 10;
 	text-align: center;
 	color: black;
+	display: none;
 }
 
 #pageLoading i {
@@ -641,6 +648,9 @@ body.transparent #copyright {
 	font-size: 18px;
 }
 
+/* Old desktop-specific message history styles removed - now using grid layout for all screens */
+
+/* 
 .messageHistory .transactions .trnsaction .timestamp {
 	width: 20%;
 	font-size: 18px;
@@ -656,6 +666,50 @@ body.transparent #copyright {
 	font-size: 18px;
   padding-right: 1em;
 }
+*/
+
+.message-status-dot {
+	font-size: 0.8em;
+	margin-left: 10px;
+	cursor: pointer;
+}
+.message-status-dot.viewed {
+    cursor: default;
+}
+
+.messageHistory .header-wrapper {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+  }
+  
+  .messageHistory .header-filter-wrapper {
+	width: 65%;
+	margin-left: auto;
+	margin-right: 1rem;
+  }
+  
+  .messageHistory .header-filter {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid var(--color-text-dark);
+	border-radius: 4px;
+	background-color: var(--color-bg-light);
+	color: var(--color-text);
+	font-size: 14px;
+  }
+  
+  .messageHistory .header-filter:focus {
+	outline: none;
+	border-color: var(--color-primary);
+  }
+  
+  @media screen and (max-width: 600px) {
+	.messageHistory .header-filter-wrapper {
+	  width: 90%;
+	  margin: auto;
+	}
+  }
 
 .transactions .transaction .amount {
 	font-size: 20px;
@@ -721,8 +775,17 @@ body.transparent #copyright {
 
 
 .tab {
-	display: block;
-	padding: 10px 5px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.tab-left {
+	display: flex;
+}
+
+.format-toggle {
+	margin-left: auto;  /* This pushes the button to the right */
 }
 
 .tab .button {
@@ -857,6 +920,45 @@ body.transparent #copyright {
 	border: 2px solid black;
 }
 
+.videoContainer {
+	position: relative;
+	display: inline-block;
+}
+
+.aimingSquare {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 200px;
+	height: 200px;
+	border: 2px solid var(--color-info);
+	box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+	pointer-events: none;
+}
+
+.aimingSquare::before,
+.aimingSquare::after {
+	content: '';
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-color: var(--color-info);
+	border-style: solid;
+}
+
+.aimingSquare::before {
+	top: -2px;
+	left: -2px;
+	border-width: 2px 0 0 2px;
+}
+
+.aimingSquare::after {
+	bottom: -2px;
+	right: -2px;
+	border-width: 0 2px 2px 0;
+}
+
 /*
 .button{
 	display: inline-block;
@@ -907,6 +1009,10 @@ body.native .indexTab .mainBlock {
 	left: 50%;
 	margin-right: -50%;
 	transform: translate(-50%, -50%);
+}
+/* Native version: Adjust headline height */
+body.native .indexTab .mainBlock .headline {
+	height: calc(100vh - 55%);
 }
 
 /* xSMall & Small */
@@ -971,12 +1077,22 @@ body.native .indexTab .mainBlock {
 	margin-right: 15px;
 }
 
+/* Native version: Stack buttons vertically */
+body.native .home .btn {
+	display: block;
+	margin: 10px auto;
+	margin-right: auto;
+	max-width: 280px;
+	width: 45%;
+}
+
 body.native .indexTab .mainBlock>.actions {
 	text-align: center;
 }
 
-.indexTab .mainBlock>.actions img {
-	max-height: 35px;
+body.native .indexTab .mainBlock>.actions img{
+	margin-top: -10px;
+	max-height: 52px;
 }
 
 .indexTab .mainBlock>.actions .btn {
@@ -1253,7 +1369,7 @@ body {
 }
 
 .panel.inline {
-	background: #424242ea;
+	background: var(--color-bg-special);
 	padding: 40px 40px 32px 40px;
 	border: 1px solid orange;
 	box-shadow: none;
@@ -1508,6 +1624,11 @@ body {
 	width: auto;
 }
 
+.field input[type=range] {
+	border-radius: 20px;
+	background: var(--color-bg-light);
+}
+
 .field .subfield {
 	padding: 0;
 }
@@ -1611,6 +1732,77 @@ body {
 	left: 2.15rem;
 }
 
+/* TTL Slider Styles */
+.ttl-slider-container {
+	margin: 10px 0;
+}
+
+.ttl-slider {
+	width: 100%;
+	height: 6px;
+	border-radius: 50%;
+	background: #ddd;
+	outline: none;
+	-webkit-appearance: none;
+	appearance: none;
+	margin: 10px 0;
+}
+
+.ttl-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: orange;
+	cursor: pointer;
+	border: 2px solid #fff;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.ttl-slider::-moz-range-thumb {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: orange;
+	cursor: pointer;
+	border: 2px solid #fff;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.ttl-slider:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.ttl-slider:disabled::-webkit-slider-thumb {
+	cursor: not-allowed;
+}
+
+.ttl-slider:disabled::-moz-range-thumb {
+	cursor: not-allowed;
+}
+
+.ttl-labels {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.8em;
+	color: var(--color-warning);
+	margin-top: 5px;
+}
+
+.message.info {
+	background-color: var(--color-bg-tab);
+	border: 1px solid var(--color-border-light);
+	color: var(--color-warning);
+	padding: 10px;
+	border-radius: 5px;
+	margin-top: 10px;
+}
+
+.message.info i {
+	margin-right: 5px;
+}
 
 /*===================TEXT=================*/
 .center,
@@ -1851,6 +2043,8 @@ body {
   display: flex;
   align-items: center;
   flex-direction: row;
+  background-color: var(--color-bg-darker-top);
+  border-radius: 5px 5px 0 0;
 }
 
 .header-filer-wrapper {
@@ -1952,6 +2146,8 @@ body {
   overflow: hidden;
   border: 1px solid #424242ea;
   background-color: var(--color-bg-tab);
+  border-radius: 5px;
+  margin-bottom: 1px;
 }
 
 /* Style the buttons inside the tab */
@@ -1965,11 +2161,15 @@ body {
   padding: 14px 16px;
   transition: 0.3s;
   font-size: 17px;
+  border-bottom: 2px solid transparent;
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
-  background-color: #ccc;
+  /* background-color: #ccc; */
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  text-shadow: 0 0 8px rgba(250, 169, 51, 0.3);
 }
 
 /* Create an active/current tablink class */
@@ -1979,7 +2179,6 @@ body {
 }
 
 .sendMessage {
-  display: none;
   color: white;
 }
 
@@ -2013,6 +2212,7 @@ body {
   max-width: 1200px;
   font-size: 18px;  
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 #accountDeposits tr {
@@ -2022,6 +2222,7 @@ body {
 #depositHistoryTable {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 #accountDeposits .depositsListHeader {
@@ -2062,6 +2263,18 @@ body {
   font-size: 22px;  
 }
 
+@media (max-width: 600px) {
+	#depositHistoryTable, #depositHistoryTableBody {
+	  white-space: nowrap;
+	  overflow-x: auto;
+	}
+
+	#depositHistoryTable th,
+	#depositHistoryTableBody th {
+	  white-space: normal !important;
+	}
+}
+
 .depositTxDetails {
   padding-left: 15px;
 }
@@ -2090,10 +2303,6 @@ body {
 @keyframes spinner {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
-}
-
-.appLoaderVisible {
-  display: flex !important;
 }
 
 .create-deposit-button {
@@ -2200,4 +2409,315 @@ body {
     font-weight: 500;
     color: #fff;
     font-size: 1.3em;
+}
+
+/* Table Column Width Classes - Desktop */
+.col-direction {
+  width: 5%;
+  text-align: center;
+}
+
+.col-txdetails {
+  width: 5%;
+  text-align: center;
+}
+
+.col-lockTimestamp {
+  width: 18%;
+  text-align: center;
+}
+
+.col-lockHeight {
+  width: 15%;
+  text-align: center;
+}
+
+.col-unlockTimestamp {
+  width: 18%;
+  text-align: center;
+}
+
+.col-unlockHeight {
+  width: 15%;
+  text-align: center;
+}
+
+.col-depositAmount {
+  width: 12%;
+  text-align: center;
+}
+
+.col-interest {
+  width: 12%;
+  text-align: center;
+}
+
+/* Mobile Responsive Table Styles */
+@media (max-width: 600px) {
+  #accountDeposits {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+	table-layout: fixed;
+  }
+  #accountDeposits .depositsListHeader {
+	font-size: 1em;
+  }
+
+  #depositHistoryTable {
+    width: 700px;
+  }
+
+  /* Mobile Column Widths */
+  .col-lockTimestamp,
+  .col-lockHeight,
+   .col-unlockHeight {
+    display: none;
+  }
+
+  .col-unlockHeight, .col-depositAmount, .col-interest {
+	font-size: 0.8em;
+  }
+
+}
+
+/* TTL Countdown Styles */
+.ttl-countdown {
+	width: 3.1rem;
+	text-align: center;
+	font-size: 0.9em;
+}
+
+.ttl-timer {
+	color: var(--color-warning);
+	font-weight: bold;
+	font-family: monospace;
+}
+
+.ttl-timer:contains("Expired") {
+	color: var(--color-error);
+}
+
+.message-preview-label {
+  font-size: 0.9em;
+  color: var(--color-text-tertiary);
+  font-weight: bold;
+}
+
+.message-preview {
+  margin-top: 1rem;
+  margin-bottom: 1.3rem;
+  padding: 8px;
+  background: var(--color-bg-light);
+  border-radius: 5px;
+  border: 1px solid #eee;
+}
+.preview-content {
+  color: var(--color-text-dark-muted);
+  white-space: pre-line;
+  line-height: 1rem;
+}
+
+/* Responsive 2-line layout for message history - applies to all screen sizes */
+/* This replaces the old table-based layout with a modern grid system that provides better space utilization */
+.messageHistory .transactions table {
+  table-layout: auto;
+}
+
+.messageHistory .transactions .transaction {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto auto auto;
+  gap: 0.5rem;
+  padding: 0.8rem 0.3rem;
+  border-bottom: 1px solid var(--color-text-tertiary);
+}
+
+.messageHistory .transactions .transaction td {
+  padding: 0.2rem;
+  border: none;
+}
+
+/* Left column - status and date on first row, block height on second row, TTL on third row */
+.messageHistory .transactions .transaction .direction {
+  grid-column: 1;
+  grid-row: 1;
+  width: auto;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.messageHistory .transactions .transaction .timestamp {
+  grid-column: 1;
+  grid-row: 1;
+  width: auto;
+  font-size: 14px;
+  text-align: center;
+  align-self: center;
+  margin-left: 0;
+  justify-content: center;
+  display: flex;
+}
+
+.messageHistory .transactions .transaction .blockHeight {
+  grid-column: 1;
+  grid-row: 2;
+  width: auto;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 0.2rem;
+  background: var(--color-bg-tab);
+  border-radius: 3px;
+  max-width: 160px;
+}
+
+.messageHistory .transactions .transaction .ttl-countdown {
+  grid-column: 1;
+  grid-row: 3;
+  width: auto;
+  font-size: 12px;
+  text-align: center;
+  padding: 0.2rem;
+  color: var(--color-warning);
+  font-weight: bold;
+  background: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  min-width: 140px;
+  max-width: 160px;
+}
+
+.messageHistory .transactions .transaction .ttl-countdown i.fa {
+  font-size: 1em;
+  margin-right: 0.2em;
+  color: var(--color-warning);
+  display: inline-block;
+  width: auto;
+  height: auto;
+  line-height: 1;
+}
+
+/* Removed the :not(:empty) rule that was causing color conflicts */
+
+/* Right column - message text spans all rows */
+.messageHistory .transactions .transaction .messageText {
+  grid-column: 2;
+  grid-row: 1 / -1; /* Span from first to last row automatically */
+  width: auto;
+  font-size: 16px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Payment ID row styling */
+.messageHistory .transactions .payment-id-row {
+  display: block;
+  margin-top: 0.2rem;
+  padding: 0.3rem;
+  background: var(--color-bg-tab);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  border-radius: 3px;
+}
+
+.messageHistory .transactions .payment-id-row td {
+  padding: 0.2rem;
+  border: none;
+  text-align: center;
+}
+
+/* Adjust message status dot positioning */
+.messageHistory .transactions .transaction .message-status-dot {
+  font-size: 1em;
+  margin-left: 0;
+}
+
+/* Ensure proper spacing for direction icons */
+.messageHistory .transactions .transaction .direction i {
+  margin-right: 0.3rem;
+}
+
+/* Responsive adjustments for different screen sizes */
+@media screen and (max-width: 768px) {
+  .messageHistory .transactions .transaction {
+    gap: 0.5rem;
+    padding: 0.8rem 0.3rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .messageHistory .transactions .transaction {
+    grid-template-columns: 0.8fr 2.2fr;
+    gap: 0.3rem;
+    padding: 0.6rem 0.2rem;
+  }
+  
+  .messageHistory .transactions .transaction .messageText {
+    font-size: 15px;
+  }
+  
+  .messageHistory .transactions .transaction .timestamp {
+    font-size: 13px;
+  }
+  
+  .messageHistory .transactions .transaction .blockHeight {
+    font-size: 11px;
+	max-height: 1.6rem;
+  }
+  
+  .messageHistory .transactions .transaction .ttl-countdown {
+    font-size: 11px;
+  }
+}
+
+/* Ensure .timestamp is centered and not inside a flex container */
+.messageHistory .transactions .transaction .timestamp {
+  text-align: center;
+  margin-left: 0.5em;
+  display: block;
+}
+
+@media screen and (max-width: 600px) {
+  .messageHistory .transactions .transaction .timestamp {
+    margin-left: 0.3em;
+    font-size: 13px;
+  }
+}
+
+.messageHistory .transactions .transaction .meta-top {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.messageHistory .transactions .transaction .meta-top .date {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.version-info {
+	position: fixed;
+	bottom: 10%;
+	left: 50%;
+	transform: translateX(-50%);
+	text-align: center;
+	font-size: 12px;
+	color: #888;
+	line-height: 1.4;
+}
+
+.version-info div {
+	margin: 2px 0;
 }

@@ -92,7 +92,7 @@
 				<div class="content" >
 					<div class="transactions" id="accountTransactions">
 						<table>
-							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked()">
+							<template v-for="transaction of transactions" v-if="transaction.isFullyChecked() && (!transaction.ttl || transaction.ttl <= 0 || getTTLCountdown(transaction) !== 'Expired')">
 								<tr class="transaction" :class="(transaction.blockHeight === 0 ? 'pending' : '')">
 									<td class="direction" >
                     					<i v-if="transaction.isDeposit" class="fa fa-bank tx_deposit" aria-hidden="true"></i>
@@ -107,9 +107,25 @@
 									<!--LEfT-->
 									<td class="timestamp" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp*1000), 'long')}}</td>
 									<td class="timestamp" v-else="">{{ $t("accountPage.historyBlock.pendingTxStatus") }}...</td>
+									<td class="ttl-countdown" v-if="transaction.blockHeight === 0 && transaction.ttl > 0">
+										<span class="ttl-timer">{{ getTTLCountdown(transaction) }}</span>
+									</td>
+									<td class="ttl-countdown" v-else=""></td>
 									<td :class="'amount '+(transaction.getAmount() > 0 ? 'tx_direction_in' : 'tx_direction_out')" >{{ transaction.getAmount() / currencyDivider }}</td>
 									<td class="moreInfo">
-										<i class="fa fa-search" aria-hidden="true" @click="moreInfoOnTx(transaction)"></i>
+										<i v-if="transaction.hasMessage() && transaction.ttl > 0 && transaction.ttl > Math.floor(Date.now() / 1000)"
+											class="fa fa-envelope" style="color: #ff9900"
+											aria-hidden="true" 
+											@click="moreInfoOnTx(transaction)"></i>
+										<i v-else-if="transaction.hasMessage() && !transaction.messageViewed" 
+                                           class="fa fa-envelope"
+                                           aria-hidden="true" 
+                                           @click="moreInfoOnTx(transaction)"></i>
+										<i v-else-if="transaction.hasMessage() && transaction.messageViewed"
+                                           class="fa fa-envelope-open"
+                                           aria-hidden="true" 
+                                           @click="moreInfoOnTx(transaction)"></i>
+										<i v-else class="fa fa-search" aria-hidden="true" @click="moreInfoOnTx(transaction)"></i>
 									</td>
 								</tr>
 								<tr v-if="transaction.paymentId !== ''">

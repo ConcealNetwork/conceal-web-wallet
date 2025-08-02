@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "비밀번호는 최소 8자리 이상이여야 하며, 1개 이상의 대문자, 소문자, 숫자 및 특수 문자로 구성해 주세요.",
       "passwordConfirmationNotMatching": "비밀번호가 일치하지 않습니다",
       "download": "다운로드",
+      "confirmText": "확인",
+      "error": "오류",
       "newVersionModal": {
         "title": "새 버전이 나왔습니다.",
         "content": "새 버전으로 다시 로딩 하시겠습니까?",
@@ -114,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "잔액",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "포트폴리오",
+        "available": "사용가능",
+        "pending": "처리중",
         "unlocked": "해제완료",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "예금",
+        "withdrawable": "출금가능",
+        "futureInterest": "미래 이자"
       },
       "historyBlock": {
         "title": "트랜젝션 기록",
@@ -127,7 +131,7 @@
         "waitSync": "지갑이 업데이트되고 있습니다. 잠시만 기다려주세요.",
         "beReallyPatient": "초기 셋업중입니다. 잠시만 기다려주세요.",
         "getCoinAddress": "카르보 코인 받기",
-        "loadMoreBtn": "Load more"
+        "loadMoreBtn": "더보기"
       },
       "txDetails": {
         "title": "트랜젝션 세부내용",
@@ -136,7 +140,7 @@
         "blockHeight": "블록넘버",
         "paymentId": "페이먼트 ID",
         "txPrivKey": "트랜젝션 비공개 키",
-        "message": "Message"
+        "message": "메시지"
       }
     },
     "changeWalletPasswordPage": {
@@ -304,7 +308,8 @@
         "title": "다음과 같이 송금 하시겠습니까?",
         "content": "금액: {amount}<br/>비용: {fees}<br/>총액: {total}",
         "confirmText": "확인",
-        "cancelText": "취소"
+        "cancelText": "취소",
+        "remoteNodeFee": "원격 노드 수수료 {fee} {symbol} 금액에 추가되었습니다."
       },
       "waitingNfcModal": {
         "title": "NFC 통신 대기중",
@@ -333,56 +338,60 @@
           "description": "Description"
         },
         "message": {
-          "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "label": "메시지",
+          "invalid": "메시지가 너무 깁니다. 최대 길이는 260자입니다",
+          "preview": "미리보기"
         },
-        "sendButton": "Send",
-        "cancelButton": "Cancel"
+        "ttl": {
+          "info": "메시지는 {ttl} (시간:분) 후에 삭제됩니다. 블록에 채굴되지 않으며 금액은 환불됩니다"
+        },
+        "sendButton": "보내기",
+        "cancelButton": "취소"
       },
       "qrCodeScanning": {
-        "explication": "Present the QR code"
+        "explication": "QR 코드를 제시하세요"
       },
       "notEnoughMoneyModal": {
-        "title": "Oops...",
-        "content": "You don't have enough funds in your wallet to execute this transfer",
-        "confirmText": "OK"
+        "title": "앗...",
+        "content": "이 전송을 실행할 충분한 자금이 지갑에 없습니다",
+        "confirmText": "확인"
       },
       "thankYouDonationModal": {
-        "title": "Thank you for your donation!",
-        "content": "Your help is appreciated. This donation will help make Conceal better",
-        "confirmText": "OK"
+        "title": "기부해 주셔서 감사합니다!",
+        "content": "도움을 주셔서 감사합니다. 이 기부는 Conceal을 더 좋게 만드는 데 도움이 될 것입니다",
+        "confirmText": "확인"
       },
       "transferSentModal": {
-        "title": "Message sent successfully!",
-        "confirmText": "OK"
+        "title": "메시지가 성공적으로 전송되었습니다!",
+        "confirmText": "확인"
       },
       "transferExceptionModal": {
-        "title": "Oops...",
-        "content": "An error occurred. Please report this error: {details}",
-        "confirmText": "OK"
+        "title": "앗...",
+        "content": "오류가 발생했습니다. 이 오류를 보고해 주세요: {details}",
+        "confirmText": "확인"
       },
       "invalidAmountModal": {
-        "title": "Oops...",
-        "content": "Invalid amount",
-        "confirmText": "OK"
+        "title": "앗...",
+        "content": "잘못된 금액",
+        "confirmText": "확인"
       },
       "creatingTransferModal": {
-        "title": "Creating transfer ...",
-        "content": "Please wait..."
+        "title": "전송 생성 중...",
+        "content": "잠시 기다려 주세요..."
       },
       "finalizingTransferModal": {
-        "title": "Finalizing transfer ...",
-        "content": "Please wait..."
+        "title": "전송 완료 중...",
+        "content": "잠시 기다려 주세요..."
       },
       "confirmTransactionModal": {
-        "title": "Confirm transfer?",
-        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
-        "confirmText": "Confirm",
-        "cancelText": "Cancel"
+        "title": "전송을 확인하시겠습니까?",
+        "content": "금액: {amount}<br/>수수료: {fees}<br/>총액: {total}",
+        "confirmText": "확인",
+        "cancelText": "취소"
       },
       "waitingNfcModal": {
-        "title": "Waiting Nfc",
-        "content": "Bring closer to the other device"
+        "title": "NFC 대기 중",
+        "content": "다른 기기에 더 가까이 가세요"
       }
     },
     "depositsPage": {
@@ -526,15 +535,21 @@
           "label": "채굴관련 송금 확인 (오직 단독 채굴에 적용됨)"
         },
         "customNode": {
-          "label": "Use custom node"
+          "label": "사용자 정의 노드 사용"
         },
         "nodeUrl": {
-          "label": "Node URL"
+          "label": "노드 URL"
+        },
+        "ticker": {
+          "label": "심볼",
+          "full": "심볼 전체",
+          "short": "심볼 짧은",
+          "preview": "미리보기"
         }
       },
       "changePasswordButton": "비밀번호 변경",
       "deleteWalletButton": "웹지갑 지우기 (지금 사용하는 기기의 브라우저에 한정)",
-      "resetWalletButton": "Reset and rescan wallet",
+      "resetWalletButton": "지갑 재설정 및 재스캔",
       "walletSettings": {
         "creationHeight": {
           "label": "지갑이 생성된 블록높이"
@@ -551,15 +566,15 @@
         "cancelText": "취소합니다."
       },
       "resetWalletModal": {
-        "title": "Reset My Wallet (local copy)",
-        "content": "Are you sure you really want to reset your wallet?",
-        "confirmText": "Yes I'm sure",
-        "cancelText": "Cancel"
+        "title": "지갑 재설정 (로컬 복사본)",
+        "content": "정말로 지갑을 재설정하시겠습니까?",
+        "confirmText": "네, 확실합니다",
+        "cancelText": "취소"
       },
       "optimizeWalletModal": {
-        "title": "Nothing to do...",
-        "content": "Your wallet is already optimized.",
-        "confirmText": "OK"
+        "title": "할 일이 없습니다...",
+        "content": "지갑이 이미 최적화되어 있습니다.",
+        "confirmText": "확인"
       }
     },
     "importBasePage": {
@@ -583,10 +598,17 @@
       "qrCodeBlock": {
         "title": "QR 코드",
         "startScanButton": "스캔시작",
-        "importButton": "불러오기"
+        "importButton": "불러오기",
+        "scanSuccess": "QR 코드 스캔 성공"
       },
       "qrScanningBlock": {
         "title": "QR 코드를 보여주세요."
+      },
+      "error": {
+        "title": "오류",
+        "connection": "연결 오류, 다시 시도해주세요",
+        "init": "초기화 오류, 다시 시도해주세요",
+        "confirmText": "확인"
       }
     },
     "exportPage": {

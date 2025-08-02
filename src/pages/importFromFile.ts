@@ -85,7 +85,7 @@ class ImportView extends DestructableView{
 							type: 'error',
 							title: i18n.t('global.error'),
 							text: i18n.t('importFromFilePage.walletBlock.invalidFile'),
-							confirmButtonText: i18n.t('global.ok'),
+							confirmButtonText: i18n.t('global.confirmText'),
 						});
 					}
 				};
@@ -98,11 +98,11 @@ class ImportView extends DestructableView{
 
 	importWallet(){
 		let self = this;
-    $("#appLoader").addClass("appLoaderVisible");
+    		$('#pageLoading').show();
 
     blockchainExplorer.initialize().then(success => {
       blockchainExplorer.getHeight().then(function(currentHeight){
-        $("#appLoader").removeClass("appLoaderVisible");
+        		$('#pageLoading').hide();
         
         setTimeout(function(){
           let newWallet = WalletRepository.decodeWithPassword(self.rawFile,self.password);
@@ -121,9 +121,11 @@ class ImportView extends DestructableView{
         },1);
      }).catch(err => {
         console.log(err);
+		$('#pageLoading').hide();
       });
     }).catch(err => {
       console.log(err);
+		$('#pageLoading').hide();
     });  
   }
 

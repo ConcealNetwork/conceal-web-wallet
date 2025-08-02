@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "La contraseña necesita al menos 8 caracteres - 1 letra mayúscula, 1 letra minúscula, un número y un carácter especial",
       "passwordConfirmationNotMatching": "La contraseña no coincide con la primera contraseña que escribió",
       "download": "Descargar",
+      "confirmText": "OK",
+      "error": "Error",
       "newVersionModal": {
         "title": "Hay una nueva version disponible",
         "content": "¿Quieres recargar la nueva version?",
@@ -306,7 +308,8 @@
         "title": "¿Confirmar transferencia?",
         "content": "Monto: {amount}<br/>Tarifa: {fees}<br/>Total: {total}",
         "confirmText": "Confirmar",
-        "cancelText": "Cancelar"
+        "cancelText": "Cancelar",
+        "remoteNodeFee": "La tarifa del nodo remoto {fee} {symbol} se ha agregado al monto"
       },
       "waitingNfcModal": {
         "title": "Esperando Nfc",
@@ -336,7 +339,11 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is to long. Max length is 260 characters",
+          "preview": "Vista previa"
+        },
+        "ttl": {
+          "info": "La transacción TTL solo existirá en el mempool y se autodestruirá después de {ttl}(Horas:Minutos). No se incluirá en los bloques. Por lo tanto, el monto cargado se devolverá a la billetera."
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -589,10 +596,17 @@
       "qrCodeBlock": {
         "title": "Código QR",
         "startScanButton": "Iniciar el escaneo",
-        "importButton": "Importar"
+        "importButton": "Importar",
+        "scanSuccess": "Código QR escaneado correctamente"
       },
       "qrScanningBlock": {
         "title": "Presentar el código QR"
+      },
+      "error": {
+        "title": "Error",
+        "connection": "Error de conexión, inténtelo de nuevo",
+        "init": "Error de inicialización, inténtelo de nuevo",
+        "confirmText": "OK"
       }
     },
     "exportPage": {

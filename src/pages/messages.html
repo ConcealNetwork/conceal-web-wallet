@@ -26,32 +26,57 @@
       <div class="messages">        
 
         <div class="tab">
-          <button class="tablinks active" onclick="openMessagesTab(event, 'messageHistory')"><i aria-hidden="true" class="fa fa-inbox"><span>{{ $t("messagesPage.tabs.inbox") }}</span></i></button>
-          <button class="tablinks" onclick="openMessagesTab(event, 'sendMessage')"><i aria-hidden="true" class="fa fa-paper-plane"></i><span>{{ $t("messagesPage.tabs.send") }}</span></button>
+          <div class="tab-left">
+            <button class="tablinks" :class="{ active: activeTab === 'messageHistory' }" @click="activeTab = 'messageHistory'">
+              <i aria-hidden="true" class="fa fa-inbox"></i>
+              <span>{{ $t("messagesPage.tabs.inbox") }}</span>
+            </button>
+            <button class="tablinks" :class="{ active: activeTab === 'sendMessage' }" @click="activeTab = 'sendMessage'">
+              <i aria-hidden="true" class="fa fa-paper-plane"></i>
+              <span>{{ $t("messagesPage.tabs.send") }}</span>
+            </button>
+          </div>
+        
+          <button v-if="activeTab === 'messageHistory'" class="tablinks format-toggle" @click="formatMessage = !formatMessage">
+            <i aria-hidden="true" :class="formatMessage ? 'fa fa-font' : 'fa fa-code'"></i>
+            <span>{{ formatMessage ? 'Format' : 'Raw' }}</span>
+          </button>
         </div>
 
         <!-- message history -->
-        <div id="messageHistory" class="panel nopadding messageHistory tabcontent">
+        <div id="messageHistory" class="panel nopadding messageHistory tabcontent" v-show="activeTab === 'messageHistory'">
           <div class="body" >
             <div class="header-wrapper">
               <div class="header-title">{{ $t("messagesPage.inboxBlock.title") }}</div>
+              <div class="header-filter-wrapper field">
+                <input class="header-filter" type="text" placeholder="Search by text" v-model="messageFilter" />
+              </div>
             </div>
             <div class="content" >
               <div class="transactions" id="accountTransactions">              
                 <table>
-                  <template v-for="transaction of transactions">
+                  <template v-for="transaction of filteredTransactions">
                     <tr class="transaction" :class="(transaction.blockHeight === 0 ? 'pending' : '')">
-                      <td class="direction" >
-                        <i v-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
-                        <i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
-                      </td><!--LEfT-->
-                      <td class="timestamp" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp * 1000), 'short')}}</td>
-                      <td class="timestamp" v-else="">...</td>
+                      <td class="direction">
+                        <div class="meta-top">
+                          <i v-if="transaction.ins.length == 0" class="fa fa-level-down tx_direction_in" aria-hidden="true"></i>
+                          <i v-else="" class="fa fa-level-up tx_direction_out" aria-hidden="true"></i>
+                          <i :class="['message-status-dot', transaction.messageViewed ? 'fa fa-envelope-open' : 'fa fa-envelope']" 
+                             aria-hidden="true" 
+                             @click="markMessageSeen(transaction.hash); $event.target.className = 'message-status-dot fa fa-envelope-open'"></i>
+                          <span class="date" v-if="transaction.blockHeight > 0">{{$d(new Date(transaction.timestamp * 1000), 'short')}}</span>
+                          <span class="date" v-else>...</span>
+                        </div>
+                      </td>
                       <td class="blockHeight">{{transaction.blockHeight}}</td>
-                      <td class="messageText">{{transaction.message}}</td>
+                      <td class="ttl-countdown" v-if="transaction.blockHeight === 0 && transaction.ttl > 0">
+                        <i class="fa fa-clock-o"></i>
+                        <span class="ttl-timer">{{ getTTLCountdown(transaction) }}</span>
+                      </td>
+                      <td class="messageText" v-html="formatMessage ? formatMessageText(transaction.message) : transaction.message"></td>
                     </tr>
-                    <tr v-if="transaction.paymentId !== ''">
-                      <td colspan="4" class="paymentId" >{{transaction.paymentId}}</td><!--UNDER-->
+                    <tr v-if="transaction.paymentId !== ''" class="payment-id-row">
+                      <td colspan="6" class="paymentId" >{{transaction.paymentId}}</td>
                     </tr>
                   </template>
                 </table>
@@ -61,7 +86,7 @@
         </div>
 
         <!-- Send a new message -->
-        <div id="sendMessage" class="panel sendMessage tabcontent">
+        <div id="sendMessage" class="panel sendMessage tabcontent" v-show="activeTab === 'sendMessage'">
           <div class="body">
             <div class="field action">
               <label>{{ $t("messagesPage.sendBlock.address.label") }}</label>
@@ -91,6 +116,35 @@
                 {{ $t("messagesPage.sendBlock.message.invalid") }}
               </div>
             </div>
+            <div v-if="showPreview">
+              <span class="message-preview-label">{{ $t("messagesPage.sendBlock.message.preview") }}</span>
+            </div>
+            <div v-if="showPreview" class="message-preview">
+              <div v-html="formatMessageText(message)" class="preview-content"></div>
+            </div>
+
+            <div class="field" >
+              <label>Time To Live (TTL): {{ formatTTL(ttl) }}</label>
+              <div class="ttl-slider-container">
+                <input 
+                  type="range" 
+                  min="0" 
+                  :max="cryptonoteMemPoolTxLifetime / 60" 
+                  step="5"
+                  v-model="ttl" 
+                  class="ttl-slider" 
+                  :disabled="isWalletSyncing"
+                  :readonly="lockedForm"
+                />
+                <div class="ttl-labels">
+                  <span>00:00 (no TTL)</span>
+                  <span>{{ formatTTL(cryptonoteMemPoolTxLifetime / 60) }}</span>
+                </div>
+              </div>
+              <div class="message info" v-if="ttl > 0">
+                <i class="fa fa-info-circle"></i> {{ $t("messagesPage.sendBlock.ttl.info", { ttl: formatTTL(ttl) }) }}
+              </div>
+            </div>
   
             <div class="actions tc">
               <button type="button" class="btn primary" @click="send()" :disabled="!destinationAddressValid || !messageValid || isWalletSyncing">{{ $t("messagesPage.sendBlock.sendButton") }}</button>
@@ -116,19 +170,3 @@
   
   </div>
 </div>
-
-<script>
-  function openMessagesTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-  }
-</script>

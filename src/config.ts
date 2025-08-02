@@ -6,7 +6,7 @@ myGlobal.config = {
     "https://ccxapi.conceal.network/api/"
   ],
   nodeList: [
-    "https://seed1.conceal.network/daemon/",
+    //"https://seed1.conceal.network/daemon/",  this node url is temporary disabled
     "https://seed2.conceal.network/daemon/",
     "https://seed3.conceal.network/daemon/"
   ],
@@ -33,17 +33,20 @@ myGlobal.config = {
 	subAddressPrefixTestnet: 0x7AD6,
 
 	UPGRADE_HEIGHT_V4: 45000,
-
+// Fees
 	coinFee: new JSBigInt('1000'),
 	minimumFee_V2: new JSBigInt('1000'),	// used for fusion tx
+	remoteNodeFee: new JSBigInt('10000'),
 	feePerKB: new JSBigInt('1000'), //for testnet its not used, as fee is dynamic.
+	
 	dustThreshold: new JSBigInt('10'),//used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
 	defaultMixin: 5, // default value mixin
   optimizeOutputs: 100, // Qty of outputs we consider for the need of optimization, 100 to be like C++ ...might be too big to handle
-  optimizeThreshold: 100, // amount of CCX in units we consider as the threshold for optimization
-  messageTxAmount: new JSBigInt('1000'), // the amount sent to the receiver of the message needed so we have at least one output for them
+  optimizeThreshold: 100, // amount of CCX in units we consider as the threshold for optimization. 100 to be like C++ ...might be too small...open for discussion
+  messageTxAmount: new JSBigInt('100'), // amount sent to the receiver of the message needed so we have at least one output for them, 100 to be like C++ ...open for discussion
   maxMessageSize: 260, // maximum lenght of the message
-
+  cryptonoteMemPoolTxLifetime: (60 * 60 * 12), // 12 hours
+// Fusion
   fusionTxMinInOutCountRatio: 4,
   maxFusionOutputs: 8,
 
@@ -59,6 +62,8 @@ myGlobal.config = {
 	openAliasPrefix: "ccx",
 	coinName: 'Conceal',
 	coinUriPrefix: 'conceal:',
+
+	donationAddress: 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj',
 
 	avgBlockTime: 120,
 	maxBlockNumber: 500000000,

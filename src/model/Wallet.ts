@@ -268,7 +268,6 @@ export class Wallet extends Observable {
 
       if (!exist || replace) {
         if (!exist) {
-          
           this.keyLookupMap.set(transaction.txPubKey, transaction);
           this.txLookupMap.set(transaction.hash, transaction);
           this.transactions.push(transaction);
@@ -277,6 +276,8 @@ export class Wallet extends Observable {
             if(this.transactions[tr].txPubKey === transaction.txPubKey) {
               // Preserve fusion flag when replacing
               transaction.fusion = this.transactions[tr].fusion;
+              // Preserve messageViewed flag when replacing
+              transaction.messageViewed = this.transactions[tr].messageViewed || transaction.messageViewed;
               this.keyLookupMap.set(transaction.txPubKey, transaction);
               this.txLookupMap.set(transaction.hash, transaction);
               this.transactions[tr] = transaction;
@@ -284,11 +285,13 @@ export class Wallet extends Observable {
           }
         }
 
-        // remove from unconfirmed and preserve fusion flag
+        // remove from unconfirmed and preserve fusion flag and messageViewed flag
         let existMem = this.findMemWithTxPubKey(transaction.txPubKey);
         if (existMem) {
           // Preserve fusion flag from mempool
           transaction.fusion = existMem.fusion;
+          // Preserve messageViewed flag from mempool
+          transaction.messageViewed = existMem.messageViewed || transaction.messageViewed;
           let trIndex = this.txsMem.indexOf(existMem);
           if(trIndex != -1) {
             this.txsMem.splice(trIndex, 1);
@@ -303,6 +306,25 @@ export class Wallet extends Observable {
     }
 	}
 
+  /**
+   * Update a flag on an existing transaction by txPubKey or hash.
+   * Only updates the specified fields, does not replace the transaction object.
+   */
+  updateTransactionFlags = (
+    txPubKeyOrHash: string,
+    flags: Partial<Pick<Transaction, 'fusion' | 'messageViewed'>>
+  ) => {
+    let tx = this.findWithTxPubKey(txPubKeyOrHash) || this.findWithTxHash(txPubKeyOrHash);
+    if (tx) {
+      if (typeof flags.fusion !== 'undefined') tx.fusion = flags.fusion;
+      if (typeof flags.messageViewed !== 'undefined') tx.messageViewed = flags.messageViewed;
+      this.signalChanged();
+      this.notify();
+      return true;
+    }
+    return false;
+  };
+
   addDeposits = (deposits: Deposit[]) => {
     for(let i = 0; i < deposits.length; ++i) {
       this.addDeposit(deposits[i]);
@@ -313,9 +335,8 @@ export class Wallet extends Observable {
     let foundMatch = false;
 
     for(let i = 0; i < this.deposits.length; ++i) {
-      if (this.deposits[i].txHash == deposit.txHash &&                //used to be matcth by amount
-        this.deposits[i].globalOutputIndex == deposit.globalOutputIndex) {    // double check
-          this.deposits[i]  = deposit;
+      if (this.deposits[i].txHash == deposit.txHash) {    // only check txHash
+        this.deposits[i]  = deposit;
           foundMatch = true;
           break;
         }
@@ -329,6 +350,22 @@ export class Wallet extends Observable {
     this.signalChanged();
     this.notify();
   }
+
+  updateDepositFlags = (
+    txHashOrPubKey: string,
+    flags: Partial<Pick<Deposit, 'withdrawPending' >>
+  ) => {
+    let deposit = this.deposits.find(
+      d => d.txHash === txHashOrPubKey || d.txPubKey === txHashOrPubKey
+    );
+    if (deposit) {
+      if (typeof flags.withdrawPending !== 'undefined') deposit.withdrawPending = flags.withdrawPending;
+      this.signalChanged();
+      this.notify();
+      return true;
+    }
+    return false;
+  };
 
   addWithdrawals = (withdrawals: Withdrawal[]) => {
     for(let i = 0; i < withdrawals.length; ++i) {
@@ -523,7 +560,23 @@ export class Wallet extends Observable {
 		return news;
 	}
 
-	getWithdrawalsCopy = (): Deposit[] => {
+  /**
+   * Checks if there are any pending deposits in the wallet.
+   * @returns {boolean} True if there is at least one pending deposit
+   */
+  get hasPendingDeposit(): boolean {
+    // Check mempool transactions
+    for (const tx of this.txsMem) {
+      for (const out of tx.outs) {
+        if (out.type === "03" && (out.globalIndex === undefined || out.globalIndex === 0)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  getWithdrawalsCopy = (): Deposit[] => {
 		let news: any[] = this.withdrawals.slice();
 
     news.sort((a,b) =>{

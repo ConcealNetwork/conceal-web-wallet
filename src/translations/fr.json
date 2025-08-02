@@ -24,6 +24,8 @@
 		"passwordInvalidRequirements": "Le mot de passe doit avoir au moins 8 caractères, 1 lettre majuscule, 1 mettre minuscule, un chiffre et un caractère spécial",
 		"passwordConfirmationNotMatching": "Le mot de passe ne correspond pas au premier écrit",
 		"download": "Télécharger",
+		"confirmText": "OK",
+		"error": "Erreur",
 		"newVersionModal": {
 		  "title": "Une nouvelle version est disponible",
 		  "content": "Voulez vous recharger pour passer à la nouvelle version ?",
@@ -306,7 +308,8 @@
 		  "title": "Confirmer le transfert ?",
 		  "content": "Montant: {amount}<br/>Frais: {fees}<br/>Total: {total}",
 		  "confirmText": "Confirmer",
-		  "cancelText": "Annuler"
+		  "cancelText": "Annuler",
+		  "remoteNodeFee": "Frais du noeud distant {fee} {symbol} ajouté au montant"
 		},
 		"waitingNfcModal": {
 		  "title": "Attente du Nfc",
@@ -336,7 +339,11 @@
 		  },
 		  "message": {
 			"label": "Message",
-			"invalid": "Le message est trop long. Maximum 260 characteres"
+			"invalid": "Le message est trop long. Maximum 260 characteres",
+			"preview": "Aperçu"
+		  },
+		  "ttl": {
+			"info": "La transaction TTL ne sera pas incluse dans les blocs et sera automatiquement détruite après {ttl}(Heures:Minutes). Le montant facturé sera remboursé."
 		  },
 		  "sendButton": "Envoyer",
 		  "cancelButton": "Annuler"
@@ -589,10 +596,17 @@
 		"qrCodeBlock": {
 		  "title": "QR code",
 		  "startScanButton": "Commençer le scan",
-		  "importButton": "Importer"
+		  "importButton": "Importer",
+		  "scanSuccess": "QR code scanné avec succès"
 		},
 		"qrScanningBlock": {
 		  "title": "Présentez le QR code"
+		},
+		"error": {
+		  "title": "Erreur",
+		  "connection": "Erreur de connexion, veuillez réessayer",
+		  "init": "Erreur d'initialisation, veuillez réessayer",
+		  "confirmText": "OK"
 		}
 	  },
 	  "exportPage": {

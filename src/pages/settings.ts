@@ -64,8 +64,22 @@ class SettingsView extends DestructableView{
 		this.readSpeed = wallet.options.readSpeed;
 		this.checkMinerTx = wallet.options.checkMinerTx;
 
-		this.customNode = wallet.options.customNode;
-		this.nodeUrl = wallet.options.nodeUrl;
+		// Sync custom node setting from storage to ensure consistency
+		Storage.getItem('customNodeUrl', null).then(customNodeUrl => {
+			if (customNodeUrl) {
+				this.customNode = true;
+				this.nodeUrl = customNodeUrl;
+				// Update wallet options to match storage
+				wallet.options.customNode = true;
+				wallet.options.nodeUrl = customNodeUrl;
+			} else {
+				this.customNode = wallet.options.customNode;
+				this.nodeUrl = wallet.options.nodeUrl;
+			}
+		}).catch(() => {
+			this.customNode = wallet.options.customNode;
+			this.nodeUrl = wallet.options.nodeUrl;
+		});
 
 		this.creationHeight = wallet.creationHeight;
 		this.scanHeight = wallet.lastHeight;
@@ -95,7 +109,7 @@ class SettingsView extends DestructableView{
     }).catch((err: any) => {
       console.error("Error trying to get user language", err);
     });
-
+// in case cordova.js got loaded, and app-version-plugin was installed ... => that won't happen in a web view redirect scenario. Need to rethink that if we really want to display those infor in Native context.
 		if(typeof (<any>window).cordova !== 'undefined' && typeof (<any>window).cordova.getAppVersion !== 'undefined') {
 			(<any>window).cordova.getAppVersion.getVersionNumber().then((version : string) => {
 				this.nativeVersionNumber = version;
@@ -199,7 +213,8 @@ class SettingsView extends DestructableView{
 
 	@VueWatched()	readSpeedWatch(){this.updateWalletOptions();}
 	@VueWatched()	checkMinerTxWatch(){this.updateWalletOptions();}
-	@VueWatched()	customNodeWatch(){this.updateWalletOptions();}
+	//@VueWatched()	customNodeWatch(){this.updateConnectionSettings();}
+	//@VueWatched()	nodeUrlWatch(){this.updateConnectionSettings();}
 
 	@VueWatched()	creationHeightWatch() {
 		if(this.creationHeight < 0)this.creationHeight = 0;
@@ -219,8 +234,6 @@ class SettingsView extends DestructableView{
 		let options = wallet.options;
 		options.readSpeed = this.readSpeed;
 		options.checkMinerTx = this.checkMinerTx;
-		options.customNode = this.customNode;
-		options.nodeUrl = this.nodeUrl;
 		wallet.options = options;
     walletWatchdog.setupWorkers();
 		walletWatchdog.signalWalletUpdate();
@@ -234,6 +247,9 @@ class SettingsView extends DestructableView{
 
 	updateConnectionSettings() {
 		let options = wallet.options;
+		let oldCustomNode = options.customNode;
+		let oldNodeUrl = options.nodeUrl;
+		
 		options.customNode = this.customNode;
 		options.nodeUrl = this.nodeUrl;
 		wallet.options = options;
@@ -244,8 +260,24 @@ class SettingsView extends DestructableView{
       Storage.remove('customNodeUrl');
     }
 
-    // reset the node connection workers with new values
-    BlockchainExplorerProvider.getInstance().resetNodes();
+    // Update wallet watchdog with new options
+    walletWatchdog.setupWorkers();
+    walletWatchdog.signalWalletUpdate();
+
+    // Reset nodes if custom node setting changed (enabled/disabled)
+    // This ensures proper switching between custom and random nodes
+    if (oldCustomNode !== this.customNode) {
+      console.log('Custom node setting changed, resetting nodes...');
+      // Reset the node connection workers with new values
+      // This will automatically clean up and reinitialize the session
+      BlockchainExplorerProvider.getInstance().resetNodes();
+    } else if (this.customNode && oldNodeUrl !== this.nodeUrl) {
+      // Only reset if custom node URL changed (when using custom node)
+      console.log('Custom node URL changed, resetting nodes...');
+      BlockchainExplorerProvider.getInstance().resetNodes();
+    } else {
+      console.log('Node configuration unchanged, skipping node reset');
+    }
 	}
 
 	destruct = (): Promise<void> => {
