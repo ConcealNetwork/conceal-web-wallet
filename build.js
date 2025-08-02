@@ -52,12 +52,14 @@ const generateAllowedExceptionsHash = (exceptions) => {
 
 // Function to update environment file with integrity hashes
 const updateIntegrityHashes = () => {
+
 	const envPath = path.join(__dirname, '.env');
 	let envContent = '';
 	
 	if (fs.existsSync(envPath)) {
 		envContent = fs.readFileSync(envPath, 'utf8');
 	}
+
 
 	// Update API integrity hash
 	const apiHtmlPath = path.join(__dirname, 'src', 'api.html');
@@ -112,6 +114,7 @@ const updateIntegrityHashes = () => {
 	// Write updated content back to .env
 	fs.writeFileSync(envPath, envContent);
 	console.log('Updated .env with new integrity hashes');
+
 };
 
 // NOTE: This should be run *AFTER* all your assets are built
