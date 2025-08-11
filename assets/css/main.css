@@ -2,8 +2,8 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
- * Copyright (c) 2022, Conceal Network
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2022-2025 Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -15,6 +15,71 @@
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+/* Color Variables */
+:root {
+	/* Brand Colors */
+	--color-primary: #faa933;          /* Main orange */
+	--color-primary-hover: #f79b11;    /* Darker orange for hover states */
+	--color-primary-light: rgba(250, 169, 51, 0.5);  /* Light orange for backgrounds */
+	--color-primary-dark: #e67e00;     /* Dark orange for active states */
+  
+	/* Background Colors */
+	--color-bg-main: rgba(52, 58, 64, 0.95);    /* Main panel background */
+	--color-bg-hover: rgba(52, 58, 64, 0.88);   /* Panel hover background */
+	--color-bg-special: rgba(52, 58, 64, 1);   /* Panel in line - Warning with border no hover */
+	--color-bg-dark: #212529;          /* Dark background (footer, menu) */
+	--color-bg-darker: #282d31;        /* Darker background (top bar and menu) */
+	--color-bg-darker-menu-hidden: rgb(40, 45, 49, 0.99);        /* Darker background (menu hidden) */
+	--color-bg-darker-menu-hidden-lighter: rgb(40, 45, 49, 0.95); /* Darker background (menu hidden) */
+	--color-bg-darker-top: rgba(52, 58, 64, 0.98); /* lighter background for table headers */
+	--color-bg-light: #eeeeee;         /* Light background (inputs) */
+	--color-bg-disabled: #ccc;         /* Disabled state background */
+	--color-bg-tab: #212529;			/* Tab background */
+	
+	/* Text Colors */
+	--color-text-primary: #fff;        /* Primary text color */
+	--color-text-secondary: #ccc;      /* Secondary text color */
+	--color-text-tertiary: #e2e2e2;      /* Tertiary text color */
+	--color-text-muted: rgba(255, 255, 255, 0.7);  /* Muted text color */
+	--color-text-dark: #000;           /* Dark text color */
+	--color-text-dark-muted: rgba(0, 0, 0, 0.7);   /* Muted dark text */
+  
+	/* Border Colors */
+	--color-border-light: #D9DCE7;     /* Light border color */
+	--color-border-dark: rgba(0, 0, 0, 0.1);  /* Dark border color */
+	--color-border-panel: rgba(66, 66, 66, 0.918);   /* Panel border color */
+  
+	/* Status Colors */
+	--color-success: #6bc534;          /* Success green */
+	--color-error: #e57373;            /* Error red */
+	--color-warning: #ff9900;          /* Warning orange */
+	--color-info: #146DBD;             /* Info blue */
+  
+	/* Transaction Colors */
+	--color-tx-in: rgba(85,204,114,0.9);            /* Incoming transaction */
+	--color-tx-out: rgba(245, 96, 96, 0.9);           /* Outgoing transaction */
+	--color-tx-withdrawal: rgba(85,204,114,0.9) ;     /* Withdrawal transaction */
+	--color-tx-deposit: rgba(245, 96, 96, 0.9);        /* Deposit transaction */
+
+  
+	/* Scrollbar Colors */
+	--color-scrollbar-track: rgba(255, 255, 255, 0.05);
+	--color-scrollbar-thumb: rgba(255, 165, 0, 0.5);
+	--color-scrollbar-thumb-hover: rgba(255, 165, 0, 1);
+  
+	/* Overlay Colors */
+	--color-overlay: rgba(255, 255, 255, 0.6);
+	--color-overlay-dark: rgba(0, 0, 0, 0.9);
+	--color-overlay-light: rgba(62, 62, 62, 0.5);
+  
+	/* Shadow Colors */
+	--color-shadow-light: rgba(0, 0, 0, 0.1);
+	--color-shadow-medium: rgba(0, 0, 0, 0.2);
+	--color-shadow-dark: rgba(0, 0, 0, 0.3);
+  }
+
+
 
 @font-face {
 	font-family: "Poppins";
@@ -32,6 +97,88 @@ html {
 html {
 	overscroll-behavior: none;
 }
+
+/* Global Modern Scrollbar Styling */
+* {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 165, 0, 0.95) rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Edge-specific styling */
+@supports (-ms-ime-align: auto) {
+  * {
+    -ms-overflow-style: none;
+  }
+  
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  *::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    margin: 2px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    min-height: 40px;
+    background-color: rgba(255, 165, 0, 0.5);
+    border-radius: 4px;
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    background-clip: padding-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover,
+  *::-webkit-scrollbar-thumb:active {
+    background-color: rgba(255, 165, 0, 1);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    background-clip: padding-box;
+  }
+}
+
+/* Other browsers */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+*::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  margin: 2px;
+}
+
+*::-webkit-scrollbar-thumb {
+  min-height: 40px;
+  background-color: rgba(255, 165, 0, 0.5);
+  border-radius: 4px;
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:active {
+  background-color: rgba(255, 165, 0, 1);
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Firefox specific styles */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 165, 0, 0.5) rgba(255, 255, 255, 0.05);
+  }
+}
+
 div,
 p,
 input,
@@ -141,7 +288,7 @@ body.native .hideOnNonNative {
 	line-height: 34px;
 	position: fixed;
 	top: 0;
-	background: #363636;
+	background: var(--color-bg-darker);
 	color: white;
 	font-size: 16px;
 	font-weight: bold;
@@ -149,6 +296,8 @@ body.native .hideOnNonNative {
 	z-index: 20;
 	left: 280px;
 	display: none;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
 }
 
 #topBar a.toggleMenu {
@@ -156,6 +305,7 @@ body.native .hideOnNonNative {
 	display: inline-block;
 	height: 100%;
 	padding: 0 15px;
+	border-radius: 0, 3px, 3px, 0;
 }
 
 #main_logo img {
@@ -208,9 +358,11 @@ body.menuHidden #menu {
 }
 
 #menu {
-	background: #363636;
 	color: white;
 	padding: 10px 15px;
+	background: linear-gradient(to right, var(--color-bg-darker-menu-hidden) 90%, var(--color-bg-darker-menu-hidden-lighter));
+	border-right: 1px solid rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
 }
 
 .menuDisabled #menu {
@@ -224,24 +376,33 @@ body.menuHidden #menu {
 	padding: 14px 0;
 	text-decoration: none;
 	font-weight: 300;
+	transition: all 0.3s ease;
 }
 
-#menu a:hover {
+#menu a:not(#menu_logo):hover {
 	border-right: 5px solid white;
+	color: var(--color-primary);
 }
 
-#menu a:first-child:hover {
-	border-right: none;
-}
-
-#menu a:last-child {
-	border-bottom: none;
-}
-
-#menu a .icon {
+#menu a:not(#menu_logo) .icon {
 	display: inline-block;
 	width: 30px;
 	text-align: center;
+	transition: all 0.3s ease;
+}
+
+#menu a:not(#menu_logo):hover .icon {
+	color: var(--color-primary);
+	transform: scale(1.1);
+}
+
+#menu a:not(#menu_logo) span {
+	transition: all 0.3s ease;
+}
+
+#menu a:not(#menu_logo):hover span {
+	color: var(--color-primary);
+	text-shadow: 0 0 8px rgba(250, 169, 51, 0.3);
 }
 
 #menu img {
@@ -258,7 +419,7 @@ body.menuHidden #menu {
 
 #pageLoading {
 	position: fixed;
-	left: 60%;
+	left: 0;
 	top: 0;
 	bottom: 0;
 	width: 100%;
@@ -266,6 +427,7 @@ body.menuHidden #menu {
 	z-index: 10;
 	text-align: center;
 	color: black;
+	display: none;
 }
 
 #pageLoading i {
@@ -387,8 +549,8 @@ body.menuDisabled #page {
 	position: fixed;
 	bottom: 0%;
 	padding: 15px 0;
-	background: #212121;
-	color: #ffffffb3;
+	background: var(--color-bg-dark);
+	color: var(--color-text-tertiary);
 	font-size: 14px;
 	padding-left: 280px;
 	text-align: center;
@@ -455,7 +617,7 @@ body.transparent #copyright {
 }
 
 .transactions .transaction {
-	border-top: 1px solid #E2E2E2;
+	border-top: 1px solid var(--color-text-tertiary);
 }
 
 .transactions table tr:first-child {
@@ -486,6 +648,9 @@ body.transparent #copyright {
 	font-size: 18px;
 }
 
+/* Old desktop-specific message history styles removed - now using grid layout for all screens */
+
+/* 
 .messageHistory .transactions .trnsaction .timestamp {
 	width: 20%;
 	font-size: 18px;
@@ -501,6 +666,50 @@ body.transparent #copyright {
 	font-size: 18px;
   padding-right: 1em;
 }
+*/
+
+.message-status-dot {
+	font-size: 0.8em;
+	margin-left: 10px;
+	cursor: pointer;
+}
+.message-status-dot.viewed {
+    cursor: default;
+}
+
+.messageHistory .header-wrapper {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+  }
+  
+  .messageHistory .header-filter-wrapper {
+	width: 65%;
+	margin-left: auto;
+	margin-right: 1rem;
+  }
+  
+  .messageHistory .header-filter {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid var(--color-text-dark);
+	border-radius: 4px;
+	background-color: var(--color-bg-light);
+	color: var(--color-text);
+	font-size: 14px;
+  }
+  
+  .messageHistory .header-filter:focus {
+	outline: none;
+	border-color: var(--color-primary);
+  }
+  
+  @media screen and (max-width: 600px) {
+	.messageHistory .header-filter-wrapper {
+	  width: 90%;
+	  margin: auto;
+	}
+  }
 
 .transactions .transaction .amount {
 	font-size: 20px;
@@ -566,8 +775,17 @@ body.transparent #copyright {
 
 
 .tab {
-	display: block;
-	padding: 10px 5px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.tab-left {
+	display: flex;
+}
+
+.format-toggle {
+	margin-left: auto;  /* This pushes the button to the right */
 }
 
 .tab .button {
@@ -702,6 +920,45 @@ body.transparent #copyright {
 	border: 2px solid black;
 }
 
+.videoContainer {
+	position: relative;
+	display: inline-block;
+}
+
+.aimingSquare {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 200px;
+	height: 200px;
+	border: 2px solid var(--color-info);
+	box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+	pointer-events: none;
+}
+
+.aimingSquare::before,
+.aimingSquare::after {
+	content: '';
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-color: var(--color-info);
+	border-style: solid;
+}
+
+.aimingSquare::before {
+	top: -2px;
+	left: -2px;
+	border-width: 2px 0 0 2px;
+}
+
+.aimingSquare::after {
+	bottom: -2px;
+	right: -2px;
+	border-width: 0 2px 2px 0;
+}
+
 /*
 .button{
 	display: inline-block;
@@ -752,6 +1009,10 @@ body.native .indexTab .mainBlock {
 	left: 50%;
 	margin-right: -50%;
 	transform: translate(-50%, -50%);
+}
+/* Native version: Adjust headline height */
+body.native .indexTab .mainBlock .headline {
+	height: calc(100vh - 55%);
 }
 
 /* xSMall & Small */
@@ -805,7 +1066,7 @@ body.native .indexTab .mainBlock {
 
 .indexTab .mainBlock>.actions {
 	text-align: left;
-	background: #212121;
+	background: var(--color-bg-dark);
 	color: #ffffffb3;
 	padding: 1.5rem 1.5rem;
 	height: 75px;
@@ -816,12 +1077,22 @@ body.native .indexTab .mainBlock {
 	margin-right: 15px;
 }
 
+/* Native version: Stack buttons vertically */
+body.native .home .btn {
+	display: block;
+	margin: 10px auto;
+	margin-right: auto;
+	max-width: 280px;
+	width: 45%;
+}
+
 body.native .indexTab .mainBlock>.actions {
 	text-align: center;
 }
 
-.indexTab .mainBlock>.actions img {
-	max-height: 35px;
+body.native .indexTab .mainBlock>.actions img{
+	margin-top: -10px;
+	max-height: 52px;
 }
 
 .indexTab .mainBlock>.actions .btn {
@@ -862,7 +1133,7 @@ body.native .indexTab .mainBlock>.actions {
 	right: 0;
 }
 
-@media screen and (max-width: 940px) {
+@media screen and (max-width: 940px), screen and (max-height: 650px) {
 	.indexTab .notesBlock {
 		display: none;
 	}
@@ -899,7 +1170,7 @@ body.native .indexTab .mainBlock>.actions {
 
 .indexTab .block i {
 	font-size: 40px;
-	color: #faa933;
+	color: var(--color-primary);
 }
 
 .indexTab .block h3 {
@@ -1075,13 +1346,18 @@ body {
 }
 
 .panel {
-	background: #424242ea;
+	background: var(--color-bg-main);
 	border-radius: 5px;
 	padding: 1rem 1.1rem 1rem 1.1rem;
 	margin-bottom: 1.8rem;
-
 	box-shadow: 0 3px 5px -1px #0003, 0 6px 10px #00000024, 0 1px 18px #0000001f;
 	position: relative;
+	transition: all 0.3s ease;
+}
+
+.panel:hover {
+	background: var(--color-bg-hover);
+	box-shadow: 0 6px 10px -1px #0003, 0 12px 20px #00000024, 0 2px 36px #0000001f;
 }
 
 .panel.nopadding {
@@ -1093,7 +1369,7 @@ body {
 }
 
 .panel.inline {
-	background: #424242ea;
+	background: var(--color-bg-special);
 	padding: 40px 40px 32px 40px;
 	border: 1px solid orange;
 	box-shadow: none;
@@ -1334,7 +1610,7 @@ body {
 	padding: 17px 16px 15px;
 	width: 100%;
 	color: rgba(71, 78, 93, 0.7);
-	background: #eeeeee;
+	background: var(--color-bg-light);
 }
 
 .field input:read-only,
@@ -1346,6 +1622,11 @@ body {
 .field input[type=checkbox],
 .field input[type=radio] {
 	width: auto;
+}
+
+.field input[type=range] {
+	border-radius: 20px;
+	background: var(--color-bg-light);
 }
 
 .field .subfield {
@@ -1451,6 +1732,77 @@ body {
 	left: 2.15rem;
 }
 
+/* TTL Slider Styles */
+.ttl-slider-container {
+	margin: 10px 0;
+}
+
+.ttl-slider {
+	width: 100%;
+	height: 6px;
+	border-radius: 50%;
+	background: #ddd;
+	outline: none;
+	-webkit-appearance: none;
+	appearance: none;
+	margin: 10px 0;
+}
+
+.ttl-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: orange;
+	cursor: pointer;
+	border: 2px solid #fff;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.ttl-slider::-moz-range-thumb {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: orange;
+	cursor: pointer;
+	border: 2px solid #fff;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.ttl-slider:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.ttl-slider:disabled::-webkit-slider-thumb {
+	cursor: not-allowed;
+}
+
+.ttl-slider:disabled::-moz-range-thumb {
+	cursor: not-allowed;
+}
+
+.ttl-labels {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.8em;
+	color: var(--color-warning);
+	margin-top: 5px;
+}
+
+.message.info {
+	background-color: var(--color-bg-tab);
+	border: 1px solid var(--color-border-light);
+	color: var(--color-warning);
+	padding: 10px;
+	border-radius: 5px;
+	margin-top: 10px;
+}
+
+.message.info i {
+	margin-right: 5px;
+}
 
 /*===================TEXT=================*/
 .center,
@@ -1600,6 +1952,14 @@ body {
   color: orange;
 }
 
+.amount_portfolio .amount_cell {
+	font-size: 1.8em;
+	font-weight: bold;
+	color: orange;
+	padding: 0.2em 0 0 0;
+	border-bottom: 1px solid var(--color-text-tertiary) !important;
+}
+
 .amount_cell {
   display: table-cell;
   padding: 0.1em;
@@ -1616,6 +1976,10 @@ body {
 
 .tx_direction_in {
   color: #6bc534;
+}
+
+.fusion-gear {
+  color: var(--color-text-secondary) !important; /* Using the neutral color */
 }
 
 .progress-container {
@@ -1679,6 +2043,8 @@ body {
   display: flex;
   align-items: center;
   flex-direction: row;
+  background-color: var(--color-bg-darker-top);
+  border-radius: 5px 5px 0 0;
 }
 
 .header-filer-wrapper {
@@ -1779,7 +2145,9 @@ body {
   margin-top: 2em;
   overflow: hidden;
   border: 1px solid #424242ea;
-  background-color: #333;
+  background-color: var(--color-bg-tab);
+  border-radius: 5px;
+  margin-bottom: 1px;
 }
 
 /* Style the buttons inside the tab */
@@ -1793,11 +2161,15 @@ body {
   padding: 14px 16px;
   transition: 0.3s;
   font-size: 17px;
+  border-bottom: 2px solid transparent;
 }
 
 /* Change background color of buttons on hover */
 .tab button:hover {
-  background-color: #ccc;
+  /* background-color: #ccc; */
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+  text-shadow: 0 0 8px rgba(250, 169, 51, 0.3);
 }
 
 /* Create an active/current tablink class */
@@ -1807,7 +2179,6 @@ body {
 }
 
 .sendMessage {
-  display: none;
   color: white;
 }
 
@@ -1839,16 +2210,19 @@ body {
 #accountDeposits {
   padding-left: 32px; 
   max-width: 1200px;
+  font-size: 18px;  
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#accountDeposits tr {
+  height: 35px;
 }
 
 #depositHistoryTable {
   width: 100%;
   border-collapse: collapse;
-}
-
-#accountDeposits {
-  font-size: 18px;  
-  overflow-x: auto;
+  table-layout: fixed;
 }
 
 #accountDeposits .depositsListHeader {
@@ -1873,6 +2247,12 @@ body {
   font-size: 22px;  
 }
 
+#accountDeposits .tx_deposit_unlocked.disabled-icon {
+  color: #666;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 #accountDeposits .tx_deposit_spent {
   color: orange;
   font-size: 22px;  
@@ -1881,6 +2261,18 @@ body {
 #accountDeposits .tx_deposit_locked {
   color: red;
   font-size: 22px;  
+}
+
+@media (max-width: 600px) {
+	#depositHistoryTable, #depositHistoryTableBody {
+	  white-space: nowrap;
+	  overflow-x: auto;
+	}
+
+	#depositHistoryTable th,
+	#depositHistoryTableBody th {
+	  white-space: normal !important;
+	}
 }
 
 .depositTxDetails {
@@ -1913,6 +2305,419 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-.appLoaderVisible {
-  display: flex !important;
+.create-deposit-button {
+  text-align: center;
+  margin: 1em 0;
+}
+
+/* Custom icon colors for transactions */
+
+.tx_deposit {
+  color: #ed0505; /* Red */
+}
+
+.tx_withdrawal {
+  color: #6bc534; /* Green */
+}
+
+.selected-filename {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--color-text-tertiary);
+  margin-left: 5px;
+}
+
+/* Radio button and ticker styles */
+.radio-group, .ticker-option {
+    margin: 10px 23px;
+}
+
+.radio-option, .ticker-option {
+    display: block;
+    cursor: pointer;
+    user-select: none;
+    text-align: left;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.radio-option input[type="radio"], .ticker-option input[type="radio"] {
+    display: none;
+}
+
+.radio-option label, .ticker-option label {
+    display: inline-block;
+    position: relative;
+    padding-left: 28px;
+    color: var(--color-text-primary);
+    font-size: 1em;
+    line-height: 1.2;
+    cursor: pointer;
+    margin: 0;
+    padding-top: 2px;
+}
+
+.radio-option label:before, .ticker-option label:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--color-primary);
+    background: var(--color-bg-main);
+    transition: border-color 0.2s;
+}
+
+.radio-option label:after, .ticker-option label:after {
+    content: '';
+    display: block;
+    width: 12px;
+    height: 12px;
+    background: var(--color-primary);
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    transform: translate(-50%, -50%) scale(0,0);
+    border-radius: 50%;
+    opacity: 0;
+    transition: all .2s cubic-bezier(0.64, 0.57, 0.67, 1.53);
+}
+
+.radio-option input[type="radio"]:checked + label:after,
+.ticker-option input[type="radio"]:checked + label:after {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1,1);
+}
+
+.radio-option input[type="radio"]:focus + label:before,
+.ticker-option input[type="radio"]:focus + label:before {
+    border-color: var(--color-primary-hover);
+}
+
+.radio-option label:hover:before,
+.ticker-option label:hover:before {
+    border-color: var(--color-primary-hover);
+}
+.ticker-preview {
+    margin-top: 12px;
+    padding: 8px;
+    background-color: var(--color-bg-main);
+    border-radius: 4px;
+    font-weight: 500;
+    color: #fff;
+    font-size: 1.3em;
+}
+
+/* Table Column Width Classes - Desktop */
+.col-direction {
+  width: 5%;
+  text-align: center;
+}
+
+.col-txdetails {
+  width: 5%;
+  text-align: center;
+}
+
+.col-lockTimestamp {
+  width: 18%;
+  text-align: center;
+}
+
+.col-lockHeight {
+  width: 15%;
+  text-align: center;
+}
+
+.col-unlockTimestamp {
+  width: 18%;
+  text-align: center;
+}
+
+.col-unlockHeight {
+  width: 15%;
+  text-align: center;
+}
+
+.col-depositAmount {
+  width: 12%;
+  text-align: center;
+}
+
+.col-interest {
+  width: 12%;
+  text-align: center;
+}
+
+/* Mobile Responsive Table Styles */
+@media (max-width: 600px) {
+  #accountDeposits {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+	table-layout: fixed;
+  }
+  #accountDeposits .depositsListHeader {
+	font-size: 1em;
+  }
+
+  #depositHistoryTable {
+    width: 700px;
+  }
+
+  /* Mobile Column Widths */
+  .col-lockTimestamp,
+  .col-lockHeight,
+   .col-unlockHeight {
+    display: none;
+  }
+
+  .col-unlockHeight, .col-depositAmount, .col-interest {
+	font-size: 0.8em;
+  }
+
+}
+
+/* TTL Countdown Styles */
+.ttl-countdown {
+	width: 3.1rem;
+	text-align: center;
+	font-size: 0.9em;
+}
+
+.ttl-timer {
+	color: var(--color-warning);
+	font-weight: bold;
+	font-family: monospace;
+}
+
+.ttl-timer:contains("Expired") {
+	color: var(--color-error);
+}
+
+.message-preview-label {
+  font-size: 0.9em;
+  color: var(--color-text-tertiary);
+  font-weight: bold;
+}
+
+.message-preview {
+  margin-top: 1rem;
+  margin-bottom: 1.3rem;
+  padding: 8px;
+  background: var(--color-bg-light);
+  border-radius: 5px;
+  border: 1px solid #eee;
+}
+.preview-content {
+  color: var(--color-text-dark-muted);
+  white-space: pre-line;
+  line-height: 1rem;
+}
+
+/* Responsive 2-line layout for message history - applies to all screen sizes */
+/* This replaces the old table-based layout with a modern grid system that provides better space utilization */
+.messageHistory .transactions table {
+  table-layout: auto;
+}
+
+.messageHistory .transactions .transaction {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto auto auto;
+  gap: 0.5rem;
+  padding: 0.8rem 0.3rem;
+  border-bottom: 1px solid var(--color-text-tertiary);
+}
+
+.messageHistory .transactions .transaction td {
+  padding: 0.2rem;
+  border: none;
+}
+
+/* Left column - status and date on first row, block height on second row, TTL on third row */
+.messageHistory .transactions .transaction .direction {
+  grid-column: 1;
+  grid-row: 1;
+  width: auto;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.messageHistory .transactions .transaction .timestamp {
+  grid-column: 1;
+  grid-row: 1;
+  width: auto;
+  font-size: 14px;
+  text-align: center;
+  align-self: center;
+  margin-left: 0;
+  justify-content: center;
+  display: flex;
+}
+
+.messageHistory .transactions .transaction .blockHeight {
+  grid-column: 1;
+  grid-row: 2;
+  width: auto;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 0.2rem;
+  background: var(--color-bg-tab);
+  border-radius: 3px;
+  max-width: 160px;
+}
+
+.messageHistory .transactions .transaction .ttl-countdown {
+  grid-column: 1;
+  grid-row: 3;
+  width: auto;
+  font-size: 12px;
+  text-align: center;
+  padding: 0.2rem;
+  color: var(--color-warning);
+  font-weight: bold;
+  background: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3em;
+  min-width: 140px;
+  max-width: 160px;
+}
+
+.messageHistory .transactions .transaction .ttl-countdown i.fa {
+  font-size: 1em;
+  margin-right: 0.2em;
+  color: var(--color-warning);
+  display: inline-block;
+  width: auto;
+  height: auto;
+  line-height: 1;
+}
+
+/* Removed the :not(:empty) rule that was causing color conflicts */
+
+/* Right column - message text spans all rows */
+.messageHistory .transactions .transaction .messageText {
+  grid-column: 2;
+  grid-row: 1 / -1; /* Span from first to last row automatically */
+  width: auto;
+  font-size: 16px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Payment ID row styling */
+.messageHistory .transactions .payment-id-row {
+  display: block;
+  margin-top: 0.2rem;
+  padding: 0.3rem;
+  background: var(--color-bg-tab);
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  border-radius: 3px;
+}
+
+.messageHistory .transactions .payment-id-row td {
+  padding: 0.2rem;
+  border: none;
+  text-align: center;
+}
+
+/* Adjust message status dot positioning */
+.messageHistory .transactions .transaction .message-status-dot {
+  font-size: 1em;
+  margin-left: 0;
+}
+
+/* Ensure proper spacing for direction icons */
+.messageHistory .transactions .transaction .direction i {
+  margin-right: 0.3rem;
+}
+
+/* Responsive adjustments for different screen sizes */
+@media screen and (max-width: 768px) {
+  .messageHistory .transactions .transaction {
+    gap: 0.5rem;
+    padding: 0.8rem 0.3rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .messageHistory .transactions .transaction {
+    grid-template-columns: 0.8fr 2.2fr;
+    gap: 0.3rem;
+    padding: 0.6rem 0.2rem;
+  }
+  
+  .messageHistory .transactions .transaction .messageText {
+    font-size: 15px;
+  }
+  
+  .messageHistory .transactions .transaction .timestamp {
+    font-size: 13px;
+  }
+  
+  .messageHistory .transactions .transaction .blockHeight {
+    font-size: 11px;
+	max-height: 1.6rem;
+  }
+  
+  .messageHistory .transactions .transaction .ttl-countdown {
+    font-size: 11px;
+  }
+}
+
+/* Ensure .timestamp is centered and not inside a flex container */
+.messageHistory .transactions .transaction .timestamp {
+  text-align: center;
+  margin-left: 0.5em;
+  display: block;
+}
+
+@media screen and (max-width: 600px) {
+  .messageHistory .transactions .transaction .timestamp {
+    margin-left: 0.3em;
+    font-size: 13px;
+  }
+}
+
+.messageHistory .transactions .transaction .meta-top {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.messageHistory .transactions .transaction .meta-top .date {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.version-info {
+	position: fixed;
+	bottom: 10%;
+	left: 50%;
+	transform: translateX(-50%);
+	text-align: center;
+	font-size: 12px;
+	color: #888;
+	line-height: 1.4;
+}
+
+.version-info div {
+	margin: 2px 0;
 }

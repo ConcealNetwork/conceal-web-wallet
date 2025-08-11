@@ -67,7 +67,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         NetworkView.prototype.refreshStats = function () {
             var _this = this;
-            $("#appLoader").addClass("appLoaderVisible");
+            $('#pageLoading').show();
             blockchainExplorer.initialize().then(function (success) {
                 blockchainExplorer.getNetworkInfo().then(function (info) {
                     _this.nodeList = __spreadArray([], info.nodes, true);
@@ -77,9 +77,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     _this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
                     _this.ticker = config.coinSymbol;
                     _this.lastBlockFound = info.timestamp;
-                    $("#appLoader").removeClass("appLoaderVisible");
+                    $('#pageLoading').hide();
                 }).catch(function (err) {
-                    $("#appLoader").removeClass("appLoaderVisible");
+                    $('#pageLoading').hide();
                 });
             });
         };

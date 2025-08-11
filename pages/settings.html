@@ -11,7 +11,7 @@
 		<div class="panel inline" v-if="nativeVersionCode !== 0">
 			<div class="body" >
 				<div class="content" >
-					<div>{{ $t("settingsPage.versionBlock.versionNumber") }}{{nativeVersionNumber}}</div>
+					<div>APK {{ $t("settingsPage.versionBlock.versionNumber") }}{{nativeVersionNumber}}</div>
 					<div>{{ $t("settingsPage.versionBlock.versionCode") }}{{nativeVersionCode}}</div>
 				</div>
 			</div>
@@ -38,6 +38,27 @@
 							<option value="es">Spanish (Español)</option>
 							<option value="uk">Ukrainian (Українська)</option>
 						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel">
+			<div class="body" >
+				<div class="content" >
+					<div class="field">
+						<label>{{ $t("settingsPage.settingsBlock.ticker.label") }}</label>
+						<div class="ticker-option">
+							<input type="radio" id="tickerFull" :value="false" v-model="useShortTicker" name="ticker">
+							<label for="tickerFull">{{ $t("settingsPage.settingsBlock.ticker.full") }} ({{ config.coinSymbol }})</label>
+						</div>
+						<div class="ticker-option">
+							<input type="radio" id="tickerShort" :value="true" v-model="useShortTicker" name="ticker">
+							<label for="tickerShort">{{ $t("settingsPage.settingsBlock.ticker.short") }} ({{ config.coinSymbolShort }})</label>
+						</div>
+						<div class="ticker-preview">
+							{{ $t("settingsPage.settingsBlock.ticker.preview") }}: 100 {{ currentTicker }}
+						</div>
 					</div>
 				</div>
 			</div>

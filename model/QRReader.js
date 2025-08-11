@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -14,6 +14,17 @@
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -45,6 +56,13 @@ define(["require", "exports"], function (require, exports) {
             var self = this;
             this.webcam = document.querySelector("#cameraVideoFluxForDelivery");
             this.setCanvas();
+            // Optimize canvas size for QR detection - using square dimensions
+            if (this.canvas !== null) {
+                // Use square dimensions for better QR code scanning
+                var size = 1024; // Square size that's good for QR detection
+                this.canvas.width = size;
+                this.canvas.height = size;
+            }
             this.decoder = new Worker(baseUrl + "decoder.min.js");
             if (this.canvas === null || this.webcam === null)
                 return;
@@ -60,23 +78,31 @@ define(["require", "exports"], function (require, exports) {
                 }, false);
             }
             else {*/
-            this.canvas.width = window.innerWidth;
-            this.canvas.height = window.innerHeight;
+            //this.canvas.width = window.innerWidth;
+            //this.canvas.height = window.innerHeight;
             // }
             function startCapture(constraints) {
-                navigator.mediaDevices.getUserMedia(constraints)
+                // Enhanced constraints for better QR detection
+                var enhancedConstraints = {
+                    audio: false,
+                    video: __assign({ facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1920 } }, constraints.video // Merge with any existing constraints
+                    )
+                };
+                navigator.mediaDevices.getUserMedia(enhancedConstraints)
                     .then(function (stream) {
-                    if (self.webcam !== null)
+                    if (self.webcam !== null) {
                         self.webcam.srcObject = stream;
+                        // Set video element properties for better quality
+                        self.webcam.setAttribute('playsinline', 'true'); // Important for iOS
+                        self.webcam.setAttribute('autoplay', 'true');
+                    }
                 })
                     .catch(function (err) {
                     showErrorMsg(err);
                 });
             }
             navigator.mediaDevices.enumerateDevices().then(function (devices) {
-                //console.log(devices);
                 var supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
-                //console.log(supportedConstraints);
                 var device = devices.filter(function (device) {
                     var deviceLabel = device.label.split(',')[1];
                     if (device.kind == "videoinput") {
@@ -121,15 +147,29 @@ define(["require", "exports"], function (require, exports) {
             if (this.decoder === null)
                 return;
             var self = this;
+            // Add frame rate control for better performance
+            var lastFrameTime = 0;
+            var targetFrameRate = 30; // 30 FPS
+            var frameInterval = 1000 / targetFrameRate;
             // Start QR-decoder
             function newDecoderFrame() {
+                var now = performance.now();
+                if (now - lastFrameTime < frameInterval) {
+                    requestAnimationFrame(newDecoderFrame);
+                    return;
+                }
+                lastFrameTime = now;
                 if (self.ctx === null || self.webcam === null || self.canvas === null || self.decoder === null)
                     return;
-                //			//console.log('new frame');
-                if (!self.active)
-                    return;
                 try {
-                    self.ctx.drawImage(self.webcam, 0, 0, self.canvas.width, self.canvas.height);
+                    // Draw the video frame to the canvas
+                    var videoWidth = self.webcam.videoWidth;
+                    var videoHeight = self.webcam.videoHeight;
+                    var size = Math.min(videoWidth, videoHeight); // largest possible square
+                    var sx = (videoWidth - size) / 2;
+                    var sy = (videoHeight - size) / 2;
+                    // Draw the centered square from the video to the square canvas
+                    self.ctx.drawImage(self.webcam, sx, sy, size, size, 0, 0, self.canvas.width, self.canvas.height);
                     var imgData = self.ctx.getImageData(0, 0, self.canvas.width, self.canvas.height);
                     if (imgData.data) {
                         self.decoder.postMessage(imgData);

@@ -43,16 +43,31 @@ const i18n = new VueI18n({
 let browserUserLang = ''+(navigator.language || (<any>navigator).userLanguage);
 browserUserLang = browserUserLang.toLowerCase().split('-')[0];
 
-Storage.getItem('user-lang', browserUserLang).then(function(userLang : string) {
-	if (userLang) {
-		Translations.loadLangTranslation(userLang).catch(err => {
-			console.error(`Failed to load '${userLang}' language`, err);
-			return Translations.loadLangTranslation('en');
-		}).catch(err => {
-			console.error("Failed to load 'en' language", err);
-		});
-	}
+// Create a promise that resolves when i18n is ready
+const i18nReadyPromise = new Promise<void>((resolve) => {
+	Storage.getItem('user-lang', browserUserLang).then(function(userLang : string) {
+		if (userLang) {
+			Translations.loadLangTranslation(userLang).catch(err => {
+				console.error(`Failed to load '${userLang}' language`, err);
+				return Translations.loadLangTranslation('en');
+			
+			}).catch(err => {
+				console.error("Failed to load 'en' language", err);
+			}).finally(() => {
+				resolve();
+			});
+		} else {
+			resolve();
+		}
+	});
 });
+
+(window as any).i18nReadyPromise = i18nReadyPromise;
+(window as any).safeSwal = function(options: any) {
+	return i18nReadyPromise.then(() => {
+		return swal(options);
+	});
+};
 
 
 //========================================================
@@ -134,6 +149,7 @@ function handleGesture(e : Event) {
 	let y = touchendY - touchstartY;
 	let xy = Math.abs(x / y);
 	let yx = Math.abs(y / x);
+	
 	if (Math.abs(x) > treshold) {   // || Math.abs(y) > treshold      ----- >   do we care about y other than a big diagonal swipe already taken into account by xy and yx ?
 		if (yx <= limit) {
 			if (x < 0) {
@@ -145,8 +161,8 @@ function handleGesture(e : Event) {
 				if(menuView.isMenuHidden)
 					menuView.toggle();
 			}
-		}
-		if (xy <= limit) {
+
+		} else if (xy <= limit) {
 			if (y < 0) {
 				//top
 			} else {
@@ -193,7 +209,7 @@ function isMobileDevice() {
 
 @VueClass()
 class CopyrightView extends Vue{
-
+	@VueVar(false) isNative !: boolean;
 	@VueVar('en') language !: string;
 
 	constructor(containerName:any,vueData:any=null){
@@ -202,6 +218,7 @@ class CopyrightView extends Vue{
 		Translations.getLang().then((userLang : string) => {
 			this.language = userLang;
 		});
+		this.isNative = window.native;
 	}
 
 	@VueWatched()
@@ -218,16 +235,24 @@ let copyrightView = new CopyrightView('#copyright');
 //==================Loading the right page================
 //========================================================
 
-let isCordovaApp = document.URL.indexOf('http://') === -1
-	&& document.URL.indexOf('https://') === -1;
+let isCordovaApp = false;
+// Check for traditional Cordova app (local files)
+const isLocalFileApp = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+
+// Check for WebView app (remote content in WebView)
+const isWebViewApp = navigator.userAgent.includes('Android') && navigator.userAgent.includes('wv');
+
+// Either local Cordova app or WebView app should be treated as native
+isCordovaApp = isLocalFileApp || isWebViewApp;
 
 let promiseLoadingReady : Promise<void>;
 
 window.native = false;
 if(isCordovaApp){
 	window.native = true;
+	copyrightView.isNative = true;
 	$('body').addClass('native');
-
+	/*	when we had hope to load cordova.js, but cannot happen in a redirect.
 	let promiseLoadingReadyResolve : null|Function = null;
 	let promiseLoadingReadyReject : null|Function = null;
 	promiseLoadingReady = new Promise<void>(function(resolve, reject){
@@ -248,7 +273,9 @@ if(isCordovaApp){
 			promiseLoadingReadyResolve();
 		clearInterval(timeoutCordovaLoad);
 	}, false);
-
+	*/
+	console.log('📱 Cordova WebView detected - skipping cordova.js loading');
+	promiseLoadingReady = Promise.resolve();
 }else
 	promiseLoadingReady = Promise.resolve();
 
@@ -283,9 +310,18 @@ Y88b  d88P Y88b.  Y88..88P 888 d88P         scam and will give them access to yo
 IA Self-XSS scam tricks you into compromising your wallet by claiming to provide a way to log into someone else's wallet, or some other kind of reward, after pasting a special code or link into your web browser.`, "font-family:monospace")
 
 if (!isCordovaApp && 'serviceWorker' in navigator) {
+	// Flag to prevent showing the same update multiple times
+	let updateModalShown = false;
+	
 	const showRefreshUI = function(registration : any){
-		//console.log(registration);
-		swal({
+		// Prevent showing the same update multiple times
+		if (updateModalShown) {
+			return;
+		}
+		updateModalShown = true;
+		
+		// Use safeSwal which automatically waits for i18n
+		(window as any).safeSwal({
 			type:'info',
 			title:i18n.t('global.newVersionModal.title'),
 			html:i18n.t('global.newVersionModal.content'),
@@ -295,6 +331,9 @@ if (!isCordovaApp && 'serviceWorker' in navigator) {
 		}).then(function(value : any){
 			if(!value.dismiss){
 				registration.waiting.postMessage('force-activate');
+			} else {
+				// Reset flag when user cancels so they can see it again later
+				updateModalShown = false;
 			}
 		});
 	};

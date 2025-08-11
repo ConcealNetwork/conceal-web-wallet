@@ -4,8 +4,8 @@
  * Copyright (c) 2018-2020 The Karbo developers
  * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
  * Copyright (c) 2022, The Karbo Developers
- * Copyright (c) 2022, Conceal Devs
- * Copyright (c) 2022, Conceal Network
+ * Copyright (c) 2022 - 2025, Conceal Devs
+ * Copyright (c) 2022 - 2025, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -37,6 +37,42 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
 };
 define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numbersLab/VueAnnotate", "../model/TransactionsExplorer", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../utils/Url", "../model/CoinUri", "../model/QRReader", "../model/AppState", "../providers/BlockchainExplorerProvider", "../model/Nfc", "../model/Cn", "../model/WalletWatchdog"], function (require, exports, DestructableView_1, VueAnnotate_1, TransactionsExplorer_1, DependencyInjector_1, Wallet_1, Url_1, CoinUri_1, QRReader_1, AppState_1, BlockchainExplorerProvider_1, Nfc_1, Cn_1, WalletWatchdog_1) {
     "use strict";
@@ -74,146 +110,189 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             _this.send = function () {
                 var self = _this;
                 blockchainExplorer.getHeight().then(function (blockchainHeight) {
-                    var amount = parseFloat(self.amountToSend);
-                    if (self.destinationAddress !== null) {
-                        //todo use BigInteger
-                        if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.availableAmount(blockchainHeight)) {
-                            swal({
-                                type: 'error',
-                                title: i18n.t('sendPage.notEnoughMoneyModal.title'),
-                                text: i18n.t('sendPage.notEnoughMoneyModal.content'),
-                                confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
-                            });
-                            return;
-                        }
-                        //TODO use biginteger
-                        var amountToSend = amount * Math.pow(10, config.coinUnitPlaces);
-                        var destinationAddress_1 = self.destinationAddress;
-                        swal({
-                            title: i18n.t('sendPage.creatingTransferModal.title'),
-                            html: i18n.t('sendPage.creatingTransferModal.content'),
-                            onOpen: function () {
-                                swal.showLoading();
-                            }
-                        });
-                        var mixinToSendWith = config.defaultMixin;
-                        TransactionsExplorer_1.TransactionsExplorer.createTx([{ address: destinationAddress_1, amount: amountToSend }], self.paymentId, wallet, blockchainHeight, function (amounts, numberOuts) {
-                            return blockchainExplorer.getRandomOuts(amounts, numberOuts);
-                        }, function (amount, feesAmount) {
-                            if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var amount, amountToSend, destinationAddress_1, mixinToSendWith_1, destination_1;
+                        return __generator(this, function (_a) {
+                            amount = parseFloat(self.amountToSend);
+                            if (self.destinationAddress !== null) {
+                                //todo use BigInteger
+                                if (amount * Math.pow(10, config.coinUnitPlaces) > wallet.availableAmount(blockchainHeight)) {
+                                    swal({
+                                        type: 'error',
+                                        title: i18n.t('sendPage.notEnoughMoneyModal.title'),
+                                        text: i18n.t('sendPage.notEnoughMoneyModal.content'),
+                                        confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
+                                    });
+                                    return [2 /*return*/];
+                                }
+                                amountToSend = amount * Math.pow(10, config.coinUnitPlaces);
+                                destinationAddress_1 = self.destinationAddress;
                                 swal({
-                                    type: 'error',
-                                    title: i18n.t('sendPage.notEnoughMoneyModal.title'),
-                                    text: i18n.t('sendPage.notEnoughMoneyModal.content'),
-                                    confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
+                                    title: i18n.t('sendPage.creatingTransferModal.title'),
+                                    html: i18n.t('sendPage.creatingTransferModal.content'),
                                     onOpen: function () {
-                                        swal.hideLoading();
+                                        swal.showLoading();
                                     }
                                 });
-                                throw '';
-                            }
-                            return new Promise(function (resolve, reject) {
-                                setTimeout(function () {
-                                    swal({
-                                        title: i18n.t('sendPage.confirmTransactionModal.title'),
-                                        html: i18n.t('sendPage.confirmTransactionModal.content', {
-                                            amount: amount / Math.pow(10, config.coinUnitPlaces),
-                                            fees: feesAmount / Math.pow(10, config.coinUnitPlaces),
-                                            total: (amount + feesAmount) / Math.pow(10, config.coinUnitPlaces),
-                                        }),
-                                        showCancelButton: true,
-                                        confirmButtonText: i18n.t('sendPage.confirmTransactionModal.confirmText'),
-                                        cancelButtonText: i18n.t('sendPage.confirmTransactionModal.cancelText'),
-                                    }).then(function (result) {
-                                        if (result.dismiss) {
-                                            reject('');
+                                mixinToSendWith_1 = config.defaultMixin;
+                                destination_1 = [{ address: destinationAddress_1, amount: amountToSend }];
+                                // Get fee address from session node for remote node fee
+                                blockchainExplorer.getSessionNodeFeeAddress().then(function (remoteFeeAddress) {
+                                    if (remoteFeeAddress !== wallet.getPublicAddress()) {
+                                        if (remoteFeeAddress !== '') {
+                                            destination_1.push({ address: remoteFeeAddress, amount: config.remoteNodeFee });
                                         }
                                         else {
+                                            destination_1.push({ address: config.donationAddress, amount: config.remoteNodeFee });
+                                        }
+                                    }
+                                    TransactionsExplorer_1.TransactionsExplorer.createTx(destination_1, self.paymentId, wallet, blockchainHeight, function (amounts, numberOuts) {
+                                        return blockchainExplorer.getRandomOuts(amounts, numberOuts);
+                                    }, function (amount, feesAmount) {
+                                        if (amount + feesAmount > wallet.availableAmount(blockchainHeight)) {
                                             swal({
-                                                title: i18n.t('sendPage.finalizingTransferModal.title'),
-                                                html: i18n.t('sendPage.finalizingTransferModal.content'),
+                                                type: 'error',
+                                                title: i18n.t('sendPage.notEnoughMoneyModal.title'),
+                                                text: i18n.t('sendPage.notEnoughMoneyModal.content'),
+                                                confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
                                                 onOpen: function () {
-                                                    swal.showLoading();
+                                                    swal.hideLoading();
                                                 }
                                             });
-                                            resolve();
+                                            throw '';
                                         }
-                                    }).catch(reject);
-                                }, 1);
-                            });
-                        }, mixinToSendWith, self.message, 0).then(function (rawTxData) {
-                            blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
-                                //save the tx private key
-                                wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
-                                //force a mempool check so the user is up to date
-                                var watchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name);
-                                if (watchdog !== null)
-                                    watchdog.checkMempool();
-                                var promise = Promise.resolve();
-                                if (destinationAddress_1 === 'ccx7NzuofXxcypov8Yqm2A118xT17HereBFjp3RScjzM7wncf8BRcnHZbACy63sWD71L7NmkJRgQKXFE3weCfAh31RAVFHgttf' ||
-                                    destinationAddress_1 === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj' ||
-                                    destinationAddress_1 === 'ccx7YZ4RC97fqMh1bmzrFtDoSSiEgvEYzhaLE53SR9bh4QrDBUhGUH3TCmXqv8MTLjJDtnCeeaT5bLC2ZSzp3ZmQ19DoiPLLXS') {
-                                    promise = swal({
-                                        type: 'success',
-                                        title: i18n.t('sendPage.thankYouDonationModal.title'),
-                                        text: i18n.t('sendPage.thankYouDonationModal.content'),
-                                        confirmButtonText: i18n.t('sendPage.thankYouDonationModal.confirmText'),
-                                        onClose: function () {
-                                            window.location.href = '#!account';
+                                        return new Promise(function (resolve, reject) {
+                                            setTimeout(function () {
+                                                var feeInfo = '';
+                                                if (remoteFeeAddress !== wallet.getPublicAddress()) {
+                                                    feeInfo = '<br><br><span style="font-size: 0.8em; font-style: italic; color: #666;">' + '(' + i18n.t('sendPage.confirmTransactionModal.remoteNodeFee', {
+                                                        fee: config.remoteNodeFee / Math.pow(10, config.coinUnitPlaces),
+                                                        symbol: config.coinSymbol
+                                                    }) + ')' + '</span>';
+                                                }
+                                                swal({
+                                                    title: i18n.t('sendPage.confirmTransactionModal.title'),
+                                                    html: i18n.t('sendPage.confirmTransactionModal.content', {
+                                                        amount: amount / Math.pow(10, config.coinUnitPlaces),
+                                                        fees: feesAmount / Math.pow(10, config.coinUnitPlaces),
+                                                        total: (amount + feesAmount) / Math.pow(10, config.coinUnitPlaces),
+                                                    }) + feeInfo,
+                                                    showCancelButton: true,
+                                                    confirmButtonText: i18n.t('sendPage.confirmTransactionModal.confirmText'),
+                                                    cancelButtonText: i18n.t('sendPage.confirmTransactionModal.cancelText'),
+                                                }).then(function (result) {
+                                                    if (result.dismiss) {
+                                                        reject('');
+                                                    }
+                                                    else {
+                                                        swal({
+                                                            title: i18n.t('sendPage.finalizingTransferModal.title'),
+                                                            html: i18n.t('sendPage.finalizingTransferModal.content'),
+                                                            onOpen: function () {
+                                                                swal.showLoading();
+                                                            }
+                                                        });
+                                                        resolve();
+                                                    }
+                                                }).catch(reject);
+                                            }, 1);
+                                        });
+                                    }, mixinToSendWith_1, self.message, 0, "regular", 0).then(function (rawTxData) {
+                                        blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
+                                            //save the tx private key
+                                            wallet.addTxPrivateKeyWithTxHashAndFusion(rawTxData.raw.hash, rawTxData.raw.prvkey, false);
+                                            //force a mempool check so the user is up to date
+                                            var watchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name);
+                                            if (watchdog !== null)
+                                                watchdog.checkMempool();
+                                            var promise = Promise.resolve();
+                                            if (destinationAddress_1 === 'ccx7NzuofXxcypov8Yqm2A118xT17HereBFjp3RScjzM7wncf8BRcnHZbACy63sWD71L7NmkJRgQKXFE3weCfAh31RAVFHgttf' ||
+                                                destinationAddress_1 === 'ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj' ||
+                                                destinationAddress_1 === 'ccx7YZ4RC97fqMh1bmzrFtDoSSiEgvEYzhaLE53SR9bh4QrDBUhGUH3TCmXqv8MTLjJDtnCeeaT5bLC2ZSzp3ZmQ19DoiPLLXS') {
+                                                promise = swal({
+                                                    type: 'success',
+                                                    title: i18n.t('sendPage.thankYouDonationModal.title'),
+                                                    text: i18n.t('sendPage.thankYouDonationModal.content'),
+                                                    confirmButtonText: i18n.t('sendPage.thankYouDonationModal.confirmText'),
+                                                    onClose: function () {
+                                                        window.location.href = '#!account';
+                                                    }
+                                                });
+                                            }
+                                            else
+                                                promise = swal({
+                                                    type: 'success',
+                                                    title: i18n.t('sendPage.transferSentModal.title'),
+                                                    confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
+                                                    onClose: function () {
+                                                        window.location.href = '#!account';
+                                                    }
+                                                });
+                                            promise.then(function () {
+                                                if (self.redirectUrlAfterSend !== null) {
+                                                    window.location.href = window.encodeURIComponent(self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash));
+                                                }
+                                            });
+                                        }).catch(function (error) {
+                                            //console.log(error);
+                                            if (error && error !== '') {
+                                                var errorMessage = '';
+                                                var errorTitle = i18n.t('sendPage.transferExceptionModal.title');
+                                                if (typeof error === 'string') {
+                                                    errorMessage = error;
+                                                }
+                                                else if (error instanceof Error) {
+                                                    errorMessage = error.message;
+                                                }
+                                                else {
+                                                    errorMessage = JSON.stringify(error);
+                                                }
+                                                swal({
+                                                    type: 'error',
+                                                    title: errorTitle,
+                                                    html: i18n.t('sendPage.transferExceptionModal.content', { details: errorMessage }),
+                                                    confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                                });
+                                            }
+                                        });
+                                        swal.close();
+                                    }).catch(function (error) {
+                                        //console.log(error);
+                                        if (error && error !== '') {
+                                            var errorMessage = '';
+                                            var errorTitle = i18n.t('sendPage.transferExceptionModal.title');
+                                            if (typeof error === 'string') {
+                                                errorMessage = error;
+                                            }
+                                            else if (error instanceof Error) {
+                                                errorMessage = error.message;
+                                            }
+                                            else {
+                                                errorMessage = JSON.stringify(error);
+                                            }
+                                            swal({
+                                                type: 'error',
+                                                title: errorTitle,
+                                                html: i18n.t('sendPage.transferExceptionModal.content', { details: errorMessage }),
+                                                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                            });
                                         }
                                     });
-                                }
-                                else
-                                    promise = swal({
-                                        type: 'success',
-                                        title: i18n.t('sendPage.transferSentModal.title'),
-                                        confirmButtonText: i18n.t('sendPage.transferSentModal.confirmText'),
-                                        onClose: function () {
-                                            window.location.href = '#!account';
-                                        }
-                                    });
-                                promise.then(function () {
-                                    if (self.redirectUrlAfterSend !== null) {
-                                        window.location.href = window.encodeURIComponent(self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash));
-                                    }
+                                }).catch(function (err) {
+                                    console.error("Error getting session node fee address", err);
                                 });
-                            }).catch(function (data) {
+                            }
+                            else {
                                 swal({
                                     type: 'error',
-                                    title: i18n.t('sendPage.transferExceptionModal.title'),
-                                    html: i18n.t('sendPage.transferExceptionModal.content', { details: JSON.stringify(data) }),
-                                    confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                    title: i18n.t('sendPage.invalidAmountModal.title'),
+                                    html: i18n.t('sendPage.invalidAmountModal.content'),
+                                    confirmButtonText: i18n.t('sendPage.invalidAmountModal.confirmText'),
                                 });
-                            });
-                            swal.close();
-                        }).catch(function (error) {
-                            //console.log(error);
-                            if (error && error !== '') {
-                                if (typeof error === 'string')
-                                    swal({
-                                        type: 'error',
-                                        title: i18n.t('sendPage.transferExceptionModal.title'),
-                                        html: i18n.t('sendPage.transferExceptionModal.content', { details: error }),
-                                        confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-                                    });
-                                else
-                                    swal({
-                                        type: 'error',
-                                        title: i18n.t('sendPage.transferExceptionModal.title'),
-                                        html: i18n.t('sendPage.transferExceptionModal.content', { details: JSON.stringify(error) }),
-                                        confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-                                    });
                             }
+                            return [2 /*return*/];
                         });
-                    }
-                    else {
-                        swal({
-                            type: 'error',
-                            title: i18n.t('sendPage.invalidAmountModal.title'),
-                            html: i18n.t('sendPage.invalidAmountModal.content'),
-                            confirmButtonText: i18n.t('sendPage.invalidAmountModal.confirmText'),
-                        });
-                    }
+                    });
                 }).catch(function (err) {
                     console.error("Error trying to send funds", err);
                 });
@@ -224,8 +303,13 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     logDebugMsg("optimizeInfo.numOutputs", optimizeInfo.numOutputs);
                     logDebugMsg('optimizeInfo.isNeeded', optimizeInfo.isNeeded);
                     _this.optimizeIsNeeded = optimizeInfo.isNeeded;
+                    _this.showOptimizePanel = optimizeInfo.isNeeded;
                     if (optimizeInfo.isNeeded) {
                         _this.optimizeOutputs = optimizeInfo.numOutputs;
+                        // Hide the panel after 20 seconds
+                        setTimeout(function () {
+                            _this.showOptimizePanel = false;
+                        }, 20000);
                     }
                 }).catch(function (err) {
                     console.error("Error in checkOptimization, calling getHeight", err);
@@ -234,7 +318,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             _this.optimizeWallet = function () {
                 _this.optimizeLoading = true; // set loading state to true
                 blockchainExplorer.getHeight().then(function (blockchainHeight) {
-                    wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer, function (amounts, numberOuts) {
+                    wallet.createFusionTransaction(blockchainHeight, config.optimizeThreshold, blockchainExplorer, function (amounts, numberOuts) {
                         return blockchainExplorer.getRandomOuts(amounts, numberOuts);
                     }).then(function (processedOuts) {
                         var watchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name);
@@ -457,6 +541,8 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             }
         };
         SendView.prototype.amountToSendWatch = function () {
+            // Allow only numbers and at most one dot
+            this.amountToSend = this.amountToSend.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1');
             try {
                 this.amountToSendValid = !isNaN(parseFloat(this.amountToSend));
             }
@@ -492,6 +578,16 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             catch (e) {
                 this.mixinIsValid = false;
             }
+        };
+        SendView.prototype.onAmountFocus = function () {
+            this.amountPlaceholder = '';
+            if (this.amountToSend === '0')
+                this.amountToSend = '';
+        };
+        SendView.prototype.onAmountBlur = function () {
+            if (this.amountToSend === '')
+                this.amountToSend = '0';
+            this.amountPlaceholder = '0';
         };
         __decorate([
             (0, VueAnnotate_1.VueVar)('')
@@ -562,6 +658,12 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         __decorate([
             (0, VueAnnotate_1.VueVar)(0)
         ], SendView.prototype, "optimizeOutputs", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)('0')
+        ], SendView.prototype, "amountPlaceholder", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(null)
+        ], SendView.prototype, "showOptimizePanel", void 0);
         __decorate([
             (0, DependencyInjector_1.Autowire)(Nfc_1.Nfc.name)
         ], SendView.prototype, "nfc", void 0);

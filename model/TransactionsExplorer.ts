@@ -5,8 +5,8 @@
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
  *     Copyright (c) 2022, The Karbo Developers
- *     Copyright (c) 2022, Conceal Devs
- *     Copyright (c) 2022, Conceal Network
+ *     Copyright (c) 2022 - 2025, Conceal Devs
+ *     Copyright (c) 2022 - 2025, Conceal Network
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -34,13 +34,41 @@
  *     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// Declare global config type
+declare var config: {
+  debug: boolean;
+  apiUrl: string[];
+  nodeList: string[];
+  publicNodes: string;
+  mainnetExplorerUrl: string;
+  mainnetExplorerUrlHash: string;
+  mainnetExplorerUrlBlock: string;
+  testnetExplorerUrl: string;
+  testnetExplorerUrlHash: string;
+  testnetExplorerUrlBlock: string;
+  testnet: boolean;
+  coinUnitPlaces: number;
+  txMinConfirms: number;
+  txCoinbaseMinConfirms: number;
+  coinFee: number;
+  maxBlockNumber: number;
+  depositMinTermBlock: number;
+  depositMaxTermMonth: number;
+  depositRateV3: number[];
+  depositHeightV3: number;
+  [key: string]: any;
+};
+
  import {Wallet} from "./Wallet";
  import {MathUtil} from "./MathUtil";
  import {JSChaCha8} from './ChaCha8';
  import {Cn, CnNativeBride, CnRandom, CnTransactions, CnUtils} from "./Cn";
  import {RawDaemon_Transaction, RawDaemon_Out} from "./blockchain/BlockchainExplorer";
  import {Transaction, TransactionData, Deposit, TransactionIn, TransactionOut} from "./Transaction";
- 
+ import {InterestCalculator} from "./Interest";
+ import { Currency } from "./Currency";
+ import { decode as varintDecode } from "./Varint";
+
  export const TX_EXTRA_PADDING_MAX_COUNT = 255;
  export const TX_EXTRA_NONCE_MAX_COUNT = 255;
 
@@ -65,7 +93,10 @@
    public_key: string,
    index: number,
    global_index: number,
-   tx_pub_key: string
+   tx_pub_key: string,
+   type?: string,
+   required_signatures?: number,
+   keys: string[],
  };
 
  type TxExtra = {
@@ -325,6 +356,7 @@
      let tx_pub_key = '';
      let paymentId: string | null = null;
      let rawMessage: string = '';
+     let ttl: number = 0;
 
      let txExtras = [];
      try {
@@ -378,6 +410,7 @@
          }
        }
        else if (extra.type === TX_EXTRA_MESSAGE_TAG) {
+          // TODO: Only extract message if not a remote node fee transaction
          for (let i = 0; i < extra.data.length; ++i) {
            rawMessage += String.fromCharCode(extra.data[i]);
          }
@@ -390,8 +423,7 @@
 			   }
 				 let ttlStr = CnUtils.bintohex(rawTTL);
 				 let uint8Array = CnUtils.hextobin(ttlStr);
-         let Varint: any;
-				 let ttl = Varint.decode(uint8Array);
+         ttl = varintDecode(uint8Array);         
 			 }
        extraIndex++;
      }
@@ -450,15 +482,20 @@
 
            if (out.target.data && out.target.data.term) {
              let deposit = new Deposit();
-
              if (typeof rawTransaction.height  !== 'undefined') deposit.blockHeight = rawTransaction.height;
              if (typeof rawTransaction.hash  !== 'undefined') deposit.txHash = rawTransaction.hash;
              if (typeof rawTransaction.ts  !== 'undefined') deposit.timestamp = rawTransaction.ts;
              deposit.amount = transactionOut.amount; 
-             deposit.term = out.target.data.term; 
-             if (rawTransaction.output_indexes && (rawTransaction.output_indexes.length > iOut)) {
-               deposit.outputIndex = rawTransaction.output_indexes[iOut]; 
+             deposit.term = out.target.data.term;
+             if (rawTransaction.output_indexes && typeof rawTransaction.output_indexes[iOut] !== 'undefined') {deposit.globalOutputIndex = rawTransaction.output_indexes[iOut]} else {deposit.globalOutputIndex = output_idx_in_tx;}
+             deposit.indexInVout = iOut;
+             // Extract keys from the transaction output target data
+             if (out.target.data.keys && Array.isArray(out.target.data.keys)) {
+               deposit.keys = out.target.data.keys;
              }
+             deposit.txPubKey = tx_pub_key; // Reuse the already extracted transaction public key
+             // Calculate the interest for this deposit
+             deposit.interest = InterestCalculator.calculateInterest(deposit.amount, deposit.term, deposit.blockHeight);
              deposits.push(deposit);
            }
          }
@@ -509,7 +546,7 @@
                if (vin.type == "03") {
                 if (vin.value && vin.value.term) {
                   let withdrawal = new Deposit();
-                  withdrawal.outputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : -1;
+                  withdrawal.globalOutputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
                   if (typeof rawTransaction.height !== 'undefined') withdrawal.blockHeight = rawTransaction.height;
                   if (typeof rawTransaction.hash !== 'undefined') withdrawal.txHash = rawTransaction.hash;
                   if (typeof rawTransaction.ts !== 'undefined') withdrawal.timestamp = rawTransaction.ts;
@@ -519,21 +556,33 @@
                   wasAdded = true;
                  }
                }
-
+               
                ins.push(transactionIn);
                break;
              }
            }
          } 
 
+
+
          // add the withdrawal if it was not yet processed
          if ((!wasAdded) && (vin.type == "03")) {
-           let withdrawal = new Deposit();
+          let transactionIn = new TransactionIn();
+           transactionIn.type = "03"; // Set type explicitly for withdrawal
+           transactionIn.term = (vin.value && vin.value.term) ? vin.value.term : 0;
+           if (vin.value && vin.value.amount) {
+             transactionIn.amount = parseInt(vin.value.amount);
+           }
+           // Add the transaction input to the array
+           ins.push(transactionIn); 
+          
+          
+          let withdrawal = new Deposit();
            if (typeof rawTransaction.ts !== 'undefined') withdrawal.timestamp = rawTransaction.ts;
            if (typeof rawTransaction.hash !== 'undefined') withdrawal.txHash = rawTransaction.hash;
            if (typeof rawTransaction.height !== 'undefined') withdrawal.blockHeight = rawTransaction.height;
            if (vin.value && vin.value.amount) withdrawal.amount = parseInt(vin.value?.amount);
-           withdrawal.outputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
+           withdrawal.globalOutputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
            withdrawal.term = (vin.value && vin.value.term) ? vin.value.term : 0;
            withdrawals.push(withdrawal);
            wasAdded = true;
@@ -600,7 +649,14 @@
        } else {
          transaction.fees = rawTransaction.fee;
        }
-
+       
+       transaction.fusion = ((rawTransaction.vin.length > Currency.fusionTxMinInputCount) && 
+       (rawTransaction.vout.length <= config.maxFusionOutputs) &&
+       ((rawTransaction.vin.length / rawTransaction.vout.length) > config.fusionTxMinInOutCountRatio) && 
+       (rawTransaction.vin.some(vin => vin.type != "03")) &&
+       (rawTransaction.vout.some(vout => vout.target.type != "03"))) &&
+       (transaction.fees === 0 || transaction.fees === parseInt(config.minimumFee_V2));
+       
        // fill the transaction info
        transaction.outs = outs;
        transaction.ins = ins;
@@ -620,12 +676,15 @@
          }
        }
      }
-
+     if (transaction && typeof ttl !== 'undefined') {
+      transaction.ttl = ttl;
+     }
      return transactionData;
    }
 
    static formatWalletOutsForTx(wallet: Wallet, blockchainHeight: number): RawOutForTx[] {
-     let unspentOuts = [];
+    let allOuts = []; 
+    let unspentOuts = [];
 
      //rct=rct_outpk + rct_mask + rct_amount
      // {"amount"          , out.amount},
@@ -640,37 +699,42 @@
      // {"timestamp"       , static_cast<uint64_t>(out.timestamp)},
      // {"height"          , tx.height},
      // {"spend_key_images", json::array()}
-
+     
      for (let tr of wallet.getAll()) {
-       //todo improve to take into account miner tx
+       //todo improve to take into account miner tx ... well, if the user is smart enough to mine, he should be able to toggle the "Read miner tx" option in settings.
        //only add outs unlocked
-       if (!tr.isConfirmed(blockchainHeight)) {
+       if (!tr.isConfirmed(blockchainHeight - 2)) { // -2 extra buffer
          continue;
        }
-
        for (let out of tr.outs) {
-         unspentOuts.push({
+         // Skip type "03" outputs (deposit outputs) for regular transactions
+         // These should only be used for withdrawals, not regular sends
+         if (out.type === "03") {
+           continue;
+         }
+
+         allOuts.push({
            keyImage: out.keyImage,
            amount: out.amount,
            public_key: out.pubKey,
            index: out.outputIdx,
            global_index: out.globalIndex,
-           tx_pub_key: tr.txPubKey
+           tx_pub_key: tr.txPubKey,
+           keys: []
          });
        }
      }
-
+     // Create a set of all key images that have been spent (used as inputs)
+     const spentKeyImages = new Set<string>();
      for (let tr of wallet.getAll().concat(wallet.txsMem)) {
        for (let i of tr.ins) {
-         for (let iOut = 0; iOut < unspentOuts.length; ++iOut) {
-           if (unspentOuts[iOut].keyImage === i.keyImage) {
-             unspentOuts.splice(iOut, 1);
-             break;
-           }
+         if (i.keyImage) {
+           spentKeyImages.add(i.keyImage);
          }
        }
      }
-
+     // Filter out outputs that have already been spent
+     unspentOuts = allOuts.filter(out => !spentKeyImages.has(out.keyImage));     
      return unspentOuts;
    }
 
@@ -685,7 +749,9 @@
      neededFee: number,
      payment_id: string,
      message: string,
-     ttl: number
+     ttl: number,
+     transactionType: string,
+     term: number
    ): Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
      return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>(function (resolve, reject) {
        let signed;
@@ -696,7 +762,23 @@
            realDestViewKey = Cn.decode_address(dsts[0].address).view;
          }
 
-         let splittedDsts = CnTransactions.decompose_tx_destinations(dsts, rct);
+         //let splittedDsts = CnTransactions.decompose_tx_destinations(dsts, rct);
+         let splittedDsts;
+         if (transactionType === "deposit") {
+           // For deposit transactions, keep the first destination intact. At this stage, dsts[0].amount is the deposit amount. and will be type "03"
+           let depositDst = dsts[0];
+           let otherDsts = dsts.slice(1);
+           
+           // Only decompose the non-deposit destinations, those destinations will be type "02"
+           let decomposedOtherDsts = CnTransactions.decompose_tx_destinations(otherDsts, rct);
+           
+           // Combine back with the deposit destination first
+           splittedDsts = [depositDst].concat(decomposedOtherDsts);  //then we could sort the splittedDsts by amount ?
+         } else {
+           // Regular transaction - decompose all destinations
+           splittedDsts = CnTransactions.decompose_tx_destinations(dsts, rct);
+         }
+         
          signed = CnTransactions.create_transaction(
            {
              spend: wallet.keys.pub.spend,
@@ -711,10 +793,13 @@
            mix_outs, mixin, neededFee,
            payment_id, pid_encrypt,
            realDestViewKey, 0, rct,
-           message, ttl);
+           message, ttl, 
+           transactionType, term);
 
          logDebugMsg("signed tx: ", signed);
+        //console.log('Pre-serialization transaction:', JSON.stringify(signed, null, 2));
          let raw_tx_and_hash = CnTransactions.serialize_tx_with_hash(signed);
+         //console.log('Serialized transaction structure:', JSON.stringify(raw_tx_and_hash, null, 2));
          resolve({raw: raw_tx_and_hash, signed: signed});
 
        } catch (e) {
@@ -733,7 +818,9 @@
      confirmCallback: (amount: number, feesAmount: number) => Promise<void>,
      mixin: number = config.defaultMixin,
      message: string = '',
-     ttl: number = 0
+     ttl: number = 0,
+     transactionType: string = "regular",
+     term: number = 0
     ): Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
      return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>(function (resolve, reject) {
 
@@ -802,7 +889,6 @@
        let unusedOuts = unspentOuts.slice(0);
 
        let totalAmount = totalAmountWithoutFee.add(neededFee)/*.add(chargeAmount)*/;
-
        //selecting outputs to fit the desired amount (totalAmount);
        function pop_random_value(list: any[]) {
          let idx = Math.floor(MathUtil.randomFloat() * list.length);
@@ -831,6 +917,9 @@
            return;
          } else if (usingOuts_amount.compare(totalAmount) > 0) {
            let changeAmount = usingOuts_amount.subtract(totalAmount);
+           if (ttl > 0) {
+             changeAmount = changeAmount.add(neededFee);
+           }
            //add entire change for rct
            logDebugMsg("1) Sending change of " + Cn.formatMoneySymbol(changeAmount)
              + " to " + wallet.getPublicAddress());
@@ -863,12 +952,26 @@
          }
          let nbOutsNeeded: number = mixin + 1;
 
-         obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts: any[]) {
+         // Request nbOutsNeeded mixouts for each output (including duplicates)
+         let nbOutsRequested: number = nbOutsNeeded + 3 // Request 3 more to account for potentialduplicates
+         obtainMixOutsCallback(amounts, nbOutsRequested).then(function (lotsMixOuts: any[]) {
            logDebugMsg('------------------------------mix_outs');
            logDebugMsg('amounts', amounts);
            logDebugMsg('lots_mix_outs', lotsMixOuts);
+           // 1. Check for duplicates and remove them
+           const removedDuplicateMixOuts = TransactionsExplorer.removeDuplicateMixOuts(lotsMixOuts);
 
-           TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId, message, ttl).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+           // 2. Shuffle and select exactly nbOutsNeeded mixouts per amount
+           const selectedMixOuts = TransactionsExplorer.selectMixOuts(removedDuplicateMixOuts, usingOuts, nbOutsNeeded);
+
+           // 3. Validate that we have enough mixouts for each input
+           const validation = TransactionsExplorer.validateMixOutsForInputs(usingOuts, selectedMixOuts, mixin);
+           if (!validation.valid) {
+             reject(new Error(validation.reason));
+             return;
+           }
+
+           TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, selectedMixOuts, mixin, neededFee, paymentId, message, ttl, transactionType, term).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
              resolve(data);
            }).catch(function (e) {
              reject(e);
@@ -877,4 +980,271 @@
        });
      });
    }
+ 
+   static createWithdrawTx(
+    deposit: Deposit,
+    wallet: Wallet,
+    blockchainHeight: number,
+    obtainMixOutsCallback: (amounts: number[], numberOuts: number) => Promise<RawDaemon_Out[]>,
+    confirmCallback: (amount: number, feesAmount: number) => Promise<void>,
+    mixin: number = 0,
+    paymentId: string = '',
+    message: string = '',
+    ttl: number = 0,
+    transactionType: string = "withdraw",
+    term: number = 0
+  ): Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }> {
+    return new Promise<{ raw: { hash: string, prvkey: string, raw: string }, signed: any }>((resolve, reject) => {
+      let lockedAmount = deposit.amount;
+      let totalInterest = deposit.interest;
+      let totalAmount = lockedAmount + totalInterest;
+      let pid_encrypt = false; // don't encrypt payment ID for withdrawals
+      let paymentId = '';
+      
+      // Check if the deposit is unlocked
+      if (deposit.unlockHeight > blockchainHeight) {
+        reject(new Error("Deposit is still locked"));
+        return;
+      }
+
+      logDebugMsg('Withdrawing deposit with amount', totalAmount);
+
+      // For withdrawals, we want a small fee for the transaction
+      let neededFee = new JSBigInt(config.depositSmallWithdrawFee);
+      let totalAmountWithoutFee = new JSBigInt(totalAmount);
+
+      if (lockedAmount < 1) {
+        reject(new Error('such a deposit cannot could not have been created'));
+        return;
+      }
+
+      confirmCallback(totalAmountWithoutFee.subtract(neededFee), neededFee).then(() => {
+        let usingOuts: RawOutForTx[] = [];
+        
+        
+        // Create the multisignature input for the deposit
+        let depositOutput: RawOutForTx = {
+          keyImage: '', // Not needed for deposit withdrawal
+          amount: deposit.amount,
+          public_key: deposit.keys[0], // to be corrected 
+          index: deposit.indexInVout,
+          global_index: deposit.globalOutputIndex,
+          tx_pub_key: deposit.txPubKey,
+          type: "input_to_deposit_key", // Specify this is a deposit key input
+          required_signatures: 1, // We know this is a single-signature deposit
+          keys: [deposit.keys[0]], // Add the single key from deposit
+        };
+        usingOuts.push(depositOutput);
+
+        let changeAmount = totalAmountWithoutFee.subtract(neededFee);
+        let dsts: { address: string, amount: number }[] = [];
+        
+        logDebugMsg("Sending withdrawn amount of " + Cn.formatMoneySymbol(changeAmount) 
+          + " to " + wallet.getPublicAddress()); 
+        dsts.push({
+          address: wallet.getPublicAddress(),
+          amount: changeAmount
+        });
+
+        logDebugMsg('destinations', dsts);
+
+        let amounts: number[] = [];
+        for (let l = 0; l < usingOuts.length; l++) {
+          amounts.push(usingOuts[l].amount);
+        }
+        let nbOutsNeeded: number = mixin + 1;
+
+        obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts: any[]) {
+          logDebugMsg('------------------------------mix_outs');
+          logDebugMsg('amounts', amounts);
+          logDebugMsg('lots_mix_outs', lotsMixOuts);
+
+          TransactionsExplorer.createRawTx(
+            dsts, 
+            wallet, 
+            false, 
+            usingOuts, 
+            pid_encrypt, 
+            lotsMixOuts, 
+            mixin, 
+            neededFee, 
+            paymentId, 
+            message, 
+            ttl, 
+            "withdraw", 
+            deposit.term
+          ).then(function (data: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+            resolve(data);
+          }).catch(function (e) {
+            reject(e);
+          });
+        }).catch((error) => {
+          reject(error);
+        });
+      }).catch((error) => {
+        reject(error);
+      });
+    });
+  }
+
+  /**
+   * Validates that we have enough valid decoys for each input
+   * This ensures we have the required number of mixins (default 5) for each input
+   */
+  static validateMixOutsForInputs(
+    usingOuts: RawOutForTx[], 
+    mixOuts: any[], // Full mix_outs structure from daemon
+    mixin: number
+  ): { valid: boolean, reason: string } {
+    
+    // Check that we have one mixout group per output
+    if (mixOuts.length !== usingOuts.length) {
+      return {
+        valid: false,
+        reason: 'Wrong number of mixout groups provided'
+      };
+    }
+    
+    // Check each output has enough mixouts
+    for (let i = 0; i < usingOuts.length; i++) {
+      const out = usingOuts[i];
+      const mixOutGroup = mixOuts[i];
+      
+      
+      if (!mixOutGroup || mixOutGroup.amount !== out.amount) {
+        return {
+          valid: false,
+          reason: 'Mixout group mismatch'
+        };
+      }
+      
+      const availableMixouts = mixOutGroup.outs.length;
+      const requiredMixouts = mixin + 1;
+      
+      
+      if (availableMixouts < requiredMixouts) {
+        return {
+          valid: false,
+          reason: 'Not enough mixouts available, try smaller amount'
+        };
+      }
+    }
+    
+    return {
+      valid: true,
+      reason: 'All outputs have sufficient mixouts'
+    };
+  }
+
+  /**
+   * Selects the required number of mixouts for each input from the daemon-provided mixouts
+   * Shuffles the available mixouts for additional entropy before selection
+   */
+  static selectMixOuts(
+    mixOuts: any[],
+    usingOuts: RawOutForTx[],
+    nbOutsNeeded: number
+  ): any[] {
+    const selectedMixOuts: any[] = [];
+    const usedGlobalIndices: Set<number> = new Set();
+    
+    // Process outputs in order, using the corresponding mixout group for each
+    for (let i = 0; i < usingOuts.length; i++) {
+      const out = usingOuts[i];
+      const mixOutGroup = mixOuts[i]; // Use the mixout group at the same index
+      
+      if (mixOutGroup && mixOutGroup.amount === out.amount && mixOutGroup.outs.length > 0) {
+        // Filter out already used global indices to ensure uniqueness
+        const availableMixouts = mixOutGroup.outs.filter((mixout: any) => !usedGlobalIndices.has(mixout.global_index));
+        
+        if (availableMixouts.length < nbOutsNeeded) {
+          console.log(`Warning: Not enough unique mixouts for output ${i} (amount ${out.amount}). Need ${nbOutsNeeded}, have ${availableMixouts.length}`);
+        }
+        
+        // Shuffle the available mixouts for additional entropy
+        const shuffledMixouts = [...availableMixouts];
+        for (let j = shuffledMixouts.length - 1; j > 0; j--) {
+          const k = Math.floor(MathUtil.randomFloat() * (j + 1));
+          [shuffledMixouts[j], shuffledMixouts[k]] = [shuffledMixouts[k], shuffledMixouts[j]];
+        }
+        
+        // Select the first nbOutsNeeded mixouts from the shuffled array
+        const selectedMixouts = shuffledMixouts.slice(0, nbOutsNeeded);
+        
+        // Mark these global indices as used
+        for (const mixout of selectedMixouts) {
+          usedGlobalIndices.add(mixout.global_index);
+        }
+        
+        // Add to selected mixouts (one entry per output)
+        selectedMixOuts.push({
+          amount: out.amount,
+          outs: selectedMixouts
+        });
+      } else {
+        console.error(`Error: No valid mixout group found for output ${i} (amount ${out.amount})`);
+      }
+    }
+    
+    return selectedMixOuts;
+  }
+
+  static removeDuplicateMixOuts(mixOuts: any[]): any[] {
+    // First loop: remove duplicates within each object
+    for (let i = 0; i < mixOuts.length; i++) {
+      const group = mixOuts[i];
+      const seenInThisGroup: Set<number> = new Set();
+      const uniqueOuts: any[] = [];
+      
+      for (const mixout of group.outs) {
+        if (!seenInThisGroup.has(mixout.global_index)) {
+          seenInThisGroup.add(mixout.global_index);
+          uniqueOuts.push(mixout);
+        }
+      }
+      
+      mixOuts[i] = {
+        amount: group.amount,
+        outs: uniqueOuts
+      };
+    }
+    
+    // Second loop: if a global index appears in multiple objects, remove it from the object with more mixouts
+    const globalIndexCounts: Map<number, number[]> = new Map();
+    
+    // Count which objects contain each global index
+    for (let i = 0; i < mixOuts.length; i++) {
+      for (const mixout of mixOuts[i].outs) {
+        if (!globalIndexCounts.has(mixout.global_index)) {
+          globalIndexCounts.set(mixout.global_index, []);
+        }
+        globalIndexCounts.get(mixout.global_index)!.push(i);
+      }
+    }
+    
+    // Remove duplicates across objects
+    for (const [globalIndex, objectIndices] of Array.from(globalIndexCounts.entries())) {
+      if (objectIndices.length > 1) {
+        // Find the object with the most mixouts
+        let maxMixouts = 0;
+        let objectToRemoveFrom = objectIndices[0];
+        
+        for (const objectIndex of objectIndices) {
+          if (mixOuts[objectIndex].outs.length > maxMixouts) {
+            maxMixouts = mixOuts[objectIndex].outs.length;
+            objectToRemoveFrom = objectIndex;
+          }
+        }
+        
+        // Remove this global index from the object with MORE mixouts
+        // This leaves the duplicate in the object with fewer mixouts
+        mixOuts[objectToRemoveFrom].outs = mixOuts[objectToRemoveFrom].outs.filter(
+          (mixout: any) => mixout.global_index !== globalIndex
+        );
+      }
+    }
+    
+    return mixOuts;
+  }
+
  }

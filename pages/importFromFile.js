@@ -61,9 +61,11 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             var self = this;
             var element = $('<input type="file">');
             self.invalidRawFile = true;
+            self.fileSelected = false;
             element.on('change', function (event) {
                 var files = event.target.files; // FileList object
                 if (files.length > 0) {
+                    self.fileName = files[0].name;
                     var fileReader_1 = new FileReader();
                     fileReader_1.onload = function () {
                         try {
@@ -71,9 +73,17 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                                 self.rawFile = JSON.parse(fileReader_1.result);
                             }
                             self.invalidRawFile = false;
+                            self.fileSelected = true;
                         }
                         catch (e) {
                             self.invalidRawFile = true;
+                            self.fileSelected = false;
+                            swal({
+                                type: 'error',
+                                title: i18n.t('global.error'),
+                                text: i18n.t('importFromFilePage.walletBlock.invalidFile'),
+                                confirmButtonText: i18n.t('global.confirmText'),
+                            });
                         }
                     };
                     fileReader_1.readAsText(files[0]);
@@ -83,10 +93,10 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         ImportView.prototype.importWallet = function () {
             var self = this;
-            $("#appLoader").addClass("appLoaderVisible");
+            $('#pageLoading').show();
             blockchainExplorer.initialize().then(function (success) {
                 blockchainExplorer.getHeight().then(function (currentHeight) {
-                    $("#appLoader").removeClass("appLoaderVisible");
+                    $('#pageLoading').hide();
                     setTimeout(function () {
                         var newWallet = WalletRepository_1.WalletRepository.decodeWithPassword(self.rawFile, self.password);
                         if (newWallet !== null) {
@@ -105,9 +115,11 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     }, 1);
                 }).catch(function (err) {
                     console.log(err);
+                    $('#pageLoading').hide();
                 });
             }).catch(function (err) {
                 console.log(err);
+                $('#pageLoading').hide();
             });
         };
         ImportView.prototype.passwordWatch = function () {
@@ -133,6 +145,12 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
         ], ImportView.prototype, "forceInsecurePassword", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(false)
+        ], ImportView.prototype, "fileSelected", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)('')
+        ], ImportView.prototype, "fileName", void 0);
         __decorate([
             (0, VueAnnotate_1.VueWatched)()
         ], ImportView.prototype, "passwordWatch", null);

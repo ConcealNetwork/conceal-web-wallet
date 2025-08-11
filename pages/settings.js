@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -45,6 +45,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         __extends(SettingsView, _super);
         function SettingsView(container) {
             var _this = _super.call(this, container) || this;
+            _this.unsubscribeTicker = null;
             _this.checkOptimization = function () {
                 blockchainExplorer.getHeight().then(function (blockchainHeight) {
                     var optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
@@ -58,7 +59,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 blockchainExplorer.getHeight().then(function (blockchainHeight) {
                     var optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
                     if (optimizeInfo.isNeeded) {
-                        wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer, function (amounts, numberOuts) {
+                        wallet.createFusionTransaction(blockchainHeight, config.optimizeThreshold, blockchainExplorer, function (amounts, numberOuts) {
                             return blockchainExplorer.getRandomOuts(amounts, numberOuts);
                         }).then(function (processedOuts) {
                             var watchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name);
@@ -92,13 +93,45 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     console.error("Error in optimizeWallet, calling getHeight", err);
                 });
             };
+            _this.destruct = function () {
+                // Cleanup ticker subscription
+                if (_this.unsubscribeTicker) {
+                    _this.unsubscribeTicker();
+                }
+                return _super.prototype.destruct.call(_this);
+            };
             var self = _this;
             _this.readSpeed = wallet.options.readSpeed;
             _this.checkMinerTx = wallet.options.checkMinerTx;
-            _this.customNode = wallet.options.customNode;
-            _this.nodeUrl = wallet.options.nodeUrl;
+            // Sync custom node setting from storage to ensure consistency
+            Storage_1.Storage.getItem('customNodeUrl', null).then(function (customNodeUrl) {
+                if (customNodeUrl) {
+                    _this.customNode = true;
+                    _this.nodeUrl = customNodeUrl;
+                    // Update wallet options to match storage
+                    wallet.options.customNode = true;
+                    wallet.options.nodeUrl = customNodeUrl;
+                }
+                else {
+                    _this.customNode = wallet.options.customNode;
+                    _this.nodeUrl = wallet.options.nodeUrl;
+                }
+            }).catch(function () {
+                _this.customNode = wallet.options.customNode;
+                _this.nodeUrl = wallet.options.nodeUrl;
+            });
             _this.creationHeight = wallet.creationHeight;
             _this.scanHeight = wallet.lastHeight;
+            // Initialize ticker from store
+            Translations_1.tickerStore.initialize().then(function () {
+                _this.useShortTicker = Translations_1.tickerStore.useShortTicker;
+                _this.currentTicker = Translations_1.tickerStore.currentTicker;
+                // Subscribe to ticker changes
+                _this.unsubscribeTicker = Translations_1.tickerStore.subscribe(function (useShortTicker) {
+                    _this.useShortTicker = useShortTicker;
+                    _this.currentTicker = Translations_1.tickerStore.currentTicker;
+                });
+            });
             _this.checkOptimization();
             blockchainExplorer.getHeight().then(function (height) {
                 self.maxHeight = height;
@@ -110,6 +143,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             }).catch(function (err) {
                 console.error("Error trying to get user language", err);
             });
+            // in case cordova.js got loaded, and app-version-plugin was installed ... => that won't happen in a web view redirect scenario. Need to rethink that if we really want to display those infor in Native context.
             if (typeof window.cordova !== 'undefined' && typeof window.cordova.getAppVersion !== 'undefined') {
                 window.cordova.getAppVersion.getVersionNumber().then(function (version) {
                     _this.nativeVersionNumber = version;
@@ -159,7 +193,8 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         SettingsView.prototype.readSpeedWatch = function () { this.updateWalletOptions(); };
         SettingsView.prototype.checkMinerTxWatch = function () { this.updateWalletOptions(); };
-        SettingsView.prototype.customNodeWatch = function () { this.updateWalletOptions(); };
+        //@VueWatched()	customNodeWatch(){this.updateConnectionSettings();}
+        //@VueWatched()	nodeUrlWatch(){this.updateConnectionSettings();}
         SettingsView.prototype.creationHeightWatch = function () {
             if (this.creationHeight < 0)
                 this.creationHeight = 0;
@@ -172,12 +207,13 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             if (this.scanHeight > this.maxHeight && this.maxHeight !== -1)
                 this.scanHeight = this.maxHeight;
         };
+        SettingsView.prototype.useShortTickerWatch = function () {
+            Translations_1.tickerStore.setTickerPreference(this.useShortTicker);
+        };
         SettingsView.prototype.updateWalletOptions = function () {
             var options = wallet.options;
             options.readSpeed = this.readSpeed;
             options.checkMinerTx = this.checkMinerTx;
-            options.customNode = this.customNode;
-            options.nodeUrl = this.nodeUrl;
             wallet.options = options;
             walletWatchdog.setupWorkers();
             walletWatchdog.signalWalletUpdate();
@@ -189,6 +225,8 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         SettingsView.prototype.updateConnectionSettings = function () {
             var options = wallet.options;
+            var oldCustomNode = options.customNode;
+            var oldNodeUrl = options.nodeUrl;
             options.customNode = this.customNode;
             options.nodeUrl = this.nodeUrl;
             wallet.options = options;
@@ -198,8 +236,25 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             else {
                 Storage_1.Storage.remove('customNodeUrl');
             }
-            // reset the node connection workers with new values
-            BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance().resetNodes();
+            // Update wallet watchdog with new options
+            walletWatchdog.setupWorkers();
+            walletWatchdog.signalWalletUpdate();
+            // Reset nodes if custom node setting changed (enabled/disabled)
+            // This ensures proper switching between custom and random nodes
+            if (oldCustomNode !== this.customNode) {
+                console.log('Custom node setting changed, resetting nodes...');
+                // Reset the node connection workers with new values
+                // This will automatically clean up and reinitialize the session
+                BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance().resetNodes();
+            }
+            else if (this.customNode && oldNodeUrl !== this.nodeUrl) {
+                // Only reset if custom node URL changed (when using custom node)
+                console.log('Custom node URL changed, resetting nodes...');
+                BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance().resetNodes();
+            }
+            else {
+                console.log('Node configuration unchanged, skipping node reset');
+            }
         };
         __decorate([
             (0, VueAnnotate_1.VueVar)(10)
@@ -238,6 +293,15 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             (0, VueAnnotate_1.VueVar)(false)
         ], SettingsView.prototype, "optimizeLoading", void 0);
         __decorate([
+            (0, VueAnnotate_1.VueVar)(false)
+        ], SettingsView.prototype, "useShortTicker", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)('')
+        ], SettingsView.prototype, "currentTicker", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(config)
+        ], SettingsView.prototype, "config", void 0);
+        __decorate([
             (0, VueAnnotate_1.VueWatched)()
         ], SettingsView.prototype, "languageWatch", null);
         __decorate([
@@ -248,13 +312,13 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         ], SettingsView.prototype, "checkMinerTxWatch", null);
         __decorate([
             (0, VueAnnotate_1.VueWatched)()
-        ], SettingsView.prototype, "customNodeWatch", null);
-        __decorate([
-            (0, VueAnnotate_1.VueWatched)()
         ], SettingsView.prototype, "creationHeightWatch", null);
         __decorate([
             (0, VueAnnotate_1.VueWatched)()
         ], SettingsView.prototype, "scanHeightWatch", null);
+        __decorate([
+            (0, VueAnnotate_1.VueWatched)()
+        ], SettingsView.prototype, "useShortTickerWatch", null);
         return SettingsView;
     }(DestructableView_1.DestructableView));
     if (wallet !== null && blockchainExplorer !== null)

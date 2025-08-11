@@ -5,8 +5,8 @@
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
  *     Copyright (c) 2022, The Karbo Developers
- *     Copyright (c) 2022, Conceal Devs
- *     Copyright (c) 2022, Conceal Network
+ *     Copyright (c) 2022 - 2025, Conceal Devs
+ *     Copyright (c) 2022 - 2025, Conceal Network
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -33,7 +33,16 @@
  *     NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  *     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"], function (require, exports, MathUtil_1, ChaCha8_1, Cn_1, Transaction_1) {
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction", "./Interest", "./Currency", "./Varint"], function (require, exports, MathUtil_1, ChaCha8_1, Cn_1, Transaction_1, Interest_1, Currency_1, Varint_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TransactionsExplorer = exports.TX_EXTRA_MESSAGE_CHECKSUM_SIZE = exports.TX_EXTRA_TTL = exports.TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID = exports.TX_EXTRA_NONCE_PAYMENT_ID = exports.TX_EXTRA_MYSTERIOUS_MINERGATE_TAG = exports.TX_EXTRA_MESSAGE_TAG = exports.TX_EXTRA_MERGE_MINING_TAG = exports.TX_EXTRA_NONCE = exports.TX_EXTRA_TAG_PUBKEY = exports.TX_EXTRA_TAG_PADDING = exports.TX_EXTRA_NONCE_MAX_COUNT = exports.TX_EXTRA_PADDING_MAX_COUNT = void 0;
@@ -280,6 +289,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             var tx_pub_key = '';
             var paymentId = null;
             var rawMessage = '';
+            var ttl = 0;
             var txExtras = [];
             try {
                 var hexExtra = [];
@@ -330,6 +340,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }
                 }
                 else if (extra.type === exports.TX_EXTRA_MESSAGE_TAG) {
+                    // TODO: Only extract message if not a remote node fee transaction
                     for (var i = 0; i < extra.data.length; ++i) {
                         rawMessage += String.fromCharCode(extra.data[i]);
                     }
@@ -342,8 +353,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }
                     var ttlStr = Cn_1.CnUtils.bintohex(rawTTL);
                     var uint8Array = Cn_1.CnUtils.hextobin(ttlStr);
-                    var Varint = void 0;
-                    var ttl = Varint.decode(uint8Array);
+                    ttl = (0, Varint_1.decode)(uint8Array);
                 }
                 extraIndex++;
             }
@@ -406,9 +416,20 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                                 deposit.timestamp = rawTransaction.ts;
                             deposit.amount = transactionOut.amount;
                             deposit.term = out.target.data.term;
-                            if (rawTransaction.output_indexes && (rawTransaction.output_indexes.length > iOut)) {
-                                deposit.outputIndex = rawTransaction.output_indexes[iOut];
+                            if (rawTransaction.output_indexes && typeof rawTransaction.output_indexes[iOut] !== 'undefined') {
+                                deposit.globalOutputIndex = rawTransaction.output_indexes[iOut];
                             }
+                            else {
+                                deposit.globalOutputIndex = output_idx_in_tx;
+                            }
+                            deposit.indexInVout = iOut;
+                            // Extract keys from the transaction output target data
+                            if (out.target.data.keys && Array.isArray(out.target.data.keys)) {
+                                deposit.keys = out.target.data.keys;
+                            }
+                            deposit.txPubKey = tx_pub_key; // Reuse the already extracted transaction public key
+                            // Calculate the interest for this deposit
+                            deposit.interest = Interest_1.InterestCalculator.calculateInterest(deposit.amount, deposit.term, deposit.blockHeight);
                             deposits.push(deposit);
                         }
                     }
@@ -453,7 +474,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                                 if (vin.type == "03") {
                                     if (vin.value && vin.value.term) {
                                         var withdrawal = new Transaction_1.Deposit();
-                                        withdrawal.outputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : -1;
+                                        withdrawal.globalOutputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
                                         if (typeof rawTransaction.height !== 'undefined')
                                             withdrawal.blockHeight = rawTransaction.height;
                                         if (typeof rawTransaction.hash !== 'undefined')
@@ -473,6 +494,14 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }
                     // add the withdrawal if it was not yet processed
                     if ((!wasAdded) && (vin.type == "03")) {
+                        var transactionIn = new Transaction_1.TransactionIn();
+                        transactionIn.type = "03"; // Set type explicitly for withdrawal
+                        transactionIn.term = (vin.value && vin.value.term) ? vin.value.term : 0;
+                        if (vin.value && vin.value.amount) {
+                            transactionIn.amount = parseInt(vin.value.amount);
+                        }
+                        // Add the transaction input to the array
+                        ins.push(transactionIn);
                         var withdrawal = new Transaction_1.Deposit();
                         if (typeof rawTransaction.ts !== 'undefined')
                             withdrawal.timestamp = rawTransaction.ts;
@@ -482,7 +511,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                             withdrawal.blockHeight = rawTransaction.height;
                         if (vin.value && vin.value.amount)
                             withdrawal.amount = parseInt((_a = vin.value) === null || _a === void 0 ? void 0 : _a.amount);
-                        withdrawal.outputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
+                        withdrawal.globalOutputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
                         withdrawal.term = (vin.value && vin.value.term) ? vin.value.term : 0;
                         withdrawals.push(withdrawal);
                         wasAdded = true;
@@ -544,6 +573,12 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 else {
                     transaction.fees = rawTransaction.fee;
                 }
+                transaction.fusion = ((rawTransaction.vin.length > Currency_1.Currency.fusionTxMinInputCount) &&
+                    (rawTransaction.vout.length <= config.maxFusionOutputs) &&
+                    ((rawTransaction.vin.length / rawTransaction.vout.length) > config.fusionTxMinInOutCountRatio) &&
+                    (rawTransaction.vin.some(function (vin) { return vin.type != "03"; })) &&
+                    (rawTransaction.vout.some(function (vout) { return vout.target.type != "03"; }))) &&
+                    (transaction.fees === 0 || transaction.fees === parseInt(config.minimumFee_V2));
                 // fill the transaction info
                 transaction.outs = outs;
                 transaction.ins = ins;
@@ -562,9 +597,13 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }
                 }
             }
+            if (transaction && typeof ttl !== 'undefined') {
+                transaction.ttl = ttl;
+            }
             return transactionData;
         };
         TransactionsExplorer.formatWalletOutsForTx = function (wallet, blockchainHeight) {
+            var allOuts = [];
             var unspentOuts = [];
             //rct=rct_outpk + rct_mask + rct_amount
             // {"amount"          , out.amount},
@@ -581,38 +620,45 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             // {"spend_key_images", json::array()}
             for (var _i = 0, _a = wallet.getAll(); _i < _a.length; _i++) {
                 var tr = _a[_i];
-                //todo improve to take into account miner tx
+                //todo improve to take into account miner tx ... well, if the user is smart enough to mine, he should be able to toggle the "Read miner tx" option in settings.
                 //only add outs unlocked
-                if (!tr.isConfirmed(blockchainHeight)) {
+                if (!tr.isConfirmed(blockchainHeight - 2)) { // -2 extra buffer
                     continue;
                 }
                 for (var _b = 0, _c = tr.outs; _b < _c.length; _b++) {
                     var out = _c[_b];
-                    unspentOuts.push({
+                    // Skip type "03" outputs (deposit outputs) for regular transactions
+                    // These should only be used for withdrawals, not regular sends
+                    if (out.type === "03") {
+                        continue;
+                    }
+                    allOuts.push({
                         keyImage: out.keyImage,
                         amount: out.amount,
                         public_key: out.pubKey,
                         index: out.outputIdx,
                         global_index: out.globalIndex,
-                        tx_pub_key: tr.txPubKey
+                        tx_pub_key: tr.txPubKey,
+                        keys: []
                     });
                 }
             }
+            // Create a set of all key images that have been spent (used as inputs)
+            var spentKeyImages = new Set();
             for (var _d = 0, _e = wallet.getAll().concat(wallet.txsMem); _d < _e.length; _d++) {
                 var tr = _e[_d];
                 for (var _f = 0, _g = tr.ins; _f < _g.length; _f++) {
                     var i = _g[_f];
-                    for (var iOut = 0; iOut < unspentOuts.length; ++iOut) {
-                        if (unspentOuts[iOut].keyImage === i.keyImage) {
-                            unspentOuts.splice(iOut, 1);
-                            break;
-                        }
+                    if (i.keyImage) {
+                        spentKeyImages.add(i.keyImage);
                     }
                 }
             }
+            // Filter out outputs that have already been spent
+            unspentOuts = allOuts.filter(function (out) { return !spentKeyImages.has(out.keyImage); });
             return unspentOuts;
         };
-        TransactionsExplorer.createRawTx = function (dsts, wallet, rct, usingOuts, pid_encrypt, mix_outs, mixin, neededFee, payment_id, message, ttl) {
+        TransactionsExplorer.createRawTx = function (dsts, wallet, rct, usingOuts, pid_encrypt, mix_outs, mixin, neededFee, payment_id, message, ttl, transactionType, term) {
             if (mix_outs === void 0) { mix_outs = []; }
             return new Promise(function (resolve, reject) {
                 var signed;
@@ -622,16 +668,32 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     if (pid_encrypt) {
                         realDestViewKey = Cn_1.Cn.decode_address(dsts[0].address).view;
                     }
-                    var splittedDsts = Cn_1.CnTransactions.decompose_tx_destinations(dsts, rct);
+                    //let splittedDsts = CnTransactions.decompose_tx_destinations(dsts, rct);
+                    var splittedDsts = void 0;
+                    if (transactionType === "deposit") {
+                        // For deposit transactions, keep the first destination intact. At this stage, dsts[0].amount is the deposit amount. and will be type "03"
+                        var depositDst = dsts[0];
+                        var otherDsts = dsts.slice(1);
+                        // Only decompose the non-deposit destinations, those destinations will be type "02"
+                        var decomposedOtherDsts = Cn_1.CnTransactions.decompose_tx_destinations(otherDsts, rct);
+                        // Combine back with the deposit destination first
+                        splittedDsts = [depositDst].concat(decomposedOtherDsts); //then we could sort the splittedDsts by amount ?
+                    }
+                    else {
+                        // Regular transaction - decompose all destinations
+                        splittedDsts = Cn_1.CnTransactions.decompose_tx_destinations(dsts, rct);
+                    }
                     signed = Cn_1.CnTransactions.create_transaction({
                         spend: wallet.keys.pub.spend,
                         view: wallet.keys.pub.view
                     }, {
                         spend: wallet.keys.priv.spend,
                         view: wallet.keys.priv.view
-                    }, splittedDsts, wallet.getPublicAddress(), usingOuts, mix_outs, mixin, neededFee, payment_id, pid_encrypt, realDestViewKey, 0, rct, message, ttl);
+                    }, splittedDsts, wallet.getPublicAddress(), usingOuts, mix_outs, mixin, neededFee, payment_id, pid_encrypt, realDestViewKey, 0, rct, message, ttl, transactionType, term);
                     logDebugMsg("signed tx: ", signed);
+                    //console.log('Pre-serialization transaction:', JSON.stringify(signed, null, 2));
                     var raw_tx_and_hash = Cn_1.CnTransactions.serialize_tx_with_hash(signed);
+                    //console.log('Serialized transaction structure:', JSON.stringify(raw_tx_and_hash, null, 2));
                     resolve({ raw: raw_tx_and_hash, signed: signed });
                 }
                 catch (e) {
@@ -639,11 +701,13 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 }
             });
         };
-        TransactionsExplorer.createTx = function (userDestinations, userPaymentId, wallet, blockchainHeight, obtainMixOutsCallback, confirmCallback, mixin, message, ttl) {
+        TransactionsExplorer.createTx = function (userDestinations, userPaymentId, wallet, blockchainHeight, obtainMixOutsCallback, confirmCallback, mixin, message, ttl, transactionType, term) {
             if (userPaymentId === void 0) { userPaymentId = ''; }
             if (mixin === void 0) { mixin = config.defaultMixin; }
             if (message === void 0) { message = ''; }
             if (ttl === void 0) { ttl = 0; }
+            if (transactionType === void 0) { transactionType = "regular"; }
+            if (term === void 0) { term = 0; }
             return new Promise(function (resolve, reject) {
                 var neededFee = new JSBigInt(window.config.coinFee);
                 var pid_encrypt = false; //don't encrypt payment ID unless we find an integrated one
@@ -721,6 +785,9 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }
                     else if (usingOuts_amount.compare(totalAmount) > 0) {
                         var changeAmount = usingOuts_amount.subtract(totalAmount);
+                        if (ttl > 0) {
+                            changeAmount = changeAmount.add(neededFee);
+                        }
                         //add entire change for rct
                         logDebugMsg("1) Sending change of " + Cn_1.Cn.formatMoneySymbol(changeAmount)
                             + " to " + wallet.getPublicAddress());
@@ -749,11 +816,23 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                         amounts.push(usingOuts[l].amount);
                     }
                     var nbOutsNeeded = mixin + 1;
-                    obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts) {
+                    // Request nbOutsNeeded mixouts for each output (including duplicates)
+                    var nbOutsRequested = nbOutsNeeded + 3; // Request 3 more to account for potentialduplicates
+                    obtainMixOutsCallback(amounts, nbOutsRequested).then(function (lotsMixOuts) {
                         logDebugMsg('------------------------------mix_outs');
                         logDebugMsg('amounts', amounts);
                         logDebugMsg('lots_mix_outs', lotsMixOuts);
-                        TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId, message, ttl).then(function (data) {
+                        // 1. Check for duplicates and remove them
+                        var removedDuplicateMixOuts = TransactionsExplorer.removeDuplicateMixOuts(lotsMixOuts);
+                        // 2. Shuffle and select exactly nbOutsNeeded mixouts per amount
+                        var selectedMixOuts = TransactionsExplorer.selectMixOuts(removedDuplicateMixOuts, usingOuts, nbOutsNeeded);
+                        // 3. Validate that we have enough mixouts for each input
+                        var validation = TransactionsExplorer.validateMixOutsForInputs(usingOuts, selectedMixOuts, mixin);
+                        if (!validation.valid) {
+                            reject(new Error(validation.reason));
+                            return;
+                        }
+                        TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, selectedMixOuts, mixin, neededFee, paymentId, message, ttl, transactionType, term).then(function (data) {
                             resolve(data);
                         }).catch(function (e) {
                             reject(e);
@@ -761,6 +840,212 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     });
                 });
             });
+        };
+        TransactionsExplorer.createWithdrawTx = function (deposit, wallet, blockchainHeight, obtainMixOutsCallback, confirmCallback, mixin, paymentId, message, ttl, transactionType, term) {
+            if (mixin === void 0) { mixin = 0; }
+            if (paymentId === void 0) { paymentId = ''; }
+            if (message === void 0) { message = ''; }
+            if (ttl === void 0) { ttl = 0; }
+            if (transactionType === void 0) { transactionType = "withdraw"; }
+            if (term === void 0) { term = 0; }
+            return new Promise(function (resolve, reject) {
+                var lockedAmount = deposit.amount;
+                var totalInterest = deposit.interest;
+                var totalAmount = lockedAmount + totalInterest;
+                var pid_encrypt = false; // don't encrypt payment ID for withdrawals
+                var paymentId = '';
+                // Check if the deposit is unlocked
+                if (deposit.unlockHeight > blockchainHeight) {
+                    reject(new Error("Deposit is still locked"));
+                    return;
+                }
+                logDebugMsg('Withdrawing deposit with amount', totalAmount);
+                // For withdrawals, we want a small fee for the transaction
+                var neededFee = new JSBigInt(config.depositSmallWithdrawFee);
+                var totalAmountWithoutFee = new JSBigInt(totalAmount);
+                if (lockedAmount < 1) {
+                    reject(new Error('such a deposit cannot could not have been created'));
+                    return;
+                }
+                confirmCallback(totalAmountWithoutFee.subtract(neededFee), neededFee).then(function () {
+                    var usingOuts = [];
+                    // Create the multisignature input for the deposit
+                    var depositOutput = {
+                        keyImage: '', // Not needed for deposit withdrawal
+                        amount: deposit.amount,
+                        public_key: deposit.keys[0], // to be corrected 
+                        index: deposit.indexInVout,
+                        global_index: deposit.globalOutputIndex,
+                        tx_pub_key: deposit.txPubKey,
+                        type: "input_to_deposit_key", // Specify this is a deposit key input
+                        required_signatures: 1, // We know this is a single-signature deposit
+                        keys: [deposit.keys[0]], // Add the single key from deposit
+                    };
+                    usingOuts.push(depositOutput);
+                    var changeAmount = totalAmountWithoutFee.subtract(neededFee);
+                    var dsts = [];
+                    logDebugMsg("Sending withdrawn amount of " + Cn_1.Cn.formatMoneySymbol(changeAmount)
+                        + " to " + wallet.getPublicAddress());
+                    dsts.push({
+                        address: wallet.getPublicAddress(),
+                        amount: changeAmount
+                    });
+                    logDebugMsg('destinations', dsts);
+                    var amounts = [];
+                    for (var l = 0; l < usingOuts.length; l++) {
+                        amounts.push(usingOuts[l].amount);
+                    }
+                    var nbOutsNeeded = mixin + 1;
+                    obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts) {
+                        logDebugMsg('------------------------------mix_outs');
+                        logDebugMsg('amounts', amounts);
+                        logDebugMsg('lots_mix_outs', lotsMixOuts);
+                        TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId, message, ttl, "withdraw", deposit.term).then(function (data) {
+                            resolve(data);
+                        }).catch(function (e) {
+                            reject(e);
+                        });
+                    }).catch(function (error) {
+                        reject(error);
+                    });
+                }).catch(function (error) {
+                    reject(error);
+                });
+            });
+        };
+        /**
+         * Validates that we have enough valid decoys for each input
+         * This ensures we have the required number of mixins (default 5) for each input
+         */
+        TransactionsExplorer.validateMixOutsForInputs = function (usingOuts, mixOuts, // Full mix_outs structure from daemon
+        mixin) {
+            // Check that we have one mixout group per output
+            if (mixOuts.length !== usingOuts.length) {
+                return {
+                    valid: false,
+                    reason: 'Wrong number of mixout groups provided'
+                };
+            }
+            // Check each output has enough mixouts
+            for (var i = 0; i < usingOuts.length; i++) {
+                var out = usingOuts[i];
+                var mixOutGroup = mixOuts[i];
+                if (!mixOutGroup || mixOutGroup.amount !== out.amount) {
+                    return {
+                        valid: false,
+                        reason: 'Mixout group mismatch'
+                    };
+                }
+                var availableMixouts = mixOutGroup.outs.length;
+                var requiredMixouts = mixin + 1;
+                if (availableMixouts < requiredMixouts) {
+                    return {
+                        valid: false,
+                        reason: 'Not enough mixouts available, try smaller amount'
+                    };
+                }
+            }
+            return {
+                valid: true,
+                reason: 'All outputs have sufficient mixouts'
+            };
+        };
+        /**
+         * Selects the required number of mixouts for each input from the daemon-provided mixouts
+         * Shuffles the available mixouts for additional entropy before selection
+         */
+        TransactionsExplorer.selectMixOuts = function (mixOuts, usingOuts, nbOutsNeeded) {
+            var _a;
+            var selectedMixOuts = [];
+            var usedGlobalIndices = new Set();
+            // Process outputs in order, using the corresponding mixout group for each
+            for (var i = 0; i < usingOuts.length; i++) {
+                var out = usingOuts[i];
+                var mixOutGroup = mixOuts[i]; // Use the mixout group at the same index
+                if (mixOutGroup && mixOutGroup.amount === out.amount && mixOutGroup.outs.length > 0) {
+                    // Filter out already used global indices to ensure uniqueness
+                    var availableMixouts = mixOutGroup.outs.filter(function (mixout) { return !usedGlobalIndices.has(mixout.global_index); });
+                    if (availableMixouts.length < nbOutsNeeded) {
+                        console.log("Warning: Not enough unique mixouts for output ".concat(i, " (amount ").concat(out.amount, "). Need ").concat(nbOutsNeeded, ", have ").concat(availableMixouts.length));
+                    }
+                    // Shuffle the available mixouts for additional entropy
+                    var shuffledMixouts = __spreadArray([], availableMixouts, true);
+                    for (var j = shuffledMixouts.length - 1; j > 0; j--) {
+                        var k = Math.floor(MathUtil_1.MathUtil.randomFloat() * (j + 1));
+                        _a = [shuffledMixouts[k], shuffledMixouts[j]], shuffledMixouts[j] = _a[0], shuffledMixouts[k] = _a[1];
+                    }
+                    // Select the first nbOutsNeeded mixouts from the shuffled array
+                    var selectedMixouts = shuffledMixouts.slice(0, nbOutsNeeded);
+                    // Mark these global indices as used
+                    for (var _i = 0, selectedMixouts_1 = selectedMixouts; _i < selectedMixouts_1.length; _i++) {
+                        var mixout = selectedMixouts_1[_i];
+                        usedGlobalIndices.add(mixout.global_index);
+                    }
+                    // Add to selected mixouts (one entry per output)
+                    selectedMixOuts.push({
+                        amount: out.amount,
+                        outs: selectedMixouts
+                    });
+                }
+                else {
+                    console.error("Error: No valid mixout group found for output ".concat(i, " (amount ").concat(out.amount, ")"));
+                }
+            }
+            return selectedMixOuts;
+        };
+        TransactionsExplorer.removeDuplicateMixOuts = function (mixOuts) {
+            // First loop: remove duplicates within each object
+            for (var i = 0; i < mixOuts.length; i++) {
+                var group = mixOuts[i];
+                var seenInThisGroup = new Set();
+                var uniqueOuts = [];
+                for (var _i = 0, _a = group.outs; _i < _a.length; _i++) {
+                    var mixout = _a[_i];
+                    if (!seenInThisGroup.has(mixout.global_index)) {
+                        seenInThisGroup.add(mixout.global_index);
+                        uniqueOuts.push(mixout);
+                    }
+                }
+                mixOuts[i] = {
+                    amount: group.amount,
+                    outs: uniqueOuts
+                };
+            }
+            // Second loop: if a global index appears in multiple objects, remove it from the object with more mixouts
+            var globalIndexCounts = new Map();
+            // Count which objects contain each global index
+            for (var i = 0; i < mixOuts.length; i++) {
+                for (var _b = 0, _c = mixOuts[i].outs; _b < _c.length; _b++) {
+                    var mixout = _c[_b];
+                    if (!globalIndexCounts.has(mixout.global_index)) {
+                        globalIndexCounts.set(mixout.global_index, []);
+                    }
+                    globalIndexCounts.get(mixout.global_index).push(i);
+                }
+            }
+            var _loop_1 = function (globalIndex, objectIndices) {
+                if (objectIndices.length > 1) {
+                    // Find the object with the most mixouts
+                    var maxMixouts = 0;
+                    var objectToRemoveFrom = objectIndices[0];
+                    for (var _g = 0, objectIndices_1 = objectIndices; _g < objectIndices_1.length; _g++) {
+                        var objectIndex = objectIndices_1[_g];
+                        if (mixOuts[objectIndex].outs.length > maxMixouts) {
+                            maxMixouts = mixOuts[objectIndex].outs.length;
+                            objectToRemoveFrom = objectIndex;
+                        }
+                    }
+                    // Remove this global index from the object with MORE mixouts
+                    // This leaves the duplicate in the object with fewer mixouts
+                    mixOuts[objectToRemoveFrom].outs = mixOuts[objectToRemoveFrom].outs.filter(function (mixout) { return mixout.global_index !== globalIndex; });
+                }
+            };
+            // Remove duplicates across objects
+            for (var _d = 0, _e = Array.from(globalIndexCounts.entries()); _d < _e.length; _d++) {
+                var _f = _e[_d], globalIndex = _f[0], objectIndices = _f[1];
+                _loop_1(globalIndex, objectIndices);
+            }
+            return mixOuts;
         };
         return TransactionsExplorer;
     }());

@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "Лозинка мора да се састоји из најмање 8 карактера, једног великог слова, једног малог слова, једног броја и једног симбола",
       "passwordConfirmationNotMatching": "Лозинке се не подударају",
       "download": "Преузми",
+      "confirmText": "OK",
+      "error": "Грешка",
       "newVersionModal": {
         "title": "Нова верзија је доступна",
         "content": "Да ли желите да освежите страницу и учитате нову верзију ?",
@@ -59,7 +61,11 @@
         "label": "Optimizacija",
         "subtitle": "Vaš novčanik treba da se optimizuje",
         "button": "Optimizuj sada",
-        "loadingText": "Optimizacija u toku, molimo sačekajte..."
+        "loadingText": "Optimizacija u toku, molimo sačekajte...",
+        "success": "Optimizacija uspela",
+        "error": "Greška pri optimizaciji",
+        "errorInfo": "Optimizacija otkazana",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -110,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "Ваша средства",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "Портфолио",
+        "available": "Доступно",
+        "pending": "Ожидается",
         "unlocked": "Откључано",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "Заблокированные депозиты",
+        "withdrawable": "Выводимые средства",
+        "futureInterest": "Будущие проценты"
       },
       "historyBlock": {
         "title": "Историја ваших трансакција",
@@ -123,7 +131,7 @@
         "waitSync": "Сачекајте да се новчаник освежи",
         "beReallyPatient": "Овај поступак може да потраје...",
         "getCoinAddress": "Адреса за пријем новчића",
-        "loadMoreBtn": "Load more"
+        "loadMoreBtn": "Загрузить больше"
       },
       "txDetails": {
         "title": "Transaction details",
@@ -132,7 +140,7 @@
         "blockHeight": "Block height",
         "paymentId": "Payment ID",
         "txPrivKey": "Transaction Private Key",
-        "message": "Message"
+        "message": "Сообщение"
       }
     },
     "changeWalletPasswordPage": {
@@ -231,7 +239,7 @@
     "sendPage": {
       "title": "Шаљи МСР",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять средства."
       },
       "sendBlock": {
         "address": {
@@ -300,7 +308,8 @@
         "title": "Потврди трансфер?",
         "content": "'Количина: {amount}<br/>Провизија: {fees}<br/>Укупно: {total}",
         "confirmText": "Потврди",
-        "cancelText": "Откажи"
+        "cancelText": "Откажи",
+        "remoteNodeFee": "Провизија за удаљени чвор {fee} {symbol} додана на износ"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",
@@ -310,7 +319,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять сообщения."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -321,93 +330,138 @@
       },
       "sendBlock": {
         "address": {
-          "label": "Destination address",
-          "placeholder": "Write the address where you want to send the message",
-          "invalid": "The destination address is invalid",
-          "fundsTo": "The message will be sent to",
-          "receiver": "Receiver",
-          "description": "Description"
+          "label": "Адреса примаоца",
+          "placeholder": "Напишите адресу на коју желите да пошаљете средства",
+          "invalid": "Адреса неисправна",
+          "fundsTo": "Средства ће бити послата на",
+          "receiver": "Прималац",
+          "description": "Опис"
         },
         "message": {
-          "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "label": "Сообщение",
+          "invalid": "Сообщение слишком длинное. Максимальная длина 260 символов",
+          "preview": "Предварительный просмотр"
         },
-        "sendButton": "Send",
-        "cancelButton": "Cancel"
+        "ttl": {
+          "info": "TTL транзакция будет существовать только в mempool и автоматически уничтожится после {ttl}(часы:минуты). Она не будет добавлена в блок. Следовательно, сумма будет возвращена в кошелек."
+        },
+        "sendButton": "Отправить",
+        "cancelButton": "Отменить"
       },
       "qrCodeScanning": {
         "explication": "Present the QR code"
       },
       "notEnoughMoneyModal": {
         "title": "Oops...",
-        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "content": "Немате довољно средстава за овај трансфер",
         "confirmText": "OK"
       },
       "thankYouDonationModal": {
-        "title": "Thank you for your donation!",
-        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "title": "Хвала вам на донацији!",
+        "content": "Ваша помоћ је добродошла.<br/>Ваша донација ће помоћи при даљем развитку Карбо-ја",
         "confirmText": "OK"
       },
       "transferSentModal": {
-        "title": "Message sent successfully!",
+        "title": "Сообщение отправлено успешно!",
         "confirmText": "OK"
       },
       "transferExceptionModal": {
         "title": "Oops...",
-        "content": "An error occurred. Please report this error: {details}",
+        "content": "Дошло је до грешке. Молимо пријавите грешку: {details}",
         "confirmText": "OK"
       },
       "invalidAmountModal": {
         "title": "Oops...",
-        "content": "Invalid amount",
+        "content": "Количина погрешна",
         "confirmText": "OK"
       },
       "creatingTransferModal": {
-        "title": "Creating transfer ...",
-        "content": "Please wait..."
+        "title": "Припремам трансфер...",
+        "content": "Молимо сачекајте..."
       },
       "finalizingTransferModal": {
-        "title": "Finalizing transfer ...",
-        "content": "Please wait..."
+        "title": "Финализирам трансфер...",
+        "content": "Молимо сачекајте..."
       },
       "confirmTransactionModal": {
-        "title": "Confirm transfer?",
+        "title": "Потврди трансфер?",
         "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
-        "confirmText": "Confirm",
-        "cancelText": "Cancel"
+        "confirmText": "Потврди",
+        "cancelText": "Откажи"
       },
       "waitingNfcModal": {
-        "title": "Waiting Nfc",
-        "content": "Bring closer to the other device"
+        "title": "Очекујем NFC",
+        "content": "Приближите се другим уређају"
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Депозити",
+      "unlockDate": "Датум разблокирања",
+      "interest": "Камата",
+      "deposit": "Депозит",
+      "lockHeight": "Висина блокирања",
+      "unlockHeight": "Висина разблокирања",
+      "depositDate": "Датум депозита",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+      "label": "Новчаник је синхронизован. Можете да видите депозите."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Депозити",
+        "send": "Креирај"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Листа депозита"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Потврди депозит",
+        "message": "Унесите вашу лозинку да бисте потврдили креирање депозита од {amount} CCX за {term} месеци?",
+        "confirm": "Креирај депозит",
+        "cancel": "Откажи",
+        "passwordRequired": "Лозинка новчаника је обавезна"
+      },
+      "createDeposit": {
+        "title": "Креирај нови депозит",
+        "amount": "Сума за депозит",
+        "term": "Време за блокирање (у месецима)",
+        "termError": "Молимо унесите цео број између 1 и 12 месеци",
+        "confirm": "Креирај депозит",
+        "cancel": "Откажи",
+        "createSuccess": "Депозит послат на блокчејн",
+        "createPending": "Ваш депозит се обрађује",
+        "createError": "Грешка при креирању депозита",
+        "withdrawSuccess": "Издвајање послато на блокчејн",
+        "withdrawPending": "Ваше издвајање се обрађује",
+        "withdrawError": "Грешка при издвајању депозита",
+        "amountError": "Неисправна сума",
+        "amountMustBePositive": "Сума мора бити позитивна",
+        "termMustBeValid": "Време мора бити између 1 и 12 месеци",
+        "insufficientFunds": "Недостаје средстава",
+        "insufficientFundsMessage": "Немате довољно средстава за креирање овог депозита",
+        "maxAmount": "Максимална сума депозита: {amount} CCX",
+        "rewardAtTerm": "Награда на крају: {reward} CCX"
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
-        "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "title": "Детаљи депозита",
+        "txHash": "Трансакција креирања",
+        "spendingTx": "Трансакција издвајања",
+        "status": "Статус",
+        "amount": "Сума",
+        "term": "Време",
+        "creationTime": "Време креирања",
+        "spendingTime": "Време издвајања",
+        "spendingHeight": "Висина издвајања",
+        "creationHeight": "Висина креирања",
+        "unlockHeight": "Висина разблокирања",
+        "interest": "Interest"
+      },
+      "recap": {
+        "title": "Рекап",
+        "totalLifetimeDeposit": "Укупна укупна сума депозита",
+        "totalLifetimeInterest": "Укупна укупна камата",
+        "totalCashedOutInterest": "Укупна укупна камата",
+        "futureInterestLocked": "Будућа камата на закључаним депозитетима",
+        "futureInterestUnlocked": "Будућа камата на издвајању",
+        "earliestWithdrawable": "Најраније издвајање"
       }
     },
     "receivePage": {
@@ -482,6 +536,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Simbol",
+          "full": "Simbol Potpuni",
+          "short": "Simbol Skraćeni",
+          "preview": "Pregled"
         }
       },
       "changePasswordButton": "Промени лозинку новчаника",
@@ -535,10 +595,17 @@
       "qrCodeBlock": {
         "title": "QR код",
         "startScanButton": "Покрени скенирање",
-        "importButton": "Увези"
+        "importButton": "Увези",
+        "scanSuccess": "QR код успешно скениран"
       },
       "qrScanningBlock": {
         "title": "Приложите QR код"
+      },
+      "error": {
+        "title": "Грешка",
+        "connection": "Грешка при повезивању, покушајте поново",
+        "init": "Грешка при иницијализацији, покушајте поново",
+        "confirmText": "У реду"
       }
     },
     "exportPage": {

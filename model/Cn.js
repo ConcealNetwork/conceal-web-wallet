@@ -5,8 +5,8 @@
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
  *     Copyright (c) 2022, The Karbo Developers
- *     Copyright (c) 2022, Conceal Devs
- *     Copyright (c) 2022, Conceal Network
+ *     Copyright (c) 2022 - 2025, Conceal Devs
+ *     Copyright (c) 2022 - 2025, Conceal Network
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -54,6 +54,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
     var UINT64_MAX = new JSBigInt(2).pow(64);
     var CURRENT_TX_VERSION = 1;
     var OLD_TX_VERSION = 1;
+    var DEPOSIT_TX_VERSION = 2;
     var TX_EXTRA_NONCE_MAX_COUNT = 255;
     var TX_EXTRA_TAGS = {
         PADDING: '00',
@@ -331,6 +332,21 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             return out;
         }
         CnUtils.encode_varint = encode_varint;
+        function encode_varint_term(i) {
+            var value = new JSBigInt(i);
+            var out = '';
+            do {
+                // Get the lowest 8 bits
+                var byteValue = value.lowVal() & 0xFF;
+                // Set MSB if more bytes will follow
+                var byte = value.compare(0x7f) > 0 ? byteValue | 0x80 : byteValue;
+                out += byte.toString(16).padStart(2, '0');
+                // Right shift by 7 bits (unsigned)
+                value = value.divide(0x80);
+            } while (value.compare(0) > 0);
+            return out;
+        }
+        CnUtils.encode_varint_term = encode_varint_term;
         function cn_fast_hash(input) {
             if (input.length % 2 !== 0 || !CnUtils.valid_hex(input)) {
                 throw "Input invalid";
@@ -581,6 +597,25 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             return CnUtils.bintohex(res);
         }
         CnNativeBride.sc_mulsub = sc_mulsub;
+        // New function that takes binary directly
+        function sc_mulsub_bin(sigc_bin, sec_bin, k_bin) {
+            var sigc_m = Module._malloc(KEY_SIZE);
+            Module.HEAPU8.set(sigc_bin, sigc_m);
+            var sec_m = Module._malloc(KEY_SIZE);
+            Module.HEAPU8.set(sec_bin, sec_m);
+            var k_m = Module._malloc(KEY_SIZE);
+            Module.HEAPU8.set(k_bin, k_m);
+            var res_m = Module._malloc(KEY_SIZE);
+            Module.ccall("sc_mulsub", "void", ["number", "number", "number", "number"], [res_m, sigc_m, sec_m, k_m]);
+            var res = Module.HEAPU8.subarray(res_m, res_m + KEY_SIZE);
+            // Clean up
+            Module._free(k_m);
+            Module._free(sec_m);
+            Module._free(sigc_m);
+            Module._free(res_m);
+            return CnUtils.bintohex(res);
+        }
+        CnNativeBride.sc_mulsub_bin = sc_mulsub_bin;
         function generate_ring_signature(prefix_hash, k_image, keys, sec, real_index) {
             if (k_image.length !== STRUCT_SIZES.KEY_IMAGE * 2) {
                 throw "invalid key image length";
@@ -694,6 +729,129 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             return sigs;
         }
         CnNativeBride.generate_ring_signature = generate_ring_signature;
+        //    <--------------------------------------------------------
+        /**
+         * Generates a signature for a transaction using Schnorr-style signature
+         * @param prefixHash - Hash of the transaction prefix
+         * @param publicKey - Public key for signature verification
+         * @param secretKey - Secret key to sign with
+         * @returns The generated signature as a hex string
+         */
+        function generate_signature(prefixHash, publicKey, secretKey) {
+            try {
+                // Validate input lengths
+                if (prefixHash.length !== HASH_SIZE * 2 || !CnUtils.valid_hex(prefixHash)) {
+                    throw new Error('Invalid prefix hash length or format');
+                }
+                if (publicKey.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(publicKey)) {
+                    throw new Error('Invalid public key length or format');
+                }
+                if (secretKey.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(secretKey)) {
+                    throw new Error('Invalid secret key length or format');
+                }
+                // Convert inputs to binary format
+                var prefixHashBin = CnUtils.hextobin(prefixHash);
+                var publicKeyBin = CnUtils.hextobin(publicKey);
+                var secretKeyBin = CnUtils.hextobin(secretKey);
+                // Check if secret key is a valid scalar, in the C++ code that is only for DEBUG MODE
+                var secBuf = Module._malloc(KEY_SIZE);
+                if (!secBuf) {
+                    throw new Error('Failed to allocate secBuf buffer');
+                }
+                try {
+                    Module.HEAPU8.set(secretKeyBin, secBuf);
+                    if (Module.ccall("sc_check", "number", ["number"], [secBuf]) !== 0) {
+                        //console.log('Secret key is not a valid scalar');
+                        throw new Error('Invalid secret key: not a valid scalar');
+                    }
+                    // Verify that secret key corresponds to public key
+                    var tmp3_1 = Module._malloc(STRUCT_SIZES.GE_P3);
+                    if (!tmp3_1) {
+                        throw new Error('Failed to allocate tmp3 buffer');
+                    }
+                    try {
+                        // Calculate public key from secret key
+                        Module.ccall("ge_scalarmult_base", "void", ["number", "number"], [tmp3_1, secBuf]);
+                        // Get the calculated public key
+                        var calculatedPubBuf = Module._malloc(KEY_SIZE);
+                        if (!calculatedPubBuf) {
+                            throw new Error('Failed to allocate calculatedPubBuf buffer');
+                        }
+                        try {
+                            Module.ccall("ge_p3_tobytes", "void", ["number", "number"], [calculatedPubBuf, tmp3_1]);
+                            var calculatedPub = CnUtils.bintohex(Module.HEAPU8.subarray(calculatedPubBuf, calculatedPubBuf + KEY_SIZE));
+                            // Compare calculated public key with provided public key
+                            if (calculatedPub !== publicKey) {
+                                //console.log('Secret key does not correspond to public key');
+                                throw new Error('Invalid key pair: secret key does not correspond to public key');
+                            }
+                        }
+                        finally {
+                            Module._free(calculatedPubBuf);
+                        }
+                    }
+                    finally {
+                        Module._free(tmp3_1);
+                    }
+                }
+                finally {
+                    Module._free(secBuf);
+                }
+                // random k 
+                var k = void 0;
+                k = CnRandom.random_scalar();
+                // console.log('check_scalar', k, 'true'); // debug for crypto-test.cpp
+                var kBin = CnUtils.hextobin(k);
+                // Allocate memory for temporary buffers
+                var tmp3 = Module._malloc(STRUCT_SIZES.GE_P3);
+                if (!tmp3) {
+                    throw new Error('Failed to allocate tmp3 buffer');
+                }
+                try {
+                    var k_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
+                    if (!k_m) {
+                        throw new Error('Failed to allocate k_m buffer');
+                    }
+                    try {
+                        Module.HEAPU8.set(kBin, k_m);
+                        // Calculate commitment point: commitment = kG
+                        Module.ccall("ge_scalarmult_base", "void", ["number", "number"], [tmp3, k_m]);
+                        // Create buffer with proper structure (prefix_hash + pub + comm)
+                        var buf = Module._malloc(HASH_SIZE + KEY_SIZE + KEY_SIZE);
+                        if (!buf) {
+                            throw new Error('Failed to allocate buffer');
+                        }
+                        try {
+                            // Make sure the order matches the C++ s_comm struct
+                            Module.HEAPU8.set(prefixHashBin, buf); // h
+                            Module.HEAPU8.set(publicKeyBin, buf + HASH_SIZE); // key
+                            Module.ccall("ge_p3_tobytes", "void", ["number", "number"], [buf + HASH_SIZE + KEY_SIZE, tmp3]); // comm
+                            var c = Cn.hash_to_scalar(CnUtils.bintohex(Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE)));
+                            //console.log('hash_to_scalar', CnUtils.bintohex(Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE)) ,c); // debug for crypto-test.cpp
+                            // Calculate response scalar: r = k - (c*sec) mod l
+                            var r = CnNativeBride.sc_mulsub(c, secretKey, k);
+                            // Final signature is c || r
+                            var finalSignature = c + r;
+                            return finalSignature;
+                        }
+                        finally {
+                            Module._free(buf);
+                        }
+                    }
+                    finally {
+                        Module._free(k_m);
+                    }
+                }
+                finally {
+                    Module._free(tmp3);
+                }
+            }
+            catch (e) {
+                console.error("Error in generate_signature:", e);
+                throw e;
+            }
+        }
+        CnNativeBride.generate_signature = generate_signature;
         function generate_key_derivation(pub, sec) {
             var generate_key_derivation_bind = self.Module_native.cwrap('generate_key_derivation', null, ['number', 'number', 'number']);
             var pub_b = CnUtils.hextobin(pub);
@@ -730,6 +888,300 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             return CnUtils.bintohex(res);
         }
         CnNativeBride.derive_public_key = derive_public_key;
+        /**
+         * @param prefixHash - Hash of the transaction prefix
+         * @param publicKey - Public key to verify against
+         * @param signature - Signature to verify (c + r)
+         * @returns boolean indicating if signature is valid
+         */
+        function verify_signature(prefixHash, publicKey, signature) {
+            try {
+                // Validate input lengths
+                if (prefixHash.length !== HASH_SIZE * 2 || !CnUtils.valid_hex(prefixHash)) {
+                    return false;
+                }
+                if (publicKey.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(publicKey)) {
+                    return false;
+                }
+                if (signature.length !== STRUCT_SIZES.SIGNATURE * 2 || !CnUtils.valid_hex(signature)) {
+                    return false;
+                }
+                //console.log('check_signature', prefixHash, publicKey, signature, 'true'); // debug for crypto-test.cpp
+                // Split signature into c and r components
+                var c = signature.slice(0, 64);
+                var r = signature.slice(64, 128);
+                // Convert inputs to binary format
+                var prefixHashBin = CnUtils.hextobin(prefixHash);
+                var publicKeyBin = CnUtils.hextobin(publicKey);
+                var cBin = CnUtils.hextobin(c);
+                var rBin = CnUtils.hextobin(r);
+                // Check scalar validity for both c and r components
+                var cBuf = Module._malloc(KEY_SIZE);
+                var rBuf = Module._malloc(KEY_SIZE);
+                if (!cBuf || !rBuf) {
+                    return false;
+                }
+                try {
+                    // Copy scalars to aligned buffers
+                    Module.HEAPU8.set(cBin, cBuf);
+                    Module.HEAPU8.set(rBin, rBuf);
+                    // Check scalar validity for c
+                    if (Module.ccall("sc_check", "number", ["number"], [cBuf]) !== 0) {
+                        console.error('c is not valid scalar');
+                        return false;
+                    }
+                    // Check scalar validity for r
+                    if (Module.ccall("sc_check", "number", ["number"], [rBuf]) !== 0) {
+                        console.error('r is not valid scalar');
+                        return false;
+                    }
+                    // Allocate memory for public key point
+                    var tmp3 = Module._malloc(STRUCT_SIZES.GE_P3);
+                    if (!tmp3) {
+                        return false;
+                    }
+                    try {
+                        // Copy public key to aligned buffer
+                        var pubKeyBuf = Module._malloc(KEY_SIZE);
+                        if (!pubKeyBuf) {
+                            return false;
+                        }
+                        try {
+                            // Copy public key to aligned buffer
+                            Module.HEAPU8.set(publicKeyBin, pubKeyBuf);
+                            // Convert public key to point on curve
+                            var fromBytesResult = Module.ccall("ge_frombytes_vartime", "number", ["number", "number"], [tmp3, pubKeyBuf]);
+                            if (fromBytesResult !== 0) {
+                                return false;
+                            }
+                            // Allocate memory for double scalar multiplication
+                            var tmp2 = Module._malloc(STRUCT_SIZES.GE_P2);
+                            if (!tmp2) {
+                                return false;
+                            }
+                            try {
+                                // Perform double scalar multiplication with aligned buffers
+                                Module.ccall("ge_double_scalarmult_base_vartime", "void", ["number", "number", "number", "number"], [tmp2, cBuf, tmp3, rBuf]);
+                                // Create buffer for hash input
+                                var buf = Module._malloc(HASH_SIZE + KEY_SIZE + KEY_SIZE);
+                                if (!buf) {
+                                    return false;
+                                }
+                                try {
+                                    // Copy prefix hash and public key to buffer
+                                    Module.HEAPU8.set(prefixHashBin, buf);
+                                    Module.HEAPU8.set(publicKeyBin, buf + HASH_SIZE);
+                                    // Allocate memory for commitment point
+                                    var comm_m = Module._malloc(KEY_SIZE);
+                                    if (!comm_m) {
+                                        return false;
+                                    }
+                                    try {
+                                        // Get commitment point bytes
+                                        Module.ccall("ge_tobytes", "void", ["number", "number"], [comm_m, tmp2]);
+                                        // Copy commitment point to buffer
+                                        var commBytes = Module.HEAPU8.subarray(comm_m, comm_m + KEY_SIZE);
+                                        Module.HEAPU8.set(commBytes, buf + HASH_SIZE + KEY_SIZE);
+                                        // Hash the buffer to create challenge scalar
+                                        var buf_bin = Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE);
+                                        var computed_c = Cn.hash_to_scalar(CnUtils.bintohex(buf_bin));
+                                        // Compare computed challenge with provided challenge
+                                        return computed_c === c;
+                                    }
+                                    finally {
+                                        Module._free(comm_m);
+                                    }
+                                }
+                                finally {
+                                    Module._free(buf);
+                                }
+                            }
+                            finally {
+                                Module._free(tmp2);
+                            }
+                        }
+                        finally {
+                            Module._free(pubKeyBuf);
+                        }
+                    }
+                    finally {
+                        Module._free(tmp3);
+                    }
+                }
+                finally {
+                    Module._free(cBuf);
+                    Module._free(rBuf);
+                }
+            }
+            catch (e) {
+                console.error("Error in verify_signature:", e);
+                return false;
+            }
+        }
+        CnNativeBride.verify_signature = verify_signature;
+        function checkTxProof(prefixHash, R, A, D, sig) {
+            try {
+                // Validate input lengths
+                if (prefixHash.length !== HASH_SIZE * 2 || !CnUtils.valid_hex(prefixHash)) {
+                    console.error('Invalid prefix hash length or format');
+                    return false;
+                }
+                if (R.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(R)) {
+                    console.error('Invalid R length or format');
+                    return false;
+                }
+                if (A.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(A)) {
+                    console.error('Invalid A length or format');
+                    return false;
+                }
+                if (D.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(D)) {
+                    console.error('Invalid D length or format');
+                    return false;
+                }
+                if (sig.length !== STRUCT_SIZES.SIGNATURE * 2 || !CnUtils.valid_hex(sig)) {
+                    console.error('Invalid signature length or format');
+                    return false;
+                }
+                // Convert inputs to binary format
+                var prefixHashBin = CnUtils.hextobin(prefixHash);
+                var RBin = CnUtils.hextobin(R);
+                var ABin = CnUtils.hextobin(A);
+                var DBin = CnUtils.hextobin(D);
+                var sigBin = CnUtils.hextobin(sig);
+                // Split signature into c and r components
+                var cBin = sigBin.slice(0, 32);
+                var rBin = sigBin.slice(32, 64);
+                // Allocate memory for points
+                var tmp3_R = Module._malloc(STRUCT_SIZES.GE_P3);
+                var tmp3_A = Module._malloc(STRUCT_SIZES.GE_P3);
+                var tmp3_D = Module._malloc(STRUCT_SIZES.GE_P3);
+                if (!tmp3_R || !tmp3_A || !tmp3_D) {
+                    console.error('Failed to allocate point memory');
+                    return false;
+                }
+                try {
+                    // Convert public keys to points
+                    var RBuf = Module._malloc(KEY_SIZE);
+                    var ABuf = Module._malloc(KEY_SIZE);
+                    var DBuf = Module._malloc(KEY_SIZE);
+                    if (!RBuf || !ABuf || !DBuf) {
+                        console.error('Failed to allocate key buffers');
+                        return false;
+                    }
+                    try {
+                        Module.HEAPU8.set(RBin, RBuf);
+                        Module.HEAPU8.set(ABin, ABuf);
+                        Module.HEAPU8.set(DBin, DBuf);
+                        var fromBytesResult_R = Module.ccall("ge_frombytes_vartime", "number", ["number", "number"], [tmp3_R, RBuf]);
+                        var fromBytesResult_A = Module.ccall("ge_frombytes_vartime", "number", ["number", "number"], [tmp3_A, ABuf]);
+                        var fromBytesResult_D = Module.ccall("ge_frombytes_vartime", "number", ["number", "number"], [tmp3_D, DBuf]);
+                        if (fromBytesResult_R !== 0 || fromBytesResult_A !== 0 || fromBytesResult_D !== 0) {
+                            console.error('Failed to convert public keys to points:', {
+                                R: fromBytesResult_R,
+                                A: fromBytesResult_A,
+                                D: fromBytesResult_D
+                            });
+                            return false;
+                        }
+                        // Allocate memory for scalar multiplication results
+                        var tmp2_cR = Module._malloc(STRUCT_SIZES.GE_P2);
+                        var tmp2_rA = Module._malloc(STRUCT_SIZES.GE_P2);
+                        if (!tmp2_cR || !tmp2_rA) {
+                            console.error('Failed to allocate scalar multiplication memory');
+                            return false;
+                        }
+                        try {
+                            // Allocate memory for scalars
+                            var cBuf = Module._malloc(KEY_SIZE);
+                            var rBuf = Module._malloc(KEY_SIZE);
+                            if (!cBuf || !rBuf) {
+                                console.error('Failed to allocate scalar buffers');
+                                return false;
+                            }
+                            try {
+                                Module.HEAPU8.set(cBin, cBuf);
+                                Module.HEAPU8.set(rBin, rBuf);
+                                // Compute X = c*R + r*G
+                                Module.ccall("ge_double_scalarmult_base_vartime", "void", ["number", "number", "number", "number"], [tmp2_cR, cBuf, tmp3_R, rBuf]);
+                                // Compute Y = c*D + r*A
+                                Module.ccall("ge_double_scalarmult_base_vartime", "void", ["number", "number", "number", "number"], [tmp2_rA, cBuf, tmp3_D, rBuf]);
+                                /*console.log('Point computation details:', {
+                                    cR: CnUtils.bintohex(Module.HEAPU8.subarray(tmp2_cR, tmp2_cR + STRUCT_SIZES.GE_P2)),
+                                    rA: CnUtils.bintohex(Module.HEAPU8.subarray(tmp2_rA, tmp2_rA + STRUCT_SIZES.GE_P2))
+                                }); */
+                                // Allocate memory for X and Y
+                                var XBuf = Module._malloc(KEY_SIZE);
+                                var YBuf = Module._malloc(KEY_SIZE);
+                                if (!XBuf || !YBuf) {
+                                    console.error('Failed to allocate X/Y buffers');
+                                    return false;
+                                }
+                                try {
+                                    // Get X = c*R + r*G
+                                    Module.ccall("ge_tobytes", "void", ["number", "number"], [XBuf, tmp2_cR]);
+                                    // Get Y = c*D + r*A
+                                    Module.ccall("ge_tobytes", "void", ["number", "number"], [YBuf, tmp2_rA]);
+                                    var X = CnUtils.bintohex(Module.HEAPU8.subarray(XBuf, XBuf + KEY_SIZE));
+                                    var Y = CnUtils.bintohex(Module.HEAPU8.subarray(YBuf, YBuf + KEY_SIZE));
+                                    //console.log('Computed points:', { X, Y });
+                                    // Create buffer for hash input
+                                    var buf = Module._malloc(HASH_SIZE + KEY_SIZE + KEY_SIZE + KEY_SIZE);
+                                    if (!buf) {
+                                        console.error('Failed to allocate hash buffer');
+                                        return false;
+                                    }
+                                    try {
+                                        // Copy data to buffer: prefixHash || D || X || Y
+                                        Module.HEAPU8.set(prefixHashBin, buf);
+                                        Module.HEAPU8.set(DBin, buf + HASH_SIZE);
+                                        Module.HEAPU8.set(Module.HEAPU8.subarray(XBuf, XBuf + KEY_SIZE), buf + HASH_SIZE + KEY_SIZE);
+                                        Module.HEAPU8.set(Module.HEAPU8.subarray(YBuf, YBuf + KEY_SIZE), buf + HASH_SIZE + KEY_SIZE + KEY_SIZE);
+                                        // Hash to scalar
+                                        var buf_bin = Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE + KEY_SIZE);
+                                        var buf_hex = CnUtils.bintohex(buf_bin);
+                                        var c2 = Cn.hash_to_scalar(buf_hex);
+                                        // Debug logs for hash calculation
+                                        var original_c = CnUtils.bintohex(cBin);
+                                        // Compare c2 with original c
+                                        return c2 === original_c;
+                                    }
+                                    finally {
+                                        Module._free(buf);
+                                    }
+                                }
+                                finally {
+                                    Module._free(XBuf);
+                                    Module._free(YBuf);
+                                }
+                            }
+                            finally {
+                                Module._free(cBuf);
+                                Module._free(rBuf);
+                            }
+                        }
+                        finally {
+                            Module._free(tmp2_cR);
+                            Module._free(tmp2_rA);
+                        }
+                    }
+                    finally {
+                        Module._free(RBuf);
+                        Module._free(ABuf);
+                        Module._free(DBuf);
+                    }
+                }
+                finally {
+                    Module._free(tmp3_R);
+                    Module._free(tmp3_A);
+                    Module._free(tmp3_D);
+                }
+            }
+            catch (e) {
+                console.error("Error in checkTxProof:", e);
+                return false;
+            }
+        }
+        CnNativeBride.checkTxProof = checkTxProof;
     })(CnNativeBride || (exports.CnNativeBride = CnNativeBride = {}));
     var Cn;
     (function (Cn) {
@@ -1211,6 +1663,13 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
                         }
                         buf += vin.k_image;
                         break;
+                    case "input_to_deposit_key":
+                        buf += "03";
+                        buf += CnUtils.encode_varint(vin.amount);
+                        buf += CnUtils.encode_varint(1); //always 1 for deposits/withdrawals
+                        buf += CnUtils.encode_varint(vin.outputIndex || 0);
+                        buf += CnUtils.encode_varint(vin.term || 0);
+                        break;
                     default:
                         throw "Unhandled vin type: " + vin.type;
                 }
@@ -1226,6 +1685,16 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
                         buf += "02";
                         buf += vout.target.data.key;
                         break;
+                    case "txout_to_deposit_key":
+                        buf += "03";
+                        var keys = vout.target.data.keys || [];
+                        buf += CnUtils.encode_varint(keys.length); // varint for number of keys, only one for deposit
+                        for (var i_1 = 0; i_1 < keys.length; i_1++) {
+                            buf += keys[i_1]; // vector of keys derivated using the recipient's view public key and the transaction secret key			
+                        }
+                        buf += CnUtils.encode_varint(1); // requiredSignatureCount is always 1 for deposits
+                        buf += CnUtils.encode_varint_term(vout.target.data.term || 0); // The term in block
+                        break;
                     default:
                         throw "Unhandled txout target type: " + vout.target.type;
                 }
@@ -1235,13 +1704,29 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
                 throw "Tx extra has invalid hex";
             }
             logDebugMsg('serialize tx ', tx);
-            buf += CnUtils.encode_varint(tx.extra.length / 2);
+            buf += CnUtils.encode_varint(tx.extra.length / 2); //because extra is store as a hexadecimal string
             buf += tx.extra;
             if (!headeronly) {
                 if (tx.vin.length !== tx.signatures.length) {
                     throw "Signatures length != vin length";
                 }
                 for (i = 0; i < tx.vin.length; i++) {
+                    var vin = tx.vin[i];
+                    var expectedSignatures = void 0;
+                    // Determine expected number of signatures based on input type
+                    if (vin.type === "input_to_deposit_key") { // Multisignature input
+                        expectedSignatures = vin.signatures; // Use signatureCount from MultisignatureInput
+                    }
+                    else if (vin.type === "input_to_key") { // Key input
+                        expectedSignatures = vin.key_offsets.length;
+                    }
+                    else { // Base input
+                        expectedSignatures = 0;
+                    }
+                    // Verify we have the correct number of signatures
+                    if (tx.signatures[i].length !== expectedSignatures) {
+                        throw "Unexpected signature count for input ".concat(i, ": expected ").concat(expectedSignatures, ", got ").concat(tx.signatures[i].length);
+                    }
                     for (j = 0; j < tx.signatures[i].length; j++) {
                         buf += tx.signatures[i][j];
                     }
@@ -1467,8 +1952,8 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             if (rows !== 2) {
                 throw "wrong row count";
             }
-            for (var i_1 = 0; i_1 < cols; i_1++) {
-                if (pk[i_1].length !== rows) {
+            for (var i_2 = 0; i_2 < cols; i_2++) {
+                if (pk[i_2].length !== rows) {
                     throw "pk is not rectangular";
                 }
             }
@@ -1481,8 +1966,8 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
                 ss: [],
                 cc: ''
             };
-            for (var i_2 = 0; i_2 < cols; i_2++) {
-                rv.ss[i_2] = [];
+            for (var i_3 = 0; i_3 < cols; i_3++) {
+                rv.ss[i_3] = [];
             }
             var toHash = []; //holds 6 elements: message, pubkey, dsRow L, dsRow R, commitment, ndsRow L
             toHash[0] = message;
@@ -1703,8 +2188,8 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
                     ai[i] = CnNativeBride.sc_sub(sumout, sumpouts);
                     rv.pseudoOuts[i] = commit(CnUtils.d2s(inAmounts[i]), ai[i]);
                     var full_message = CnTransactions.get_pre_mlsag_hash(rv);
-                    for (var i_3 = 0; i_3 < inAmounts.length; i_3++) {
-                        p.MGs.push(CnTransactions.proveRctMG(full_message, mixRing[i_3], inSk[i_3], kimg[i_3], ai[i_3], rv.pseudoOuts[i_3], indices[i_3]));
+                    for (var i_4 = 0; i_4 < inAmounts.length; i_4++) {
+                        p.MGs.push(CnTransactions.proveRctMG(full_message, mixRing[i_4], inSk[i_4], kimg[i_4], ai[i_4], rv.pseudoOuts[i_4], indices[i_4]));
                     }
                 }
                 else {
@@ -1721,290 +2206,398 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             return rv;
         }
         CnTransactions.genRct = genRct;
-        function construct_tx(keys, sources, dsts, senderAddress, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl) {
+        function construct_tx(keys, sources, dsts, senderAddress, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl, transactionType, term) {
             if (unlock_time === void 0) { unlock_time = 0; }
-            //we move payment ID stuff here, because we need txkey to encrypt
-            var txkey = Cn.random_keypair();
-            logDebugMsg(txkey);
-            var extra = '';
-            if (payment_id) {
-                if (pid_encrypt && payment_id.length !== INTEGRATED_ID_SIZE * 2) {
-                    throw "payment ID must be " + INTEGRATED_ID_SIZE + " bytes to be encrypted!";
+            try {
+                console.log('Starting transaction construction...');
+                //we move payment ID stuff here, because we need txkey to encrypt
+                var txkey = Cn.random_keypair();
+                logDebugMsg(txkey);
+                var extra = '';
+                if (payment_id) {
+                    if (pid_encrypt && payment_id.length !== INTEGRATED_ID_SIZE * 2) {
+                        throw "payment ID must be " + INTEGRATED_ID_SIZE + " bytes to be encrypted!";
+                    }
+                    logDebugMsg("Adding payment id: " + payment_id);
+                    if (pid_encrypt && realDestViewKey) { //get the derivation from our passed viewkey, then hash that + tail to get encryption key
+                        var pid_key = CnUtils.cn_fast_hash(Cn.generate_key_derivation(realDestViewKey, txkey.sec) + ENCRYPTED_PAYMENT_ID_TAIL.toString(16)).slice(0, INTEGRATED_ID_SIZE * 2);
+                        logDebugMsg("Txkeys:", txkey, "Payment ID key:", pid_key);
+                        payment_id = CnUtils.hex_xor(payment_id, pid_key);
+                    }
+                    var nonce = CnTransactions.get_payment_id_nonce(payment_id, pid_encrypt);
+                    logDebugMsg("Extra nonce: " + nonce);
+                    extra = CnTransactions.add_nonce_to_extra(extra, nonce);
                 }
-                logDebugMsg("Adding payment id: " + payment_id);
-                if (pid_encrypt && realDestViewKey) { //get the derivation from our passed viewkey, then hash that + tail to get encryption key
-                    var pid_key = CnUtils.cn_fast_hash(Cn.generate_key_derivation(realDestViewKey, txkey.sec) + ENCRYPTED_PAYMENT_ID_TAIL.toString(16)).slice(0, INTEGRATED_ID_SIZE * 2);
-                    logDebugMsg("Txkeys:", txkey, "Payment ID key:", pid_key);
-                    payment_id = CnUtils.hex_xor(payment_id, pid_key);
-                }
-                var nonce = CnTransactions.get_payment_id_nonce(payment_id, pid_encrypt);
-                logDebugMsg("Extra nonce: " + nonce);
-                extra = CnTransactions.add_nonce_to_extra(extra, nonce);
-            }
-            var tx = {
-                unlock_time: unlock_time,
-                version: rct ? CURRENT_TX_VERSION : OLD_TX_VERSION,
-                extra: extra,
-                prvkey: '',
-                vin: [],
-                vout: [],
-                rct_signatures: {
-                    ecdhInfo: [],
-                    outPk: [],
-                    pseudoOuts: [],
-                    txnFee: '',
-                    type: 0,
-                },
-                signatures: []
-            };
-            if (rct) {
-                tx.rct_signatures = { ecdhInfo: [], outPk: [], pseudoOuts: [], txnFee: "", type: 0 };
-            }
-            else {
-                tx.signatures = [];
-            }
-            tx.prvkey = txkey.sec;
-            var in_contexts = [];
-            var inputs_money = JSBigInt.ZERO;
-            var i, j;
-            logDebugMsg('Sources: ');
-            //run the for loop twice to sort ins by key image
-            //first generate key image and other construction data to sort it all in one go
-            for (i = 0; i < sources.length; i++) {
-                logDebugMsg(i + ': ' + Cn.formatMoneyFull(sources[i].amount));
-                if (sources[i].real_out >= sources[i].outputs.length) {
-                    throw "real index >= outputs.length";
-                }
-                // inputs_money = inputs_money.add(sources[i].amount);
-                // sets res.mask among other things. mask is identity for non-rct transactions
-                // and for coinbase ringct (type = 0) txs.
-                var res = CnTransactions.generate_key_image_helper_rct(keys, sources[i].real_out_tx_key, sources[i].real_out_in_tx, sources[i].mask); //mask will be undefined for non-rct
-                // in_contexts.push(res.in_ephemeral);
-                // now we mark if this is ringct coinbase txs. such transactions
-                // will have identity mask. Non-ringct txs will have  sources[i].mask set to null.
-                // this only works if beckend will produce masks in get_unspent_outs for
-                // coinbaser ringct txs.
-                //is_rct_coinbases.push((sources[i].mask ? sources[i].mask === I : 0));
-                logDebugMsg('res.in_ephemeral.pub', res, res.in_ephemeral.pub, sources, i);
-                if (res.in_ephemeral.pub !== sources[i].outputs[sources[i].real_out].key) {
-                    throw "in_ephemeral.pub != source.real_out.key";
-                }
-                sources[i].key_image = res.image;
-                sources[i].in_ephemeral = res.in_ephemeral;
-            }
-            //sort ins
-            sources.sort(function (a, b) {
-                return JSBigInt.parse(a.key_image, 16).compare(JSBigInt.parse(b.key_image, 16)) * -1;
-            });
-            //copy the sorted sources data to tx
-            for (i = 0; i < sources.length; i++) {
-                inputs_money = inputs_money.add(sources[i].amount);
-                in_contexts.push(sources[i].in_ephemeral);
-                var input_to_key = {
-                    type: "input_to_key",
-                    amount: sources[i].amount,
-                    k_image: sources[i].key_image,
-                    key_offsets: [],
+                var tx = {
+                    unlock_time: unlock_time,
+                    version: rct ? CURRENT_TX_VERSION : OLD_TX_VERSION,
+                    extra: extra,
+                    prvkey: '',
+                    vin: [],
+                    vout: [],
+                    rct_signatures: {
+                        ecdhInfo: [],
+                        outPk: [],
+                        pseudoOuts: [],
+                        txnFee: '',
+                        type: 0,
+                    },
+                    signatures: []
                 };
-                for (j = 0; j < sources[i].outputs.length; ++j) {
-                    logDebugMsg('add to key offsets', sources[i].outputs[j].index, j, sources[i].outputs);
-                    input_to_key.key_offsets.push(sources[i].outputs[j].index);
-                }
-                logDebugMsg('key offsets before abs', input_to_key.key_offsets);
-                input_to_key.key_offsets = CnTransactions.abs_to_rel_offsets(input_to_key.key_offsets);
-                logDebugMsg('key offsets after abs', input_to_key.key_offsets);
-                tx.vin.push(input_to_key);
-            }
-            var outputs_money = JSBigInt.ZERO;
-            var out_index = 0;
-            var amountKeys = []; //rct only
-            var num_stdaddresses = 0;
-            var num_subaddresses = 0;
-            var single_dest_subaddress = '';
-            var unique_dst_addresses = {};
-            for (i = 0; i < dsts.length; ++i) {
-                if (new JSBigInt(dsts[i].amount).compare(0) < 0) {
-                    throw "dst.amount < 0"; //amount can be zero if no change
-                }
-                var destKeys = Cn.decode_address(dsts[i].address);
-                if (destKeys.view === keys.view.pub) //change address
-                    continue;
-                if (typeof unique_dst_addresses[dsts[i].address] === 'undefined') {
-                    unique_dst_addresses[dsts[i].address] = 1;
-                    if (Cn.is_subaddress(dsts[i].address)) {
-                        ++num_subaddresses;
-                        single_dest_subaddress = dsts[i].address;
-                    }
-                    else {
-                        ++num_stdaddresses;
-                    }
-                }
-            }
-            logDebugMsg('Destinations resume:', unique_dst_addresses, num_stdaddresses, num_subaddresses);
-            if (num_stdaddresses == 0 && num_subaddresses == 1) {
-                var uniqueSubaddressDecoded = Cn.decode_address(single_dest_subaddress);
-                txkey.pub = CnUtils.ge_scalarmult(uniqueSubaddressDecoded.spend, txkey.sec);
-            }
-            var additional_tx_keys = [];
-            var additional_tx_public_keys = [];
-            var need_additional_txkeys = num_subaddresses > 0 && (num_stdaddresses > 0 || num_subaddresses > 1);
-            for (i = 0; i < dsts.length; ++i) {
-                var destKeys = Cn.decode_address(dsts[i].address);
-                var additional_txkey = { sec: '', pub: '' };
-                if (need_additional_txkeys) {
-                    additional_txkey = Cn.random_keypair();
-                    if (Cn.is_subaddress(dsts[i].address)) {
-                        // R = rD for subaddresses
-                        additional_txkey.pub = CnUtils.ge_scalarmult(destKeys.spend, additional_txkey.sec);
-                    }
-                    else
-                        additional_txkey.pub = CnUtils.ge_scalarmult_base(additional_txkey.sec);
-                }
-                var out_derivation = void 0;
-                if (destKeys.view === keys.view.pub) {
-                    out_derivation = Cn.generate_key_derivation(txkey.pub, keys.view.sec);
+                if (rct) {
+                    tx.rct_signatures = { ecdhInfo: [], outPk: [], pseudoOuts: [], txnFee: "", type: 0 };
                 }
                 else {
-                    if (Cn.is_subaddress(dsts[i].address) && need_additional_txkeys)
-                        out_derivation = Cn.generate_key_derivation(destKeys.view, additional_txkey.sec);
-                    else
-                        out_derivation = Cn.generate_key_derivation(destKeys.view, txkey.sec);
+                    tx.signatures = [];
                 }
-                if (need_additional_txkeys) {
-                    additional_tx_public_keys.push(additional_txkey.pub);
-                    additional_tx_keys.push(additional_txkey.sec);
+                if (transactionType !== "regular") {
+                    tx.version = DEPOSIT_TX_VERSION;
                 }
-                if (rct) {
-                    amountKeys.push(CnUtils.derivation_to_scalar(out_derivation, out_index));
+                tx.prvkey = txkey.sec;
+                var in_contexts = [];
+                var inputs_money = JSBigInt.ZERO;
+                var i = void 0, j = void 0;
+                logDebugMsg('Sources: ');
+                //run the for loop twice to sort ins by key image
+                //first generate key image and other construction data to sort it all in one go
+                if (transactionType !== "withdraw") {
+                    for (i = 0; i < sources.length; i++) {
+                        logDebugMsg(i + ': ' + Cn.formatMoneyFull(sources[i].amount));
+                        if (sources[i].real_out >= sources[i].outputs.length) {
+                            throw "real index >= outputs.length";
+                        }
+                        // inputs_money = inputs_money.add(sources[i].amount);
+                        // sets res.mask among other things. mask is identity for non-rct transactions
+                        // and for coinbase ringct (type = 0) txs.
+                        var res = CnTransactions.generate_key_image_helper_rct(keys, sources[i].real_out_tx_key, sources[i].real_out_in_tx, sources[i].mask); //mask will be undefined for non-rct
+                        // in_contexts.push(res.in_ephemeral);
+                        // now we mark if this is ringct coinbase txs. such transactions
+                        // will have identity mask. Non-ringct txs will have  sources[i].mask set to null.
+                        // this only works if beckend will produce masks in get_unspent_outs for
+                        // coinbaser ringct txs.
+                        //is_rct_coinbases.push((sources[i].mask ? sources[i].mask === I : 0));
+                        logDebugMsg('res.in_ephemeral.pub', res, res.in_ephemeral.pub, sources, i);
+                        if (res.in_ephemeral.pub !== sources[i].outputs[sources[i].real_out].key) {
+                            throw "in_ephemeral.pub != source.real_out.key";
+                        }
+                        sources[i].key_image = res.image;
+                        sources[i].in_ephemeral = res.in_ephemeral;
+                    }
+                    //sort ins
+                    sources.sort(function (a, b) {
+                        return JSBigInt.parse(a.key_image, 16).compare(JSBigInt.parse(b.key_image, 16)) * -1;
+                    });
                 }
-                var out_ephemeral_pub = Cn.derive_public_key(out_derivation, out_index, destKeys.spend);
-                var out = {
-                    amount: dsts[i].amount,
-                    target: {
-                        type: "txout_to_key",
-                        data: {
-                            key: out_ephemeral_pub
+                //copy the sorted sources data to tx
+                for (i = 0; i < sources.length; i++) {
+                    inputs_money = inputs_money.add(sources[i].amount);
+                    in_contexts.push(sources[i].in_ephemeral);
+                    var input_to_key = void 0;
+                    if (transactionType === "withdraw") {
+                        input_to_key = {
+                            type: "input_to_deposit_key",
+                            term: term,
+                            amount: sources[i].amount,
+                            k_image: sources[i].key_image, // NOT USED WON'T BE SERIALIZED ANYWAY
+                            key_offsets: [],
+                            signatures: 1,
+                            outputIndex: sources[i].real_out_in_tx
+                        };
+                    }
+                    else {
+                        input_to_key = {
+                            type: "input_to_key",
+                            amount: sources[i].amount,
+                            k_image: sources[i].key_image,
+                            key_offsets: [],
+                        };
+                        for (j = 0; j < sources[i].outputs.length; ++j) {
+                            logDebugMsg('add to key offsets', sources[i].outputs[j].index, j, sources[i].outputs);
+                            input_to_key.key_offsets.push(sources[i].outputs[j].index);
+                        }
+                        logDebugMsg('key offsets before abs', input_to_key.key_offsets);
+                        input_to_key.key_offsets = CnTransactions.abs_to_rel_offsets(input_to_key.key_offsets);
+                        logDebugMsg('key offsets after abs', input_to_key.key_offsets);
+                    }
+                    tx.vin.push(input_to_key);
+                }
+                var outputs_money = JSBigInt.ZERO;
+                var out_index = 0;
+                var amountKeys = []; //rct only
+                var num_stdaddresses = 0;
+                var num_subaddresses = 0;
+                var single_dest_subaddress = '';
+                var unique_dst_addresses = {};
+                for (i = 0; i < dsts.length; ++i) {
+                    if (new JSBigInt(dsts[i].amount).compare(0) < 0) {
+                        throw "dst.amount < 0"; //amount can be zero if no change
+                    }
+                    var destKeys = Cn.decode_address(dsts[i].address);
+                    if (destKeys.view === keys.view.pub) //change address
+                        continue;
+                    if (typeof unique_dst_addresses[dsts[i].address] === 'undefined') {
+                        unique_dst_addresses[dsts[i].address] = 1;
+                        if (Cn.is_subaddress(dsts[i].address)) {
+                            ++num_subaddresses;
+                            single_dest_subaddress = dsts[i].address;
+                        }
+                        else {
+                            ++num_stdaddresses;
                         }
                     }
-                };
-                // txout_to_key
-                tx.vout.push(out);
-                ++out_index;
-                outputs_money = outputs_money.add(dsts[i].amount);
-            }
-            // add pub key to extra after we know whether to use R = rG or R = rD
-            tx.extra = CnTransactions.add_pub_key_to_extra(tx.extra, txkey.pub);
-            tx.extra = CnTransactions.add_additionnal_pub_keys_to_extra(tx.extra, additional_tx_public_keys);
-            // Encrypt message and add it to the extra
-            // CCX has only 1 destination for messages anyways
-            if (message) {
-                var messageAddress = null;
-                for (var i_4 = 0; i_4 < dsts.length; i_4++) {
-                    if (dsts[i_4].address !== senderAddress) {
-                        messageAddress = dsts[i_4].address;
+                }
+                logDebugMsg('Destinations resume:', unique_dst_addresses, num_stdaddresses, num_subaddresses);
+                if (num_stdaddresses == 0 && num_subaddresses == 1) {
+                    var uniqueSubaddressDecoded = Cn.decode_address(single_dest_subaddress);
+                    txkey.pub = CnUtils.ge_scalarmult(uniqueSubaddressDecoded.spend, txkey.sec);
+                }
+                var additional_tx_keys = [];
+                var additional_tx_public_keys = [];
+                var need_additional_txkeys = num_subaddresses > 0 && (num_stdaddresses > 0 || num_subaddresses > 1);
+                for (i = 0; i < dsts.length; ++i) {
+                    var destKeys = Cn.decode_address(dsts[i].address);
+                    var additional_txkey = { sec: '', pub: '' };
+                    if (need_additional_txkeys) {
+                        additional_txkey = Cn.random_keypair();
+                        if (Cn.is_subaddress(dsts[i].address)) {
+                            // R = rD for subaddresses
+                            additional_txkey.pub = CnUtils.ge_scalarmult(destKeys.spend, additional_txkey.sec);
+                        }
+                        else
+                            additional_txkey.pub = CnUtils.ge_scalarmult_base(additional_txkey.sec);
+                    }
+                    var out_derivation = void 0;
+                    if (destKeys.view === keys.view.pub) {
+                        out_derivation = Cn.generate_key_derivation(txkey.pub, keys.view.sec);
+                    }
+                    else {
+                        if (Cn.is_subaddress(dsts[i].address) && need_additional_txkeys)
+                            out_derivation = Cn.generate_key_derivation(destKeys.view, additional_txkey.sec);
+                        else
+                            out_derivation = Cn.generate_key_derivation(destKeys.view, txkey.sec);
+                    }
+                    if (need_additional_txkeys) {
+                        additional_tx_public_keys.push(additional_txkey.pub);
+                        additional_tx_keys.push(additional_txkey.sec);
+                    }
+                    if (rct) {
+                        amountKeys.push(CnUtils.derivation_to_scalar(out_derivation, out_index));
+                    }
+                    var out_ephemeral_pub = Cn.derive_public_key(out_derivation, out_index, destKeys.spend);
+                    var out = void 0;
+                    if (transactionType === "deposit" && i === 0) {
+                        var depositOut = {
+                            amount: dsts[i].amount, // dsts[0].amount = amount_to_deposit
+                            target: {
+                                type: "txout_to_deposit_key",
+                                data: {
+                                    keys: [out_ephemeral_pub],
+                                    required_signatures: 1,
+                                    term: term
+                                }
+                            }
+                        };
+                        tx.vout.push(depositOut);
+                        ++out_index;
+                        ++i;
+                        out_ephemeral_pub = Cn.derive_public_key(out_derivation, out_index, destKeys.spend);
+                    }
+                    out = {
+                        amount: dsts[i].amount,
+                        target: {
+                            type: "txout_to_key",
+                            data: {
+                                key: out_ephemeral_pub
+                            }
+                        }
+                    };
+                    tx.vout.push(out);
+                    ++out_index;
+                    /*
+                    tx.vout.push(out);
+                    ++out_index;
+                    */
+                }
+                // add pub key to extra after we know whether to use R = rG or R = rD
+                tx.extra = CnTransactions.add_pub_key_to_extra(tx.extra, txkey.pub);
+                tx.extra = CnTransactions.add_additionnal_pub_keys_to_extra(tx.extra, additional_tx_public_keys);
+                // Encrypt message and add it to the extra
+                // CCX has only 1 destination for messages anyways
+                if (message) {
+                    var messageAddress = null;
+                    for (var i_5 = 0; i_5 < dsts.length; i_5++) {
+                        if (dsts[i_5].address !== senderAddress) {
+                            messageAddress = dsts[i_5].address;
+                            break; // Break after finding the first non-sender destination
+                        }
+                    }
+                    if (messageAddress) {
+                        var destKeys = Cn.decode_address(messageAddress);
+                        var derivation = CnNativeBride.generate_key_derivation(destKeys.spend, txkey.sec);
+                        var magick1 = "80";
+                        var magick2 = "00";
+                        var keyData = derivation + magick1 + magick2;
+                        var hash = CnUtils.cn_fast_hash(keyData);
+                        var hashBuf = CnUtils.hextobin(hash);
+                        var nonceBuf = new Uint8Array(12);
+                        var index = 0; // Because we only have one message
+                        for (var i_6 = 0; i_6 < 12; i_6++) {
+                            nonceBuf.set([index / Math.pow(0x100, i_6)], 11 - i_6);
+                        }
+                        var rawMessArr = new TextEncoder().encode(message);
+                        var rawMessArrFull = new Uint8Array(rawMessArr.length + 4);
+                        rawMessArrFull.set(rawMessArr);
+                        rawMessArrFull.set([0, 0, 0, 0], rawMessArr.length);
+                        var cha = new ChaCha8_1.JSChaCha8(hashBuf, nonceBuf);
+                        var _buf = cha.encrypt(rawMessArrFull);
+                        var encryptedMessStr = CnUtils.bintohex(_buf);
+                        // Append to extra:
+                        // Add message tag
+                        tx.extra += TX_EXTRA_TAGS.MESSAGE_TAG;
+                        // Encode length of message
+                        tx.extra += ('0' + (rawMessArrFull.length).toString(16)).slice(-2);
+                        // Write message
+                        tx.extra += encryptedMessStr;
                     }
                 }
-                if (messageAddress) {
-                    var destKeys = Cn.decode_address(messageAddress);
-                    var derivation = CnNativeBride.generate_key_derivation(destKeys.spend, txkey.sec);
-                    var magick1 = "80";
-                    var magick2 = "00";
-                    var keyData = derivation + magick1 + magick2;
-                    var hash = CnUtils.cn_fast_hash(keyData);
-                    var hashBuf = CnUtils.hextobin(hash);
-                    var nonceBuf = new Uint8Array(12);
-                    var index = 0; // Because we only have one message
-                    for (var i_5 = 0; i_5 < 12; i_5++) {
-                        nonceBuf.set([index / Math.pow(0x100, i_5)], 11 - i_5);
-                    }
-                    var rawMessArr = new TextEncoder().encode(message);
-                    var rawMessArrFull = new Uint8Array(rawMessArr.length + 4);
-                    rawMessArrFull.set(rawMessArr);
-                    rawMessArrFull.set([0, 0, 0, 0], rawMessArr.length);
-                    var cha = new ChaCha8_1.JSChaCha8(hashBuf, nonceBuf);
-                    var _buf = cha.encrypt(rawMessArrFull);
-                    var encryptedMessStr = CnUtils.bintohex(_buf);
-                    // Append to extra:
-                    // Add message tag
-                    tx.extra += TX_EXTRA_TAGS.MESSAGE_TAG;
-                    // Encode length of message
-                    tx.extra += ('0' + (rawMessArrFull.length).toString(16)).slice(-2);
-                    // Write message
-                    tx.extra += encryptedMessStr;
+                if (ttl !== 0) {
+                    // Convert TTL from minutes to absolute UNIX timestamp in seconds
+                    var currentTimestamp = Math.floor(Date.now() / 1000); // Current time in seconds
+                    var ttlTimestamp = currentTimestamp + (ttl * 60); // Add TTL minutes converted to seconds
+                    var ttlStr = CnUtils.encode_varint(ttlTimestamp);
+                    var ttlSize = CnUtils.encode_varint(ttlStr.length / 2);
+                    tx.extra = tx.extra + TX_EXTRA_TAGS.TTL_TAG + ttlSize + ttlStr;
                 }
-            }
-            if (ttl !== 0) {
-                var ttlStr = CnUtils.encode_varint(ttl);
-                var ttlSize = CnUtils.encode_varint(ttlStr.length / 2);
-                tx.extra = tx.extra + TX_EXTRA_TAGS.TTL_TAG + ttlSize + ttlStr;
-            }
-            if (outputs_money.add(fee_amount).compare(inputs_money) > 0) {
-                throw "outputs money (" + Cn.formatMoneyFull(outputs_money) + ") + fee (" + Cn.formatMoneyFull(fee_amount) + ") > inputs money (" + Cn.formatMoneyFull(inputs_money) + ")";
-            }
-            if (!rct) {
-                for (i = 0; i < sources.length; ++i) {
-                    var src_keys = [];
-                    for (j = 0; j < sources[i].outputs.length; ++j) {
-                        src_keys.push(sources[i].outputs[j].key);
-                    }
-                    var sigs = CnNativeBride.generate_ring_signature(CnTransactions.get_tx_prefix_hash(tx), tx.vin[i].k_image, src_keys, in_contexts[i].sec, sources[i].real_out);
-                    tx.signatures.push(sigs);
+                if (outputs_money.add(fee_amount).compare(inputs_money) > 0) {
+                    throw "outputs money (" + Cn.formatMoneyFull(outputs_money) + ") + fee (" + Cn.formatMoneyFull(fee_amount) + ") > inputs money (" + Cn.formatMoneyFull(inputs_money) + ")";
                 }
-            }
-            else { //rct
-                var txnFee = fee_amount;
-                var keyimages = [];
-                var inSk = [];
-                var inAmounts = [];
-                var mixRing = [];
-                var indices = [];
-                for (i = 0; i < tx.vin.length; i++) {
-                    keyimages.push(tx.vin[i].k_image);
-                    inSk.push({
-                        x: in_contexts[i].sec,
-                        a: in_contexts[i].mask,
-                    });
-                    inAmounts.push(tx.vin[i].amount);
-                    if (in_contexts[i].mask !== CnVars.I) {
-                        //if input is rct (has a valid mask), 0 out amount
-                        tx.vin[i].amount = "0";
+                if (!rct) {
+                    for (i = 0; i < sources.length; ++i) {
+                        var src_keys = [];
+                        for (j = 0; j < sources[i].outputs.length; ++j) {
+                            src_keys.push(sources[i].outputs[j].key);
+                        }
+                        if (transactionType !== "withdraw") {
+                            var sigs = CnNativeBride.generate_ring_signature(CnTransactions.get_tx_prefix_hash(tx), tx.vin[i].k_image, src_keys, in_contexts[i].sec, sources[i].real_out);
+                            tx.signatures.push(sigs);
+                        }
+                        else {
+                            // For withdrawals, use multisignature signing
+                            var txPrefixHash = CnTransactions.get_tx_prefix_hash(tx);
+                            // Step 1: Generate key derivation
+                            var derivation = CnNativeBride.generate_key_derivation(sources[i].real_out_tx_key, // sourceTransactionKey
+                            keys.view.sec // accountKeys.viewSecretKey
+                            );
+                            //console.log('generate_key_derivation', sources[i].real_out_tx_key, keys.view.sec, 'true', derivation); // debug for crypto-test.cpp
+                            // Step 2: Derive ephemeral keys
+                            var ephemeralPublicKey = CnNativeBride.derive_public_key(derivation, // derivation
+                            parseInt(sources[i].outputs[i].index), // outputIndex
+                            keys.spend.pub // accountKeys.address.spendPublicKey
+                            );
+                            //console.log('derive_public_key', derivation, parseInt(sources[i].outputs[0].index), keys.spend.pub, 'true', ephemeralPublicKey); // debug for crypto-test.cpp
+                            var ephemeralSecretKey = CnNativeBride.derive_secret_key(derivation, // derivation
+                            parseInt(sources[i].outputs[i].index), // outputIndex
+                            keys.spend.sec // accountKeys.spendSecretKey
+                            );
+                            //console.log('derive_secret_key', derivation, parseInt(sources[i].outputs[0].index), keys.spend.sec, ephemeralSecretKey); // debug for crypto-test.cpp
+                            // Step 3: Generate signature using ephemeral keys
+                            var sig = CnNativeBride.generate_signature(txPrefixHash, // txPrefixHash
+                            ephemeralPublicKey, // ephemeralPublicKey
+                            ephemeralSecretKey // ephemeralSecretKey
+                            );
+                            // Verify the signature before adding it
+                            var isValidSignature = CnNativeBride.verify_signature(txPrefixHash, ephemeralPublicKey, sig);
+                            console.log('Signature verification result:', isValidSignature);
+                            if (!isValidSignature) {
+                                throw "Signature verification failed";
+                            }
+                            // Verify signature from blockchain point of view
+                            /*
+                            const isValid_2 = CnNativeBride.checkTxProof(
+                                txPrefixHash,
+                                sources[i].real_out_tx_key,  				// R: transaction public key
+                                ephemeralPublicKey,  						// A: ephemeral public key
+                                derivation,          						// D: key derivation
+                                sig                  						// signature
+                            );
+                            console.log('Deposit Public key:', sources[i].keys[0]);
+                            console.log('Signature verification from Blockchain point of view:', isValid_2);
+                            if (!isValid_2) {
+                                throw "Signature verification with derived key failed";
+                            }
+                            */
+                            // Add the signature to the transaction
+                            tx.signatures.push([sig]);
+                        }
                     }
-                    mixRing[i] = [];
-                    for (j = 0; j < sources[i].outputs.length; j++) {
-                        mixRing[i].push({
-                            dest: sources[i].outputs[j].key,
-                            mask: sources[i].outputs[j].commit,
+                }
+                else { //rct
+                    var txnFee = fee_amount;
+                    var keyimages = [];
+                    var inSk = [];
+                    var inAmounts = [];
+                    var mixRing = [];
+                    var indices = [];
+                    for (i = 0; i < tx.vin.length; i++) {
+                        keyimages.push(tx.vin[i].k_image);
+                        inSk.push({
+                            x: in_contexts[i].sec,
+                            a: in_contexts[i].mask,
                         });
+                        inAmounts.push(tx.vin[i].amount);
+                        if (in_contexts[i].mask !== CnVars.I) {
+                            //if input is rct (has a valid mask), 0 out amount
+                            tx.vin[i].amount = "0";
+                        }
+                        mixRing[i] = [];
+                        for (j = 0; j < sources[i].outputs.length; j++) {
+                            mixRing[i].push({
+                                dest: sources[i].outputs[j].key,
+                                mask: sources[i].outputs[j].commit,
+                            });
+                        }
+                        indices.push(sources[i].real_out);
                     }
-                    indices.push(sources[i].real_out);
+                    var outAmounts = [];
+                    for (i = 0; i < tx.vout.length; i++) {
+                        outAmounts.push(tx.vout[i].amount);
+                        tx.vout[i].amount = 0; //zero out all rct outputs
+                    }
+                    logDebugMsg('rc signature----');
+                    var tx_prefix_hash = CnTransactions.get_tx_prefix_hash(tx);
+                    logDebugMsg('rc signature----');
+                    tx.rct_signatures = CnTransactions.genRct(tx_prefix_hash, inSk, keyimages, /*destinations, */ inAmounts, outAmounts, mixRing, amountKeys, indices, txnFee);
                 }
-                var outAmounts = [];
-                for (i = 0; i < tx.vout.length; i++) {
-                    outAmounts.push(tx.vout[i].amount);
-                    tx.vout[i].amount = 0; //zero out all rct outputs
-                }
-                logDebugMsg('rc signature----');
-                var tx_prefix_hash = CnTransactions.get_tx_prefix_hash(tx);
-                logDebugMsg('rc signature----');
-                tx.rct_signatures = CnTransactions.genRct(tx_prefix_hash, inSk, keyimages, /*destinations, */ inAmounts, outAmounts, mixRing, amountKeys, indices, txnFee);
+                logDebugMsg(tx);
+                console.log('Transaction construction completed successfully');
+                return tx;
             }
-            logDebugMsg(tx);
-            return tx;
+            catch (error) {
+                console.error('Error in construct_tx:', error);
+                throw error;
+            }
         }
         CnTransactions.construct_tx = construct_tx;
-        function create_transaction(pub_keys, sec_keys, dsts, senderAddress, outputs, mix_outs, fake_outputs_count, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl) {
+        function create_transaction(pub_keys, sec_keys, dsts, senderAddress, outputs, mix_outs, fake_outputs_count, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl, transactionType, term) {
             if (mix_outs === void 0) { mix_outs = []; }
             if (unlock_time === void 0) { unlock_time = 0; }
             var i, j;
             if (dsts.length === 0) {
                 throw 'Destinations empty';
             }
-            if (mix_outs.length !== outputs.length && fake_outputs_count !== 0) {
-                throw 'Wrong number of mix outs provided (' + outputs.length + ' outputs, ' + mix_outs.length + ' mix outs)';
+            // For withdrawals, we don't need mixins
+            if (transactionType === "withdraw") {
+                fake_outputs_count = 0;
+                mix_outs = [];
             }
-            for (i = 0; i < mix_outs.length; i++) {
-                if ((mix_outs[i].outs || []).length < fake_outputs_count) {
-                    throw 'Not enough outputs to mix with';
+            else {
+                if (mix_outs.length !== outputs.length && fake_outputs_count !== 0) {
+                    throw 'Wrong number of mix outs provided (' + outputs.length + ' outputs, ' + mix_outs.length + ' mix outs)';
+                }
+                for (i = 0; i < mix_outs.length; i++) {
+                    if ((mix_outs[i].outs || []).length < fake_outputs_count) {
+                        throw 'Not enough outputs to mix with';
+                    }
                 }
             }
             var keys = {
@@ -2035,103 +2628,131 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
                 if (found_money.compare(UINT64_MAX) !== -1) {
                     throw "Input overflow!";
                 }
-                var src = {
-                    outputs: [],
-                    amount: '',
-                    real_out_tx_key: '',
-                    real_out: 0,
-                    real_out_in_tx: 0,
-                    mask: null,
-                    key_image: '',
-                    in_ephemeral: {
-                        pub: '',
-                        sec: '',
-                        mask: ''
-                    }
-                };
-                src.amount = new JSBigInt(outputs[i].amount).toString();
-                if (mix_outs.length !== 0) { //if mixin
-                    // Sort fake outputs by global index
-                    logDebugMsg('mix outs before sort', mix_outs[i].outs);
-                    mix_outs[i].outs.sort(function (a, b) {
-                        return new JSBigInt(a.global_index).compare(b.global_index);
-                    });
-                    j = 0;
-                    logDebugMsg('mix outs sorted', mix_outs[i].outs);
-                    while ((src.outputs.length < fake_outputs_count) && (j < mix_outs[i].outs.length)) {
-                        var out = mix_outs[i].outs[j];
-                        logDebugMsg('chekcing mixin');
-                        logDebugMsg("out: ", out);
-                        logDebugMsg("output ", i, ": ", outputs[i]);
-                        if (out.global_index === outputs[i].global_index) {
-                            logDebugMsg('got mixin the same as output, skipping');
-                            j++;
-                            continue;
-                        }
-                        var oe = {
-                            index: out.global_index.toString(),
-                            key: out.public_key,
-                            commit: ''
-                        };
-                        /*
-                        if (rct){
-                            if (out.rct){
-                                oe.commit = out.rct.slice(0,64); //add commitment from rct mix outs
-                            } else {
-                                if (outputs[i]['rct']) {throw "mix rct outs missing commit";}
-                                oe.commit = zeroCommit(CnUtils.d2s(src.amount)); //create identity-masked commitment for non-rct mix input
+                if (transactionType === "withdraw") {
+                    var src = {
+                        outputs: [
+                            {
+                                index: outputs[i].index.toString(), //.index.toString(),
+                                key: outputs[i].public_key,
+                                commit: ''
                             }
+                        ],
+                        amount: '',
+                        keys: outputs[i].keys || [],
+                        real_out_tx_key: outputs[i].tx_pub_key, // Set the source transaction key tr.txPubKey
+                        real_out: 0,
+                        real_out_in_tx: outputs[i].global_index, // Set the output index will be used to generate_signature()
+                        mask: null,
+                        key_image: '',
+                        in_ephemeral: {
+                            pub: '',
+                            sec: '',
+                            mask: ''
                         }
-    
-                         */
-                        src.outputs.push(oe);
-                        j++;
-                    }
-                } // end of mixin
-                var real_oe = {
-                    index: new JSBigInt(outputs[i].global_index || 0).toString(),
-                    key: outputs[i].public_key,
-                    commit: '',
-                };
-                logDebugMsg('OUT FOR REAL:', outputs[i].global_index);
-                /*
-                if (rct){
-                    if (outputs[i].rct) {
-                        real_oe.commit = outputs[i].rct.slice(0,64); //add commitment for real input
-                    } else {
-                        logDebugMsg('ZERO COMMIT');
-                        real_oe.commit = zeroCommit(CnUtils.d2s(src.amount)); //create identity-masked commitment for non-rct input
-                    }
+                    };
+                    src.amount = new JSBigInt(outputs[i].amount).toString();
+                    sources.push(src);
                 }
-    
-                 */
-                var real_index = src.outputs.length;
-                for (j = 0; j < src.outputs.length; j++) {
-                    if (new JSBigInt(real_oe.index).compare(src.outputs[j].index) < 0) {
-                        real_index = j;
-                        break;
+                else {
+                    var src = {
+                        outputs: [],
+                        amount: '',
+                        real_out_tx_key: '',
+                        real_out: 0,
+                        real_out_in_tx: 0,
+                        mask: null,
+                        key_image: '',
+                        in_ephemeral: {
+                            pub: '',
+                            sec: '',
+                            mask: ''
+                        },
+                        keys: []
+                    };
+                    src.amount = new JSBigInt(outputs[i].amount).toString();
+                    if (mix_outs.length !== 0) { //if mixin
+                        // Sort fake outputs by global index
+                        logDebugMsg('mix outs before sort', mix_outs[i].outs);
+                        mix_outs[i].outs.sort(function (a, b) {
+                            return new JSBigInt(a.global_index).compare(b.global_index);
+                        });
+                        j = 0;
+                        logDebugMsg('mix outs sorted', mix_outs[i].outs);
+                        while ((src.outputs.length < fake_outputs_count) && (j < mix_outs[i].outs.length)) {
+                            var out = mix_outs[i].outs[j];
+                            logDebugMsg('chekcing mixin');
+                            logDebugMsg("out: ", out);
+                            logDebugMsg("output ", i, ": ", outputs[i]);
+                            if (out.global_index === outputs[i].global_index) {
+                                logDebugMsg('got mixin the same as output, skipping');
+                                j++;
+                                continue;
+                            }
+                            var oe = {
+                                index: out.global_index.toString(),
+                                key: out.public_key,
+                                commit: ''
+                            };
+                            /*
+                            if (rct){
+                                if (out.rct){
+                                    oe.commit = out.rct.slice(0,64); //add commitment from rct mix outs
+                                } else {
+                                    if (outputs[i]['rct']) {throw "mix rct outs missing commit";}
+                                    oe.commit = zeroCommit(CnUtils.d2s(src.amount)); //create identity-masked commitment for non-rct mix input
+                                }
+                            }
+        
+                             */
+                            src.outputs.push(oe);
+                            j++;
+                        }
+                    } // end of mixin
+                    var real_oe = {
+                        index: new JSBigInt(outputs[i].global_index || 0).toString(),
+                        key: outputs[i].public_key,
+                        commit: '',
+                    };
+                    logDebugMsg('OUT FOR REAL:', outputs[i].global_index);
+                    /*
+                    if (rct){
+                        if (outputs[i].rct) {
+                            real_oe.commit = outputs[i].rct.slice(0,64); //add commitment for real input
+                        } else {
+                            logDebugMsg('ZERO COMMIT');
+                            real_oe.commit = zeroCommit(CnUtils.d2s(src.amount)); //create identity-masked commitment for non-rct input
+                        }
                     }
-                }
-                // Add real_oe to outputs
-                logDebugMsg('inserting real ouput at index', real_index, real_oe, outputs[i], i);
-                src.outputs.splice(real_index, 0, real_oe);
-                src.real_out_tx_key = outputs[i].tx_pub_key;
-                // Real output entry index
-                src.real_out = real_index;
-                src.real_out_in_tx = outputs[i].index;
-                logDebugMsg('check mask', outputs, rct, i);
-                /*
-                if (rct){
-                    if (outputs[i].rct) {
-                        src.mask = outputs[i].rct.slice(64,128); //encrypted or idenity mask for coinbase txs.
-                    } else {
-                        logDebugMsg('NULL MASK');
-                        src.mask = null; //will be set by generate_key_image_helper_rct
+        
+                     */
+                    var real_index = src.outputs.length;
+                    for (j = 0; j < src.outputs.length; j++) {
+                        if (new JSBigInt(real_oe.index).compare(src.outputs[j].index) < 0) {
+                            real_index = j;
+                            break;
+                        }
                     }
+                    // Add real_oe to outputs
+                    logDebugMsg('inserting real ouput at index', real_index, real_oe, outputs[i], i);
+                    src.outputs.splice(real_index, 0, real_oe);
+                    src.real_out_tx_key = outputs[i].tx_pub_key;
+                    // Real output entry index
+                    src.real_out = real_index;
+                    src.real_out_in_tx = outputs[i].index;
+                    logDebugMsg('check mask', outputs, rct, i);
+                    /*
+                    if (rct){
+                        if (outputs[i].rct) {
+                            src.mask = outputs[i].rct.slice(64,128); //encrypted or idenity mask for coinbase txs.
+                        } else {
+                            logDebugMsg('NULL MASK');
+                            src.mask = null; //will be set by generate_key_image_helper_rct
+                        }
+                    }
+        
+                     */
+                    sources.push(src);
                 }
-    
-                 */
-                sources.push(src);
             }
             logDebugMsg('found_money: ', found_money);
             logDebugMsg('needed_money: ', needed_money);
@@ -2140,6 +2761,9 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
                 amount: JSBigInt.ZERO
             };
             var cmp = needed_money.compare(found_money);
+            if (transactionType === "withdraw") { // until we find something better
+                cmp = 0;
+            }
             if (cmp < 0) {
                 change.amount = found_money.subtract(needed_money);
                 if (change.amount.compare(fee_amount) !== 0) {
@@ -2149,7 +2773,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             else if (cmp > 0) {
                 throw "Need more money than found! (have: " + Cn.formatMoney(found_money) + " need: " + Cn.formatMoney(needed_money) + ")";
             }
-            return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl);
+            return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl, transactionType, term);
         }
         CnTransactions.create_transaction = create_transaction;
     })(CnTransactions || (exports.CnTransactions = CnTransactions = {}));

@@ -57,10 +57,10 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         ImportView.prototype.importWallet = function () {
             var self = this;
-            $("#appLoader").addClass("appLoaderVisible");
+            $('#pageLoading').show();
             blockchainExplorer.initialize().then(function (success) {
                 blockchainExplorer.getHeight().then(function (currentHeight) {
-                    $("#appLoader").removeClass("appLoaderVisible");
+                    $('#pageLoading').hide();
                     var newWallet = new Wallet_1.Wallet();
                     if (self.viewOnly) {
                         var decodedPublic = Cn_1.Cn.decode_address(self.publicAddress.trim());
@@ -100,9 +100,11 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     window.location.href = '#account';
                 }).catch(function (err) {
                     console.log(err);
+                    $('#pageLoading').hide();
                 });
             }).catch(function (err) {
                 console.log(err);
+                $('#pageLoading').hide();
             });
         };
         ImportView.prototype.passwordWatch = function () {

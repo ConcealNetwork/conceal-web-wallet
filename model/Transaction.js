@@ -4,6 +4,8 @@
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
  *     Copyright (c) 2014-2018, MyMonero.com
+ *     Copyright (c) 2022 - 2025, Conceal Devs
+ *     Copyright (c) 2022 - 2025, Conceal Network
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -45,7 +47,16 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-define(["require", "exports"], function (require, exports) {
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+define(["require", "exports", "./Currency"], function (require, exports, Currency_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TransactionData = exports.Withdrawal = exports.Deposit = exports.Transaction = exports.TransactionIn = exports.TransactionOut = void 0;
@@ -137,7 +148,8 @@ define(["require", "exports"], function (require, exports) {
                     outputIndex: _this.outputIndex,
                     keyImage: _this.keyImage,
                     amount: _this.amount,
-                    term: _this.term
+                    term: _this.term,
+                    type: _this.type
                 };
             };
             this.copy = function () {
@@ -155,6 +167,7 @@ define(["require", "exports"], function (require, exports) {
             nin.outputIndex = raw.outputIndex,
                 nin.keyImage = raw.keyImage;
             nin.amount = raw.amount;
+            nin.type = raw.type;
             nin.term = raw.term;
             return nin;
         };
@@ -172,7 +185,10 @@ define(["require", "exports"], function (require, exports) {
             this.timestamp = 0;
             this.paymentId = '';
             this.fees = 0;
+            this.fusion = false;
             this.message = '';
+            this.messageViewed = false;
+            this.ttl = 0; // TTL timestamp (absolute UNIX timestamp in seconds)
             this.export = function () {
                 var data = {
                     blockHeight: _this.blockHeight,
@@ -202,6 +218,12 @@ define(["require", "exports"], function (require, exports) {
                     data.message = _this.message;
                 if (_this.fees !== 0)
                     data.fees = _this.fees;
+                if (_this.fusion)
+                    data.fusion = _this.fusion;
+                if (_this.messageViewed)
+                    data.messageViewed = _this.messageViewed;
+                if (_this.ttl !== 0)
+                    data.ttl = _this.ttl;
                 return data;
             };
             this.getAmount = function () {
@@ -236,14 +258,30 @@ define(["require", "exports"], function (require, exports) {
                 return false;
             };
             this.isFullyChecked = function () {
-                if (_this.getAmount() === 0)
-                    return false; //fusion
-                for (var _i = 0, _a = _this.ins; _i < _a.length; _i++) {
-                    var input = _a[_i];
-                    if (input.amount < 0)
+                if (_this.getAmount() === 0 || _this.getAmount() === (-1 * config.minimumFee_V2)) {
+                    if (_this.isFusion) {
+                        return true;
+                    }
+                    else if (_this.ttl > 0) {
+                        return true;
+                    }
+                    else {
                         return false;
+                    }
                 }
-                return true;
+                else {
+                    for (var _i = 0, _a = _this.ins; _i < _a.length; _i++) {
+                        var input = _a[_i];
+                        if (input.amount < 0) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
+            };
+            this.hasMessage = function () {
+                var txAmount = _this.getAmount();
+                return (_this.message !== '') && (txAmount > 0) && (txAmount !== (1 * config.remoteNodeFee)) && (txAmount !== (10 * config.remoteNodeFee)); // no envelope for a suspectedremote node fee transaction
             };
             this.copy = function () {
                 var aCopy = new Transaction();
@@ -254,6 +292,9 @@ define(["require", "exports"], function (require, exports) {
                 aCopy.paymentId = _this.paymentId;
                 aCopy.fees = _this.fees;
                 aCopy.message = _this.message;
+                aCopy.fusion = _this.fusion;
+                aCopy.messageViewed = _this.messageViewed;
+                aCopy.ttl = _this.ttl;
                 for (var _i = 0, _a = _this.ins; _i < _a.length; _i++) {
                     var nin = _a[_i];
                     aCopy.ins.push(nin.copy());
@@ -265,6 +306,34 @@ define(["require", "exports"], function (require, exports) {
                 return aCopy;
             };
         }
+        Object.defineProperty(Transaction.prototype, "isDeposit", {
+            get: function () {
+                // Check if any of the outputs has a type "03", which indicates it's a deposit transaction
+                return this.outs.some(function (out) { return out.type === "03"; });
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Transaction.prototype, "isWithdrawal", {
+            get: function () {
+                // Check if any of the inputs has a type "03", which indicates it's a withdrawal transaction
+                return this.ins.some(function (input) { return input.type === "03"; });
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Transaction.prototype, "isFusion", {
+            get: function () {
+                var outputsCount = this.outs.length;
+                var inputsCount = this.ins.length;
+                if (this.outs.some(function (out) { return out.type === "03"; }) || this.ins.some(function (input) { return input.type === "03"; })) {
+                    return false;
+                }
+                return (((inputsCount > Currency_1.Currency.fusionTxMinInputCount) && ((inputsCount / outputsCount) > config.fusionTxMinInOutCountRatio)) || this.fusion);
+            },
+            enumerable: false,
+            configurable: true
+        });
         Transaction.fromRaw = function (raw) {
             var transac = new Transaction();
             transac.blockHeight = raw.blockHeight;
@@ -294,6 +363,12 @@ define(["require", "exports"], function (require, exports) {
                 transac.hash = raw.hash;
             if (typeof raw.message !== 'undefined')
                 transac.message = raw.message;
+            if (typeof raw.fusion !== 'undefined')
+                transac.fusion = raw.fusion;
+            if (typeof raw.messageViewed !== 'undefined')
+                transac.messageViewed = raw.messageViewed;
+            if (typeof raw.ttl !== 'undefined')
+                transac.ttl = raw.ttl;
             return transac;
         };
         return Transaction;
@@ -304,18 +379,26 @@ define(["require", "exports"], function (require, exports) {
             this.term = 0;
             this.txHash = '';
             this.amount = 0;
+            this.interest = 0;
             this.timestamp = 0;
             this.blockHeight = 0;
-            this.outputIndex = -1;
+            this.unlockHeight = 0;
+            this.globalOutputIndex = 0;
+            this.indexInVout = 0;
+            this.txPubKey = '';
         }
         BaseBanking.fromRaw = function (raw) {
             var deposit = new Deposit();
             deposit.term = raw.term;
             deposit.txHash = raw.txHash;
             deposit.amount = raw.amount;
+            deposit.interest = raw.interest;
             deposit.timestamp = raw.timestamp;
             deposit.blockHeight = raw.blockHeight;
-            deposit.outputIndex = raw.outputIndex;
+            deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
+            deposit.globalOutputIndex = raw.globalOutputIndex;
+            deposit.indexInVout = raw.indexInVout;
+            deposit.txPubKey = raw.txPubKey;
             return deposit;
         };
         BaseBanking.prototype.export = function () {
@@ -323,9 +406,13 @@ define(["require", "exports"], function (require, exports) {
                 term: this.term,
                 txHash: this.txHash,
                 amount: this.amount,
+                interest: this.interest,
                 timestamp: this.timestamp,
                 blockHeight: this.blockHeight,
-                outputIndex: this.outputIndex
+                unlockHeight: this.unlockHeight,
+                globalOutputIndex: this.globalOutputIndex,
+                indexInVout: this.indexInVout,
+                txPubKey: this.txPubKey
             };
         };
         BaseBanking.prototype.copy = function () {
@@ -333,9 +420,13 @@ define(["require", "exports"], function (require, exports) {
             aCopy.term = this.term;
             aCopy.txHash = this.txHash;
             aCopy.amount = this.amount;
+            aCopy.interest = this.interest;
             aCopy.timestamp = this.timestamp;
             aCopy.blockHeight = this.blockHeight;
-            aCopy.outputIndex = this.outputIndex;
+            aCopy.unlockHeight = this.unlockHeight;
+            aCopy.globalOutputIndex = this.globalOutputIndex;
+            aCopy.indexInVout = this.indexInVout;
+            aCopy.txPubKey = this.txPubKey;
             return aCopy;
         };
         return BaseBanking;
@@ -345,9 +436,13 @@ define(["require", "exports"], function (require, exports) {
         function Deposit() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this.spentTx = '';
+            _this.keys = []; // Array of public keys for multisignature deposit
+            _this.withdrawPending = false;
             _this.copy = function () {
                 var aCopy = _super.prototype.copy.call(_this);
                 aCopy.spentTx = _this.spentTx;
+                aCopy.withdrawPending = _this.withdrawPending;
+                aCopy.keys = __spreadArray([], _this.keys, true);
                 return aCopy;
             };
             return _this;
@@ -357,14 +452,48 @@ define(["require", "exports"], function (require, exports) {
             deposit.term = raw.term;
             deposit.txHash = raw.txHash;
             deposit.amount = raw.amount;
+            deposit.interest = raw.interest;
             deposit.spentTx = raw.spentTx;
             deposit.timestamp = raw.timestamp;
             deposit.blockHeight = raw.blockHeight;
-            deposit.outputIndex = raw.outputIndex;
+            deposit.globalOutputIndex = raw.globalOutputIndex; //used to build Multisig input for withdrawals
+            deposit.indexInVout = raw.indexInVout; //used to generate_signature for withdrawals
+            deposit.txPubKey = raw.txPubKey;
+            deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
+            deposit.keys = raw.keys || [];
+            deposit.withdrawPending = raw.withdrawPending;
             return deposit;
         };
         Deposit.prototype.export = function () {
-            return Object.assign(_super.prototype.export.call(this), { spentTx: this.spentTx });
+            return Object.assign(_super.prototype.export.call(this), {
+                spentTx: this.spentTx,
+                withdrawPending: this.withdrawPending,
+                keys: this.keys
+            });
+        };
+        // Get total amount (principal + interest)
+        Deposit.prototype.getTotalAmount = function () {
+            return this.amount + this.interest;
+        };
+        // Check if deposit is unlocked at current height
+        Deposit.prototype.isUnlocked = function (currentHeight) {
+            return currentHeight >= this.unlockHeight;
+        };
+        // Check if deposit has been spent
+        Deposit.prototype.isSpent = function () {
+            return !!this.spentTx;
+        };
+        // Get deposit status
+        Deposit.prototype.getStatus = function (currentHeight) {
+            if (this.isSpent()) {
+                return 'Spent';
+            }
+            else if (this.isUnlocked(currentHeight)) {
+                return 'Unlocked';
+            }
+            else {
+                return 'Locked';
+            }
         };
         return Deposit;
     }(BaseBanking));

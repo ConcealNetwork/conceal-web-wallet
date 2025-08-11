@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -83,7 +83,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                         _this._isWorking = false;
                         resolve(raw);
                     }).fail(function (data, textStatus) {
-                        console.log("makeRequest failed", textStatus);
+                        console.error("Node ".concat(_this._url, " makeRequest failed: ").concat(textStatus, " (errors: ").concat(_this._errors + 1, ")"));
                         _this._isWorking = false;
                         _this.increaseErrors();
                         reject(data);
@@ -193,130 +193,62 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
     var NodeWorkersList = /** @class */ (function () {
         function NodeWorkersList() {
             var _this = this;
-            this.acquireWorker = function () {
-                var shuffledNodes = __spreadArray([], _this.nodes, true).sort(function (a, b) { return 0.5 - Math.random(); });
-                for (var i = 0; i < shuffledNodes.length; i++) {
-                    if (!shuffledNodes[i].isWorking && !shuffledNodes[i].hasToManyErrors()) {
-                        return shuffledNodes[i];
-                    }
-                }
-                return null;
-            };
+            this.sessionNode = null;
+            this.sessionStartTime = 0;
+            this.sessionDuration = 30 * 60 * 1000; // 30 minutes
+            this.maxSessionErrors = 3;
+            this.sessionErrorCount = 0;
+            this.usedNodeUrls = new Set(); // Track used nodes to avoid re-picking
             this.makeRequest = function (method, path, body) {
                 if (body === void 0) { body = undefined; }
-                return new Promise(function (resolve, reject) {
-                    (function (self) {
-                        return __awaiter(this, void 0, void 0, function () {
-                            var waitCounter, currWorker, resultData, data_1;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0:
-                                        waitCounter = 0;
-                                        _a.label = 1;
-                                    case 1:
-                                        if (!((self.nodes.length === 0) && (waitCounter < 5))) return [3 /*break*/, 3];
-                                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 1000); })];
-                                    case 2:
-                                        _a.sent();
-                                        ++waitCounter;
-                                        return [3 /*break*/, 1];
-                                    case 3:
-                                        if (!(self.nodes.length > 0)) return [3 /*break*/, 10];
-                                        currWorker = self.acquireWorker();
-                                        resultData = null;
-                                        _a.label = 4;
-                                    case 4:
-                                        if (!currWorker) return [3 /*break*/, 9];
-                                        _a.label = 5;
-                                    case 5:
-                                        _a.trys.push([5, 7, , 8]);
-                                        return [4 /*yield*/, currWorker.makeRequest(method, path, body)];
-                                    case 6:
-                                        // Fix: Remove 'let' to use outer resultData variable
-                                        resultData = _a.sent();
-                                        currWorker = null;
-                                        // return the data
-                                        resolve(resultData);
-                                        return [3 /*break*/, 8];
-                                    case 7:
-                                        data_1 = _a.sent();
-                                        currWorker = self.acquireWorker();
-                                        resultData = data_1;
-                                        return [3 /*break*/, 8];
-                                    case 8: return [3 /*break*/, 4];
-                                    case 9:
-                                        // if we are here we failed
-                                        if (!currWorker) {
-                                            reject(resultData);
-                                        }
-                                        return [3 /*break*/, 11];
-                                    case 10:
-                                        reject(null);
-                                        _a.label = 11;
-                                    case 11: return [2 /*return*/];
-                                }
-                            });
-                        });
-                    })(_this);
-                });
+                return _this.executeWithSessionFailover(function (node) { return node.makeRequest(method, path, body); });
             };
+            this.executeWithSessionFailover = function (operation) { return __awaiter(_this, void 0, void 0, function () {
+                var lastError, attempts, sessionNode, error_1;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            attempts = 0;
+                            _a.label = 1;
+                        case 1:
+                            if (!(attempts < 3)) return [3 /*break*/, 6];
+                            _a.label = 2;
+                        case 2:
+                            _a.trys.push([2, 4, , 5]);
+                            sessionNode = this.getSessionNode();
+                            if (!sessionNode) {
+                                throw new Error('No available nodes');
+                            }
+                            return [4 /*yield*/, operation(sessionNode)];
+                        case 3: return [2 /*return*/, _a.sent()];
+                        case 4:
+                            error_1 = _a.sent();
+                            lastError = error_1;
+                            this.sessionErrorCount++;
+                            // If we've reached max session errors, reset the session to pick a new node
+                            if (this.sessionErrorCount >= this.maxSessionErrors) {
+                                this.sessionNode = null;
+                                this.sessionErrorCount = 0;
+                                // Only clear used nodes if we've used most of the available nodes
+                                // This prevents immediately re-selecting the same failed node
+                                if (this.usedNodeUrls.size >= Math.max(1, this.nodes.length - 1)) {
+                                    this.usedNodeUrls.clear();
+                                }
+                                else {
+                                    console.log("Keeping used nodes list (".concat(this.usedNodeUrls.size, "/").concat(this.nodes.length, " used)"));
+                                }
+                            }
+                            return [3 /*break*/, 5];
+                        case 5:
+                            attempts++;
+                            return [3 /*break*/, 1];
+                        case 6: throw lastError;
+                    }
+                });
+            }); };
             this.makeRpcRequest = function (method, params) {
                 if (params === void 0) { params = {}; }
-                return new Promise(function (resolve, reject) {
-                    (function (self) {
-                        return __awaiter(this, void 0, void 0, function () {
-                            var waitCounter, currWorker, resultData, data_2;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0:
-                                        waitCounter = 0;
-                                        _a.label = 1;
-                                    case 1:
-                                        if (!((self.nodes.length === 0) && (waitCounter < 5))) return [3 /*break*/, 3];
-                                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 1000); })];
-                                    case 2:
-                                        _a.sent();
-                                        ++waitCounter;
-                                        return [3 /*break*/, 1];
-                                    case 3:
-                                        if (!(self.nodes.length > 0)) return [3 /*break*/, 10];
-                                        currWorker = self.acquireWorker();
-                                        resultData = null;
-                                        _a.label = 4;
-                                    case 4:
-                                        if (!currWorker) return [3 /*break*/, 9];
-                                        _a.label = 5;
-                                    case 5:
-                                        _a.trys.push([5, 7, , 8]);
-                                        return [4 /*yield*/, currWorker.makeRpcRequest(method, params)];
-                                    case 6:
-                                        // Fix: Remove 'let' to use outer resultData variable
-                                        resultData = _a.sent();
-                                        currWorker = null;
-                                        // return the data
-                                        resolve(resultData);
-                                        return [3 /*break*/, 8];
-                                    case 7:
-                                        data_2 = _a.sent();
-                                        currWorker = self.acquireWorker();
-                                        resultData = data_2;
-                                        return [3 /*break*/, 8];
-                                    case 8: return [3 /*break*/, 4];
-                                    case 9:
-                                        // if we are here we failed
-                                        if (!currWorker) {
-                                            reject(resultData);
-                                        }
-                                        return [3 /*break*/, 11];
-                                    case 10:
-                                        reject(null);
-                                        _a.label = 11;
-                                    case 11: return [2 /*return*/];
-                                }
-                            });
-                        });
-                    })(_this);
-                });
+                return _this.executeWithSessionFailover(function (node) { return node.makeRpcRequest(method, params); });
             };
             this.getNodes = function () {
                 return _this.nodes;
@@ -325,12 +257,116 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 for (var i = 0; i < nodes.length; i++) {
                     _this.nodes.push(new NodeWorker(nodes[i]));
                 }
+                // Initialize session when nodes are available
+                _this.initializeSession();
             };
             this.stop = function () {
                 _this.nodes = [];
             };
             this.nodes = [];
         }
+        NodeWorkersList.prototype.initializeSession = function () {
+            // Pick a random node for the session
+            this.sessionNode = this.pickRandomNode();
+            this.sessionStartTime = Date.now();
+            this.sessionErrorCount = 0;
+            if (this.sessionNode) {
+                this.usedNodeUrls.add(this.sessionNode.url);
+            }
+        };
+        NodeWorkersList.prototype.cleanupSession = function () {
+            // Clean up the session when wallet closes
+            this.sessionNode = null;
+            this.sessionStartTime = 0;
+            this.sessionErrorCount = 0;
+            this.usedNodeUrls.clear(); // Clear used nodes to allow fresh random selection
+        };
+        NodeWorkersList.prototype.isSessionExpired = function () {
+            return (Date.now() - this.sessionStartTime) > this.sessionDuration;
+        };
+        NodeWorkersList.prototype.pickRandomNode = function () {
+            var _this = this;
+            var availableNodes = this.nodes.filter(function (node) {
+                return !node.hasToManyErrors() && !_this.usedNodeUrls.has(node.url);
+            });
+            if (availableNodes.length === 0) {
+                // If all nodes have been used, reset and try again
+                this.usedNodeUrls.clear();
+                availableNodes = this.nodes.filter(function (node) { return !node.hasToManyErrors(); });
+                if (availableNodes.length === 0) {
+                    // Last resort: try any node, even if it has errors
+                    availableNodes = this.nodes;
+                    if (availableNodes.length === 0) {
+                        return null; // No nodes at all
+                    }
+                    // Filter out nodes with excessive errors even in last resort
+                    var lastResortNodes = availableNodes.filter(function (node) { return node.allErrors < node.maxAllErrors; });
+                    if (lastResortNodes.length > 0) {
+                        availableNodes = lastResortNodes;
+                    }
+                }
+            }
+            // Shuffle the available nodes for better randomization
+            var shuffledNodes = __spreadArray([], availableNodes, true).sort(function () { return Math.random() - 0.5; });
+            var selectedNode = shuffledNodes[0];
+            this.usedNodeUrls.add(selectedNode.url);
+            return selectedNode;
+        };
+        NodeWorkersList.prototype.getSessionNode = function () {
+            if (!this.sessionNode || this.isSessionExpired() || this.sessionErrorCount >= this.maxSessionErrors) {
+                // Need to pick a new node
+                this.sessionNode = this.pickRandomNode();
+                this.sessionStartTime = Date.now();
+                this.sessionErrorCount = 0;
+                if (this.sessionNode) {
+                    console.log("New session node selected: ".concat(this.sessionNode.url));
+                }
+                else {
+                    console.log('No available nodes found');
+                }
+            }
+            return this.sessionNode;
+        };
+        // Get the current session node's fee address
+        NodeWorkersList.prototype.getSessionNodeFeeAddress = function () {
+            var _this = this;
+            return new Promise(function (resolve, reject) {
+                // Use the session failover system instead of direct node calls
+                _this.executeWithSessionFailover(function (sessionNode) { return __awaiter(_this, void 0, void 0, function () {
+                    var response, error_2, info, fallbackError_1;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 2, , 7]);
+                                return [4 /*yield*/, sessionNode.makeRequest('GET', 'feeaddress')];
+                            case 1:
+                                response = _a.sent();
+                                if (response.status !== 'OK') {
+                                    throw new Error('Invalid fee address response');
+                                }
+                                return [2 /*return*/, response.fee_address || ''];
+                            case 2:
+                                error_2 = _a.sent();
+                                console.warn("Fee address endpoint failed for node ".concat(sessionNode.url, ":"), error_2);
+                                _a.label = 3;
+                            case 3:
+                                _a.trys.push([3, 5, , 6]);
+                                return [4 /*yield*/, sessionNode.makeRequest('GET', 'getinfo')];
+                            case 4:
+                                info = _a.sent();
+                                return [2 /*return*/, info.fee_address || ''];
+                            case 5:
+                                fallbackError_1 = _a.sent();
+                                console.warn("Getinfo fallback also failed for node ".concat(sessionNode.url, ":"), fallbackError_1);
+                                // If both fail, return empty string (will use donation address)
+                                return [2 /*return*/, ''];
+                            case 6: return [3 /*break*/, 7];
+                            case 7: return [2 /*return*/];
+                        }
+                    });
+                }); }).then(resolve).catch(reject);
+            });
+        };
         return NodeWorkersList;
     }());
     var BlockchainExplorerRpcDaemon = /** @class */ (function () {
@@ -368,6 +404,8 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             };
             this.resetNodes = function () {
                 Storage_1.Storage.getItem('customNodeUrl', null).then(function (customNodeUrl) {
+                    // Clean up current session before changing nodes
+                    _this.nodeWorkers.cleanupSession();
                     _this.nodeWorkers.stop();
                     function shuffle(array) {
                         var _a;
@@ -390,8 +428,10 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                         shuffle(config.nodeList);
                         _this.nodeWorkers.start(config.nodeList);
                     }
+                    // Initialize new session with the updated node configuration
+                    _this.nodeWorkers.initializeSession();
                 }).catch(function (err) {
-                    console.log("resetNodes failed", err);
+                    console.error("resetNodes failed", err);
                 });
             };
             this.isInitialized = function () {
@@ -533,8 +573,19 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 tx_as_hex: rawTx,
                 do_not_relay: false
             }).then(function (transactions) {
-                if (!transactions.status || transactions.status !== 'OK')
-                    throw transactions;
+                if (!transactions.status || transactions.status !== 'OK') {
+                    // Create a meaningful error message from the status
+                    var errorMessage = 'Failed to send raw transaction';
+                    if (transactions.status) {
+                        errorMessage += ": ".concat(transactions.status);
+                    }
+                    // Create and throw a proper Error object
+                    var error = new Error(errorMessage);
+                    // Attach the original response for debugging if needed
+                    error.originalResponse = transactions;
+                    throw error;
+                }
+                return transactions;
             });
         };
         BlockchainExplorerRpcDaemon.prototype.resolveOpenAlias = function (domain) {
@@ -577,6 +628,19 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                     'status': info['status']
                 };
             });
+        };
+        // Session management methods
+        BlockchainExplorerRpcDaemon.prototype.initializeSession = function () {
+            // Initialize the node session when wallet opens
+            this.nodeWorkers.initializeSession();
+        };
+        BlockchainExplorerRpcDaemon.prototype.cleanupSession = function () {
+            // Clean up the node session when wallet closes
+            this.nodeWorkers.cleanupSession();
+        };
+        // Get the current session node's fee address
+        BlockchainExplorerRpcDaemon.prototype.getSessionNodeFeeAddress = function () {
+            return this.nodeWorkers.getSessionNodeFeeAddress();
         };
         return BlockchainExplorerRpcDaemon;
     }());

@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "Das Passwort muss mindestens 8 Zeichen lang sein, einen Großbuchstaben, einen Kleinbuchstaben und eine Zahl oder Sonderzeichen enthalten",
       "passwordConfirmationNotMatching": "Das Passwort entspricht nicht dem vorher eingegebenen",
       "download": "Download",
+      "confirmText": "OK",
+      "error": "Fehler",
       "newVersionModal": {
         "title": "Eine neue Version ist verfügbar",
         "content": "Möchtest du neu laden um die neue Version zu erhalten?",
@@ -59,7 +61,11 @@
         "label": "Optimierung",
         "subtitle": "Deine Wallet muss optimiert werden",
         "button": "Jetzt optimieren",
-        "loadingText": "Optimiere, bitte warten..."
+        "loadingText": "Optimiere, bitte warten...",
+        "success": "Fusion Transaktion eingereicht",
+        "error": "Fehler beim Einreichen der Fusion Transaktion",
+        "errorInfo": "Optimierung abgebrochen",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -110,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "Dein Guthaben",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "Portfolio",
+        "available": "Verfügbar",
+        "pending": "Ausstehend",
         "unlocked": "Entsperrt",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "Einlagen",
+        "withdrawable": "Auszahlbar",
+        "futureInterest": "Zukünftiger Zins"
       },
       "historyBlock": {
         "title": "Transaktionshistorie",
@@ -231,7 +239,7 @@
     "sendPage": {
       "title": "Schicke CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Wallet wird synchronisiert.... Wenn es vollständig synchronisiert ist, können Sie Mittel schicken."
       },
       "sendBlock": {
         "address": {
@@ -300,7 +308,8 @@
         "title": "Transfer bestätigen ?",
         "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
         "confirmText": "Bestätigen",
-        "cancelText": "Abbrechen"
+        "cancelText": "Abbrechen",
+        "remoteNodeFee": "Remote Node Gebühr {fee} {symbol} wurde zum Betrag hinzugefügt"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",
@@ -310,7 +319,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Wallet wird synchronisiert.... Wenn es vollständig synchronisiert ist, können Sie Nachrichten senden."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -330,7 +339,11 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is to long. Max length is 260 characters",
+          "preview": "Vorschau"
+        },
+        "ttl": {
+          "info": "TTL Transaktion wird nur im mempool existieren und nach {ttl}(Stunden:Minuten) automatisch zerstört werden. Sie wird nie in Blöcke eingemint. Daher wird der Betrag zurückerstattet."
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -382,32 +395,73 @@
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Einlagen",
+      "depositDate": "Einzahlungsdatum",
+      "lockHeight": "Sperrfrist",
+      "unlockDate": "Entsperrungsdatum",
+      "unlockHeight": "Entsperrungsfrist",
+      "interest": "Zinsen",
+      "deposit": "Einzahlung",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "Synchronisiere Wallet.... Wenn es vollständig synchronisiert ist, können Sie Ihre Einlagen sehen."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Einlagen",
+        "send": "Erstellen"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Liste der Einzahlungen"
       },
-      "createBlock": {
-        
+      "confirmDeposit": {
+        "title": "Einzahlung Bestätigen",
+        "message": "Geben Sie Ihr Passwort ein um eine Einzahlung von {amount} CCX für {term} Monate zu bestätigen?",
+        "confirm": "Einzahlung Erstellen",
+        "cancel": "Abbrechen",
+        "passwordRequired": "Wallet-Passwort ist erforderlich"
+      },
+      "createDeposit": {
+        "title": "Neue Einlage Erstellen",
+        "amount": "Einzahlungsbetrag",
+        "term": "Sperrfrist (in Monaten)",
+        "termError": "Bitte geben Sie eine ganze Zahl zwischen 1 und 12 Monaten ein",
+        "confirm": "Einlage Erstellen",
+        "cancel": "Abbrechen",
+        "createSuccess": "Einlage an die Blockchain gesendet",
+        "createPending": "Ihre Einlage wird verarbeitet",
+        "createError": "Fehler beim Erstellen der Einlage",
+        "withdrawSuccess": "Auszahlung an die Blockchain gesendet",
+        "withdrawPending": "Ihre Auszahlung wird verarbeitet",
+        "withdrawError": "Fehler bei der Auszahlung der Einlage",
+        "amountError": "Ungültiger Betrag",
+        "amountMustBePositive": "Der Betrag muss positiv sein",
+        "termMustBeValid": "Die Laufzeit muss zwischen 1 und 12 Monaten liegen",
+        "insufficientFunds": "Unzureichende Mittel",
+        "insufficientFundsMessage": "Sie haben nicht genügend Mittel für diese Einlage",
+        "maxAmount": "Maximaler Einlagebetrag: {amount} CCX",
+        "rewardAtTerm": "Belohnung bei Laufzeit: {reward} CCX"
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
+        "title": "Einlagendetails",
+        "txHash": "Transaktionserstellung",
+        "spendingTx": "Transaktionsausgabe",
         "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "amount": "Betrag",
+        "term": "Laufzeit",
+        "creationTime": "Erstellungsdatum",
+        "spendingTime": "Auszahlungsdatum",
+        "spendingHeight": "Auszahlungshöhe",
+        "creationHeight": "Erstellungshöhe",
+        "unlockHeight": "Freigabehöhe",
+        "interest": "Zinsen"
+      },
+      "recap": {
+        "title": "Einlagenübersicht",
+        "totalLifetimeDeposit": "Gesamte Einlagen",
+        "totalLifetimeInterest": "Gesamte Zinsen",
+        "totalCashedOutInterest": "Gesamte Ausgezahlte Zinsen",
+        "futureInterestLocked": "Zukünftige Zinsen auf gesperrte Einlagen",
+        "futureInterestUnlocked": "Zukünftige Zinsen auf freie Einlagen",
+        "earliestWithdrawable": "Früheste Freigabe"
       }
     },
     "receivePage": {
@@ -482,6 +536,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Ticker Symbol",
+          "full": "Vollständiges Ticker Symbol",
+          "short": "Kurzes Ticker Symbol",
+          "preview": "Vorschau"
         }
       },
       "changePasswordButton": "Ändere mein Wallet Passwort",
@@ -518,7 +578,8 @@
       "parametersBlock": {
         "title": "Parameter",
         "password": {
-          "label": "Passwort zum Schutz deiner Wallet"
+          "label": "Passwort zum Schutz deiner Wallet",
+          "label_input": "Wallet Passwort"
         },
         "passwordConfirm": {
           "label": "Bestätige das Passwort",
@@ -535,10 +596,17 @@
       "qrCodeBlock": {
         "title": "QR code",
         "startScanButton": "Starte den Scan",
-        "importButton": "Importiere"
+        "importButton": "Importiere",
+        "scanSuccess": "QR code erfolgreich gescannt"
       },
       "qrScanningBlock": {
         "title": "Präsentiere den QR code"
+      },
+      "error": {
+        "title": "Fehler",
+        "connection": "Verbindungsfehler, versuche es erneut",
+        "init": "Initialisierungsfehler, versuche es erneut",
+        "confirmText": "OK"
       }
     },
     "exportPage": {
@@ -598,7 +666,10 @@
       "walletBlock": {
         "title": "Wallet Datei",
         "label": "Datei auswählen",
-        "importButton": "Importiere"
+        "importButton": "Importiere",
+        "selectFile": "Bitte wähle eine gültige Wallet Datei json aus:",
+        "fileSelected": "Datei ausgewählt",
+        "invalidFile": "Die ausgewählte Datei ist keine gültige Wallet Datei."
       }
     },
     "importFromMnemonicPage": {

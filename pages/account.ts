@@ -15,7 +15,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {VueClass, VueRequireFilter, VueVar} from "../lib/numbersLab/VueAnnotate";
+import {VueClass, VueRequireFilter, VueVar, VueWatched} from "../lib/numbersLab/VueAnnotate";
 import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
 import {Wallet} from "../model/Wallet";
 import {DestructableView} from "../lib/numbersLab/DestructableView";
@@ -25,6 +25,7 @@ import {Transaction, TransactionIn} from "../model/Transaction";
 import {RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {WalletWatchdog} from "../model/WalletWatchdog";
 import {CnUtils} from "../model/Cn";
+import {Translations, tickerStore} from "../model/Translations";
 
 
 let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name,'default', false);
@@ -41,10 +42,13 @@ class AccountView extends DestructableView{
 	@VueVar(0) unlockedWalletAmount !: number;
 	@VueVar(0) depositedWalletAmount !: number;
 	@VueVar(0) withdrawableWalletAmount !: number;
+  @VueVar(0) futureLockedInterest !: number;
+  @VueVar(0) futureUnlockedInterest !: number;
 	@VueVar(0) allTransactionsCount !: number;
 	@VueVar(0) pagesCount !: number;
 	@VueVar(0) txPerPage !: number;
-	@VueVar(0) ticker !: string;
+	@VueVar('') ticker !: string;
+	@VueVar(false) private useShortTicker !: boolean;
 
 	@VueVar(0) currentScanBlock !: number;
 	@VueVar(0) blockchainHeight !: number;
@@ -55,29 +59,49 @@ class AccountView extends DestructableView{
   	@VueVar(false) optimizeLoading !: boolean;
 	@VueVar(false) isWalletSyncing !: boolean;
 	@VueVar(0) optimizeOutputs !: number;
+  @VueVar(false) showDepositsFuture!: boolean;
+  @VueVar(false) showWithdrawableFuture!: boolean;
 
   @VueVar(false) private isInitialized: boolean = false;
 	@VueVar(0) private messagesCountRecord: number = 0;
 
   readonly refreshInterval = 500;
+
 	private intervalRefresh : NodeJS.Timeout;
+
   private refreshTimestamp: Date;
   private oldTxFilter: string;
   private lastPending: number;
   private initMessagesCount: number = wallet.txsMem.concat(wallet.getTransactionsCopy()).filter(tx => tx.message).length;
 
+	private unsubscribeTicker: (() => void) | null = null;
+
+	@VueVar(false) showOptimizePanel!: boolean;
+	private optimizePanelTimeout: NodeJS.Timeout | null = null;
+
 	constructor(container : string) {
 		super(container);
 
     this.refreshTimestamp = new Date(0);
-    this.ticker = config.coinSymbol;
+
     this.lastPending = 0;
     this.pagesCount = 1;
     this.txPerPage = 200;
     this.oldTxFilter = '';
     this.txFilter = '';
 
-  	this.checkOptimization();
+    // Initialize ticker from store
+    tickerStore.initialize().then(() => {
+      this.useShortTicker = tickerStore.useShortTicker;
+      this.ticker = tickerStore.currentTicker;
+      
+      // Subscribe to ticker changes
+      this.unsubscribeTicker = tickerStore.subscribe((useShortTicker) => {
+        this.useShortTicker = useShortTicker;
+        this.ticker = tickerStore.currentTicker;
+      });
+    });
+    this.checkOptimization();
 		AppState.enableLeftMenu();
 
 		this.intervalRefresh = setInterval(() => {
@@ -86,11 +110,20 @@ class AccountView extends DestructableView{
 
 		this.refresh();
 
+		this.showOptimizePanel = false;
+
 		(window as any).accountView = this;
 	}
 
 	destruct = (): Promise<void> => {
+
+    // Cleanup ticker subscription
+    if (this.unsubscribeTicker) {
+      this.unsubscribeTicker();
+    }
+    if (this.optimizePanelTimeout) clearTimeout(this.optimizePanelTimeout);
     clearInterval(this.intervalRefresh);
+
 		return super.destruct();
   }
 
@@ -109,22 +142,39 @@ class AccountView extends DestructableView{
   }
 
 	checkOptimization = () => {
-    blockchainExplorer.getHeight().then((blockchainHeight: number) => {
-      let optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
-      this.optimizeIsNeeded = optimizeInfo.isNeeded;
-      if(optimizeInfo.isNeeded) {
-        this.optimizeOutputs = optimizeInfo.numOutputs;
-      }
-    }).catch((err: any) => {
-      console.error("Error in checkOptimization", err);
-    });
+    blockchainExplorer.getHeight()
+      .then((blockchainHeight: number) => {
+        try {
+          let optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
+          
+          this.optimizeIsNeeded = optimizeInfo.isNeeded;
+          if(optimizeInfo.isNeeded) {
+            this.optimizeOutputs = optimizeInfo.numOutputs;
+            this.showOptimizePanel = true;
+            if (this.optimizePanelTimeout) clearTimeout(this.optimizePanelTimeout);
+            this.optimizePanelTimeout = setTimeout(() => {
+              this.showOptimizePanel = false;
+            }, 20000);
+          } else {
+            this.showOptimizePanel = false;
+            if (this.optimizePanelTimeout) clearTimeout(this.optimizePanelTimeout);
+          }
+        } catch (innerError) {
+          if (innerError === null) return;
+          throw innerError;
+        }
+      })
+      .catch((err: any) => {
+        if (err === null) return;
+        console.error("Error in checkOptimization:", err);
+      });
   }
 
   optimizeWallet = () => {
     this.optimizeLoading = true; // set loading state to true
 
     blockchainExplorer.getHeight().then((blockchainHeight: number) => {
-      wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
+      wallet.createFusionTransaction(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
         function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
           return blockchainExplorer.getRandomOuts(amounts, numberOuts);
         }).then((processedOuts: number) => {
@@ -159,36 +209,47 @@ class AccountView extends DestructableView{
 		let explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
 		let feesHtml = '';
 		if (transaction.fees > 0) {
-			feesHtml = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.feesOnTx')+`</span>:<span class="txDetailsValue">`+(transaction.fees / Math.pow(10, config.coinUnitPlaces))+`</a></span></div>`;
+			feesHtml = `<div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.feesOnTx')}</span>:<span class="txDetailsValue">${(transaction.fees / Math.pow(10, config.coinUnitPlaces))}</a></span></div>`;
     }
 		let paymentId = '';
 		if (transaction.paymentId) {
-			paymentId = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.paymentId')+`</span>:<span class="txDetailsValue">`+transaction.paymentId+`</a></span></div>`;
+			paymentId = `<div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.paymentId')}</span>:<span class="txDetailsValue">${transaction.paymentId}</a></span></div>`;
 		}
 
 		let txPrivKeyMessage = '';
 		let txPrivKey = wallet.findTxPrivateKeyWithHash(transaction.hash);
 		if (txPrivKey) {
-			txPrivKeyMessage = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.txPrivKey')+`</span>:<span class="txDetailsValue">`+txPrivKey+`</a></span></div>`;
+			txPrivKeyMessage = `<div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.txPrivKey')}</span>:<span class="txDetailsValue">${txPrivKey}</a></span></div>`;
 		}
     let messageText = '';
     if (transaction.message) {
-      messageText = `<div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.message')+`</span>:<span class="txDetailsValue">` + transaction.message + `</span>`;
+      messageText = `<div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.message')}</span>:<div style="color: #e2e2e2; border: 1px solid #212529; border-radius: 4px; background-color: #343a40; padding: 8px; margin-top: 4px;"><span class="txDetailsValue">${transaction.message}</span></div></div>`;
+      // Set message as viewed and update the transaction in wallet
+      wallet.updateTransactionFlags(transaction.hash, {messageViewed: true});
     }
 
-		swal({
-			title:i18n.t('accountPage.txDetails.title'),
-      customClass:'swal-wide',
-			html:`
-        <div class="tl" >
-          <div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.txHash')+`</span>:<span class="txDetailsValue"><a href="`+explorerUrlHash.replace('{ID}', transaction.hash)+`" target="_blank">`+transaction.hash+`</a></span></div>
-          `+paymentId+`
-          `+feesHtml+`
-          `+txPrivKeyMessage+`
-          <div><span class="txDetailsLabel">`+i18n.t('accountPage.txDetails.blockHeight')+`</span>:<span class="txDetailsValue"><a href="`+explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)+`" target="_blank">`+transaction.blockHeight+`</a></span></div>
-          `+messageText+`          
-        </div>`
-		});
+    new Promise((resolve) => {
+      setTimeout(() => {
+        swal({
+          title:i18n.t('accountPage.txDetails.title'),
+          customClass:'swal-wide',
+          html:`
+            <div class="tl" >
+              <div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.txHash')}</span>:<span class="txDetailsValue"><a href="${explorerUrlHash.replace('{ID}', transaction.hash)}" target="_blank">${transaction.hash}</a></span></div>
+              ${paymentId}
+              ${feesHtml}
+              ${txPrivKeyMessage}
+              <div><span class="txDetailsLabel">${i18n.t('accountPage.txDetails.blockHeight')}</span>:<span class="txDetailsValue"><a href="${explorerUrlBlock.replace('{ID}', ''+transaction.blockHeight)}" target="_blank">${transaction.blockHeight}</a></span></div>
+              ${transaction.fusion ? '<div><span class="txDetailsLabel">Fusion:</span><span class="txDetailsValue">true</span></div>' : ''}
+              ${messageText}
+            </div>`
+        });
+        resolve(true);
+        // Force UI update after the modal is shown
+        this.refreshWallet(true);
+      }, 500);
+    });
+
 	}
 
 	refreshWallet = (forceRedraw: boolean = false) => {
@@ -202,7 +263,6 @@ class AccountView extends DestructableView{
 
     this.isWalletSyncing = (wallet.lastHeight + 2) < this.blockchainHeight;
     this.isWalletProcessing = this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().hasData());
-    
     if (oldIsWalletSyncing && !this.isWalletSyncing) {
       this.checkOptimization();
     }
@@ -221,7 +281,9 @@ class AccountView extends DestructableView{
       this.depositedWalletAmount = wallet.lockedDeposits(this.currentScanBlock);
       this.withdrawableWalletAmount = wallet.unlockedDeposits(this.currentScanBlock);
       this.lastPending = this.walletAmount - this.unlockedWalletAmount;
-
+      this.futureLockedInterest = wallet.futureDepositInterest(this.currentScanBlock).locked;
+      this.futureUnlockedInterest = wallet.futureDepositInterest(this.currentScanBlock).unlocked;
+      
       if ((this.refreshTimestamp < wallet.modifiedTimestamp()) || forceRedraw || filterChanged) {
         let allTransactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
 
@@ -285,6 +347,31 @@ class AccountView extends DestructableView{
                 this.messagesCountRecord = newMessagesCount;
             }
         }
+    }
+  }
+
+  getTTLCountdown(transaction: Transaction): string {
+    if (!transaction.ttl || transaction.ttl === 0 || transaction.blockHeight !== 0) {
+      return '';
+    }
+    
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const remainingSeconds = transaction.ttl - currentTimestamp;
+    
+    if (remainingSeconds <= 0) {
+      return 'Expired';
+    }
+    
+    const hours = Math.floor(remainingSeconds / 3600);
+    const minutes = Math.floor((remainingSeconds % 3600) / 60);
+    const seconds = remainingSeconds % 60;
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${seconds}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
+    } else {
+      return `${seconds}s`;
     }
   }
 

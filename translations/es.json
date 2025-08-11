@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "La contraseña necesita al menos 8 caracteres - 1 letra mayúscula, 1 letra minúscula, un número y un carácter especial",
       "passwordConfirmationNotMatching": "La contraseña no coincide con la primera contraseña que escribió",
       "download": "Descargar",
+      "confirmText": "OK",
+      "error": "Error",
       "newVersionModal": {
         "title": "Hay una nueva version disponible",
         "content": "¿Quieres recargar la nueva version?",
@@ -59,7 +61,11 @@
         "label": "Optimización",
         "subtitle": "Su billetera necesita ser optimizada",
         "button": "Optimizar ahora",
-        "loadingText": "Optimizando, por favor espere..."
+        "loadingText": "Optimizando, por favor espere...",
+        "success": "Transacción de fusión enviada",
+        "error": "Error al enviar la transacción de fusión",
+        "errorInfo": "Optimización cancelada",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -110,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "Su balance",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "Portfolio",
+        "available": "Disponible",
+        "pending": "Pendiente",
         "unlocked": "Desbloqueado",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "Depósitos",
+        "withdrawable": "Retirable",
+        "futureInterest": "Interés futuro"
       },
       "historyBlock": {
         "title": "Historial de transacciones",
@@ -231,7 +239,7 @@
     "sendPage": {
       "title": "Enviar CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "La billetera se está sincronizando.... Cuando esté completamente sincronizada, podrá enviar fondos."
       },
       "sendBlock": {
         "address": {
@@ -300,7 +308,8 @@
         "title": "¿Confirmar transferencia?",
         "content": "Monto: {amount}<br/>Tarifa: {fees}<br/>Total: {total}",
         "confirmText": "Confirmar",
-        "cancelText": "Cancelar"
+        "cancelText": "Cancelar",
+        "remoteNodeFee": "La tarifa del nodo remoto {fee} {symbol} se ha agregado al monto"
       },
       "waitingNfcModal": {
         "title": "Esperando Nfc",
@@ -310,7 +319,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "La billetera se está sincronizando.... Cuando esté completamente sincronizada, podrá enviar mensajes."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -330,7 +339,11 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is to long. Max length is 260 characters",
+          "preview": "Vista previa"
+        },
+        "ttl": {
+          "info": "La transacción TTL solo existirá en el mempool y se autodestruirá después de {ttl}(Horas:Minutos). No se incluirá en los bloques. Por lo tanto, el monto cargado se devolverá a la billetera."
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -383,18 +396,49 @@
     },
     "depositsPage": {
       "title": "Deposits",
+      "depositDate": "Fecha de depósito",
+      "lockHeight": "Altura de bloqueo",
+      "unlockDate": "Fecha de desbloqueo",
+      "unlockHeight": "Altura de desbloqueo",
+      "interest": "Interés",
+      "deposit": "Depósito",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "La billetera se está sincronizando.... Cuando esté completamente sincronizada, podrá ver los depósitos."
       },
       "tabs": {
         "inbox": "Deposits",
         "send": "Create"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Lista de depósitos"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Confirmar Depósito",
+        "message": "Ingrese su contraseña para confirmar la creación de un depósito de {amount} CCX por {term} meses?",
+        "confirm": "Crear Depósito",
+        "cancel": "Cancelar",
+        "passwordRequired": "Se requiere la contraseña de la billetera"
+      },
+      "createDeposit": {
+        "title": "Crear Nuevo Depósito",
+        "amount": "Cantidad a depositar",
+        "term": "Tiempo de bloqueo (en meses)",
+        "termError": "Por favor ingrese un número entero entre 1 y 12 meses",
+        "confirm": "Crear Depósito",
+        "cancel": "Cancelar",
+        "createSuccess": "Depósito Enviado a la Blockchain",
+        "createPending": "Su depósito está siendo procesado",
+        "createError": "Error al Crear el Depósito",
+        "withdrawSuccess": "Retiro enviado a la blockchain",
+        "withdrawPending": "Su retiro está siendo procesado",
+        "withdrawError": "Error al Retirar el Depósito",
+        "amountError": "Cantidad Inválida",
+        "amountMustBePositive": "La cantidad debe ser positiva",
+        "termMustBeValid": "El término debe estar entre 1 y 12 meses",
+        "insufficientFunds": "Fondos Insuficientes",
+        "insufficientFundsMessage": "No tiene suficientes fondos para crear este depósito",
+        "maxAmount": "Cantidad máxima de depósito: {amount} CCX",
+        "rewardAtTerm": "Recompensa al Término: {reward} CCX"
       },
       "depositDetails": {
         "title": "Deposits details",
@@ -407,7 +451,17 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "unlockHeight": "Unlock height",
+        "interest": "interés"
+      },
+      "recap": {
+        "title": "Resumen de depósitos",
+        "totalLifetimeDeposit": "Total de depósitos",
+        "totalLifetimeInterest": "Total de interés",
+        "totalCashedOutInterest": "Total de interés retirado",
+        "futureInterestLocked": "Interés futuro en depósitos bloqueados",
+        "futureInterestUnlocked": "Interés futuro en depósitos desbloqueados",
+        "earliestWithdrawable": "Fecha de desbloqueo más cercana"
       }
     },
     "receivePage": {
@@ -482,6 +536,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Símbolo Ticker",
+          "full": "Símbolo Ticker Completo",
+          "short": "Símbolo Ticker Corto",
+          "preview": "Vista previa"
         }
       },
       "changePasswordButton": "Cambiar mi contraseña de billetera",
@@ -518,7 +578,8 @@
       "parametersBlock": {
         "title": "Parámetros",
         "password": {
-          "label": "Contraseña para proteger su billetera"
+          "label": "Contraseña para proteger su billetera",
+          "label_input": "Contraseña de la billetera"
         },
         "passwordConfirm": {
           "label": "Confirmar la contraseña",
@@ -535,10 +596,17 @@
       "qrCodeBlock": {
         "title": "Código QR",
         "startScanButton": "Iniciar el escaneo",
-        "importButton": "Importar"
+        "importButton": "Importar",
+        "scanSuccess": "Código QR escaneado correctamente"
       },
       "qrScanningBlock": {
         "title": "Presentar el código QR"
+      },
+      "error": {
+        "title": "Error",
+        "connection": "Error de conexión, inténtelo de nuevo",
+        "init": "Error de inicialización, inténtelo de nuevo",
+        "confirmText": "OK"
       }
     },
     "exportPage": {
@@ -598,7 +666,10 @@
       "walletBlock": {
         "title": "Archivo de billetera",
         "label": "Selecciona el archivo",
-        "importButton": "Importar"
+        "importButton": "Importar",
+        "selectFile": "Por favor seleccione un archivo de copia de seguridad de billetera json válido:",
+        "fileSelected": "Archivo seleccionado",
+        "invalidFile": "El archivo seleccionado no es un archivo de billetera válido."
       }
     },
     "importFromMnemonicPage": {

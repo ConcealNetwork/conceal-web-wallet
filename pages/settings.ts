@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -24,7 +24,7 @@ import {Constants} from "../model/Constants";
 import {Wallet} from "../model/Wallet";
 import {AppState} from "../model/AppState";
 import {Storage} from "../model/Storage";
-import {Translations} from "../model/Translations";
+import {Translations, tickerStore} from "../model/Translations";
 import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
 import {BlockchainExplorer, RawDaemon_Out} from "../model/blockchain/BlockchainExplorer";
 import {WalletWatchdog} from "../model/WalletWatchdog";
@@ -52,17 +52,49 @@ class SettingsView extends DestructableView{
   @VueVar(false) optimizeIsNeeded !: boolean;
   @VueVar(false) optimizeLoading !: boolean;
 
+	@VueVar(false) useShortTicker !: boolean;
+	@VueVar('') currentTicker !: string;
+	@VueVar(config) config !: any;
+
+	private unsubscribeTicker: (() => void) | null = null;
+
 	constructor(container : string) {
 		super(container);
 		let self = this;
 		this.readSpeed = wallet.options.readSpeed;
 		this.checkMinerTx = wallet.options.checkMinerTx;
 
-		this.customNode = wallet.options.customNode;
-		this.nodeUrl = wallet.options.nodeUrl;
+		// Sync custom node setting from storage to ensure consistency
+		Storage.getItem('customNodeUrl', null).then(customNodeUrl => {
+			if (customNodeUrl) {
+				this.customNode = true;
+				this.nodeUrl = customNodeUrl;
+				// Update wallet options to match storage
+				wallet.options.customNode = true;
+				wallet.options.nodeUrl = customNodeUrl;
+			} else {
+				this.customNode = wallet.options.customNode;
+				this.nodeUrl = wallet.options.nodeUrl;
+			}
+		}).catch(() => {
+			this.customNode = wallet.options.customNode;
+			this.nodeUrl = wallet.options.nodeUrl;
+		});
 
 		this.creationHeight = wallet.creationHeight;
 		this.scanHeight = wallet.lastHeight;
+
+		// Initialize ticker from store
+		tickerStore.initialize().then(() => {
+			this.useShortTicker = tickerStore.useShortTicker;
+			this.currentTicker = tickerStore.currentTicker;
+			
+			// Subscribe to ticker changes
+			this.unsubscribeTicker = tickerStore.subscribe((useShortTicker) => {
+				this.useShortTicker = useShortTicker;
+				this.currentTicker = tickerStore.currentTicker;
+			});
+		});
 
 		this.checkOptimization();
 
@@ -77,7 +109,7 @@ class SettingsView extends DestructableView{
     }).catch((err: any) => {
       console.error("Error trying to get user language", err);
     });
-
+// in case cordova.js got loaded, and app-version-plugin was installed ... => that won't happen in a web view redirect scenario. Need to rethink that if we really want to display those infor in Native context.
 		if(typeof (<any>window).cordova !== 'undefined' && typeof (<any>window).cordova.getAppVersion !== 'undefined') {
 			(<any>window).cordova.getAppVersion.getVersionNumber().then((version : string) => {
 				this.nativeVersionNumber = version;
@@ -144,7 +176,7 @@ class SettingsView extends DestructableView{
       let optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
 
       if (optimizeInfo.isNeeded) {
-        wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
+        wallet.createFusionTransaction(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
           function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
             return blockchainExplorer.getRandomOuts(amounts, numberOuts);
           }).then((processedOuts: number) => {
@@ -181,7 +213,8 @@ class SettingsView extends DestructableView{
 
 	@VueWatched()	readSpeedWatch(){this.updateWalletOptions();}
 	@VueWatched()	checkMinerTxWatch(){this.updateWalletOptions();}
-	@VueWatched()	customNodeWatch(){this.updateWalletOptions();}
+	//@VueWatched()	customNodeWatch(){this.updateConnectionSettings();}
+	//@VueWatched()	nodeUrlWatch(){this.updateConnectionSettings();}
 
 	@VueWatched()	creationHeightWatch() {
 		if(this.creationHeight < 0)this.creationHeight = 0;
@@ -192,12 +225,15 @@ class SettingsView extends DestructableView{
 		if(this.scanHeight > this.maxHeight && this.maxHeight !== -1)this.scanHeight = this.maxHeight;
 	}
 
+	@VueWatched()
+	useShortTickerWatch() {
+		tickerStore.setTickerPreference(this.useShortTicker);
+	}
+
 	private updateWalletOptions() {
 		let options = wallet.options;
 		options.readSpeed = this.readSpeed;
 		options.checkMinerTx = this.checkMinerTx;
-		options.customNode = this.customNode;
-		options.nodeUrl = this.nodeUrl;
 		wallet.options = options;
     walletWatchdog.setupWorkers();
 		walletWatchdog.signalWalletUpdate();
@@ -211,6 +247,9 @@ class SettingsView extends DestructableView{
 
 	updateConnectionSettings() {
 		let options = wallet.options;
+		let oldCustomNode = options.customNode;
+		let oldNodeUrl = options.nodeUrl;
+		
 		options.customNode = this.customNode;
 		options.nodeUrl = this.nodeUrl;
 		wallet.options = options;
@@ -221,8 +260,32 @@ class SettingsView extends DestructableView{
       Storage.remove('customNodeUrl');
     }
 
-    // reset the node connection workers with new values
-    BlockchainExplorerProvider.getInstance().resetNodes();
+    // Update wallet watchdog with new options
+    walletWatchdog.setupWorkers();
+    walletWatchdog.signalWalletUpdate();
+
+    // Reset nodes if custom node setting changed (enabled/disabled)
+    // This ensures proper switching between custom and random nodes
+    if (oldCustomNode !== this.customNode) {
+      console.log('Custom node setting changed, resetting nodes...');
+      // Reset the node connection workers with new values
+      // This will automatically clean up and reinitialize the session
+      BlockchainExplorerProvider.getInstance().resetNodes();
+    } else if (this.customNode && oldNodeUrl !== this.nodeUrl) {
+      // Only reset if custom node URL changed (when using custom node)
+      console.log('Custom node URL changed, resetting nodes...');
+      BlockchainExplorerProvider.getInstance().resetNodes();
+    } else {
+      console.log('Node configuration unchanged, skipping node reset');
+    }
+	}
+
+	destruct = (): Promise<void> => {
+		// Cleanup ticker subscription
+		if (this.unsubscribeTicker) {
+			this.unsubscribeTicker();
+		}
+		return super.destruct();
 	}
 }
 

@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -60,6 +60,9 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
             if (walletWatchdog !== null) {
                 walletWatchdog.stop();
             }
+            // Clean up the blockchain explorer session to ensure fresh node selection on next connection
+            var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
+            blockchainExplorer.cleanupSession();
             (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, undefined, 'default');
             (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, undefined, 'default');
             (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, undefined, 'default');
@@ -88,9 +91,9 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
                     confirmButtonText: i18n.t('global.openWalletModal.confirmText'),
                     cancelButtonText: i18n.t('global.openWalletModal.cancelText'),
                 }).then(function (result) {
-                    $("#appLoader").addClass("appLoaderVisible");
+                    $('#pageLoading').show();
                     BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance().initialize().then(function (success) {
-                        $("#appLoader").removeClass("appLoaderVisible");
+                        $('#pageLoading').hide();
                         setTimeout(function () {
                             if (result.value) {
                                 swal({
@@ -132,8 +135,16 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
                                 reject();
                             }
                         }, 1);
-                    }).catch(reject);
-                }).catch(reject);
+                    }).catch(function (err) {
+                        console.log(err);
+                        $('#pageLoading').hide();
+                        reject(err);
+                    });
+                }).catch(function (err) {
+                    console.log(err);
+                    $('#pageLoading').hide();
+                    reject(err);
+                });
             });
         };
         AppState.leftMenuEnabled = false;

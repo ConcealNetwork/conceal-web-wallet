@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "La password richiede almeno 8 caratteri: 1 lettera maiuscola, 1 lettera minuscola, un numero e un carattere speciale",
       "passwordConfirmationNotMatching": "La password non corrisponde a quella precedentemente inserita",
       "download": "Download",
+      "confirmText": "OK",
+      "error": "Errore",
       "newVersionModal": {
         "title": "È disponibile una nuova versione",
         "content": "Vuoi ricaricare la pagina per ottenere la nuova versione?",
@@ -59,7 +61,11 @@
         "label": "Ottimizzazione",
         "subtitle": "Il tuo portafoglio ha bisogno di essere ottimizzato",
         "button": "Ottimizza ora",
-        "loadingText": "Ottimizzazione in corso, attendere..."
+        "loadingText": "Ottimizzazione in corso, attendere...",
+        "success": "Transazione di fusione inviata",
+        "error": "Errore durante l'invio della transazione di fusione",
+        "errorInfo": "Ottimizzazione annullata",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -110,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "Il tuo bilancio",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "Portafoglio",
+        "available": "Disponibile",
+        "pending": "In attesa",
         "unlocked": "Sbloccato",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "Depositi",
+        "withdrawable": "Prelevabile",
+        "futureInterest": "Interessi futuri"
       },
       "historyBlock": {
         "title": "Cronologia delle transazioni",
@@ -123,7 +131,7 @@
         "waitSync": "Si prega di attendere la fine della sincronizzazione",
         "beReallyPatient": "La prima sincronizzazione potrebbe richiedere alcuni minuti ...",
         "getCoinAddress": "Ricevi CCX",
-        "loadMoreBtn": "Load more"
+        "loadMoreBtn": "Carica altro"
       },
       "txDetails": {
         "title": "Dettagli transazione",
@@ -132,7 +140,7 @@
         "blockHeight": "Altezza sulla blockchain",
         "paymentId": "Payment ID",
         "txPrivKey": "Chiave privata della transazione",
-        "message": "Message"
+        "message": "Messaggio"
       }
     },
     "changeWalletPasswordPage": {
@@ -231,7 +239,7 @@
     "sendPage": {
       "title": "Invia CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Il tuo portafoglio è in fase di sincronizzazione.... Quando sarà completamente sincronizzato, potrai inviare fondi."
       },
       "sendBlock": {
         "address": {
@@ -289,18 +297,19 @@
         "confirmText": "Ok"
       },
       "creatingTransferModal": {
-        "title": "Creazione del trasferimento...",
-        "content": "Per favore attendi..."
+        "title": "Creazione transazione...",
+        "content": "Attendere prego..."
       },
       "finalizingTransferModal": {
-        "title": "Finalizzazione del trasferimento...",
-        "content": "Per favore attendi..."
+        "title": "Finalizzazione transazione...",
+        "content": "Attendere prego..."
       },
       "confirmTransactionModal": {
         "title": "Confermare transferimento?",
         "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
         "confirmText": "Conferma",
-        "cancelText": "Annulla"
+        "cancelText": "Annulla",
+        "remoteNodeFee": "La commissione del nodo remoto {fee} {symbol} è stata aggiunta al montante"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",
@@ -310,7 +319,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Il tuo portafoglio è in fase di sincronizzazione.... Quando sarà completamente sincronizzato, potrai inviare messaggi."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -321,60 +330,64 @@
       },
       "sendBlock": {
         "address": {
-          "label": "Destination address",
-          "placeholder": "Write the address where you want to send the message",
-          "invalid": "The destination address is invalid",
-          "fundsTo": "The message will be sent to",
-          "receiver": "Receiver",
-          "description": "Description"
+          "label": "Indirizzo di destinazione",
+          "placeholder": "Scrivi l'indirizzo nel quale vuoi inviare il messaggio",
+          "invalid": "L'indirizzo di destinazione è invalido",
+          "fundsTo": "Il messaggio verrà inviato a",
+          "receiver": "Destinatario",
+          "description": "Descrizione"
         },
         "message": {
-          "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "label": "Messaggio",
+          "invalid": "Il messaggio è troppo lungo. La lunghezza massima è di 260 caratteri",
+          "preview": "Anteprima"
         },
-        "sendButton": "Send",
-        "cancelButton": "Cancel"
+        "ttl": {
+          "info": "Il messaggio sarà eliminato in {ttl} (ore:minuti). Il montante sarà rimborsato"
+        },
+        "sendButton": "Invia",
+        "cancelButton": "Annulla"
       },
       "qrCodeScanning": {
-        "explication": "Present the QR code"
+        "explication": "Presenta il codice QR"
       },
       "notEnoughMoneyModal": {
         "title": "Oops...",
-        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "content": "Non hai abbastanza fondi nel tuo portafoglio per completare questo trasferimento",
         "confirmText": "OK"
       },
       "thankYouDonationModal": {
-        "title": "Thank you for your donation!",
-        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "title": "Grazie per la tua donazione!",
+        "content": "Il tuo aiuto è molto apprezzato. <br/>Questa donazione contribuirà a rendere Conceal ancora migliore",
         "confirmText": "OK"
       },
       "transferSentModal": {
-        "title": "Message sent successfully!",
+        "title": "Messaggio inviato con successo!",
         "confirmText": "OK"
       },
       "transferExceptionModal": {
         "title": "Oops...",
-        "content": "An error occurred. Please report this error: {details}",
+        "content": "Si è verificato un errore. Si prega di segnalare questo errore: {details}",
         "confirmText": "OK"
       },
       "invalidAmountModal": {
         "title": "Oops...",
-        "content": "Invalid amount",
+        "content": "Importo invalido",
         "confirmText": "OK"
       },
       "creatingTransferModal": {
-        "title": "Creating transfer ...",
-        "content": "Please wait..."
+        "title": "Creazione transazione...",
+        "content": "Attendere prego..."
       },
       "finalizingTransferModal": {
-        "title": "Finalizing transfer ...",
-        "content": "Please wait..."
+        "title": "Finalizzazione transazione...",
+        "content": "Attendere prego..."
       },
       "confirmTransactionModal": {
-        "title": "Confirm transfer?",
+        "title": "Confermare trasferimento?",
         "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
-        "confirmText": "Confirm",
-        "cancelText": "Cancel"
+        "confirmText": "Conferma",
+        "cancelText": "Annulla"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",
@@ -382,32 +395,73 @@
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Depositi",
+      "unlockDate": "Data di sblocco",
+      "interest": "Interesse",
+      "deposit": "Deposito",
+      "lockHeight": "Altezza di blocco",
+      "unlockHeight": "Altezza di sblocco",
+      "depositDate": "Data di deposito",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "Il tuo portafoglio è in fase di sincronizzazione.... Quando sarà completamente sincronizzato, potrai visualizzare i depositi."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Depositi",
+        "send": "Crea"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Lista depositi"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Conferma deposito",
+        "message": "Inserisci la tua password per confermare la creazione di un deposito di {amount} CCX per {term} mesi?",
+        "confirm": "Crea deposito",
+        "cancel": "Annulla",
+        "passwordRequired": "Password del portafoglio richiesta"
+      },
+      "createDeposit": {
+        "title": "Crea nuovo deposito",
+        "amount": "Importo da deposito",
+        "term": "Tempo di blocco (in mesi)",
+        "termError": "Inserisci un numero intero tra 1 e 12 mesi",
+        "confirm": "Crea deposito",
+        "cancel": "Annulla",
+        "createSuccess": "Deposito inviato al blockchain",
+        "createPending": "Il tuo deposito è in fase di elaborazione",
+        "createError": "Errore nella creazione del deposito",
+        "withdrawSuccess": "Prelevato inviato al blockchain",
+        "withdrawPending": "Il tuo prelevato è in fase di elaborazione",
+        "withdrawError": "Errore nel prelevato del deposito",
+        "amountError": "Importo non valido",
+        "amountMustBePositive": "Importo deve essere positivo",
+        "termMustBeValid": "Tempo deve essere tra 1 e 12 mesi",
+        "insufficientFunds": "Fondi insufficienti",
+        "insufficientFundsMessage": "Non hai abbastanza fondi per creare questo deposito",
+        "maxAmount": "Importo massimo di deposito: {amount} CCX",
+        "rewardAtTerm": "Ricompensa al termine: {reward} CCX"
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
-        "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "title": "Dettagli depositi",
+        "txHash": "Transazione di creazione",
+        "spendingTx": "Transazione di prelevato",
+        "status": "Stato",
+        "amount": "Importo",
+        "term": "Tempo",
+        "creationTime": "Tempo di creazione",
+        "spendingTime": "Tempo di prelevato",
+        "spendingHeight": "Altezza di prelevato",
+        "creationHeight": "Altezza di creazione",
+        "unlockHeight": "Altezza di sblocco",
+        "interest": "Interesse"
+      },
+      "recap": {
+        "title": "Depositi Recap",
+        "totalLifetimeDeposit": "Totale deposito",
+        "totalLifetimeInterest": "Totale interesse",
+        "totalCashedOutInterest": "Totale interesse prelevato",
+        "futureInterestLocked": "Interesse futuro su depositi bloccati",
+        "futureInterestUnlocked": "Interesse futuro su depositi prelevabili",
+        "earliestWithdrawable": "Prelevabile più presto"
       }
     },
     "receivePage": {
@@ -465,28 +519,34 @@
       },
       "settingsBlock": {
         "speed": {
-          "label": "Speed to update the wallet (consumerà più energia)",
+          "label": "Velocità di aggiornamento del portafoglio (consumerà più energia)",
           "fastest": "Più veloce",
           "fast": "Veloce",
           "medium": "Medio",
           "slow": "Lento"
         },
         "language": {
-          "label": "Language"
+          "label": "Lingua"
         },
         "readMinerTx": {
           "label": "Leggi transazioni del miner(solo mining)"
         },
         "customNode": {
-          "label": "Use custom node"
+          "label": "Usa nodo personalizzato"
         },
         "nodeUrl": {
-          "label": "Node URL"
+          "label": "URL del nodo"
+        },
+        "ticker": {
+          "label": "Simbolo",
+          "full": "Simbolo Completo",
+          "short": "Simbolo Breve",
+          "preview": "Anteprima"
         }
       },
       "changePasswordButton": "Cambia la password del mio portafoglio",
       "deleteWalletButton": "Elimina il mio portafoglio (copia locale)",
-      "resetWalletButton": "Reset and rescan wallet",
+      "resetWalletButton": "Reset e riscansiona portafoglio",
       "walletSettings": {
         "creationHeight": {
           "label": "Altezza a cui è stato creato il portafoglio"
@@ -494,29 +554,29 @@
         "currentScanningHeight": {
           "label": "Altezza di scansione attuale della blockchain"
         },
-        "updateButton": "Update"
+        "updateButton": "Aggiorna"
       },
       "deleteWalletModal": {
         "title": "Elimina il mio wallet (copia locale)",
-        "content": "Sei VERAMENTE sicuro di voler canecellare il tuo portafoglio?",
+        "content": "Sei VERAMENTE sicuro di voler cancellare il tuo portafoglio?",
         "confirmText": "Si, sono sicuro",
         "cancelText": "Annulla"
       },
       "resetWalletModal": {
-        "title": "Reset My Wallet (local copy)",
-        "content": "Are you sure you really want to reset your wallet?",
-        "confirmText": "Yes I'm sure",
-        "cancelText": "Cancel"
+        "title": "Reset del mio portafoglio (copia locale)",
+        "content": "Sei sicuro di voler davvero resettare il tuo portafoglio?",
+        "confirmText": "Si, sono sicuro",
+        "cancelText": "Annulla"
       },
       "optimizeWalletModal": {
-        "title": "Nothing to do...",
-        "content": "Your wallet is already optimized.",
+        "title": "Niente da fare...",
+        "content": "Il tuo portafoglio è già ottimizzato.",
         "confirmText": "OK"
       }
     },
     "importBasePage": {
       "parametersBlock": {
-        "title": "Parameter",
+        "title": "Parametri",
         "password": {
           "label": "Password per proteggere il tuo portafoglio"
         },
@@ -535,10 +595,17 @@
       "qrCodeBlock": {
         "title": "QR code",
         "startScanButton": "Inizia la scansione",
-        "importButton": "Importa"
+        "importButton": "Importa",
+        "scanSuccess": "Codice QR scansionato con successo"
       },
       "qrScanningBlock": {
         "title": "Presentare il codice QR"
+      },
+      "error": {
+        "title": "Errore",
+        "connection": "Errore di connessione, prova di nuovo",
+        "init": "Errore di inizializzazione, prova di nuovo",
+        "confirmText": "OK"
       }
     },
     "exportPage": {
@@ -563,7 +630,7 @@
       "walletKeysModal": {
         "title": "Chiavi private",
         "confirmText": "Ok",
-        "content": "Si prega di conservare attentamente queste chiavi. <b>Possederle significa possedere i fondi associati</b>!<br/>Spend key: {privSpendKey}<br/>Private view key: {privViewKey}"
+        "content": "Si prega di conservare attentamente queste chiavi. <b>Possederle significa possedere i fondi associati</b>!<br/>Chiave di spesa: {privSpendKey}<br/>Chiave di visualizzazione privata: {privViewKey}"
       },
       "mnemonicKeyModal": {
         "title": "Frase mnemonica",
@@ -623,16 +690,16 @@
         }
       },
       "keysBlock": {
-        "titleNotViewOnly": "Wallet keys",
-        "titleViewOnly": "View-Only Wallet",
+        "titleNotViewOnly": "Chiavi del portafoglio",
+        "titleViewOnly": "Portafoglio Solo Visualizzazione",
         "privateSpend": {
-          "label": "Private Spend Key"
+          "label": "Chiave di Spesa Privata"
         },
         "privateView": {
-          "label": "Private View Key"
+          "label": "Chiave di Visualizzazione Privata"
         },
         "publicKey": {
-          "label": "Public key"
+          "label": "Chiave pubblica"
         },
         "importButton": "Importa"
       }

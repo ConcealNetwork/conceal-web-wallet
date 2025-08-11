@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "密码长度需要大于8位 - 至少包含1个大写字母，1个小写字母，1个数字，以及1个特殊字符。",
       "passwordConfirmationNotMatching": "两次输入的密码不匹配",
       "download": "下载",
+      "confirmText": "确认",
+      "error": "错误",
       "newVersionModal": {
         "title": "有新版本可以更新",
         "content": "要重新加载新版本吗？",
@@ -59,7 +61,11 @@
         "label": "优化",
         "subtitle": "您的钱包需要优化",
         "button": "立即优化",
-        "loadingText": "正在优化，请稍候..."
+        "loadingText": "正在优化，请稍候...",
+        "success": "优化成功",
+        "error": "优化失败",
+        "errorInfo": "优化失败",
+        "confirmText": "确认"
       }
     },
     "bottom": {
@@ -110,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "您的余额",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "投资组合",
+        "available": "可用",
+        "pending": "等待中",
         "unlocked": "解锁",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "锁定存款",
+        "withdrawable": "可提款",
+        "futureInterest": "未来利息"
       },
       "historyBlock": {
         "title": "交易记录",
@@ -123,7 +131,7 @@
         "waitSync": "请等待钱包更新完毕",
         "beReallyPatient": "初始化设置可能比较耗时......",
         "getCoinAddress": "收到CCX",
-        "loadMoreBtn": "Load more"
+        "loadMoreBtn": "加载更多"
       },
       "txDetails": {
         "title": "交易明细",
@@ -132,7 +140,7 @@
         "blockHeight": "区块高度",
         "paymentId": "付款ID",
         "txPrivKey": "交易私钥",
-        "message": "Message"
+        "message": "消息"
       }
     },
     "changeWalletPasswordPage": {
@@ -231,7 +239,7 @@
     "sendPage": {
       "title": "发送CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "钱包正在同步.... 当它完全同步时，您将能够发送资金。"
       },
       "sendBlock": {
         "address": {
@@ -300,7 +308,8 @@
         "title": "确认转账？",
         "content": "数量: {amount}<br/>交易费: {fees}<br/>总额: {total}",
         "confirmText": "确认",
-        "cancelText": "取消"
+        "cancelText": "取消",
+        "remoteNodeFee": "远程节点费用 {fee} {symbol} 已添加到金额"
       },
       "waitingNfcModal": {
         "title": "等待Nfc",
@@ -308,106 +317,146 @@
       }
     },
     "messagesPage": {
-      "title": "Messages",
+      "title": "消息",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "钱包正在同步.... 当它完全同步时，您将能够发送消息。"
       },
       "tabs": {
-        "inbox": "Inbox",
-        "send": "Send"
+        "inbox": "收件箱",
+        "send": "发送"
       },
       "inboxBlock": {
-        "title": "Messages Inbox"
+        "title": "消息收件箱"
       },
       "sendBlock": {
         "address": {
-          "label": "Destination address",
-          "placeholder": "Write the address where you want to send the message",
-          "invalid": "The destination address is invalid",
-          "fundsTo": "The message will be sent to",
-          "receiver": "Receiver",
-          "description": "Description"
+          "label": "目标地址",
+          "placeholder": "写下您要汇款目标地址",
+          "invalid": "非法的目标地址",
+          "fundsTo": "消息将被发送到",
+          "receiver": "接收者",
+          "description": "描述"
         },
         "message": {
-          "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "label": "消息",
+          "invalid": "消息太长。最大长度为260个字符",
+          "preview": "预览"
         },
-        "sendButton": "Send",
-        "cancelButton": "Cancel"
+        "ttl": {
+          "info": "TTL 交易仅存在于 mempool 中，并在 {ttl}(小时:分钟) 后自动销毁。它不会被挖矿到区块中。因此，所收取的金额将退还到钱包中。"
+        },
+        "sendButton": "发送",
+        "cancelButton": "取消"
       },
       "qrCodeScanning": {
-        "explication": "Present the QR code"
+        "explication": "展示二维码"
       },
       "notEnoughMoneyModal": {
-        "title": "Oops...",
-        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "title": "糟糕！",
+        "content": "您没有足够的资金来执行此转账",
         "confirmText": "OK"
       },
       "thankYouDonationModal": {
-        "title": "Thank you for your donation!",
-        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "title": "感谢您的捐赠！",
+        "content": "您的帮助是宝贵的。您的捐赠将帮助我们改进卡博币",
         "confirmText": "OK"
       },
       "transferSentModal": {
-        "title": "Message sent successfully!",
+        "title": "消息发送成功！",
         "confirmText": "OK"
       },
       "transferExceptionModal": {
-        "title": "Oops...",
-        "content": "An error occurred. Please report this error: {details}",
+        "title": "糟糕！",
+        "content": "发生错误，请上报此错误: {details}",
         "confirmText": "OK"
       },
       "invalidAmountModal": {
-        "title": "Oops...",
-        "content": "Invalid amount",
+        "title": "糟糕！",
+        "content": "不合法的数量",
         "confirmText": "OK"
       },
       "creatingTransferModal": {
-        "title": "Creating transfer ...",
-        "content": "Please wait..."
+        "title": "转账创建中......",
+        "content": "请耐心等待..."
       },
       "finalizingTransferModal": {
-        "title": "Finalizing transfer ...",
-        "content": "Please wait..."
+        "title": "转账完成......",
+        "content": "请耐心等待..."
       },
       "confirmTransactionModal": {
-        "title": "Confirm transfer?",
-        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
-        "confirmText": "Confirm",
-        "cancelText": "Cancel"
+        "title": "确认转账？",
+        "content": "数量: {amount}<br/>交易费: {fees}<br/>总额: {total}",
+        "confirmText": "确认",
+        "cancelText": "取消"
       },
       "waitingNfcModal": {
-        "title": "Waiting Nfc",
-        "content": "Bring closer to the other device"
+        "title": "等待Nfc",
+        "content": "靠近其他设备一些"
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "存款",
+      "unlockDate": "解锁日期",
+      "interest": "利息",
+      "deposit": "存款",
+      "lockHeight": "锁定高度",
+      "unlockHeight": "解锁高度",
+      "depositDate": "存款日期",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "钱包正在同步.... 当它完全同步时，您将能够查看存款。"
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "存款",
+        "send": "创建"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "存款列表"
       },
-      "createBlock": {
-
+      "createDeposit": {
+        "title": "创建存款",
+        "amount": "金额",
+        "term": "期限",
+        "termError": "请输入一个1到12个月之间的整数",
+        "confirm": "创建存款",
+        "cancel": "取消",
+        "createSuccess": "存款已提交到区块链",
+        "createPending": "您的存款正在处理",
+        "createError": "创建存款失败",
+        "withdrawSuccess": "提款已提交到区块链",
+        "withdrawPending": "您的提款正在处理",
+        "withdrawError": "提款失败",
+        "amountError": "金额无效",
+        "amountMustBePositive": "金额必须为正",
+        "termMustBePositive": "期限必须为正",
+        "termMustBeValid": "期限必须在1到12个月之间",
+        "insufficientFunds": "资金不足",
+        "insufficientFundsMessage": "您没有足够的资金来创建此存款",
+        "maxAmount": "最大存款金额: {amount} CCX",
+        "rewardAtTerm": "到期奖励: {reward} CCX"
+        
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
-        "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "title": "存款详情",
+        "txHash": "创建交易",
+        "spendingTx": "消费交易",
+        "status": "状态",
+        "amount": "金额",
+        "term": "期限",
+        "creationTime": "创建时间",
+        "spendingTime": "消费时间",
+        "spendingHeight": "消费高度",
+        "creationHeight": "创建高度",
+        "unlockHeight": "解锁高度",
+        "interest": "利息"
+      },
+      "recap": {
+        "title": "存款总结",
+        "totalLifetimeDeposit": "总存款",
+        "totalLifetimeInterest": "总利息",
+        "totalCashedOutInterest": "已提取利息",
+        "futureInterestLocked": "未来锁定利息",
+        "futureInterestUnlocked": "未来可提取利息",
+        "earliestWithdrawable": "最早可提取"
       }
     },
     "receivePage": {
@@ -478,15 +527,21 @@
           "label": "读取挖矿交易信息（仅适用于Solo挖矿）"
         },
         "customNode": {
-          "label": "Use custom node"
+          "label": "使用自定义节点"
         },
         "nodeUrl": {
-          "label": "Node URL"
+          "label": "节点URL"
+        },
+        "ticker": {
+          "label": "符号",
+          "full": "完整符号",
+          "short": "短符号",
+          "preview": "预览"
         }
       },
       "changePasswordButton": "更改我的钱包密码",
       "deleteWalletButton": "删除我的钱包（本地副本）",
-      "resetWalletButton": "Reset and rescan wallet",
+      "resetWalletButton": "重置并重新扫描钱包",
       "walletSettings": {
         "creationHeight": {
           "label": "钱包创建的区块高度"
@@ -503,15 +558,15 @@
         "cancelText": "取消"
       },
       "resetWalletModal": {
-        "title": "Reset My Wallet (local copy)",
-        "content": "Are you sure you really want to reset your wallet?",
-        "confirmText": "Yes I'm sure",
-        "cancelText": "Cancel"
+        "title": "重置我的钱包（本地副本）",
+        "content": "确定要重置您的钱包吗？",
+        "confirmText": "是的，我确定",
+        "cancelText": "取消"
       },
       "optimizeWalletModal": {
-        "title": "Nothing to do...",
-        "content": "Your wallet is already optimized.",
-        "confirmText": "OK"
+        "title": "没有可做的...",
+        "content": "您的钱包已经优化。",
+        "confirmText": "好的"
       }
     },
     "importBasePage": {
@@ -535,10 +590,17 @@
       "qrCodeBlock": {
         "title": "二维码",
         "startScanButton": "开始扫描",
-        "importButton": "导入"
+        "importButton": "导入",
+        "scanSuccess": "二维码扫描成功"
       },
       "qrScanningBlock": {
         "title": "展示二维码"
+      },
+      "error": {
+        "title": "错误",
+        "connection": "连接错误，请重试",
+        "init": "初始化错误，请重试",
+        "confirmText": "确认"
       }
     },
     "exportPage": {

@@ -4,8 +4,8 @@
  * Copyright (c) 2018-2020 The Karbo developers
  * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
  * Copyright (c) 2022, The Karbo Developers
- * Copyright (c) 2022, Conceal Devs
- * Copyright (c) 2022, Conceal Network
+ * Copyright (c) 2022 - 2025, Conceal Devs
+ * Copyright (c) 2022 - 2025, Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -65,6 +65,10 @@ class SendView extends DestructableView {
   @VueVar(false) optimizeLoading !: boolean;
 	@VueVar(false) isWalletSyncing !: boolean;
 	@VueVar(0) optimizeOutputs !: number;
+
+  @VueVar('0') amountPlaceholder!: string;
+
+  @VueVar(null) showOptimizePanel !: boolean | null;
 
   @Autowire(Nfc.name) nfc !: Nfc;
 
@@ -264,7 +268,7 @@ class SendView extends DestructableView {
 
   send = () => {
     let self = this;
-    blockchainExplorer.getHeight().then(function (blockchainHeight: number) {
+    blockchainExplorer.getHeight().then(async function (blockchainHeight: number) {
       let amount = parseFloat(self.amountToSend);
       if (self.destinationAddress !== null) {
         //todo use BigInteger
@@ -291,8 +295,20 @@ class SendView extends DestructableView {
         });
 
         let mixinToSendWith: number = config.defaultMixin;
+        
+        let destination: any [] = [{address: destinationAddress, amount: amountToSend}];
+        
+         // Get fee address from session node for remote node fee
+         blockchainExplorer.getSessionNodeFeeAddress().then((remoteFeeAddress: string) => {
+          if (remoteFeeAddress !== wallet.getPublicAddress()) {
+            if (remoteFeeAddress !== '') {
+              destination.push({address: remoteFeeAddress, amount: config.remoteNodeFee});
+            } else {
+              destination.push({address: config.donationAddress, amount: config.remoteNodeFee});
+            } 
+          }
 
-        TransactionsExplorer.createTx([{address: destinationAddress, amount: amountToSend}], self.paymentId, wallet, blockchainHeight,
+        TransactionsExplorer.createTx(destination, self.paymentId, wallet, blockchainHeight,
           function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
             return blockchainExplorer.getRandomOuts(amounts, numberOuts);
           }
@@ -312,13 +328,21 @@ class SendView extends DestructableView {
 
             return new Promise<void>(function (resolve, reject) {
               setTimeout(function () {//prevent bug with swal when code is too fast
+                let feeInfo = '';
+                if (remoteFeeAddress !== wallet.getPublicAddress()) {
+                  feeInfo = '<br><br><span style="font-size: 0.8em; font-style: italic; color: #666;">' + '(' +i18n.t('sendPage.confirmTransactionModal.remoteNodeFee', {
+                    fee: config.remoteNodeFee / Math.pow(10, config.coinUnitPlaces),
+                    symbol: config.coinSymbol
+                  }) + ')'+ '</span>';
+                }
+                
                 swal({
                   title: i18n.t('sendPage.confirmTransactionModal.title'),
                   html: i18n.t('sendPage.confirmTransactionModal.content', {
                     amount:amount / Math.pow(10, config.coinUnitPlaces),
                     fees:feesAmount / Math.pow(10, config.coinUnitPlaces),
                     total:(amount+feesAmount) / Math.pow(10, config.coinUnitPlaces),
-                  }),
+                  }) + feeInfo,
                   showCancelButton: true,
                   confirmButtonText: i18n.t('sendPage.confirmTransactionModal.confirmText'),
                   cancelButtonText: i18n.t('sendPage.confirmTransactionModal.cancelText'),
@@ -339,11 +363,11 @@ class SendView extends DestructableView {
               }, 1);
             });
           },
-          mixinToSendWith, self.message, 0).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
+          mixinToSendWith, self.message, 0, "regular", 0).then(function (rawTxData: { raw: { hash: string, prvkey: string, raw: string }, signed: any }) {
 
           blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
             //save the tx private key
-            wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
+            wallet.addTxPrivateKeyWithTxHashAndFusion(rawTxData.raw.hash, rawTxData.raw.prvkey, false);
 
             //force a mempool check so the user is up to date
             let watchdog: WalletWatchdog = DependencyInjectorInstance().getInstance(WalletWatchdog.name);
@@ -378,34 +402,55 @@ class SendView extends DestructableView {
                 window.location.href = window.encodeURIComponent(self.redirectUrlAfterSend.replace('{TX_HASH}', rawTxData.raw.hash));
               }
             });
-          }).catch(function (data: any) {
-            swal({
-              type: 'error',
-              title: i18n.t('sendPage.transferExceptionModal.title'),
-              html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(data)}),
-              confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-            });
+          }).catch(function (error: any) {
+            //console.log(error);
+            if (error && error !== '') {
+              let errorMessage = '';
+              let errorTitle = i18n.t('sendPage.transferExceptionModal.title');
+              
+              if (typeof error === 'string') {
+                errorMessage = error;
+              } else if (error instanceof Error) {
+                errorMessage = error.message;
+              } else {
+                errorMessage = JSON.stringify(error);
+              }
+              
+              swal({
+                type: 'error',
+                title: errorTitle,
+                html: i18n.t('sendPage.transferExceptionModal.content', {details: errorMessage}),
+                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+              });
+            }
           });
           swal.close();
         }).catch(function (error: any) {
           //console.log(error);
           if (error && error !== '') {
-            if (typeof error === 'string')
-              swal({
-                type: 'error',
-                title: i18n.t('sendPage.transferExceptionModal.title'),
-                html: i18n.t('sendPage.transferExceptionModal.content', {details: error}),
-                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-              });
-            else
-              swal({
-                type: 'error',
-                title: i18n.t('sendPage.transferExceptionModal.title'),
-                html: i18n.t('sendPage.transferExceptionModal.content', {details: JSON.stringify(error)}),
-                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
-              });
+            let errorMessage = '';
+            let errorTitle = i18n.t('sendPage.transferExceptionModal.title');
+            
+            if (typeof error === 'string') {
+              errorMessage = error;
+            } else if (error instanceof Error) {
+              errorMessage = error.message;
+            } else {
+              errorMessage = JSON.stringify(error);
+            }
+            
+            swal({
+              type: 'error',
+              title: errorTitle,
+              html: i18n.t('sendPage.transferExceptionModal.content', {details: errorMessage}),
+              confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+            });
           }
         });
+      }).catch((err: any) => {
+        console.error("Error getting session node fee address", err);
+       
+      });
       } else {
         swal({
           type: 'error',
@@ -425,10 +470,15 @@ class SendView extends DestructableView {
       logDebugMsg("optimizeInfo.numOutputs", optimizeInfo.numOutputs);
       logDebugMsg('optimizeInfo.isNeeded', optimizeInfo.isNeeded);
       this.optimizeIsNeeded = optimizeInfo.isNeeded;
-      if(optimizeInfo.isNeeded) {
+      this.showOptimizePanel = optimizeInfo.isNeeded;
+      if (optimizeInfo.isNeeded) {
         this.optimizeOutputs = optimizeInfo.numOutputs;
+        // Hide the panel after 20 seconds
+        setTimeout(() => {
+          this.showOptimizePanel = false;
+        }, 20000);
       }
-		}).catch((err: any) => {
+    }).catch((err: any) => {
       console.error("Error in checkOptimization, calling getHeight", err);
     });
   }
@@ -436,7 +486,7 @@ class SendView extends DestructableView {
   optimizeWallet = () => {
     this.optimizeLoading = true; // set loading state to true
     blockchainExplorer.getHeight().then((blockchainHeight: number) => {
-      wallet.optimize(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
+      wallet.createFusionTransaction(blockchainHeight, config.optimizeThreshold, blockchainExplorer,
         function (amounts: number[], numberOuts: number): Promise<RawDaemon_Out[]> {
           return blockchainExplorer.getRandomOuts(amounts, numberOuts);
         }).then((processedOuts: number) => {
@@ -450,7 +500,7 @@ class SendView extends DestructableView {
           setTimeout(() => {
             this.checkOptimization(); // check if optimization is still needed
           }, 1000);  
-        }).catch((err) => {
+        }).catch((err: any) => {
           console.log(err);
           this.optimizeLoading = false; // set loading state to false
           setTimeout(() => {
@@ -502,6 +552,8 @@ class SendView extends DestructableView {
 
   @VueWatched()
   amountToSendWatch() {
+    // Allow only numbers and at most one dot
+    this.amountToSend = this.amountToSend.replace(/[^0-9.]/g, '').replace(/(\\..*)\\./g, '$1');
     try {
       this.amountToSendValid = !isNaN(parseFloat(this.amountToSend));
     } catch (e) {
@@ -542,6 +594,16 @@ class SendView extends DestructableView {
     } catch (e) {
       this.mixinIsValid = false;
     }
+  }
+
+  onAmountFocus() {
+    this.amountPlaceholder = '';
+    if (this.amountToSend === '0') this.amountToSend = '';
+  }
+
+  onAmountBlur() {
+    if (this.amountToSend === '') this.amountToSend = '0';
+    this.amountPlaceholder = '0';
   }
 }
 

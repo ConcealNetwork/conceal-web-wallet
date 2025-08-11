@@ -56,7 +56,7 @@ class NetworkView extends DestructableView {
 	}
 
 	refreshStats() {
-    $("#appLoader").addClass("appLoaderVisible");
+    		$('#pageLoading').show();
 
     blockchainExplorer.initialize().then((success : boolean) => {      
       blockchainExplorer.getNetworkInfo().then((info: NetworkInfo) => {
@@ -68,9 +68,9 @@ class NetworkView extends DestructableView {
         this.ticker = config.coinSymbol;
         this.lastBlockFound = info.timestamp;
 
-        $("#appLoader").removeClass("appLoaderVisible");
+        $('#pageLoading').hide();
       }).catch((err: any) => {
-        $("#appLoader").removeClass("appLoaderVisible");
+        $('#pageLoading').hide();
       });
     });
 	}

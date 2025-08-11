@@ -10,7 +10,7 @@
 		"send": "Envoyer",
 		"receive": "Recevoir",
 		"message": "Messages",
-		"deposit": "Deposits",
+		"deposit": "Dépôts",
 		"export": "Exporter",
 		"donate": "Contribuer",
 		"settings": "Paramètres",
@@ -24,6 +24,8 @@
 		"passwordInvalidRequirements": "Le mot de passe doit avoir au moins 8 caractères, 1 lettre majuscule, 1 mettre minuscule, un chiffre et un caractère spécial",
 		"passwordConfirmationNotMatching": "Le mot de passe ne correspond pas au premier écrit",
 		"download": "Télécharger",
+		"confirmText": "OK",
+		"error": "Erreur",
 		"newVersionModal": {
 		  "title": "Une nouvelle version est disponible",
 		  "content": "Voulez vous recharger pour passer à la nouvelle version ?",
@@ -59,7 +61,11 @@
 		  "label": "Optimisation",
 		  "subtitle": "Votre portefeuille doit être optimisé",
 		  "button": "Optimiser maintenant",
-		  "loadingText": "Optimisation en cours, veuillez patienter..."
+		  "loadingText": "Optimisation en cours, veuillez patienter...",
+		  "success": "Transfert envoyé avec succès!",
+		  "error": "Une erreur est survenue.",
+		  "errorInfo": "Optimisation annulée",
+		  "confirmText": "OK"
 		}
 	  },
 	  "bottom": {
@@ -110,11 +116,13 @@
 		},
 		"balanceBlock": {
 		  "title": "Votre solde",
-		  "total": "Total",
+		  "portfolio": "Portfolio",
+		  "available": "Disponible",
 		  "pending": "En cours",
 		  "unlocked": "Disponible",
 		  "deposited": "Dépots",
-		  "withdrawable": "Retirable"
+		  "withdrawable": "Retirable",
+		  "futureInterest": "Intérêt futur"
 		},
 		"historyBlock": {
 		  "title": "Historique des transactions",
@@ -300,7 +308,8 @@
 		  "title": "Confirmer le transfert ?",
 		  "content": "Montant: {amount}<br/>Frais: {fees}<br/>Total: {total}",
 		  "confirmText": "Confirmer",
-		  "cancelText": "Annuler"
+		  "cancelText": "Annuler",
+		  "remoteNodeFee": "Frais du noeud distant {fee} {symbol} ajouté au montant"
 		},
 		"waitingNfcModal": {
 		  "title": "Attente du Nfc",
@@ -330,7 +339,11 @@
 		  },
 		  "message": {
 			"label": "Message",
-			"invalid": "Le message est trop long. Maximum 260 characteres"
+			"invalid": "Le message est trop long. Maximum 260 characteres",
+			"preview": "Aperçu"
+		  },
+		  "ttl": {
+			"info": "La transaction TTL ne sera pas incluse dans les blocs et sera automatiquement détruite après {ttl}(Heures:Minutes). Le montant facturé sera remboursé."
 		  },
 		  "sendButton": "Envoyer",
 		  "cancelButton": "Annuler"
@@ -382,7 +395,13 @@
 		}
 	  },
 	  "depositsPage": {
-		"title": "Dépots",
+		"title": "Dépots",	
+		"depositDate": "Date de dépot",
+		"lockHeight": "Hauteur de blocage",
+		"unlockDate": "Date de déblocage",
+		"unlockHeight": "Hauteur de déblocage",
+		"interest": "Intérêt",
+		"deposit": "Dépot",
 		"syncing": {
 		  "label": "Synchronisation du portefeuille.... Quand il sera totalement synchronisé vous pourrez voir vos dépots."
 		},
@@ -391,10 +410,35 @@
 		  "send": "Créer"
 		},
 		"depositsBlock": {
-		  "title": "Liste des Dépots"
+		  "title": "Liste des dépôts"
 		},
-		"createBlock": {
-			
+		"confirmDeposit": {
+		  "title": "Confirmer le Dépôt",
+		  "message": "Entrer votre mot de passe pour confirmer la création d'un dépôt de {amount} CCX pour {term} mois ?",
+		  "confirm": "Créer le Dépôt",
+		  "cancel": "Annuler",
+		  "passwordRequired": "Le mot de passe du portefeuille est requis"
+		},
+		"createDeposit": {
+		  "title": "Créer un Nouveau Dépôt",
+		  "amount": "Montant à déposer",
+		  "term": "Durée de blocage (en mois)",
+		  "termError": "Veuillez entrer un nombre entier entre 1 et 12 mois",
+		  "confirm": "Créer le Dépôt",
+		  "cancel": "Annuler",
+		  "createSuccess": "Dépôt Envoyé à la Blockchain",
+		  "createPending": "Votre dépôt est en cours de traitement",
+		  "createError": "Erreur lors de la création du dépôt",
+		  "withdrawSuccess": "Retrait envoyé à la blockchain",
+		  "withdrawPending": "Votre retrait est en cours de traitement",
+		  "withdrawError": "Erreur lors du retrait du dépôt",
+		  "amountError": "Montant Invalide",
+		  "amountMustBePositive": "Le montant doit être positif",
+		  "termMustBeValid": "La durée doit être comprise entre 1 et 12 mois",
+		  "insufficientFunds": "Fonds Insuffisants",
+		  "insufficientFundsMessage": "Vous n'avez pas assez de fonds pour créer ce dépôt",
+		  "maxAmount": "Montant maximal du dépôt: {amount} CCX",
+		  "rewardAtTerm": "Récompense à terme: {reward} CCX"
 		},
 		"depositDetails": {
 		  "title": "Détails des dépots",
@@ -407,7 +451,17 @@
 		  "spendingTime": "Date de la dépense",
 		  "spendingHeight": "Hauteur de la dépense",
 		  "creationHeight": "Hauteur de création",
-		  "unlockHeight": "Hauteur de déverouillage"
+		  "unlockHeight": "Hauteur de déverouillage",
+		  "interest": "Intérêt"
+		},
+		"recap": {
+		  "title": "Récapitulatif des dépôts",
+		  "totalLifetimeDeposit": "Total des dépôts",
+		  "totalLifetimeInterest": "Total des intérêts",
+		  "totalCashedOutInterest": "Total des intérêts déjà retirés",
+		  "futureInterestLocked": "Intérêt futur sur les dépôts verrouillés",
+		  "futureInterestUnlocked": "Intérêt futur sur les dépôts déverrouillés",
+		  "earliestWithdrawable": "Date de déverouillage la plus proche"
 		}
 	  },
 	  "receivePage": {
@@ -482,6 +536,12 @@
 		  },
 		  "nodeUrl": {
 			"label": "Node URL"
+		  },
+		  "ticker": {
+			"label": "Symbole",
+			"full": "Symbole Complet",
+			"short": "Symbole Court",
+			"preview": "Aperçu"
 		  }
 		},
 		"changePasswordButton": "Changer le mot de passe de mon portefeuille",
@@ -518,7 +578,8 @@
 		"parametersBlock": {
 		  "title": "Paramètres",
 		  "password": {
-			"label": "Mot de passe pour protéger le portefeuille"
+			"label": "Mot de passe pour protéger le portefeuille",
+			"label_input": "Mot de passe du portefeuille"
 		  },
 		  "passwordConfirm": {
 			"label": "Confirmer le mot de passe",
@@ -535,10 +596,17 @@
 		"qrCodeBlock": {
 		  "title": "QR code",
 		  "startScanButton": "Commençer le scan",
-		  "importButton": "Importer"
+		  "importButton": "Importer",
+		  "scanSuccess": "QR code scanné avec succès"
 		},
 		"qrScanningBlock": {
 		  "title": "Présentez le QR code"
+		},
+		"error": {
+		  "title": "Erreur",
+		  "connection": "Erreur de connexion, veuillez réessayer",
+		  "init": "Erreur d'initialisation, veuillez réessayer",
+		  "confirmText": "OK"
 		}
 	  },
 	  "exportPage": {
@@ -594,11 +662,14 @@
 	  },
 	  "importFromFilePage": {
 		"title": "Importer un portefeuille depuis un fichier",
-		"subtitle": "Utilisez votre sauvegarde pour récréer le portefeuille",
+		"subtitle": "Utilisez votre sauvegarde json pour importer le portefeuille",
 		"walletBlock": {
 		  "title": "Fichier du portefeuille",
 		  "label": "Sélectionner",
-		  "importButton": "Importer"
+		  "importButton": "Importer",
+		  "selectFile": "Veuillez sélectionner un fichier de portefeuille json valide:",
+		  "fileSelected": "Fichier sélectionné",
+		  "invalidFile": "Le fichier sélectionné n'est pas un fichier portefeuille valide."
 		}
 	  },
 	  "importFromMnemonicPage": {

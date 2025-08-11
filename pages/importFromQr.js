@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -62,10 +62,10 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         ImportView.prototype.importWallet = function () {
             var self = this;
-            $("#appLoader").addClass("appLoaderVisible");
+            $('#pageLoading').show();
             blockchainExplorer.initialize().then(function (success) {
                 blockchainExplorer.getHeight().then(function (currentHeight) {
-                    $("#appLoader").removeClass("appLoaderVisible");
+                    $('#pageLoading').hide();
                     var newWallet = new Wallet_1.Wallet();
                     if (self.mnemonicSeed !== null) {
                         var detectedMnemonicLang = Mnemonic_1.Mnemonic.detectLang(self.mnemonicSeed);
@@ -130,9 +130,23 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     window.location.href = '#account';
                 }).catch(function (err) {
                     console.log(err);
+                    $('#pageLoading').hide();
+                    swal({
+                        type: 'error',
+                        title: i18n.t('importFromQrPage.error.title'),
+                        text: i18n.t('importFromQrPage.error.connection'),
+                        confirmButtonText: i18n.t('importFromQrPage.error.confirmText'),
+                    });
                 });
             }).catch(function (err) {
                 console.log(err);
+                $('#pageLoading').hide();
+                swal({
+                    type: 'error',
+                    title: i18n.t('importFromQrPage.error.title'),
+                    text: i18n.t('importFromQrPage.error.init'),
+                    confirmButtonText: i18n.t('importFromQrPage.error.confirmText'),
+                });
             });
         };
         ImportView.prototype.initQr = function () {
@@ -143,6 +157,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         ImportView.prototype.startScan = function () {
             var _this = this;
             var self = this;
+            this.scanSuccess = false; // Reset scan success state
             if (typeof window.QRScanner !== 'undefined') {
                 window.QRScanner.scan(function (err, result) {
                     if (err) {
@@ -188,11 +203,13 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                         this.importHeight = parseInt('' + txDetails.height);
                     if (typeof txDetails.address !== 'undefined')
                         this.publicAddress = txDetails.address;
+                    this.scanSuccess = true;
                     return true;
                 }
             }
             catch (e) {
             }
+            this.scanSuccess = false;
             return false;
         };
         ImportView.prototype.stopScan = function () {
@@ -249,6 +266,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
         ], ImportView.prototype, "qrScanning", void 0);
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(false)
+        ], ImportView.prototype, "scanSuccess", void 0);
         __decorate([
             (0, VueAnnotate_1.VueWatched)()
         ], ImportView.prototype, "passwordWatch", null);

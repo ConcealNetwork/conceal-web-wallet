@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "یک رمز عبور قوی باید حداقل شامل هشت حرف با حروف بزرگ ، کوچک و سمبل باشد",
       "passwordConfirmationNotMatching": "رمز عبور شما مطابقت ندارد",
       "download": "دریافت",
+      "confirmText": "تایید",
+      "error": "خطا",
       "newVersionModal": {
         "title": "نسخه ی جدیدی موجود است",
         "content": "آیا مایل به بارگذاری مجدد صفحه و دریافت بروز رسانی میباشید ؟",
@@ -59,7 +61,11 @@
         "label": "بهینه سازی",
         "subtitle": "کیف پول شما باید بهینه سازی شود",
         "button": "هم اکنون بهینه سازی کنید",
-        "loadingText": "در حال بهینه سازی، لطفاً صبر کنید..."
+        "loadingText": "در حال بهینه سازی، لطفاً صبر کنید...",
+        "success": "تراکنش همگام سازی ارسال شد",
+        "error": "خطا در ارسال تراکنش همگام سازی",
+        "errorInfo": "بهینه سازی لغو شد",
+        "confirmText": "تایید"
       }
     },
     "bottom": {
@@ -110,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "کل حساب",
-        "total": "Total",
+        "portfolio": "نمونه کارها",
+        "available": "موجود",
         "pending": "Pending",
         "unlocked": "در دسترس",
         "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "withdrawable": "Withdrawable",
+        "futureInterest": "آینده"
       },
       "historyBlock": {
         "title": "تاریخچه تراکنش ها",
@@ -231,7 +239,7 @@
     "sendPage": {
       "title": "ارسال کربو",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "کیف پول شما در حال همگام سازی است.... هنگامی که همگام شد، میتوانید پول ارسال کنید."
       },
       "sendBlock": {
         "address": {
@@ -300,7 +308,8 @@
         "title": "آیا تراکنش را تایید میکنید",
         "content": "'مقدار : {amount}<br/>کارمزد : {fees}<br/>مقدار کل : {total}",
         "confirmText": "تایید",
-        "cancelText": "لغو"
+        "cancelText": "لغو",
+        "remoteNodeFee": "کارمزد نود رمزگذاری {fee} {symbol} به مقدار اضافه شده است"
       },
       "waitingNfcModal": {
         "title": "در انتظار ان اف سی",
@@ -310,7 +319,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "کیف پول شما در حال همگام سازی است.... هنگامی که همگام شد، میتوانید پول ارسال کنید."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -330,7 +339,11 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is to long. Max length is 260 characters",
+          "preview": "پیش نمایش"
+        },
+        "ttl": {
+          "info": "تراکنش TTL فقط در mempool وجود خواهد داشت و به طور خودکار به پایان رسیده پس از {ttl}(ساعت:دقیقه). آن در بلوکها معدود نمیشود. بنابراین، مقدار قابل بازگشت خواهد بود."
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -383,8 +396,14 @@
     },
     "depositsPage": {
       "title": "Deposits",
+      "unlockDate": "باز کردن",
+      "interest": "علاقه",
+      "deposit": "سپردن",
+      "lockHeight": "قفل",
+      "unlockHeight": "باز کردن",
+      "depositDate": "سپردن",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "کیف پول شما در حال همگام سازی است.... هنگامی که همگام شد، میتوانید پول ارسال کنید."
       },
       "tabs": {
         "inbox": "Deposits",
@@ -393,8 +412,33 @@
       "depositsBlock": {
         "title": "Deposits list"
       },
-      "createBlock": {
-        "[]": "تهی"
+      "confirmDeposit": {
+        "title": "تأیید کردن",
+        "message": "وارد کردن",
+        "confirm": "ایجاد کردن",
+        "cancel": "لغو کردن",
+        "passwordRequired": "کیف پول"
+      },
+      "createDeposit": {
+        "title": "ایجاد کردن",
+        "amount": "مقدار",
+        "term": "قفل",
+        "termError": "لطفا",
+        "confirm": "ایجاد کردن",
+        "cancel": "لغو کردن",
+        "createSuccess": "سپردن",
+        "createPending": "شما",
+        "createError": "خطا",
+        "withdrawSuccess": "عقب نشینی",
+        "withdrawPending": "شما",
+        "withdrawError": "خطا",
+        "amountError": "نامعتبر",
+        "amountMustBePositive": "مقدار",
+        "termMustBeValid": "دوره",
+        "insufficientFunds": "ناچیز",
+        "insufficientFundsMessage": "شما",
+        "maxAmount": "حداکثر",
+        "rewardAtTerm": "پاداش"
       },
       "depositDetails": {
         "title": "Deposits details",
@@ -407,7 +451,17 @@
         "spendingTime": "Spending time",
         "spendingHeight": "Spending height",
         "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "unlockHeight": "Unlock height",
+        "interest": "علاقه"
+      },
+      "recap": {
+        "title": "مرور سپرده ها",
+        "totalLifetimeDeposit": "مجموع سپرده ها",
+        "totalLifetimeInterest": "مجموع علاقه ها",
+        "totalCashedOutInterest": "مجموع علاقه های دریافت شده",
+        "futureInterestLocked": "علاقه های آتی سپرده های قفل شده",
+        "futureInterestUnlocked": "علاقه های آتی سپرده های باز شده",
+        "earliestWithdrawable": "سپرده های قابل باز شدن"
       }
     },
     "receivePage": {
@@ -482,6 +536,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "سیمبل",
+          "full": "سیمبل کامل",
+          "short": "سیمبل کوتاه",
+          "preview": "پیش نمایش"
         }
       },
       "changePasswordButton": "تغییر رمز عبور کیف پول",
@@ -518,7 +578,8 @@
       "parametersBlock": {
         "title": "پارامترها",
         "password": {
-          "label": "رمز عبور جهت محافظت از کیف پول شما"
+          "label": "رمز عبور جهت محافظت از کیف پول شما",
+          "label_input": ""
         },
         "passwordConfirm": {
           "label": "تایید رمز عبور",
@@ -535,10 +596,17 @@
       "qrCodeBlock": {
         "title": "کد کیو آر",
         "startScanButton": "شروع اسکن",
-        "importButton": "درون ریزی"
+        "importButton": "درون ریزی",
+        "scanSuccess": "کد کیو آر با موفقیت اسکن شد"
       },
       "qrScanningBlock": {
         "title": "متصل کردن کد کیو آر"
+      },
+      "error": {
+        "title": "خطا",
+        "connection": "خطا در اتصال، لطفا دوباره تلاش کنید",
+        "init": "خطا در اولیه سازی، لطفا دوباره تلاش کنید",
+        "confirmText": "تایید"
       }
     },
     "exportPage": {
@@ -598,7 +666,10 @@
       "walletBlock": {
         "title": "فایل کیف پول",
         "label": "انتخاب کنید",
-        "importButton": "درون ریزی"
+        "importButton": "درون ریزی",
+        "selectFile": "لطفا",
+        "fileSelected": "پرونده",
+        "invalidFile": "در"
       }
     },
     "importFromMnemonicPage": {

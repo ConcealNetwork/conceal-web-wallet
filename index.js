@@ -54,16 +54,30 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
     window.i18n = i18n;
     var browserUserLang = '' + (navigator.language || navigator.userLanguage);
     browserUserLang = browserUserLang.toLowerCase().split('-')[0];
-    Storage_1.Storage.getItem('user-lang', browserUserLang).then(function (userLang) {
-        if (userLang) {
-            Translations_1.Translations.loadLangTranslation(userLang).catch(function (err) {
-                console.error("Failed to load '".concat(userLang, "' language"), err);
-                return Translations_1.Translations.loadLangTranslation('en');
-            }).catch(function (err) {
-                console.error("Failed to load 'en' language", err);
-            });
-        }
+    // Create a promise that resolves when i18n is ready
+    var i18nReadyPromise = new Promise(function (resolve) {
+        Storage_1.Storage.getItem('user-lang', browserUserLang).then(function (userLang) {
+            if (userLang) {
+                Translations_1.Translations.loadLangTranslation(userLang).catch(function (err) {
+                    console.error("Failed to load '".concat(userLang, "' language"), err);
+                    return Translations_1.Translations.loadLangTranslation('en');
+                }).catch(function (err) {
+                    console.error("Failed to load 'en' language", err);
+                }).finally(function () {
+                    resolve();
+                });
+            }
+            else {
+                resolve();
+            }
+        });
     });
+    window.i18nReadyPromise = i18nReadyPromise;
+    window.safeSwal = function (options) {
+        return i18nReadyPromise.then(function () {
+            return swal(options);
+        });
+    };
     //========================================================
     //====================Generic design======================
     //========================================================
@@ -149,7 +163,7 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
                         menuView.toggle();
                 }
             }
-            if (xy <= limit) {
+            else if (xy <= limit) {
                 if (y < 0) {
                     //top
                 }
@@ -195,6 +209,7 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
             Translations_1.Translations.getLang().then(function (userLang) {
                 _this.language = userLang;
             });
+            _this.isNative = window.native;
             return _this;
         }
         CopyrightView.prototype.languageWatch = function () {
@@ -204,6 +219,9 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
                 console.error("Failed to load \"".concat(_this.language, "\" language"), err);
             });
         };
+        __decorate([
+            (0, VueAnnotate_1.VueVar)(false)
+        ], CopyrightView.prototype, "isNative", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)('en')
         ], CopyrightView.prototype, "language", void 0);
@@ -219,32 +237,43 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
     //========================================================
     //==================Loading the right page================
     //========================================================
-    var isCordovaApp = document.URL.indexOf('http://') === -1
-        && document.URL.indexOf('https://') === -1;
+    var isCordovaApp = false;
+    // Check for traditional Cordova app (local files)
+    var isLocalFileApp = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+    // Check for WebView app (remote content in WebView)
+    var isWebViewApp = navigator.userAgent.includes('Android') && navigator.userAgent.includes('wv');
+    // Either local Cordova app or WebView app should be treated as native
+    isCordovaApp = isLocalFileApp || isWebViewApp;
     var promiseLoadingReady;
     window.native = false;
     if (isCordovaApp) {
         window.native = true;
+        copyrightView.isNative = true;
         $('body').addClass('native');
-        var promiseLoadingReadyResolve_1 = null;
-        var promiseLoadingReadyReject_1 = null;
-        promiseLoadingReady = new Promise(function (resolve, reject) {
-            promiseLoadingReadyResolve_1 = resolve;
-            promiseLoadingReadyReject_1 = reject;
+        /*	when we had hope to load cordova.js, but cannot happen in a redirect.
+        let promiseLoadingReadyResolve : null|Function = null;
+        let promiseLoadingReadyReject : null|Function = null;
+        promiseLoadingReady = new Promise<void>(function(resolve, reject){
+            promiseLoadingReadyResolve = resolve;
+            promiseLoadingReadyReject = reject;
         });
-        var cordovaJs = document.createElement('script');
+        let cordovaJs = document.createElement('script');
         cordovaJs.type = 'text/javascript';
         cordovaJs.src = 'cordova.js';
         document.body.appendChild(cordovaJs);
-        var timeoutCordovaLoad_1 = setTimeout(function () {
-            if (promiseLoadingReadyResolve_1)
-                promiseLoadingReadyResolve_1();
-        }, 10 * 1000);
-        document.addEventListener('deviceready', function () {
-            if (promiseLoadingReadyResolve_1)
-                promiseLoadingReadyResolve_1();
-            clearInterval(timeoutCordovaLoad_1);
+    
+        let timeoutCordovaLoad = setTimeout(function(){
+            if(promiseLoadingReadyResolve)
+                promiseLoadingReadyResolve();
+        }, 10*1000);
+        document.addEventListener('deviceready', function(){
+            if(promiseLoadingReadyResolve)
+                promiseLoadingReadyResolve();
+            clearInterval(timeoutCordovaLoad);
         }, false);
+        */
+        console.log('📱 Cordova WebView detected - skipping cordova.js loading');
+        promiseLoadingReady = Promise.resolve();
     }
     else
         promiseLoadingReady = Promise.resolve();
@@ -262,9 +291,16 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
     //only install the service on web platforms and not native
     console.log("%c                                            \n .d8888b.  888                       888    \nd88P  Y88b 888                       888    \nY88b.      888                       888    This is a browser feature intended for \n \"Y888b.   888888  .d88b.  88888b.   888    developers. If someone told you to copy-paste \n    \"Y88b. 888    d88\"\"88b 888 \"88b  888    something here to enable a feature \n      \"888 888    888  888 888  888  Y8P    or \"hack\" someone's account, it is a \nY88b  d88P Y88b.  Y88..88P 888 d88P         scam and will give them access to your \n \"Y8888P\"   \"Y888  \"Y88P\"  88888P\"   888    Conceal Network Wallet!\n                           888              \n                           888              \n                           888              \n\nIA Self-XSS scam tricks you into compromising your wallet by claiming to provide a way to log into someone else's wallet, or some other kind of reward, after pasting a special code or link into your web browser.", "font-family:monospace");
     if (!isCordovaApp && 'serviceWorker' in navigator) {
+        // Flag to prevent showing the same update multiple times
+        var updateModalShown_1 = false;
         var showRefreshUI_1 = function (registration) {
-            //console.log(registration);
-            swal({
+            // Prevent showing the same update multiple times
+            if (updateModalShown_1) {
+                return;
+            }
+            updateModalShown_1 = true;
+            // Use safeSwal which automatically waits for i18n
+            window.safeSwal({
                 type: 'info',
                 title: i18n.t('global.newVersionModal.title'),
                 html: i18n.t('global.newVersionModal.content'),
@@ -274,6 +310,10 @@ define(["require", "exports", "./lib/numbersLab/Router", "./model/Mnemonic", "./
             }).then(function (value) {
                 if (!value.dismiss) {
                     registration.waiting.postMessage('force-activate');
+                }
+                else {
+                    // Reset flag when user cancels so they can see it again later
+                    updateModalShown_1 = false;
                 }
             });
         };
