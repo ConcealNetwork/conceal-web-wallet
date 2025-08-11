@@ -12,7 +12,7 @@
   },
   "main": "index.js",
   "dependencies": {
-    "@babel/helper-validator-identifier": "^7.24.6",
+    "@babel/helper-validator-identifier": "^7.27.1",
     "@types/node": "^24.0.14",
     "dotenv": "^17.2.0",
 
