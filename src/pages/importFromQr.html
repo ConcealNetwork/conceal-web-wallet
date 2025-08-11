@@ -51,6 +51,9 @@
 				<div class="body" >
 					<div class="header-title" >{{ $t("importFromQrPage.qrCodeBlock.title") }}</div>
 					<div class="content" >
+						<div v-if="scanSuccess" class="selected-filename">
+							{{ $t("importFromQrPage.qrCodeBlock.scanSuccess") }}
+						</div>
 						<div class="actions tc" >
 							<button @click="startScan()" class="btn">{{ $t("importFromQrPage.qrCodeBlock.startScanButton") }}</button>
 						</div>
@@ -71,6 +74,7 @@
 			<h2>{{ $t("importFromQrPage.qrScanningBlock.title") }}</h2>
 			<div class="videoContainer" >
 				<video width="100" id="cameraVideoFluxForDelivery" autoplay></video>
+				<div class="aimingSquare" v-if="qrScanning"></div>
 			</div>
 		</div>
 	</div>

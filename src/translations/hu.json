@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "A jelszónak legalább 8 karakterből kell állnia és tartalmaznia kell egy nagybetűt, egy kisbetűt, egy számot és egy különleges karaktert",
       "passwordConfirmationNotMatching": "A megadott jelszavak nem egyeznek",
       "download": "Letöltés",
+      "confirmText": "OK",
+      "error": "Hiba",
       "newVersionModal": {
         "title": "Elérhető egy új verzió",
         "content": "Szeretnéd újratölteni az oldalt az új verzió használatához?",
@@ -59,7 +61,11 @@
         "label": "Optimalizálás",
         "subtitle": "A tárca optimalizálásra szorul",
         "button": "Optimalizálás most",
-        "loadingText": "Optimalizálás folyamatban, kis türelmet..."
+        "loadingText": "Optimalizálás folyamatban, kis türelmet...",
+        "success": "Optimalizálás sikeres",
+        "error": "Optimalizálás sikertelen",
+        "errorInfo": "Optimalizálás sikertelen",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -110,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "Egyenleg",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "Portfólió",
+        "available": "Elérhető",
+        "pending": "Függőben",
         "unlocked": "Feloldva",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "Befektetések",
+        "withdrawable": "Kifizethető",
+        "futureInterest": "Jövőbeli kamat"
       },
       "historyBlock": {
         "title": "Tranzakciós előzmények",
@@ -123,7 +131,7 @@
         "waitSync": "Kérlek, várj, míg a tárca naprakész lesz",
         "beReallyPatient": "A kezdeti beállítás némi időbe telhet...",
         "getCoinAddress": "CCX fogadása",
-        "loadMoreBtn": "Load more"
+        "loadMoreBtn": "Több"
       },
       "txDetails": {
         "title": "Tranzakciórészletek",
@@ -132,7 +140,7 @@
         "blockHeight": "Blokk",
         "paymentId": "Fizetési azonosító",
         "txPrivKey": "Tranzakció magánkulcs",
-        "message": "Message"
+        "message": "Üzenet"
       }
     },
     "changeWalletPasswordPage": {
@@ -231,7 +239,7 @@
     "sendPage": {
       "title": "CCX küldése",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "A tárca szinkronizálása folyamatban.... Amikor teljesen szinkronizálva van, küldhet pénzt."
       },
       "sendBlock": {
         "address": {
@@ -300,7 +308,8 @@
         "title": "Megerősíted a tranzakciót?",
         "content": "Mennyiség: {amount}<br/>Díj: {fees}<br/>Összesen: {total}",
         "confirmText": "Megerősítés",
-        "cancelText": "Mégsem"
+        "cancelText": "Mégsem",
+        "remoteNodeFee": "A tárca díja {fee} {symbol} hozzáadva a mennyiséghez"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",
@@ -310,71 +319,75 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "A tárca szinkronizálása folyamatban.... Amikor teljesen szinkronizálva van, küldhet üzenetet."
       },
       "tabs": {
-        "inbox": "Inbox",
-        "send": "Send"
+        "inbox": "Beérkező üzenetek",
+        "send": "Küldés"
       },
       "inboxBlock": {
-        "title": "Messages Inbox"
+        "title": "Üzenetek beérkező"
       },
       "sendBlock": {
         "address": {
-          "label": "Destination address",
-          "placeholder": "Write the address where you want to send the message",
-          "invalid": "The destination address is invalid",
-          "fundsTo": "The message will be sent to",
-          "receiver": "Receiver",
-          "description": "Description"
+          "label": "Cím",
+          "placeholder": "Írd be azt a címet, ahová üzenetet szeretnél küldeni",
+          "invalid": "A cím érvénytelen",
+          "fundsTo": "Az üzenet ide kerül küldésre:",
+          "receiver": "Fogadás",
+          "description": "Leírás"
         },
         "message": {
-          "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "label": "Üzenet",
+          "invalid": "Az üzenet túl hosszú. Max hossza 260 karakter",
+          "preview": "Előnézet"
         },
-        "sendButton": "Send",
-        "cancelButton": "Cancel"
+        "ttl": {
+          "info": "A TTL tranzakció csak a mempoolban létezik és automatikusan összeomlik {ttl}(Óra:Perc) után. Nem lesz beillesztve a blokkokba. Ezért a díjat visszaigénylik."
+        },
+        "sendButton": "Küldés",
+        "cancelButton": "Mégsem"
       },
       "qrCodeScanning": {
         "explication": "Present the QR code"
       },
       "notEnoughMoneyModal": {
-        "title": "Oops...",
-        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "title": "Hupsz...",
+        "content": "Nincs elegendő pénz a tranzakció végrehajtásához",
         "confirmText": "OK"
       },
       "thankYouDonationModal": {
-        "title": "Thank you for your donation!",
-        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "title": "Köszönjük az adományt!",
+        "content": "Értékeljük a segítséged.<br/>Ez az adomány is segít jobbá tenni a Concealt.",
         "confirmText": "OK"
       },
       "transferSentModal": {
-        "title": "Message sent successfully!",
+        "title": "Üzenet sikeresen elküldve!",
         "confirmText": "OK"
       },
       "transferExceptionModal": {
-        "title": "Oops...",
-        "content": "An error occurred. Please report this error: {details}",
+        "title": "Hupsz...",
+        "content": "Hiba történt. Kérlek, jelentsd az alábbi hibát: {details}",
         "confirmText": "OK"
       },
       "invalidAmountModal": {
-        "title": "Oops...",
-        "content": "Invalid amount",
+        "title": "Hupsz...",
+        "content": "Érvénytelen összeg",
         "confirmText": "OK"
       },
       "creatingTransferModal": {
-        "title": "Creating transfer ...",
-        "content": "Please wait..."
+        "title": "Tranzakció létrehozása...",
+        "content": "Kérlek, várj..."
       },
       "finalizingTransferModal": {
-        "title": "Finalizing transfer ...",
-        "content": "Please wait..."
+        "title": "Tranzakció véglegesítése...",
+        "content": "Kérlek, várj..."
       },
       "confirmTransactionModal": {
-        "title": "Confirm transfer?",
-        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
-        "confirmText": "Confirm",
-        "cancelText": "Cancel"
+        "title": "Megerősíted a tranzakciót?",
+        "content": "Mennyiség: {amount}<br/>Díj: {fees}<br/>Összesen: {total}",
+        "confirmText": "Megerősítés",
+        "cancelText": "Mégsem"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",
@@ -382,32 +395,73 @@
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Deposztok",
+      "unlockDate": "Befektetés lekötési időpontja",
+      "interest": "Kamat",
+      "deposit": "Deposit",
+      "lockHeight": "Befektetés blokklánchossza",
+      "unlockHeight": "Befektetés lekötési blokklánchossza",
+      "depositDate": "Befektetés dátuma",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "A tárca szinkronizálása.... Amikor teljesen szinkronizálva van, láthatod a befektetéseket."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Befektetések",
+        "send": "Létrehozás"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Befektetések listája"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Befektetés megerősítése",
+        "message": "Írd be a jelszavadat a befektetés létrehozásának megerősítéséhez {amount} CCX {term} hónapra?",
+        "confirm": "Befektetés létrehozása",
+        "cancel": "Mégsem",
+        "passwordRequired": "A tárcajelszó megadása szükséges"
+      },
+      "createDeposit": {
+        "title": "Create New Deposit",
+        "amount": "Befektetendő összeg",
+        "term": "Befektetés időtartama (hónapban)",
+        "termError": "Kérlek, adj meg egy egész számot 1 és 12 hónap között",
+        "confirm": "Befektetés létrehozása",
+        "cancel": "Mégsem",
+        "createSuccess": "Befektetés elküldve a blokkláncra",
+        "createPending": "A befektetésedet feldolgozzák",
+        "createError": "Befektetés létrehozási hiba",
+        "withdrawSuccess": "Befektetés kifizetése elküldve a blokkláncra",
+        "withdrawPending": "A kifizetésedet feldolgozzák",
+        "withdrawError": "Befektetés kifizetési hiba",
+        "amountError": "Érvénytelen összeg",
+        "amountMustBePositive": "Az összegnek pozitívnak kell lennie",
+        "termMustBeValid": "A befektetés időtartama 1 és 12 hónap között kell legyen",
+        "insufficientFunds": "Nincs elegendő pénz",
+        "insufficientFundsMessage": "Nincs elegendő pénz a befektetés létrehozásához",
+        "maxAmount": "Maximum befektetés összege: {amount} CCX",
+        "rewardAtTerm": "Befektetés jutalma: {reward} CCX"
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
-        "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "title": "Befektetés részletei",
+        "txHash": "Befektetés tranzakciója",
+        "spendingTx": "Kifizetés tranzakciója",
+        "status": "Állapot",
+        "amount": "Összeg",
+        "term": "Időtartam",
+        "creationTime": "Létrehozás ideje",
+        "spendingTime": "Kifizetés ideje",
+        "spendingHeight": "Kifizetés blokklánchossza",
+        "creationHeight": "Befektetés blokklánchossza",
+        "unlockHeight": "Befektetés lekötési blokklánchossza",
+        "interest": "Kamat"
+      },
+      "recap": {
+        "title": "Befektetések összefoglalója",
+        "totalLifetimeDeposit": "Összes életbeli befektetés",
+        "totalLifetimeInterest": "Összes életbeli kamat",
+        "totalCashedOutInterest": "Összes kifizetett kamat",
+        "futureInterestLocked": "Jövőbeli kamat a lekötött befektetéseken",
+        "futureInterestUnlocked": "Jövőbeli kamat a kifizethető befektetéseken",
+        "earliestWithdrawable": "Legkorábbi kifizethető"
       }
     },
     "receivePage": {
@@ -482,6 +536,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Ticker",
+          "full": "Teljes",
+          "short": "Rövid",
+          "preview": "Előnézet"
         }
       },
       "changePasswordButton": "Jelszómódosítás",
@@ -535,10 +595,17 @@
       "qrCodeBlock": {
         "title": "QR-kód",
         "startScanButton": "Beolvasás",
-        "importButton": "Importálás"
+        "importButton": "Importálás",
+        "scanSuccess": "QR-kód sikeresen beolvasva"
       },
       "qrScanningBlock": {
         "title": "Mutasd be a QR-kódot"
+      },
+      "error": {
+        "title": "Hiba",
+        "connection": "Kapcsolódási hiba, próbáld újra",
+        "init": "Inicializálási hiba, próbáld újra",
+        "confirmText": "OK"
       }
     },
     "exportPage": {

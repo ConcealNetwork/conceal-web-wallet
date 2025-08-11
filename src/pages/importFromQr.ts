@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -41,6 +41,7 @@ class ImportView extends DestructableView{
 	@VueVar(false) forceInsecurePassword !: boolean;
 	@VueVar(0) importHeight !: number;
 	@VueVar(false) qrScanning !: boolean;
+	@VueVar(false) scanSuccess !: boolean;
 
 	private mnemonicSeed : string|null = null;
 	private privateSpendKey : string|null = null;
@@ -66,11 +67,11 @@ class ImportView extends DestructableView{
 
 	importWallet(){
 		let self = this;
-    $("#appLoader").addClass("appLoaderVisible");
+    $('#pageLoading').show();
 
     blockchainExplorer.initialize().then(success => {    
       blockchainExplorer.getHeight().then(function(currentHeight){
-        $("#appLoader").removeClass("appLoaderVisible");
+        $('#pageLoading').hide();
         let newWallet = new Wallet();
 
         if(self.mnemonicSeed !== null) {
@@ -132,12 +133,27 @@ class ImportView extends DestructableView{
         newWallet.creationHeight = newWallet.lastHeight;
 
         AppState.openWallet(newWallet, self.password);
+
         window.location.href = '#account';
      }).catch(err => {
         console.log(err);
+        $('#pageLoading').hide();
+        swal({
+          type: 'error',
+          title: i18n.t('importFromQrPage.error.title'),
+          text: i18n.t('importFromQrPage.error.connection'),
+          confirmButtonText: i18n.t('importFromQrPage.error.confirmText'),
+        });
       });
     }).catch(err => {
       console.log(err);
+      $('#pageLoading').hide();
+      swal({
+        type: 'error',
+        title: i18n.t('importFromQrPage.error.title'),
+        text: i18n.t('importFromQrPage.error.init'),
+        confirmButtonText: i18n.t('importFromQrPage.error.confirmText'),
+      });
     });  
 	}
 
@@ -152,6 +168,7 @@ class ImportView extends DestructableView{
 
 	startScan(){
 		let self = this;
+		this.scanSuccess = false;  // Reset scan success state
 		if(typeof window.QRScanner !== 'undefined') {
 			window.QRScanner.scan(function(err : any, result : any){
 				if (err) {
@@ -195,11 +212,13 @@ class ImportView extends DestructableView{
 				if (typeof txDetails.viewKey !== 'undefined') this.privateViewKey = txDetails.viewKey;
 				if (typeof txDetails.height !== 'undefined') this.importHeight = parseInt('' + txDetails.height);
 				if (typeof txDetails.address !== 'undefined') this.publicAddress = txDetails.address;
+				this.scanSuccess = true;
 				return true;
 			}
 		} catch (e) {
 		}
 
+		this.scanSuccess = false;
 		return false;
 	}
 

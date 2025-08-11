@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "Ο κωδικός πρέπει να αποτελείται από τουλάχιστο 8 χαρακτήρες - 1 κεφαλαίο, 1 πεζό, 1 αριθμό και 1 σύμβολο",
       "passwordConfirmationNotMatching": "Οι κωδικοί δεν ταιριάζουν μεταξύ τους",
       "download": "Λήψη",
+      "confirmText": "OK",
+      "error": "Σφάλμα",
       "newVersionModal": {
         "title": "Μια νέα έκδοση είναι διαθέσιμη",
         "content": "Θέλετε να φορτώσετε τη νέα έκδοση;",
@@ -59,7 +61,11 @@
         "label": "Βελτιστοποίηση",
         "subtitle": "Το πορτοφόλι σας χρειάζεται βελτιστοποίηση",
         "button": "Βελτιστοποίηση Τώρα",
-        "loadingText": "Βελτιστοποίηση, παρακαλώ περιμένετε..."
+        "loadingText": "Βελτιστοποίηση, παρακαλώ περιμένετε...",
+        "success": "Η συναλλαγή συγχρονισμού στάλθηκε",
+        "error": "Προέκυψε σφάλμα κατά την αποστολή της συναλλαγής συγχρονισμού",
+        "errorInfo": "Η βελτιστοποίηση ακυρώθηκε",
+        "confirmText": "OK"
       }
     },
     "bottom": {
@@ -110,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "Το υπόλοιπό σας",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "Πορτοφόλι",
+        "available": "Απόθεμα",
+        "pending": "Εκκρεμεί",
         "unlocked": "Ξεκλείδωτο",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "Κλειδωμένο",
+        "withdrawable": "Προσφερόμενο",
+        "futureInterest": "Μελλοντικό επιτόκιο"
       },
       "historyBlock": {
         "title": "Ιστορικό συναλλαγών",
@@ -123,7 +131,7 @@
         "waitSync": "Παρακαλώ περιμένετε μέχρι να ανανεωθεί το πορτοφόλι",
         "beReallyPatient": "Η αρχική ρύθμιση μπορεί να διαρκέσει λίγη ώρα...",
         "getCoinAddress": "Λήψη CCX",
-        "loadMoreBtn": "Load more"
+        "loadMoreBtn": "Περισσότερα"
       },
       "txDetails": {
         "title": "Λεπτομέρειες συναλλαγής",
@@ -132,7 +140,7 @@
         "blockHeight": "Block height",
         "paymentId": "Payment ID",
         "txPrivKey": "Ιδιωτικό κλειδί συναλλαγής",
-        "message": "Message"
+        "message": "Μήνυμα"
       }
     },
     "changeWalletPasswordPage": {
@@ -231,7 +239,7 @@
     "sendPage": {
       "title": "Στείλτε CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Το πορτοφόλι σας συγχρονίζεται.... Όταν ολοκληρωθεί η συγχρονισμός θα μπορείτε να στείλετε χρήματα."
       },
       "sendBlock": {
         "address": {
@@ -300,7 +308,8 @@
         "title": "Αποδοχή συναλλαγής;",
         "content": "Ποσό: {amount}<br/>Τέλη: {fees}<br/>Total: {total}",
         "confirmText": "Αποδοχή",
-        "cancelText": "Ακύρωση"
+        "cancelText": "Ακύρωση",
+        "remoteNodeFee": "Τέλη του απομακρυσμένου κόμβου {fee} {symbol} προστέθηκαν στο ποσό"
       },
       "waitingNfcModal": {
         "title": "Αναμονή NFC",
@@ -310,7 +319,7 @@
     "messagesPage": {
       "title": "Messages",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Το πορτοφόλι σας συγχρονίζεται.... Όταν ολοκληρωθεί η συγχρονισμός θα μπορείτε να στείλετε μηνύματα."
       },
       "tabs": {
         "inbox": "Inbox",
@@ -330,7 +339,11 @@
         },
         "message": {
           "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "invalid": "The message is to long. Max length is 260 characters",
+          "preview": "Προεπισκόπηση"
+        },
+        "ttl": {
+          "info": "Η TTL συναλλαγή θα υπάρχει μόνο στο mempool και θα αυτοκαταστραφεί μετά το {ttl}(Ώρες:Λεπτά). Δεν θα ενσωματωθεί σε blocks. Επομένως, το ποσό που θα χρεωθεί θα επιστραφεί στο πορτοφόλι."
         },
         "sendButton": "Send",
         "cancelButton": "Cancel"
@@ -382,32 +395,73 @@
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Βελτιστοποιήστε το πορτοφόλι σας",
+      "unlockDate": "Ημερομηνία αποκλεισμού",
+      "interest": "Πρόστιμο",
+      "deposit": "Βελτιστοποίηση",
+      "lockHeight": "Ύψος αποκλεισμού",
+      "unlockHeight": "Ύψος αποκλεισμού",
+      "depositDate": "Ημερομηνία αποθέσεως",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "Το πορτοφόλι σας συγχρονίζεται.... Όταν ολοκληρωθεί η συγχρονισμός θα μπορείτε να δείτε τις αποθέσεις."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Αποθέσεις",
+        "send": "Δημιουργία"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Λίστα αποθέσεων"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Επιβεβαίωση αποθέσεως",
+        "message": "Εισάγετε τον κωδικό προστασίας σας για να επιβεβαιώσετε την δημιουργία αποθέσεως {amount} CCX για {term} μήνες?",
+        "confirm": "Δημιουργία αποθέσεως",
+        "cancel": "Ακύρωση",
+        "passwordRequired": "Ο κωδικός προστασίας του πορτοφολιού είναι υποχρεωτικός"
+      },
+      "createDeposit": {
+        "title": "Δημιουργία νέας αποθέσεως",
+        "amount": "Ποσό προς αποθέσεως",
+        "term": "Χρόνος αποθέσεως (σε μήνες)",
+        "termError": "Παρακαλώ εισάγετε ένα ακέραιο αριθμό μεταξύ 1 και 12 μήνες",
+        "confirm": "Δημιουργία αποθέσεως",
+        "cancel": "Ακύρωση",
+        "createSuccess": "Αποθέσεως αποστολή στο blockchain",
+        "createPending": "Η αποθέσεως σας επεξεργάζεται",
+        "createError": "Σφάλμα δημιουργίας αποθέσεως",
+        "withdrawSuccess": "Αποθέσεως αποστολή στο blockchain",
+        "withdrawPending": "Η αποθέσεως σας επεξεργάζεται",
+        "withdrawError": "Σφάλμα αποθέσεως αποστολής",
+        "amountError": "Άκυρο ποσό",
+        "amountMustBePositive": "Το ποσό πρέπει να είναι θετικό",
+        "termMustBeValid": "Ο χρόνος πρέπει να είναι μεταξύ 1 και 12 μήνες",
+        "insufficientFunds": "Ανεπαρκή χρήματα",
+        "insufficientFundsMessage": "Δεν έχετε αρκετά χρήματα για να δημιουργήσετε αυτή την αποθέσεως",
+        "maxAmount": "Μέγιστο ποσό αποθέσεως: {amount} CCX",
+        "rewardAtTerm": "Αμοιβή στο τέλος του χρόνου: {reward} CCX"
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
-        "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "title": "Λεπτομέρειες αποθέσεως",
+        "txHash": "Συναλλαγή δημιουργίας",
+        "spendingTx": "Συναλλαγή αποθέσεως",
+        "status": "Κατάσταση",
+        "amount": "Ποσό",
+        "term": "Χρόνος",
+        "creationTime": "Ημερομηνία δημιουργίας",
+        "spendingTime": "Ημερομηνία αποθέσεως",
+        "spendingHeight": "Ύψος αποθέσεως",
+        "creationHeight": "Ύψος δημιουργίας",
+        "unlockHeight": "Ύψος αποκλεισμού",
+        "interest": "Πρόστιμο"
+      },
+      "recap": {
+        "title": "Ανακεφαλαίωση αποθέσεων",
+        "totalLifetimeDeposit": "Συνολικό ποσό αποθέσεων",
+        "totalLifetimeInterest": "Συνολικό πρόστιμο",
+        "totalCashedOutInterest": "Συνολικό πρόστιμο που έχει αποσυνταχθεί",
+        "futureInterestLocked": "Πρόστιμο σε αποθέσεις που δεν έχουν αποκλειστεί",
+        "futureInterestUnlocked": "Πρόστιμο σε αποθέσεις που έχουν αποκλειστεί",
+        "earliestWithdrawable": "Πρώτη αποθέσεως που μπορεί να αποσυνταχθεί"
       }
     },
     "receivePage": {
@@ -482,6 +536,12 @@
         },
         "nodeUrl": {
           "label": "Node URL"
+        },
+        "ticker": {
+          "label": "Σύμβολο",
+          "full": "Πλήρες σύμβολο",
+          "short": "Συντομογραφία",
+          "preview": "Προεπισκόπηση"
         }
       },
       "changePasswordButton": "Άλλαξε τον κωδικό του πορτοφολιού μου",
@@ -530,21 +590,28 @@
       }
     },
     "importFromQrPage": {
-      "title": "Εισαγωγή πορτοφολιού από QR code",
-      "subtitle": "Εισαγωγή πορτοφολιού από εφεδρικό αντίγραφο εκτός σύνδεσης",
+      "title": "Εισαγωγή από QR",
+      "subtitle": "Εισαγωγή πορτοφολιού από QR κώδικα",
       "qrCodeBlock": {
-        "title": "QR code",
+        "title": "QR κώδικας",
         "startScanButton": "Έναρξη σάρωσης",
-        "importButton": "Εισαγωγή"
+        "importButton": "Εισαγωγή",
+        "scanSuccess": "QR κώδικας σαρώθηκε με επιτυχία"
       },
       "qrScanningBlock": {
-        "title": "Δείξτε το QR code"
+        "title": "Σάρωση QR κώδικα"
+      },
+      "error": {
+        "title": "Σφάλμα",
+        "connection": "Σφάλμα σύνδεσης, παρακαλώ δοκιμάστε ξανά",
+        "init": "Σφάλμα αρχικοποίησης, παρακαλώ δοκιμάστε ξανά",
+        "confirmText": "Εντάξει"
       }
     },
     "exportPage": {
-      "title": "Backup your credentials",
+      "title": "Δημιουργήστε αντίγραφο ασφαλείας των διαπιστευτηρίων σας",
       "publicAddressBlock": {
-        "title": "Your public address"
+        "title": "Η διεύθυνση που θα χρησιμοποιηθεί για την αποθήκευση των χρημάτων σας"
       },
       "pdfBlock": {
         "title": "PDF Backup",

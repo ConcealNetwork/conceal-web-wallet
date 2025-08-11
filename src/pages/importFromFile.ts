@@ -37,6 +37,8 @@ class ImportView extends DestructableView{
 	@VueVar('') password2 !: string;
 	@VueVar(false) insecurePassword !: boolean;
 	@VueVar(false) forceInsecurePassword !: boolean;
+	@VueVar(false) fileSelected !: boolean;
+	@VueVar('') fileName !: string;
 
 	rawFile : any = null;
 	invalidRawFile : boolean = false;
@@ -63,9 +65,11 @@ class ImportView extends DestructableView{
 		let self = this;
 		let element = $('<input type="file">');
 		self.invalidRawFile = true;
+		self.fileSelected = false;
 		element.on('change', function(event : Event){
 			let files :File[] = (<any>event.target).files; // FileList object
 			if(files.length > 0) {
+				self.fileName = files[0].name;
 				let fileReader = new FileReader();
 				fileReader.onload = function () {
 					try {
@@ -73,8 +77,16 @@ class ImportView extends DestructableView{
 							self.rawFile = JSON.parse(fileReader.result);
 						}
 						self.invalidRawFile = false;
+						self.fileSelected = true;
 					}catch (e) {
 						self.invalidRawFile = true;
+						self.fileSelected = false;
+						swal({
+							type: 'error',
+							title: i18n.t('global.error'),
+							text: i18n.t('importFromFilePage.walletBlock.invalidFile'),
+							confirmButtonText: i18n.t('global.confirmText'),
+						});
 					}
 				};
 
@@ -86,11 +98,11 @@ class ImportView extends DestructableView{
 
 	importWallet(){
 		let self = this;
-    $("#appLoader").addClass("appLoaderVisible");
+    		$('#pageLoading').show();
 
     blockchainExplorer.initialize().then(success => {
       blockchainExplorer.getHeight().then(function(currentHeight){
-        $("#appLoader").removeClass("appLoaderVisible");
+        		$('#pageLoading').hide();
         
         setTimeout(function(){
           let newWallet = WalletRepository.decodeWithPassword(self.rawFile,self.password);
@@ -109,9 +121,11 @@ class ImportView extends DestructableView{
         },1);
      }).catch(err => {
         console.log(err);
+		$('#pageLoading').hide();
       });
     }).catch(err => {
       console.log(err);
+		$('#pageLoading').hide();
     });  
   }
 

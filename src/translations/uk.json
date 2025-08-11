@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "Пароль повинен складатися принаймні з 8 символів - 1 великої літери, 1 маленької, одного числа, одного спецсимвола",
       "passwordConfirmationNotMatching": "Підтвердження пароля не збігається з першим",
       "download": "Завантажити",
+      "confirmText": "OK",
+      "error": "Помилка",
       "newVersionModal": {
         "title": "Є нова версія",
         "content": "Хочете перезавантажити щоб оновити версію?",
@@ -59,7 +61,11 @@
         "label": "Оптимізація",
         "subtitle": "Ваш гаманець потребує оптимізації",
         "button": "Оптимізувати зараз",
-        "loadingText": "Оптимізація, будь ласка, зачекайте..."
+        "loadingText": "Оптимізація, будь ласка, зачекайте...",
+        "success": "Оптимізація пройшла успішно",
+        "error": "Ошибка при оптимизации",
+        "errorInfo": "Оптимизация отменена",
+        "confirmText": "да"
       }
     },
     "bottom": {
@@ -110,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "Ваш баланс",
-        "total": "Total",
-        "pending": "Pending",
-        "unlocked": "Доступно",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "portfolio": "Портфолио",
+        "available": "Доступно",
+        "pending": "Ожидается",
+        "unlocked": "Откључано",
+        "deposited": "Заблокированные депозиты",
+        "withdrawable": "Выводимые средства",
+        "futureInterest": "Будущие проценты"
       },
       "historyBlock": {
         "title": "Історія транзакцій",
@@ -123,7 +131,7 @@
         "waitSync": "Будь ласка, зачекайте гаманець оновлює дані",
         "beReallyPatient": "Початкова установка може зайняти деякий час...",
         "getCoinAddress": "Отримати CCX",
-        "loadMoreBtn": "Load more"
+        "loadMoreBtn": "Завантажити більше"
       },
       "txDetails": {
         "title": "Деталі транзакції",
@@ -132,7 +140,7 @@
         "blockHeight": "Висота блоку",
         "paymentId": "Ідентифікатор платежу",
         "txPrivKey": "Секретний ключ транзакції",
-        "message": "Message"
+        "message": "Повідомлення"
       }
     },
     "changeWalletPasswordPage": {
@@ -231,7 +239,7 @@
     "sendPage": {
       "title": "Надіслати CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять средства."
       },
       "sendBlock": {
         "address": {
@@ -300,7 +308,8 @@
         "title": "Підтвердити переказ?",
         "content": "Сума: {amount}<br/>Комісії: {fees}<br/>Всього: {total}",
         "confirmText": "Підтвердити",
-        "cancelText": "Скасувати"
+        "cancelText": "Скасувати",
+        "remoteNodeFee": "Комісія вузла віддаленої мережі {fee} {symbol} додана до суми"
       },
       "waitingNfcModal": {
         "title": "Очікування Nfc",
@@ -308,106 +317,151 @@
       }
     },
     "messagesPage": {
-      "title": "Messages",
+      "title": "Сообщения",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять сообщения."
       },
       "tabs": {
-        "inbox": "Inbox",
-        "send": "Send"
+        "inbox": "Входящие",
+        "send": "Отправить"
       },
       "inboxBlock": {
-        "title": "Messages Inbox"
+        "title": "Входящие сообщения"
       },
       "sendBlock": {
         "address": {
-          "label": "Destination address",
-          "placeholder": "Write the address where you want to send the message",
-          "invalid": "The destination address is invalid",
-          "fundsTo": "The message will be sent to",
-          "receiver": "Receiver",
-          "description": "Description"
+          "label": "Адреса одержувача",
+          "placeholder": "Вкажіть адресу, на яку хочете відправити кошти",
+          "invalid": "Адреса одержувача неправильна",
+          "fundsTo": "Кошти будуть відправлені на",
+          "receiver": "Одержувач",
+          "description": "Опис"
         },
         "message": {
-          "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "label": "Сообщение",
+          "invalid": "Сообщение слишком длинное. Максимальная длина 260 символов",
+          "preview": "Предварительный просмотр"
         },
-        "sendButton": "Send",
-        "cancelButton": "Cancel"
+        "ttl": {
+          "info": "TTL транзакция будет существовать только в mempool и автоматически уничтожится после {ttl}(часы:минуты). Она не будет добавлена в блок. Следовательно, сумма будет возвращена в кошелек."
+        },
+        "sendButton": "Надіслати",
+        "cancelButton": "Скасувати"
       },
       "qrCodeScanning": {
         "explication": "Present the QR code"
       },
       "notEnoughMoneyModal": {
         "title": "Oops...",
-        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "content": "У гаманці недостатньо коштів для здійснення цього перекладу",
         "confirmText": "OK"
       },
       "thankYouDonationModal": {
-        "title": "Thank you for your donation!",
-        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "title": "Спасибі за ваше пожертвування!",
+        "content": "Ми цінуємо вашу підтримку. <br/>Це пожертвування допоможе зробити Карбо краще",
         "confirmText": "OK"
       },
       "transferSentModal": {
-        "title": "Message sent successfully!",
+        "title": "Сообщение успешно отправлено!",
         "confirmText": "OK"
       },
       "transferExceptionModal": {
         "title": "Oops...",
-        "content": "An error occurred. Please report this error: {details}",
+        "content": "Сталася помилка. Будь ласка повідомте про неї: {details}",
         "confirmText": "OK"
       },
       "invalidAmountModal": {
         "title": "Oops...",
-        "content": "Invalid amount",
+        "content": "Неправильна сума",
         "confirmText": "OK"
       },
       "creatingTransferModal": {
-        "title": "Creating transfer ...",
-        "content": "Please wait..."
+        "title": "Створюється переказ...",
+        "content": "Будь ласка зачекайте..."
       },
       "finalizingTransferModal": {
-        "title": "Finalizing transfer ...",
-        "content": "Please wait..."
+        "title": "Завершується переказ...",
+        "content": "Будь ласка зачекайте..."
       },
       "confirmTransactionModal": {
-        "title": "Confirm transfer?",
-        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
-        "confirmText": "Confirm",
-        "cancelText": "Cancel"
+        "title": "Підтвердити переказ?",
+        "content": "Сума: {amount}<br/>Комісії: {fees}<br/>Всього: {total}",
+        "confirmText": "Підтвердити",
+        "cancelText": "Скасувати"
       },
       "waitingNfcModal": {
-        "title": "Waiting Nfc",
-        "content": "Bring closer to the other device"
+        "title": "Очікування Nfc",
+        "content": "Піднесіть ближче до іншого пристрою"
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Депозити",
+      "unlockDate": "Дата розблокування",
+      "interest": "Відсоток",
+      "deposit": "Депозит",
+      "lockHeight": "Висота блокування",
+      "unlockHeight": "Висота розблокування",
+      "depositDate": "Дата депозиту",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "Гаманець синхронізується.... Коли синхронізація буде завершена, ви зможете переглядати депозити."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Депозити",
+        "send": "Створити"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Список депозитів"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Підтвердити депозит",
+        "message": "Введіть ваш пароль для підтвердження створення депозиту {amount} CCX на {term} місяців?",
+        "confirm": "Створити депозит",
+        "cancel": "Скасувати",
+        "passwordRequired": "Пароль гаманця є обов'язковим"
+      },
+      "createDeposit": {
+        "title": "Створити новий депозит",
+        "amount": "Сума для депозиту",
+        "term": "Час блокування (в місяцях)",
+        "termError": "Будь ласка введіть ціле число від 1 до 12 місяців",
+        "confirm": "Створити депозит",
+        "cancel": "Скасувати",
+        "createSuccess": "Депозит надісланий на блокчейн",
+        "createPending": "Ваш депозит обробляється",
+        "createError": "Помилка при створенні депозиту",
+        "withdrawSuccess": "Виведення надіслано на блокчейн",
+        "withdrawPending": "Ваше виведення обробляється",
+        "withdrawError": "Помилка при виведенні депозиту",
+        "amountError": "Неправильна сума",
+        "amountMustBePositive": "Сума повинна бути позитивною",
+        "termMustBeValid": "Час повинен бути від 1 до 12 місяців",
+        "insufficientFunds": "Недостатньо коштів",
+        "insufficientFundsMessage": "У вас недостатньо коштів для створення цього депозиту",
+        "maxAmount": "Максимальна сума депозиту: {amount} CCX",
+        "rewardAtTerm": "Нагорода за термін: {reward} CCX"
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
-        "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "title": "Деталі депозитів",
+        "txHash": "Транзакція створення",
+        "spendingTx": "Транзакція витрачання",
+        "status": "Статус",
+        "amount": "Сума",
+        "term": "Час блокування",
+        "creationTime": "Час створення",
+        "spendingTime": "Час витрачання",
+        "spendingHeight": "Висота витрачання",
+        "creationHeight": "Висота створення",
+        "unlockHeight": "Висота розблокування",
+        "interest": "Відсоток"
+      },
+      "recap": {
+        "title": "Deposits Recap",
+        "totalLifetimeDeposit": "Total Lifetime Deposit",
+        "totalLifetimeInterest": "Total Lifetime Interest",
+        "totalCashedOutInterest": "Total Cashed Out Interest",
+        "futureInterestLocked": "Future Interest on Locked Deposits",
+        "futureInterestUnlocked": "Future Interest on Withdrawable",
+        "earliestWithdrawable": "Earliest Withdrawable"
       }
     },
     "receivePage": {
@@ -482,6 +536,12 @@
         },
         "nodeUrl": {
           "label": "Адреса URL вузла"
+        },
+        "ticker": {
+          "label": "Символ",
+          "full": "Повний символ",
+          "short": "Короткий символ",
+          "preview": "Перегляд"
         }
       },
       "changePasswordButton": "Змінити пароль мого гаманця",
@@ -535,10 +595,17 @@
       "qrCodeBlock": {
         "title": "QR код",
         "startScanButton": "Почати сканування",
-        "importButton": "Імпортувати"
+        "importButton": "Імпортувати",
+        "scanSuccess": "QR код успішно скенований"
       },
       "qrScanningBlock": {
         "title": "Наведіть на QR код"
+      },
+      "error": {
+        "title": "Помилка",
+        "connection": "Помилка з'єднання, спробуйте знову",
+        "init": "Помилка ініціалізації, спробуйте знову",
+        "confirmText": "OK"
       }
     },
     "exportPage": {

@@ -36,35 +36,85 @@ const generateIntegrityHash = (filePath) => {
 	}
 };
 
-// Generate integrity hash for api.html and update the .env file
-const updateApiIntegrityHash = () => {
-	const apiHtmlPath = path.join(__dirname, 'src', 'api.html');
-	
-	const integrityHash = generateIntegrityHash(apiHtmlPath);
-	if (!integrityHash) return;
-	
-	console.log(`Generated new integrity hash for api.html`);
-	
-	// Store in .env if not exists or has changed
+// Function to generate SHA384 integrity hash for allowed pages
+const generateAllowedPagesHash = (content) => {
+	const hash = crypto.createHash('sha384').update(content).digest('base64');
+	return `sha384-${hash}`;
+};
+
+// Function to generate SHA384 integrity hash for allowed exceptions
+const generateAllowedExceptionsHash = (exceptions) => {
+	// Use the same SHA-3 implementation as the browser code
+	const sha3 = require('./src/lib/sha3.js');
+	const hash = sha3.sha3_384(exceptions.join(','));
+	return `sha384-${hash}`;
+};
+
+// Function to update environment file with integrity hashes
+const updateIntegrityHashes = () => {
+
 	const envPath = path.join(__dirname, '.env');
 	let envContent = '';
 	
 	if (fs.existsSync(envPath)) {
 		envContent = fs.readFileSync(envPath, 'utf8');
 	}
+
+
+	// Update API integrity hash
+	const apiHtmlPath = path.join(__dirname, 'src', 'api.html');
+	const apiIntegrityHash = generateIntegrityHash(apiHtmlPath);
+	if (apiIntegrityHash) {
+		console.log(`Generated new integrity hash for api.html`);
+		if (!envContent.includes('API_INTEGRITY_HASH=')) {
+			envContent += `API_INTEGRITY_HASH=${apiIntegrityHash}`;
+		} else {
+			envContent = envContent.replace(
+				/API_INTEGRITY_HASH=.*/,
+				`API_INTEGRITY_HASH=${apiIntegrityHash}`
+			);
+		}
+	}
+
+	// Generate hash for allowed exceptions
+	const allowedPagesPath = path.join(__dirname, 'src', 'lib', 'config', 'allowedPages.ts');
+	const allowedPagesContent = fs.readFileSync(allowedPagesPath, 'utf8');
 	
-	// Update or add the API_INTEGRITY_HASH in .env
-	if (!envContent.includes('API_INTEGRITY_HASH=')) {
-		fs.appendFileSync(envPath, `\nAPI_INTEGRITY_HASH=${integrityHash}\n`);
-	} else {
-		const newEnvContent = envContent.replace(
-			/API_INTEGRITY_HASH=.*/,
-			`API_INTEGRITY_HASH=${integrityHash}`
-		);
-		fs.writeFileSync(envPath, newEnvContent);
+	// Extract the allowedExceptions array using regex - specifically target allowedExceptions
+	const exceptionsMatch = allowedPagesContent.match(/export const allowedExceptions = \[([\s\S]*?)\]/);
+	if (!exceptionsMatch) {
+		console.error('Could not find allowedExceptions array in allowedPages.ts');
+		return;
 	}
 	
-	console.log('Updated .env with new integrity hash');
+	// Get the content between square brackets, remove quotes and commas, then split and clean
+	const exceptionsContent = exceptionsMatch[1]
+		.replace(/['"]/g, '') // Remove quotes
+		.replace(/,/g, '')    // Remove commas
+		.replace(/\s+/g, '')  // Remove all whitespace
+		.trim();              // Final trim
+		
+	const exceptionsHash = generateAllowedExceptionsHash([exceptionsContent]);
+	// console.log('Generated hash:', exceptionsHash);
+	
+	// Update the hash in the compiled JS file
+	const allowedPagesJsPath = path.join(__dirname, 'src', 'lib', 'config', 'allowedPages.js');
+	if (fs.existsSync(allowedPagesJsPath)) {
+		let jsContent = fs.readFileSync(allowedPagesJsPath, 'utf8');
+		jsContent = jsContent.replace(
+			/ALLOWED_EXCEPTIONS_INTEGRITY_HASH = 'sha384-.*'/,
+			`ALLOWED_EXCEPTIONS_INTEGRITY_HASH = '${exceptionsHash}'`
+		);
+		fs.writeFileSync(allowedPagesJsPath, jsContent);
+		console.log(`Updated allowedPages.js with new exceptions integrity hash`);
+	} else {
+		console.error('Could not find allowedPages.js to update hash');
+	}
+
+	// Write updated content back to .env
+	fs.writeFileSync(envPath, envContent);
+	console.log('Updated .env with new integrity hashes');
+
 };
 
 // NOTE: This should be run *AFTER* all your assets are built
@@ -83,6 +133,6 @@ const buildSW = () => {
 	});
 };
 
-// Update integrity hash before building SW
-updateApiIntegrityHash();
+// Update integrity hashes before building SW
+updateIntegrityHashes();
 buildSW();

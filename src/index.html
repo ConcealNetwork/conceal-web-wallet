@@ -56,6 +56,11 @@
 </head>
 <body class="menuHidden menuDisabled">
 
+<div id="pageLoading" >
+	<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+	<span class="sr-only">{{ $t("global.loading") }}...</span>
+</div>
+
 <div id="topBar">
 	<a href="#!index" class="toggleMenu" aria-label="Toggle menu"><i class="fa fa-bars" aria-hidden="true"></i></a>
 </div>
@@ -75,14 +80,9 @@
 	<a href="#!disconnect"  class="onlyWhenConnected"><span class="icon" ><i class="fa fa-times" aria-hidden="true"></i></span> {{ $t("menu.disconnect") }}</a>
 </div>
 
-<div id="pageLoading" >
-	<i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
-	<span class="sr-only">{{ $t("global.loading") }}...</span>
-</div>
-
 <div id="page" ></div>
 
-<div id="copyright" v-cloak="">
+<div id="copyright" v-cloak="" :style="isNative ? 'bottom:-3%;' : ''">
 	<div>© 2018-2025 Conceal.Network</div>
 	<div class="links">
 		<a href="#!termsOfUse" >{{ $t("bottom.termsOfUse") }}</a>
@@ -106,7 +106,7 @@
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js" ></script>-->
 <script src="lib/vue.min.js" ></script>
 <script src="lib/vue-i18n.js" ></script>
-<script src="lib/jquery-3.2.1.min.js"></script>
+<script src="lib/jquery-3.7.1.min.js"></script>
 <script src="lib/sweetalert2.js"></script>
 <script src="lib/sha3.js"></script>
 <script src="lib/crypto.js"></script>

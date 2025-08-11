@@ -24,6 +24,8 @@
       "passwordInvalidRequirements": "Пароль должен состоять по крайней мере из 8 символов - 1 большой буквы, 1 маленькой, одного числа, одного спецсимвола",
       "passwordConfirmationNotMatching": "Подтверждение пароля не совпадает с первым",
       "download": "Скачать",
+      "confirmText": "OK",
+      "error": "Ошибка",
       "newVersionModal": {
         "title": "Есть новая версия",
         "content": "Хотите перезагрузить чтобы обновить версию?",
@@ -59,7 +61,11 @@
         "label": "Оптимизация",
         "subtitle": "Ваш кошелек нуждается в оптимизации",
         "button": "Оптимизировать сейчас",
-        "loadingText": "Оптимизация, пожалуйста, подождите..."
+        "loadingText": "Оптимизация, пожалуйста, подождите...",
+        "success": "Оптимизация прошла успешно",
+        "error": "Ошибка при оптимизации",
+        "errorInfo": "Оптимизация отменена",
+        "confirmText": "да"
       }
     },
     "bottom": {
@@ -110,11 +116,13 @@
       },
       "balanceBlock": {
         "title": "Ваш баланс",
-        "total": "Total",
-        "pending": "Pending",
+        "portfolio": "Портфолио",
+        "available": "Доступно",
+        "pending": "Ожидается",
         "unlocked": "Доступно",
-        "deposited": "Locked Deposits",
-        "withdrawable": "Withdrawable"
+        "deposited": "Заблокированные депозиты",
+        "withdrawable": "Выводимые средства",
+        "futureInterest": "Будущие проценты"
       },
       "historyBlock": {
         "title": "История транзакций",
@@ -123,7 +131,7 @@
         "waitSync": "Пожалуйста подождите пока кошелек обновляется",
         "beReallyPatient": "Начальная установка может занять некоторое время...",
         "getCoinAddress": "Получить CCX",
-        "loadMoreBtn": "Load more"
+        "loadMoreBtn": "Загрузить больше"
       },
       "txDetails": {
         "title": "Детали транзакции",
@@ -132,7 +140,7 @@
         "blockHeight": "Высота блока",
         "paymentId": "Идентификатор платежа",
         "txPrivKey": "Секретный ключ транзакции",
-        "message": "Message"
+        "message": "Сообщение"
       }
     },
     "changeWalletPasswordPage": {
@@ -231,7 +239,7 @@
     "sendPage": {
       "title": "Отправить CCX",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send funds."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять средства."
       },
       "sendBlock": {
         "address": {
@@ -251,8 +259,8 @@
           "invalid": "Идентификатор платежа неверный. Длина должна быть 16 или 64 символа"
         },
         "message": {
-          "label": "Message (optional)",
-          "invalid": "The message is to long. Max length is 255 characters"
+          "label": "Сообщение (необязательно)",
+          "invalid": "Сообщение слишком длинное. Максимальная длина 255 символов"
         },
         "mixin": {
           "label": "Конфиденциальность",
@@ -300,7 +308,8 @@
         "title": "Подтвердить перевод?",
         "content": "Сумма: {amount}<br/>Комиссии: {fees}<br/>Всего: {total}",
         "confirmText": "Подтвердить",
-        "cancelText": "Отменить"
+        "cancelText": "Отменить",
+        "remoteNodeFee": "Комиссия удаленного узла {fee} {symbol} добавлена к сумме"
       },
       "waitingNfcModal": {
         "title": "Ожидание Nfc",
@@ -308,73 +317,77 @@
       }
     },
     "messagesPage": {
-      "title": "Messages",
+      "title": "Сообщения",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to send messages."
+      "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете отправлять сообщения."
       },
       "tabs": {
-        "inbox": "Inbox",
-        "send": "Send"
+        "inbox": "Входящие",
+        "send": "Отправить"
       },
       "inboxBlock": {
-        "title": "Messages Inbox"
+        "title": "Входящие сообщения"
       },
       "sendBlock": {
         "address": {
-          "label": "Destination address",
-          "placeholder": "Write the address where you want to send the message",
-          "invalid": "The destination address is invalid",
-          "fundsTo": "The message will be sent to",
-          "receiver": "Receiver",
-          "description": "Description"
+          "label": "Адрес получателя",
+          "placeholder": "Введите адрес, на который хотите отправить сообщение",
+          "invalid": "Адрес получателя неверный",
+          "fundsTo": "Сообщение будет отправлено на",
+          "receiver": "Получатель",
+          "description": "Описание"
         },
         "message": {
-          "label": "Message",
-          "invalid": "The message is to long. Max length is 260 characters"
+          "label": "Сообщение",
+          "invalid": "Сообщение слишком длинное. Максимальная длина 260 символов",
+          "preview": "Предварительный просмотр"
         },
-        "sendButton": "Send",
-        "cancelButton": "Cancel"
+        "ttl": {
+          "info": "TTL транзакция будет существовать только в mempool и автоматически уничтожится после {ttl}(часы:минуты). Она не будет добавлена в блок. Следовательно, сумма будет возвращена в кошелек."
+        },
+        "sendButton": "Отправить",
+        "cancelButton": "Отменить"
       },
       "qrCodeScanning": {
-        "explication": "Present the QR code"
+        "explication": "Показать QR код"
       },
       "notEnoughMoneyModal": {
-        "title": "Oops...",
-        "content": "You don't have enough funds in your wallet to execute this transfer",
+        "title": "Ой...",
+        "content": "В кошельке недостаточно средств для совершения этого перевода",
         "confirmText": "OK"
       },
       "thankYouDonationModal": {
-        "title": "Thank you for your donation!",
-        "content": "Your help is appreciated. This donation will help make Conceal better",
+        "title": "Спасибо за ваше пожертвование!",
+        "content": "Ваша помощь оценена. Это пожертвование поможет сделать Conceal лучше",
         "confirmText": "OK"
       },
       "transferSentModal": {
-        "title": "Message sent successfully!",
+        "title": "Сообщение отправлено успешно!",
         "confirmText": "OK"
       },
       "transferExceptionModal": {
-        "title": "Oops...",
-        "content": "An error occurred. Please report this error: {details}",
+        "title": "Ой...",
+        "content": "Произошла ошибка. Пожалуйста сообщите об этой ошибке: {details}",
         "confirmText": "OK"
       },
       "invalidAmountModal": {
-        "title": "Oops...",
-        "content": "Invalid amount",
+        "title": "Ой...",
+        "content": "Неверная сумма",
         "confirmText": "OK"
       },
       "creatingTransferModal": {
-        "title": "Creating transfer ...",
-        "content": "Please wait..."
+        "title": "Создание перевода ...",
+        "content": "Пожалуйста подождите..."
       },
       "finalizingTransferModal": {
-        "title": "Finalizing transfer ...",
-        "content": "Please wait..."
+        "title": "Завершение перевода ...",
+        "content": "Пожалуйста подождите..."
       },
       "confirmTransactionModal": {
-        "title": "Confirm transfer?",
-        "content": "Amount: {amount}<br/>Fees: {fees}<br/>Total: {total}",
-        "confirmText": "Confirm",
-        "cancelText": "Cancel"
+        "title": "Подтвердить перевод?",
+        "content": "Сумма: {amount}<br/>Комиссии: {fees}<br/>Всего: {total}",
+        "confirmText": "Подтвердить",
+        "cancelText": "Отменить"
       },
       "waitingNfcModal": {
         "title": "Waiting Nfc",
@@ -382,32 +395,73 @@
       }
     },
     "depositsPage": {
-      "title": "Deposits",
+      "title": "Депозиты",
+      "unlockDate": "Дата разблокировки",
+      "interest": "Процент",
+      "deposit": "Депозит",
+      "lockHeight": "Высота блокировки",
+      "unlockHeight": "Высота разблокировки",
+      "depositDate": "Дата депозита",
       "syncing": {
-        "label": "Wallet is syncing.... When its fully snyced you will be able to view deposits."
+        "label": "Кошелек синхронизируется.... Когда он будет полностью синхронизирован, вы сможете просматривать депозиты."
       },
       "tabs": {
-        "inbox": "Deposits",
-        "send": "Create"
+        "inbox": "Депозиты",
+        "send": "Создать"
       },
       "depositsBlock": {
-        "title": "Deposits list"
+        "title": "Список депозитов"
       },
-      "createBlock": {
-
+      "confirmDeposit": {
+        "title": "Подтвердить депозит",
+        "message": "Введите ваш пароль для подтверждения создания депозита {amount} CCX на {term} месяцев?",
+        "confirm": "Создать депозит",
+        "cancel": "Отменить",
+        "passwordRequired": "Пароль кошелька обязателен"
+      },
+      "createDeposit": {
+        "title": "Создать новый депозит",
+        "amount": "Сумма для депозита",
+        "term": "Срок депозита (в месяцах)",
+        "termError": "Пожалуйста, введите целое число от 1 до 12 месяцев",
+        "confirm": "Создать депозит",
+        "cancel": "Отменить",
+        "createSuccess": "Депозит отправлен на блокчейн",
+        "createPending": "Ваш депозит обрабатывается",
+        "createError": "Ошибка при создании депозита",
+        "withdrawSuccess": "Вывод отправлен на блокчейн",
+        "withdrawPending": "Ваш вывод обрабатывается",
+        "withdrawError": "Ошибка при выводе депозита",
+        "amountError": "Неверная сумма",
+        "amountMustBePositive": "Сумма должна быть положительной",
+        "termMustBeValid": "Срок должен быть от 1 до 12 месяцев",
+        "insufficientFunds": "Недостаточно средств",
+        "insufficientFundsMessage": "У вас недостаточно средств для создания этого депозита",
+        "maxAmount": "Максимальная сумма депозита: {amount} CCX",
+        "rewardAtTerm": "Награда за срок: {reward} CCX"
       },
       "depositDetails": {
-        "title": "Deposits details",
-        "txHash": "Creation tx",
-        "spendingTx": "Spending tx",
-        "status": "Status",
-        "amount": "Amount",
-        "term": "Term",
-        "creationTime": "Creation time",
-        "spendingTime": "Spending time",
-        "spendingHeight": "Spending height",
-        "creationHeight": "Creation height",
-        "unlockHeight": "Unlock height"
+        "title": "Депозиты",
+        "txHash": "Транзакция создания",
+        "spendingTx": "Транзакция вывода",
+        "status": "Статус",
+        "amount": "Сумма",
+        "term": "Срок",
+        "creationTime": "Время создания",
+        "spendingTime": "Время вывода",
+        "spendingHeight": "Высота вывода",
+        "creationHeight": "Высота создания",
+        "unlockHeight": "Высота разблокировки",
+        "interest": "Процент"
+      },
+      "recap": {
+        "title": "Рекап",
+        "totalLifetimeDeposit": "Общая сумма депозитов",
+        "totalLifetimeInterest": "Общая сумма процентов",
+        "totalCashedOutInterest": "Общая сумма выведенных процентов",
+        "futureInterestLocked": "Будущие проценты на заблокированных депозитах",
+        "futureInterestUnlocked": "Будущие проценты на выводимых депозитах",
+        "earliestWithdrawable": "Раньше выводимые"
       }
     },
     "receivePage": {
@@ -478,15 +532,21 @@
           "label": "Считывать транзакции майнинга (только для соло майнинга)"
         },
         "customNode": {
-          "label": "Use custom node"
+          "label": "Использовать собственный узел"
         },
         "nodeUrl": {
-          "label": "Node URL"
+          "label": "URL узла"
+        },
+        "ticker": {
+          "label": "Символ",
+          "full": "Полный символ",
+          "short": "Короткий символ",
+          "preview": "Предварительный просмотр"
         }
       },
       "changePasswordButton": "Изменть пароль моего кошелька",
       "deleteWalletButton": "Удалить мой кошелек (локальную копию)",
-      "resetWalletButton": "Reset and rescan wallet",
+      "resetWalletButton": "Сбросить и пересканировать кошелек",
       "walletSettings": {
         "creationHeight": {
           "label": "Высота создания кошелька"
@@ -503,14 +563,14 @@
         "cancelText": "Отменить"
       },
       "resetWalletModal": {
-        "title": "Reset My Wallet (local copy)",
-        "content": "Are you sure you really want to reset your wallet?",
-        "confirmText": "Yes I'm sure",
-        "cancelText": "Cancel"
+        "title": "Сбросить мой кошелек (локальная копия)",
+        "content": "Вы ДЕЙСТВИТЕЛЬНО уверены что хотите сбросить свой кошелек?",
+        "confirmText": "Да, я знаю что делаю",
+        "cancelText": "Отменить"
       },
       "optimizeWalletModal": {
-        "title": "Nothing to do...",
-        "content": "Your wallet is already optimized.",
+        "title": "Ничего не делать...",
+        "content": "Ваш кошелек уже оптимизирован.",
         "confirmText": "OK"
       }
     },
@@ -535,10 +595,17 @@
       "qrCodeBlock": {
         "title": "QR код",
         "startScanButton": "Начать сканирование",
-        "importButton": "Импортировать"
+        "importButton": "Импортировать",
+        "scanSuccess": "QR код успешно сканирован"
       },
       "qrScanningBlock": {
         "title": "Покажите QR код"
+      },
+      "error": {
+        "title": "Ошибка",
+        "connection": "Ошибка соединения, попробуйте еще раз",
+        "init": "Ошибка инициализации, попробуйте еще раз",
+        "confirmText": "OK"
       }
     },
     "exportPage": {
