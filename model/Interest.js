@@ -69,11 +69,11 @@ define(["require", "exports"], function (require, exports) {
             // Base interest rates depending on amount tiers
             var baseInterest = config.depositRateV3[0] || 0.029; // Basic rate for amounts < 10000
             // Use config values as primary source
-            if (amount4Humans >= 10000) {
-                baseInterest = config.depositRateV3[1] || 0.039; // Medium rate for amounts between 10000-20000
-            }
-            else if (amount4Humans >= 20000) {
+            if (amount4Humans >= 20000) {
                 baseInterest = config.depositRateV3[2] || 0.049; // Highest rate for amounts >= 20000
+            }
+            else if (amount4Humans >= 10000) {
+                baseInterest = config.depositRateV3[1] || 0.039; // Medium rate for amounts between 10000-20000
             }
             // Calculate months
             var months = term / this.DEPOSIT_MIN_TERM_V3;
