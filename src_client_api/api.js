@@ -66,9 +66,21 @@ var ConcealAPI = new function(){
 		return new Promise(function(resolve, reject){
 			self.registerPromise('ready', resolve, reject);
 			var ifrm = document.createElement("iframe");
-			ifrm.setAttribute("src", self.apiDomain+"/api.html");
+			
+			// Ensure the URL uses HTTPS
+			const iframeSrc = self.apiDomain + "/api.html";
+			if (!iframeSrc.startsWith('https:') && !iframeSrc.startsWith('http://localhost')) {
+				console.error('Iframe source invalid');
+				reject(new Error('Iframe source invalid'));
+				return;
+			}
+			
+			// Set iframe attributes with security in mind
+			ifrm.setAttribute("src", iframeSrc);
 			ifrm.setAttribute("integrity", self.apiIntegrityHash);
 			ifrm.setAttribute("crossorigin", "anonymous");
+			// Add security attributes
+			ifrm.setAttribute("sandbox", "allow-scripts allow-same-origin");
 			ifrm.style.width = "0";
 			ifrm.style.height = "0";
 			ifrm.style.display = 'none';
@@ -92,7 +104,8 @@ var ConcealAPI = new function(){
 	this.hasWallet = function(){
 		return new Promise(function(resolve, reject){
 			self.registerPromise('hasWallet', resolve, reject);
-			self.iframe.contentWindow.postMessage('hasWallet', '*');
+			// Use specific origin instead of '*' for security
+			self.iframe.contentWindow.postMessage('hasWallet', self.apiDomain);
 		});
 	};
 

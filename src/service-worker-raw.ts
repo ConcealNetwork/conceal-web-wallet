@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2023 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -23,7 +23,20 @@ __WB_MANIFEST: any[];
 
 workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
 
+// List of allowed origins for cross-origin security
+const ALLOWED_ORIGINS = [
+	'http://localhost:3000',
+	'https://wallet.conceal.network',
+	'https://wws.conceal.network'
+];
+
 self.addEventListener('message', (event) => {
+	// Verify the origin of the message for security
+	if (!ALLOWED_ORIGINS.includes(event.origin)) {
+		console.warn('Service worker received message from non-allowed origin:', event.origin);
+		return;
+	}
+	
 	if (!event.data){
 		return;
 	}
