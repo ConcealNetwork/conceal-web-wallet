@@ -17,15 +17,38 @@
 
 import {WalletRepository} from "./model/WalletRepository";
 
+// List of allowed parent origins
+const ALLOWED_ORIGINS = [
+	'http://localhost:3000',
+	'https://wallet.conceal.network',
+	'https://wws.conceal.network'
+];
+
 function sendMessageToParent(type : string, data : any){
-	window.parent.postMessage({
-		type:type,
-		payload:data
-	}, '*');
+	// Get the parent origin from referrer or use the production URL as fallback
+	const parentOrigin = document.referrer ? 
+		new URL(document.referrer).origin : 
+		ALLOWED_ORIGINS[1]; // wallet.conceal.network
+	
+	// Only send message if the origin is in our allowed list
+	if (ALLOWED_ORIGINS.includes(parentOrigin)) {
+		window.parent.postMessage({
+			type: type,
+			payload: data
+		}, parentOrigin);
+	} else {
+		console.warn('Attempted to send message to non-allowed origin:', parentOrigin);
+	}
 }
 
 window.addEventListener('message', function(e : MessageEvent){
-	//console.log(e);
+	// Verify the origin of the message for security
+	if (!ALLOWED_ORIGINS.includes(e.origin)) {
+		console.warn('Received message from non-allowed origin:', e.origin);
+		return;
+	}
+	
+	// Process the message only if it comes from an allowed origin
 	if(e.data == 'hasWallet'){
 		sendMessageToParent('hasWallet', WalletRepository.hasOneStored());
 	}
