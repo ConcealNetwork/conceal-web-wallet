@@ -200,6 +200,7 @@ class NodeWorkersList {
         // Last resort: try any node, even if it has errors
         availableNodes = this.nodes;
         if (availableNodes.length === 0) {
+          console.error(`pickRandomNode: No nodes at all!`);
           return null; // No nodes at all
         }
         
@@ -214,7 +215,11 @@ class NodeWorkersList {
     // Shuffle the available nodes for better randomization
     const shuffledNodes = [...availableNodes].sort(() => Math.random() - 0.5);
     const selectedNode = shuffledNodes[0];
-    this.usedNodeUrls.add(selectedNode.url);
+    if (selectedNode) {
+      this.usedNodeUrls.add(selectedNode.url);
+    } else {
+      console.error(`pickRandomNode: No node selected from ${availableNodes.length} available nodes`);
+    }
     return selectedNode;
   }
 
@@ -306,6 +311,7 @@ class NodeWorkersList {
   }
 
   start = (nodes: string[]) => {
+    console.log(`NodeWorkersList.start: Initializing ${nodes.length} nodes`);
     for (let i = 0; i < nodes.length; i++) {
       this.nodes.push(new NodeWorker(nodes[i]));      
     }
@@ -394,8 +400,8 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     return this.scannedHeight;
   }
 
-  resetNodes = () => {
-    Storage.getItem('customNodeUrl', null).then(customNodeUrl => {
+  resetNodes = (): Promise<void> => {
+    return Storage.getItem('customNodeUrl', null).then(customNodeUrl => {
       // Clean up current session before changing nodes
       this.nodeWorkers.cleanupSession();
       this.nodeWorkers.stop();
@@ -416,17 +422,27 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
         }
       }    
       
+      // Ensure we have nodes to work with
+      if (!config || !config.nodeList || config.nodeList.length === 0) {
+        throw new Error('No nodes available in configuration');
+      }
+      
       if (customNodeUrl) {
         this.nodeWorkers.start([customNodeUrl]);
       } else {
+        // Shuffle the node list for random selection
         shuffle(config.nodeList);
         this.nodeWorkers.start(config.nodeList);
       }
       
-      // Initialize new session with the updated node configuration
-      this.nodeWorkers.initializeSession();
+      // Note: initializeSession() is already called in NodeWorkersList.start()     
+      // Verify that nodes are actually available before proceeding
+      if (this.nodeWorkers.getNodes().length === 0) {
+        throw new Error('Failed to initialize nodes');
+      }
     }).catch(err => {
       console.error("resetNodes failed", err);
+      throw err;
     });
   }
   
@@ -461,13 +477,36 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
           }
           
           this.initialized = true;
-          this.resetNodes();
-          return true;
+          // Wait for resetNodes to complete before returning
+          return this.resetNodes().then(() => {
+            // Double-check that nodes are ready
+            if (this.nodeWorkers.getNodes().length === 0) {
+              throw new Error('Node initialization failed');
+            }
+            return true;
+          });
         }).fail((data: any, textStatus: string) => {        
-          return false;
+          console.warn('Failed to fetch public nodes, using config nodes only:', textStatus);
+          // Even if public nodes fetch fails, we still have config nodes
+          this.initialized = true;
+          return this.resetNodes().then(() => {
+            // Double-check that nodes are ready
+            if (this.nodeWorkers.getNodes().length === 0) {
+              throw new Error('Node initialization failed');
+            }
+            return true;
+          });
         });
       } else {
-        return Promise.resolve(true);
+        // For non-public nodes, still need to wait for resetNodes
+        this.initialized = true;
+        return this.resetNodes().then(() => {
+          // Double-check that nodes are ready
+          if (this.nodeWorkers.getNodes().length === 0) {
+            throw new Error('Node initialization failed');
+          }
+          return true;
+        });
       }  
     }   
   }
