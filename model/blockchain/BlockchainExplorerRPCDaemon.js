@@ -254,6 +254,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 return _this.nodes;
             };
             this.start = function (nodes) {
+                console.log("NodeWorkersList.start: Initializing ".concat(nodes.length, " nodes"));
                 for (var i = 0; i < nodes.length; i++) {
                     _this.nodes.push(new NodeWorker(nodes[i]));
                 }
@@ -297,6 +298,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                     // Last resort: try any node, even if it has errors
                     availableNodes = this.nodes;
                     if (availableNodes.length === 0) {
+                        console.error("pickRandomNode: No nodes at all!");
                         return null; // No nodes at all
                     }
                     // Filter out nodes with excessive errors even in last resort
@@ -309,7 +311,12 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             // Shuffle the available nodes for better randomization
             var shuffledNodes = __spreadArray([], availableNodes, true).sort(function () { return Math.random() - 0.5; });
             var selectedNode = shuffledNodes[0];
-            this.usedNodeUrls.add(selectedNode.url);
+            if (selectedNode) {
+                this.usedNodeUrls.add(selectedNode.url);
+            }
+            else {
+                console.error("pickRandomNode: No node selected from ".concat(availableNodes.length, " available nodes"));
+            }
             return selectedNode;
         };
         NodeWorkersList.prototype.getSessionNode = function () {
@@ -403,7 +410,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 return _this.scannedHeight;
             };
             this.resetNodes = function () {
-                Storage_1.Storage.getItem('customNodeUrl', null).then(function (customNodeUrl) {
+                return Storage_1.Storage.getItem('customNodeUrl', null).then(function (customNodeUrl) {
                     // Clean up current session before changing nodes
                     _this.nodeWorkers.cleanupSession();
                     _this.nodeWorkers.stop();
@@ -421,17 +428,26 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                             ], array[currentIndex] = _a[0], array[randomIndex] = _a[1];
                         }
                     }
+                    // Ensure we have nodes to work with
+                    if (!config || !config.nodeList || config.nodeList.length === 0) {
+                        throw new Error('No nodes available in configuration');
+                    }
                     if (customNodeUrl) {
                         _this.nodeWorkers.start([customNodeUrl]);
                     }
                     else {
+                        // Shuffle the node list for random selection
                         shuffle(config.nodeList);
                         _this.nodeWorkers.start(config.nodeList);
                     }
-                    // Initialize new session with the updated node configuration
-                    _this.nodeWorkers.initializeSession();
+                    // Note: initializeSession() is already called in NodeWorkersList.start()     
+                    // Verify that nodes are actually available before proceeding
+                    if (_this.nodeWorkers.getNodes().length === 0) {
+                        throw new Error('Failed to initialize nodes');
+                    }
                 }).catch(function (err) {
                     console.error("resetNodes failed", err);
+                    throw err;
                 });
             };
             this.isInitialized = function () {
@@ -462,14 +478,37 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                                 }
                             }
                             _this.initialized = true;
-                            _this.resetNodes();
-                            return true;
+                            // Wait for resetNodes to complete before returning
+                            return _this.resetNodes().then(function () {
+                                // Double-check that nodes are ready
+                                if (_this.nodeWorkers.getNodes().length === 0) {
+                                    throw new Error('Node initialization failed');
+                                }
+                                return true;
+                            });
                         }).fail(function (data, textStatus) {
-                            return false;
+                            console.warn('Failed to fetch public nodes, using config nodes only:', textStatus);
+                            // Even if public nodes fetch fails, we still have config nodes
+                            _this.initialized = true;
+                            return _this.resetNodes().then(function () {
+                                // Double-check that nodes are ready
+                                if (_this.nodeWorkers.getNodes().length === 0) {
+                                    throw new Error('Node initialization failed');
+                                }
+                                return true;
+                            });
                         });
                     }
                     else {
-                        return Promise.resolve(true);
+                        // For non-public nodes, still need to wait for resetNodes
+                        _this.initialized = true;
+                        return _this.resetNodes().then(function () {
+                            // Double-check that nodes are ready
+                            if (_this.nodeWorkers.getNodes().length === 0) {
+                                throw new Error('Node initialization failed');
+                            }
+                            return true;
+                        });
                     }
                 }
             };

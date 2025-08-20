@@ -58,50 +58,53 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         ImportView.prototype.importWallet = function () {
             var self = this;
             $('#pageLoading').show();
-            blockchainExplorer.initialize().then(function (success) {
-                blockchainExplorer.getHeight().then(function (currentHeight) {
-                    $('#pageLoading').hide();
-                    var newWallet = new Wallet_1.Wallet();
-                    if (self.viewOnly) {
-                        var decodedPublic = Cn_1.Cn.decode_address(self.publicAddress.trim());
-                        newWallet.keys = {
-                            priv: {
-                                spend: '',
-                                view: self.privateViewKey.trim()
-                            },
-                            pub: {
-                                spend: decodedPublic.spend,
-                                view: decodedPublic.view,
-                            }
-                        };
-                    }
-                    else {
-                        //console.log(1);
-                        var viewkey = self.privateViewKey.trim();
-                        if (viewkey === '') {
-                            viewkey = Cn_1.Cn.generate_keys(Cn_1.CnUtils.cn_fast_hash(self.privateSpendKey.trim())).sec;
+            blockchainExplorer.initialize().then(function () {
+                // Add a small delay to ensure nodes are fully ready
+                setTimeout(function () {
+                    blockchainExplorer.getHeight().then(function (currentHeight) {
+                        $('#pageLoading').hide();
+                        var newWallet = new Wallet_1.Wallet();
+                        if (self.viewOnly) {
+                            var decodedPublic = Cn_1.Cn.decode_address(self.publicAddress.trim());
+                            newWallet.keys = {
+                                priv: {
+                                    spend: '',
+                                    view: self.privateViewKey.trim()
+                                },
+                                pub: {
+                                    spend: decodedPublic.spend,
+                                    view: decodedPublic.view,
+                                }
+                            };
                         }
-                        //console.log(1, viewkey);
-                        newWallet.keys = KeysRepository_1.KeysRepository.fromPriv(self.privateSpendKey.trim(), viewkey);
-                        //console.log(1);
-                    }
-                    var height = self.importHeight; //never trust a perfect value from the user
-                    if (height >= currentHeight) {
-                        height = currentHeight - 1;
-                    }
-                    height = height - 10;
-                    if (height < 0)
-                        height = 0;
-                    if (height > currentHeight)
-                        height = currentHeight;
-                    newWallet.lastHeight = height;
-                    newWallet.creationHeight = newWallet.lastHeight;
-                    AppState_1.AppState.openWallet(newWallet, self.password);
-                    window.location.href = '#account';
-                }).catch(function (err) {
-                    console.log(err);
-                    $('#pageLoading').hide();
-                });
+                        else {
+                            //console.log(1);
+                            var viewkey = self.privateViewKey.trim();
+                            if (viewkey === '') {
+                                viewkey = Cn_1.Cn.generate_keys(Cn_1.CnUtils.cn_fast_hash(self.privateSpendKey.trim())).sec;
+                            }
+                            //console.log(1, viewkey);
+                            newWallet.keys = KeysRepository_1.KeysRepository.fromPriv(self.privateSpendKey.trim(), viewkey);
+                            //console.log(1);
+                        }
+                        var height = self.importHeight; //never trust a perfect value from the user
+                        if (height >= currentHeight) {
+                            height = currentHeight - 1;
+                        }
+                        height = height - 10;
+                        if (height < 0)
+                            height = 0;
+                        if (height > currentHeight)
+                            height = currentHeight;
+                        newWallet.lastHeight = height;
+                        newWallet.creationHeight = newWallet.lastHeight;
+                        AppState_1.AppState.openWallet(newWallet, self.password);
+                        window.location.href = '#account';
+                    }).catch(function (err) {
+                        console.log(err);
+                        $('#pageLoading').hide();
+                    });
+                }, 100); // 100ms delay to ensure nodes are ready
             }).catch(function (err) {
                 console.log(err);
                 $('#pageLoading').hide();

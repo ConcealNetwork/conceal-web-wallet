@@ -94,29 +94,33 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         ImportView.prototype.importWallet = function () {
             var self = this;
             $('#pageLoading').show();
-            blockchainExplorer.initialize().then(function (success) {
-                blockchainExplorer.getHeight().then(function (currentHeight) {
-                    $('#pageLoading').hide();
-                    setTimeout(function () {
-                        var newWallet = WalletRepository_1.WalletRepository.decodeWithPassword(self.rawFile, self.password);
-                        if (newWallet !== null) {
-                            newWallet.recalculateIfNotViewOnly();
-                            AppState_1.AppState.openWallet(newWallet, self.password);
-                            window.location.href = '#account';
-                        }
-                        else {
-                            swal({
-                                type: 'error',
-                                title: i18n.t('global.invalidPasswordModal.title'),
-                                text: i18n.t('global.invalidPasswordModal.content'),
-                                confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
-                            });
-                        }
-                    }, 1);
-                }).catch(function (err) {
-                    console.log(err);
-                    $('#pageLoading').hide();
-                });
+            blockchainExplorer.initialize().then(function () {
+                // Add a small delay to ensure nodes are fully ready
+                setTimeout(function () {
+                    blockchainExplorer.getHeight().then(function (currentHeight) {
+                        $('#pageLoading').hide();
+                        setTimeout(function () {
+                            var newWallet = WalletRepository_1.WalletRepository.decodeWithPassword(self.rawFile, self.password);
+                            if (newWallet !== null) {
+                                newWallet.recalculateIfNotViewOnly();
+                                AppState_1.AppState.openWallet(newWallet, self.password);
+                                window.location.href = '#account';
+                            }
+                            else {
+                                swal({
+                                    type: 'error',
+                                    title: i18n.t('global.invalidPasswordModal.title'),
+                                    text: i18n.t('global.invalidPasswordModal.content'),
+                                    confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
+                                });
+                            }
+                        }, 1);
+                        console.log("Current height: ", currentHeight);
+                    }).catch(function (err) {
+                        console.log(err);
+                        $('#pageLoading').hide();
+                    });
+                }, 100); // 100ms delay to ensure nodes are ready
             }).catch(function (err) {
                 console.log(err);
                 $('#pageLoading').hide();
