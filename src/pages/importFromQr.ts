@@ -69,8 +69,10 @@ class ImportView extends DestructableView{
 		let self = this;
     $('#pageLoading').show();
 
-    blockchainExplorer.initialize().then(success => {    
-      blockchainExplorer.getHeight().then(function(currentHeight){
+    blockchainExplorer.initialize().then(() => {    
+      // Add a small delay to ensure nodes are fully ready
+      setTimeout(() => {
+        blockchainExplorer.getHeight().then(function(currentHeight){
         $('#pageLoading').hide();
         let newWallet = new Wallet();
 
@@ -135,16 +137,17 @@ class ImportView extends DestructableView{
         AppState.openWallet(newWallet, self.password);
 
         window.location.href = '#account';
-     }).catch(err => {
-        console.log(err);
-        $('#pageLoading').hide();
-        swal({
-          type: 'error',
-          title: i18n.t('importFromQrPage.error.title'),
-          text: i18n.t('importFromQrPage.error.connection'),
-          confirmButtonText: i18n.t('importFromQrPage.error.confirmText'),
+       }).catch(err => {
+          console.log(err);
+          $('#pageLoading').hide();
+          swal({
+            type: 'error',
+            title: i18n.t('importFromQrPage.error.title'),
+            text: i18n.t('importFromQrPage.error.connection'),
+            confirmButtonText: i18n.t('importFromQrPage.error.confirmText'),
+          });
         });
-      });
+      }, 100); // 100ms delay to ensure nodes are ready
     }).catch(err => {
       console.log(err);
       $('#pageLoading').hide();

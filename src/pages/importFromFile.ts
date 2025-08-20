@@ -100,8 +100,10 @@ class ImportView extends DestructableView{
 		let self = this;
     		$('#pageLoading').show();
 
-    blockchainExplorer.initialize().then(success => {
-      blockchainExplorer.getHeight().then(function(currentHeight){
+    blockchainExplorer.initialize().then(() => {
+      // Add a small delay to ensure nodes are fully ready
+      setTimeout(() => {
+        blockchainExplorer.getHeight().then(function(currentHeight){
         		$('#pageLoading').hide();
         
         setTimeout(function(){
@@ -119,10 +121,12 @@ class ImportView extends DestructableView{
             });
           }
         },1);
-     }).catch(err => {
-        console.log(err);
-		$('#pageLoading').hide();
-      });
+		console.log("Current height: ", currentHeight);
+       }).catch(err => {
+          console.log(err);
+  		$('#pageLoading').hide();
+        });
+      }, 100); // 100ms delay to ensure nodes are ready
     }).catch(err => {
       console.log(err);
 		$('#pageLoading').hide();
