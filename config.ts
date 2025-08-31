@@ -6,9 +6,8 @@ myGlobal.config = {
     "https://ccxapi.conceal.network/api/"
   ],
   nodeList: [
-    //"https://seed1.conceal.network/daemon/",  this node url is temporary disabled
-    "https://seed2.conceal.network/daemon/",
-    "https://seed3.conceal.network/daemon/"
+    "https://explorer.conceal.network/daemon/",
+    "https://ccxapi.conceal.network/daemon/"
   ],
   publicNodes: "https://explorer.conceal.network/pool",
 	mainnetExplorerUrl: "https://explorer.conceal.network/",
