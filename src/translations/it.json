@@ -643,13 +643,13 @@
       }
     },
     "importPage": {
-      "title": "Creare un portafoglio",
+      "title": "Importa un portafoglio",
       "subtitle": "Da chiavi, da file o da una frase mnemonica",
-      "chooseMethod": "Scegli il tuo metodo di importazione:",
-      "fromKeys": "Da chiavi",
-      "fromFile": "Da un file",
-      "fromMnemonic": "Da una frase mnemonica",
-      "fromQr": "Da un codice QR"
+      "chooseMethod": "Importa da:",
+      "fromKeys": "Chiavi",
+      "fromFile": "File",
+      "fromMnemonic": "Frase mnemonica",
+      "fromQr": "Codice QR"
     },
     "termsOfUsePage": {
       "title": "Termini di utilizzo",

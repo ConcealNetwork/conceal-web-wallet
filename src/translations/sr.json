@@ -645,11 +645,11 @@
     "importPage": {
       "title": "Увези новчаник",
       "subtitle": "Од претходно добијених кључева, фајла, или мнемоничке фразе",
-      "chooseMethod": "Изабери метод",
-      "fromKeys": "Помоћу кључева",
-      "fromFile": "Помоћу фајла",
-      "fromMnemonic": "Помоћу мнемоничке фразе",
-      "fromQr": "Помоћу QR кода"
+      "chooseMethod": "Импортирати из:",
+      "fromKeys": "Кључеви",
+      "fromFile": "Фајл",
+      "fromMnemonic": "Мнемоничка фраза",
+      "fromQr": "QR код"
     },
     "termsOfUsePage": {
       "title": "Правила коришћења",

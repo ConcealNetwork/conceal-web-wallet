@@ -96,41 +96,41 @@ class ImportView extends DestructableView{
 		element.click();
 	}
 
-	importWallet(){
+	async importWallet(){
 		let self = this;
-    		$('#pageLoading').show();
+    	$('#pageLoading').show();
 
-    blockchainExplorer.initialize().then(() => {
+    try {
+      await blockchainExplorer.initialize();
+      
       // Add a small delay to ensure nodes are fully ready
-      setTimeout(() => {
-        blockchainExplorer.getHeight().then(function(currentHeight){
-        		$('#pageLoading').hide();
-        
-        setTimeout(function(){
-          let newWallet = WalletRepository.decodeWithPassword(self.rawFile,self.password);
-          if(newWallet !== null) {
-            newWallet.recalculateIfNotViewOnly();
-            AppState.openWallet(newWallet, self.password);
-            window.location.href = '#account';
-          }else{
-            swal({
-              type: 'error',
-              title: i18n.t('global.invalidPasswordModal.title'),
-              text: i18n.t('global.invalidPasswordModal.content'),
-              confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
-            });
-          }
-        },1);
-		console.log("Current height: ", currentHeight);
-       }).catch(err => {
-          console.log(err);
-  		$('#pageLoading').hide();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const currentHeight = await blockchainExplorer.getHeight();
+      $('#pageLoading').hide();
+      
+      // Small delay before wallet operations
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      let newWallet = WalletRepository.decodeWithPassword(self.rawFile, self.password);
+      if(newWallet !== null) {
+        newWallet.recalculateIfNotViewOnly();
+        AppState.openWallet(newWallet, self.password);
+        window.location.href = '#account';
+      } else {
+        swal({
+          type: 'error',
+          title: i18n.t('global.invalidPasswordModal.title'),
+          text: i18n.t('global.invalidPasswordModal.content'),
+          confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
         });
-      }, 100); // 100ms delay to ensure nodes are ready
-    }).catch(err => {
-      console.log(err);
-		$('#pageLoading').hide();
-    });  
+      }
+      
+      console.log("Current height: ", currentHeight);
+    } catch (err) {
+      console.log('Import wallet failed:', err);
+      $('#pageLoading').hide();
+    }
   }
 
 	@VueWatched()

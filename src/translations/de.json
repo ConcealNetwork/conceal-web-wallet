@@ -644,13 +644,13 @@
       }
     },
     "importPage": {
-      "title": "Erstelle eine Wallet",
+      "title": "Importiere eine Wallet",
       "subtitle": "Von vorher erstellten Schlüsslen, einer Datei oder einer Mnemonic Phrase",
-      "chooseMethod": "Wähle deine Import Methode",
-      "fromKeys": "Von Schlüsseln",
-      "fromFile": "Von einer Datei",
-      "fromMnemonic": "Von einer Mnemonic Phrase",
-      "fromQr": "Von einem QR code"
+      "chooseMethod": "Importiere von:",
+      "fromKeys": "Schlüssel",
+      "fromFile": "Datei",
+      "fromMnemonic": "Mnemonic Phrase",
+      "fromQr": "QR code"
     },
     "termsOfUsePage": {
       "title": "Nutzungsbedingungen",

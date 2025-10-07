@@ -646,13 +646,13 @@
       }
     },
     "importPage": {
-      "title": "Utwórz portfel",
+      "title": "Importuj portfel",
       "subtitle": "Z wcześniej utworzonych kluczy, pliku lub frazy mnemonicznej",
-      "chooseMethod": "Wybierz metodę importu:",
-      "fromKeys": "Za pomocą kluczy",
-      "fromFile": "Za pomocą pliku",
-      "fromMnemonic": "Za pomocą frazy mnemonicznej",
-      "fromQr": "Za pomocą QR kodu"
+      "chooseMethod": "Importuj z:",
+      "fromKeys": "Klucze",
+      "fromFile": "Plik",
+      "fromMnemonic": "Fraza mnemoniczna",
+      "fromQr": "QR kod"
     },
     "termsOfUsePage": {
       "title": "Warunki korzystania",
