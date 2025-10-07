@@ -450,65 +450,58 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     return this.initialized;
   }
 
-  initialize = (): Promise<boolean> => {     
+  initialize = async (): Promise<boolean> => {     
     const doesMatch = (toCheck: string) => {
       return (element: string) => {
           return element.toLowerCase() === toCheck.toLowerCase();
       }
     }
 
+
     if (this.initialized) {
-      return Promise.resolve(true);
-    } else {
+      return true;
+    }
+
+    try {
       if (config.publicNodes) {
-        return $.ajax({
-          method: 'GET',
-          timeout: 10 * 1000,
-          url: config.publicNodes + '/list?hasSSL=true'
-        }).done((result: any) => {
-          if (result.success && (result.list.length > 0)) {
-            for (let i = 0; i < result.list.length; ++i) {
-              let finalUrl = "https://" + result.list[i].url.host + "/";
+        try {
+          const response = await $.ajax({
+            method: 'GET',
+            timeout: 10 * 1000,
+            url: config.publicNodes + '/list?hasSSL=true'
+          });
+
+          if (response.success && (response.list.length > 0)) {
+            for (let i = 0; i < response.list.length; ++i) {
+              let finalUrl = "https://" + response.list[i].url.host + "/";
   
               if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
                 config.nodeList.push(finalUrl);
               }
             }
           }
-          
-          this.initialized = true;
-          // Wait for resetNodes to complete before returning
-          return this.resetNodes().then(() => {
-            // Double-check that nodes are ready
-            if (this.nodeWorkers.getNodes().length === 0) {
-              throw new Error('Node initialization failed');
-            }
-            return true;
-          });
-        }).fail((data: any, textStatus: string) => {        
-          console.warn('Failed to fetch public nodes, using config nodes only:', textStatus);
-          // Even if public nodes fetch fails, we still have config nodes
-          this.initialized = true;
-          return this.resetNodes().then(() => {
-            // Double-check that nodes are ready
-            if (this.nodeWorkers.getNodes().length === 0) {
-              throw new Error('Node initialization failed');
-            }
-            return true;
-          });
-        });
-      } else {
-        // For non-public nodes, still need to wait for resetNodes
-        this.initialized = true;
-        return this.resetNodes().then(() => {
-          // Double-check that nodes are ready
-          if (this.nodeWorkers.getNodes().length === 0) {
-            throw new Error('Node initialization failed');
-          }
-          return true;
-        });
-      }  
-    }   
+        } catch (error) {
+          console.warn('Failed to fetch public nodes, using config nodes only:', error);
+        }
+      }
+      
+      this.initialized = true;
+      
+      // Wait for resetNodes to complete before returning
+      await this.resetNodes();
+      
+      // Double-check that nodes are ready
+      if (this.nodeWorkers.getNodes().length === 0) {
+        throw new Error('Node initialization failed - no nodes available');
+      }
+      
+      console.log(`Initialized with ${this.nodeWorkers.getNodes().length} nodes`);
+      return true;
+      
+    } catch (error) {
+      console.error('Node initialization failed:', error);
+      throw error;
+    }
   }
 
   start = (wallet: Wallet): WalletWatchdog => {

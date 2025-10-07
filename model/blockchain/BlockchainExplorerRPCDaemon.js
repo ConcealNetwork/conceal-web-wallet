@@ -453,65 +453,67 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             this.isInitialized = function () {
                 return _this.initialized;
             };
-            this.initialize = function () {
-                var doesMatch = function (toCheck) {
-                    return function (element) {
-                        return element.toLowerCase() === toCheck.toLowerCase();
-                    };
-                };
-                if (_this.initialized) {
-                    return Promise.resolve(true);
-                }
-                else {
-                    if (config.publicNodes) {
-                        return $.ajax({
-                            method: 'GET',
-                            timeout: 10 * 1000,
-                            url: config.publicNodes + '/list?hasSSL=true'
-                        }).done(function (result) {
-                            if (result.success && (result.list.length > 0)) {
-                                for (var i = 0; i < result.list.length; ++i) {
-                                    var finalUrl = "https://" + result.list[i].url.host + "/";
+            this.initialize = function () { return __awaiter(_this, void 0, void 0, function () {
+                var doesMatch, response, i, finalUrl, error_3, error_4;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            doesMatch = function (toCheck) {
+                                return function (element) {
+                                    return element.toLowerCase() === toCheck.toLowerCase();
+                                };
+                            };
+                            if (this.initialized) {
+                                return [2 /*return*/, true];
+                            }
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 7, , 8]);
+                            if (!config.publicNodes) return [3 /*break*/, 5];
+                            _a.label = 2;
+                        case 2:
+                            _a.trys.push([2, 4, , 5]);
+                            return [4 /*yield*/, $.ajax({
+                                    method: 'GET',
+                                    timeout: 10 * 1000,
+                                    url: config.publicNodes + '/list?hasSSL=true'
+                                })];
+                        case 3:
+                            response = _a.sent();
+                            if (response.success && (response.list.length > 0)) {
+                                for (i = 0; i < response.list.length; ++i) {
+                                    finalUrl = "https://" + response.list[i].url.host + "/";
                                     if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
                                         config.nodeList.push(finalUrl);
                                     }
                                 }
                             }
-                            _this.initialized = true;
+                            return [3 /*break*/, 5];
+                        case 4:
+                            error_3 = _a.sent();
+                            console.warn('Failed to fetch public nodes, using config nodes only:', error_3);
+                            return [3 /*break*/, 5];
+                        case 5:
+                            this.initialized = true;
                             // Wait for resetNodes to complete before returning
-                            return _this.resetNodes().then(function () {
-                                // Double-check that nodes are ready
-                                if (_this.nodeWorkers.getNodes().length === 0) {
-                                    throw new Error('Node initialization failed');
-                                }
-                                return true;
-                            });
-                        }).fail(function (data, textStatus) {
-                            console.warn('Failed to fetch public nodes, using config nodes only:', textStatus);
-                            // Even if public nodes fetch fails, we still have config nodes
-                            _this.initialized = true;
-                            return _this.resetNodes().then(function () {
-                                // Double-check that nodes are ready
-                                if (_this.nodeWorkers.getNodes().length === 0) {
-                                    throw new Error('Node initialization failed');
-                                }
-                                return true;
-                            });
-                        });
-                    }
-                    else {
-                        // For non-public nodes, still need to wait for resetNodes
-                        _this.initialized = true;
-                        return _this.resetNodes().then(function () {
+                            return [4 /*yield*/, this.resetNodes()];
+                        case 6:
+                            // Wait for resetNodes to complete before returning
+                            _a.sent();
                             // Double-check that nodes are ready
-                            if (_this.nodeWorkers.getNodes().length === 0) {
-                                throw new Error('Node initialization failed');
+                            if (this.nodeWorkers.getNodes().length === 0) {
+                                throw new Error('Node initialization failed - no nodes available');
                             }
-                            return true;
-                        });
+                            console.log("Initialized with ".concat(this.nodeWorkers.getNodes().length, " nodes"));
+                            return [2 /*return*/, true];
+                        case 7:
+                            error_4 = _a.sent();
+                            console.error('Node initialization failed:', error_4);
+                            throw error_4;
+                        case 8: return [2 /*return*/];
                     }
-                }
-            };
+                });
+            }); };
             this.start = function (wallet) {
                 var watchdog = new WalletWatchdog_1.WalletWatchdog(wallet, _this);
                 watchdog.start();

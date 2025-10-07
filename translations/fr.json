@@ -644,13 +644,13 @@
 		}
 	  },
 	  "importPage": {
-		"title": "Créer un portefeuille",
+		"title": "Importer un portefeuille",
 		"subtitle": "Depuis des clefs, un fichier ou une phrase mnémotechnique",
 		"chooseMethod": "Choisissez votre méthode d'importation",
-		"fromKeys": "Depuis des clefs privées",
-		"fromFile": "Depuis un fichier",
-		"fromMnemonic": "Depuis une phrase mnémotechnique",
-		"fromQr": "Depuis un QR code"
+		"fromKeys": "Clefs privées",
+		"fromFile": "Fichier",
+		"fromMnemonic": "Phrase mnémotechnique",
+		"fromQr": "QR code"
 	  },
 	  "termsOfUsePage": {
 		"title": "Conditions d'utilisations",

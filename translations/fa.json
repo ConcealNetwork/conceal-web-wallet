@@ -644,12 +644,12 @@
       }
     },
     "importPage": {
-      "title": "درون ریزی کیف پول",
+      "title": "وارد کردن کیف پول",
       "subtitle": "از کلیدهای قبلی",
-      "chooseMethod": "یک متد انتخاب کنید",
-      "fromKeys": "با استفاده از کلید ها",
-      "fromFile": "با استفاده از فایل ",
-      "fromMnemonic": "با استفاده از کد سید",
+      "chooseMethod": "وارد کردن از:",
+      "fromKeys": "کلید ها",
+      "fromFile": "فایل ",
+      "fromMnemonic": "کد سید",
       "fromQr": "با استفاده از کد تصویری کیو آر"
     },
     "termsOfUsePage": {

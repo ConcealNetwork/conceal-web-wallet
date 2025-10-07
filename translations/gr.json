@@ -643,13 +643,13 @@
       }
     },
     "importPage": {
-      "title": "Δημιουργία πορτοφολιού",
+      "title": "Εισαγωγή πορτοφολιού",
       "subtitle": "Από προηγουμένως δημιουργημένα κλειδιά, αρχείο ή μνημονική φράση",
-      "chooseMethod": "Διαλέξτε την μέθοδο εισαγωγής:",
-      "fromKeys": "Απο κλειδιά",
-      "fromFile": "Από αρχείο",
-      "fromMnemonic": "Από μνημονική φράση",
-      "fromQr": "Από QR code"
+      "chooseMethod": "Εισαγωγή από:",
+      "fromKeys": "Κλειδιά",
+      "fromFile": "Αρχείο",
+      "fromMnemonic": "Μνημονική φράση",
+      "fromQr": "QR code"
     },
     "termsOfUsePage": {
       "title": "Όροι χρήσης",

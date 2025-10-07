@@ -638,7 +638,7 @@
       }
     },
     "importPage": {
-      "title": "创建一个钱包",
+      "title": "导入一个钱包",
       "subtitle": "从以前创建过的密钥，文件或助记词",
       "chooseMethod": "选择导入方法：",
       "fromKeys": "从秘钥",
