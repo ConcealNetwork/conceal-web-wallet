@@ -644,13 +644,13 @@
       }
     },
     "importPage": {
-      "title": "Crear una billetera",
+      "title": "Importar una billetera",
       "subtitle": "A partir de claves, archivos o frases mnemónicas creadas previamente.",
-      "chooseMethod": "Selecciona un método de importación:",
-      "fromKeys": "De las llaves",
-      "fromFile": "De un archivo",
-      "fromMnemonic": "Desde una frase mnemotécnica.",
-      "fromQr": "Desde un código QR"
+      "chooseMethod": "Importar desde:",
+      "fromKeys": "Claves",
+      "fromFile": "Archivo",
+      "fromMnemonic": "Frase mnemotécnica.",
+      "fromQr": "Código QR"
     },
     "termsOfUsePage": {
       "title": "Términos de Uso",

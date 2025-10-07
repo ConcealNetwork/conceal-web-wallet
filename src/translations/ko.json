@@ -646,12 +646,12 @@
       }
     },
     "importPage": {
-      "title": "지갑 만들기",
+      "title": "지갑 가져오기",
       "subtitle": "키, 파일 또는 연상단어를 사용하여 가져오기",
       "chooseMethod": "지갑을 가져올 방법을 선택해 주세요:",
-      "fromKeys": "키를 사용하여 가져오기",
-      "fromFile": "파일을 사용하여 가져오기",
-      "fromMnemonic": "연상단어 사용하여 가져오기",
+      "fromKeys": "키",
+      "fromFile": "파일",
+      "fromMnemonic": "연상단어",
       "fromQr": "QR 코드 사용하여 가져오기"
     },
     "termsOfUsePage": {

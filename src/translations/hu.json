@@ -643,9 +643,9 @@
       }
     },
     "importPage": {
-      "title": "Tárca létrehozása",
+      "title": "Tárca importálása",
       "subtitle": "Korábban létrehozott kulcsokkal, fájllal vagy mnemonikus szósorral",
-      "chooseMethod": "Válassz importálási módszert:",
+      "chooseMethod": "Importálás:",
       "fromKeys": "Kulcsok",
       "fromFile": "Fájl",
       "fromMnemonic": "Mnemonikus szósor",
