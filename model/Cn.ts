@@ -2453,6 +2453,7 @@ export namespace CnTransactions{
 		unlock_time : number = 0,    
 		rct:boolean,
     	message: string,
+    	messageTo: string|undefined,
     	ttl: number,
 		transactionType: string,
 		term: number
@@ -2702,13 +2703,8 @@ export namespace CnTransactions{
     // Encrypt message and add it to the extra
 		// CCX has only 1 destination for messages anyways
 		if (message) {
-      let messageAddress: string | null = null;
-      for (let i = 0; i < dsts.length; i++) {
-        if (dsts[i].address !== senderAddress) {
-          messageAddress = dsts[i].address;
-          break; // Break after finding the first non-sender destination
-        }
-      }
+		//let messageAddress: string | null = null;
+		let messageAddress = messageTo ? messageTo : null;
 
       if (messageAddress) {
         let destKeys = Cn.decode_address(messageAddress);
@@ -2897,6 +2893,7 @@ export namespace CnTransactions{
     unlock_time : number = 0,
     rct:boolean,
     message: string,
+    messageTo: string|undefined,
     ttl: number,
 	transactionType: string,
 	term: number
@@ -3096,6 +3093,6 @@ export namespace CnTransactions{
 		} else if (cmp > 0) {
 			throw "Need more money than found! (have: " + Cn.formatMoney(found_money) + " need: " + Cn.formatMoney(needed_money) + ")";
 		}
-		return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl, transactionType, term);
+		return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, messageTo, ttl, transactionType, term);
 	}
 }

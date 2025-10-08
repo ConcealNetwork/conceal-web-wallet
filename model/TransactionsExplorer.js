@@ -668,6 +668,11 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     if (pid_encrypt) {
                         realDestViewKey = Cn_1.Cn.decode_address(dsts[0].address).view;
                     }
+                    // getting message destination address for encrypting here, before splitting and sorting
+                    var messageTo = undefined;
+                    if (message) {
+                        messageTo = dsts[0].address;
+                    }
                     //let splittedDsts = CnTransactions.decompose_tx_destinations(dsts, rct);
                     var splittedDsts = void 0;
                     if (transactionType === "deposit") {
@@ -689,7 +694,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }, {
                         spend: wallet.keys.priv.spend,
                         view: wallet.keys.priv.view
-                    }, splittedDsts, wallet.getPublicAddress(), usingOuts, mix_outs, mixin, neededFee, payment_id, pid_encrypt, realDestViewKey, 0, rct, message, ttl, transactionType, term);
+                    }, splittedDsts, wallet.getPublicAddress(), usingOuts, mix_outs, mixin, neededFee, payment_id, pid_encrypt, realDestViewKey, 0, rct, message, messageTo, ttl, transactionType, term);
                     logDebugMsg("signed tx: ", signed);
                     //console.log('Pre-serialization transaction:', JSON.stringify(signed, null, 2));
                     var raw_tx_and_hash = Cn_1.CnTransactions.serialize_tx_with_hash(signed);

@@ -2206,7 +2206,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             return rv;
         }
         CnTransactions.genRct = genRct;
-        function construct_tx(keys, sources, dsts, senderAddress, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl, transactionType, term) {
+        function construct_tx(keys, sources, dsts, senderAddress, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, messageTo, ttl, transactionType, term) {
             if (unlock_time === void 0) { unlock_time = 0; }
             try {
                 console.log('Starting transaction construction...');
@@ -2424,13 +2424,8 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
                 // Encrypt message and add it to the extra
                 // CCX has only 1 destination for messages anyways
                 if (message) {
-                    var messageAddress = null;
-                    for (var i_5 = 0; i_5 < dsts.length; i_5++) {
-                        if (dsts[i_5].address !== senderAddress) {
-                            messageAddress = dsts[i_5].address;
-                            break; // Break after finding the first non-sender destination
-                        }
-                    }
+                    //let messageAddress: string | null = null;
+                    var messageAddress = messageTo ? messageTo : null;
                     if (messageAddress) {
                         var destKeys = Cn.decode_address(messageAddress);
                         var derivation = CnNativeBride.generate_key_derivation(destKeys.spend, txkey.sec);
@@ -2441,8 +2436,8 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
                         var hashBuf = CnUtils.hextobin(hash);
                         var nonceBuf = new Uint8Array(12);
                         var index = 0; // Because we only have one message
-                        for (var i_6 = 0; i_6 < 12; i_6++) {
-                            nonceBuf.set([index / Math.pow(0x100, i_6)], 11 - i_6);
+                        for (var i_5 = 0; i_5 < 12; i_5++) {
+                            nonceBuf.set([index / Math.pow(0x100, i_5)], 11 - i_5);
                         }
                         var rawMessArr = new TextEncoder().encode(message);
                         var rawMessArrFull = new Uint8Array(rawMessArr.length + 4);
@@ -2578,7 +2573,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             }
         }
         CnTransactions.construct_tx = construct_tx;
-        function create_transaction(pub_keys, sec_keys, dsts, senderAddress, outputs, mix_outs, fake_outputs_count, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl, transactionType, term) {
+        function create_transaction(pub_keys, sec_keys, dsts, senderAddress, outputs, mix_outs, fake_outputs_count, fee_amount /*JSBigInt*/, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, messageTo, ttl, transactionType, term) {
             if (mix_outs === void 0) { mix_outs = []; }
             if (unlock_time === void 0) { unlock_time = 0; }
             var i, j;
@@ -2773,7 +2768,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
             else if (cmp > 0) {
                 throw "Need more money than found! (have: " + Cn.formatMoney(found_money) + " need: " + Cn.formatMoney(needed_money) + ")";
             }
-            return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, ttl, transactionType, term);
+            return CnTransactions.construct_tx(keys, sources, dsts, senderAddress, fee_amount, payment_id, pid_encrypt, realDestViewKey, unlock_time, rct, message, messageTo, ttl, transactionType, term);
         }
         CnTransactions.create_transaction = create_transaction;
     })(CnTransactions || (exports.CnTransactions = CnTransactions = {}));

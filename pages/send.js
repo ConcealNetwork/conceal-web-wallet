@@ -580,11 +580,15 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             }
         };
         SendView.prototype.onAmountFocus = function () {
+            if (!this)
+                return; // Safety check
             this.amountPlaceholder = '';
             if (this.amountToSend === '0')
                 this.amountToSend = '';
         };
         SendView.prototype.onAmountBlur = function () {
+            if (!this)
+                return; // Safety check
             if (this.amountToSend === '')
                 this.amountToSend = '0';
             this.amountPlaceholder = '0';
