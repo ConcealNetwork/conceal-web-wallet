@@ -1,6 +1,6 @@
 {
   "name": "conceal-web-wallet",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Web Wallet for Conceal Network",
   "engines": {
     "node": ">=20"
