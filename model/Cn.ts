@@ -2703,8 +2703,7 @@ export namespace CnTransactions{
     // Encrypt message and add it to the extra
 		// CCX has only 1 destination for messages anyways
 		if (message) {
-		//let messageAddress: string | null = null;
-		let messageAddress = messageTo ? messageTo : null;
+		let messageAddress = messageTo;
 
       if (messageAddress) {
         let destKeys = Cn.decode_address(messageAddress);

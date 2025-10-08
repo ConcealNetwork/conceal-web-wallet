@@ -2424,8 +2424,7 @@ define(["require", "exports", "./Mnemonic", "./ChaCha8"], function (require, exp
                 // Encrypt message and add it to the extra
                 // CCX has only 1 destination for messages anyways
                 if (message) {
-                    //let messageAddress: string | null = null;
-                    var messageAddress = messageTo ? messageTo : null;
+                    var messageAddress = messageTo;
                     if (messageAddress) {
                         var destKeys = Cn.decode_address(messageAddress);
                         var derivation = CnNativeBride.generate_key_derivation(destKeys.spend, txkey.sec);
