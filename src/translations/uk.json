@@ -643,13 +643,13 @@
       }
     },
     "importPage": {
-      "title": "Створити гаманець",
+      "title": "Імпортувати гаманець",
       "subtitle": "З раніше створених ключів, файлу або мнемонічною фрази",
-      "chooseMethod": "Виберіть метод імпорту:",
-      "fromKeys": "З ключів",
-      "fromFile": "З файлу",
-      "fromMnemonic": "З мнемонічної фрази",
-      "fromQr": "З QR коду"
+      "chooseMethod": "Імпортувати з:",
+      "fromKeys": "Ключі",
+      "fromFile": "Файл",
+      "fromMnemonic": "Мнемонічна фраза",
+      "fromQr": "QR код"
     },
     "termsOfUsePage": {
       "title": "Умови використання",
