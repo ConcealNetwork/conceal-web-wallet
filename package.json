@@ -13,7 +13,7 @@
   "main": "index.js",
   "dependencies": {
     "@babel/helper-validator-identifier": "^7.27.1",
-    "@types/node": "^24.7.0",
+    "@types/node": "^24.8.0",
     "dotenv": "^17.2.3",
     "typescript": "^5.9.3",
     "workbox-build": "^7.3.0"
@@ -29,6 +29,6 @@
   },
   "homepage": "https://github.com/ConcealNetwork/conceal-web-wallet#readme",
   "devDependencies": {
-    "@types/node": "^24.7.0"
+    "@types/node": "^24.8.0"
   }
 }
