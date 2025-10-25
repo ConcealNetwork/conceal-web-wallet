@@ -55,59 +55,127 @@ class NodeWorker {
     }, 60 * 1000);
   }
 
-  makeRequest = (method: 'GET' | 'POST', path: string, body: any = undefined): Promise<any> => {
+  makeRequest = (
+    method: "GET" | "POST",
+    path: string,
+    body: any = undefined
+  ): Promise<any> => {
     this._isWorking = true;
     ++this._requests;
 
-    return new Promise<any>((resolve, reject) => {
-      $.ajax({
-        url: this._url + path,
-        method: method,
-        timeout: this.timeout,
-        data: typeof body === 'string' ? body : JSON.stringify(body)
-      }).done((raw: any) => {
-        this._isWorking = false;        
-        resolve(raw);
-      }).fail((data: any, textStatus: string) => {
-        console.error(`Node ${this._url} makeRequest failed: ${textStatus} (errors: ${this._errors + 1})`);
-        this._isWorking = false;        
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        const url = this._url + path;
+        const requestBody =
+          typeof body === "string" ? body : JSON.stringify(body);
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+        const response = await fetch(url, {
+          method: method,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: method === "POST" ? requestBody : undefined,
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+        this._isWorking = false;
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        resolve(data);
+      } catch (error: any) {
+        this._isWorking = false;
         this.increaseErrors();
-        reject(data);
-      });
+
+        if (error.name === "AbortError") {
+          console.error(
+            `Node ${this._url} makeRequest timeout after ${this.timeout}ms (errors: ${this._errors + 1})`
+          );
+          reject(new Error("Request timeout"));
+        } else {
+          console.error(
+            `Node ${this._url} makeRequest failed: %s (errors: ${this._errors + 1})`,
+            error.message
+          );
+          reject(error);
+        }
+      }
     });
-  }
+  };
 
   makeRpcRequest = (method: string, params: any = {}): Promise<any> => {
     this._isWorking = true;
     ++this._requests;
 
-    return new Promise<any>((resolve, reject) => {
-      $.ajax({
-        url: this._url + 'json_rpc',
-        method: 'POST',
-        timeout: this.timeout,
-        data: JSON.stringify({
-          jsonrpc: '2.0',
+    return new Promise<any>(async (resolve, reject) => {
+      try {
+        const url = this._url + "json_rpc";
+        const requestBody = JSON.stringify({
+          jsonrpc: "2.0",
           method: method,
           params: params,
-          id: 0
-        }),
-        contentType: 'application/json'
-      }).done((raw: any) => {
+          id: 0,
+        });
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: requestBody,
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
         this._isWorking = false;
-        if (typeof raw.id === 'undefined' || typeof raw.jsonrpc === 'undefined' || raw.jsonrpc !== '2.0' || typeof raw.result !== 'object') {
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const raw = await response.json();
+
+        // Validate RPC response format
+        if (
+          typeof raw.id === "undefined" ||
+          typeof raw.jsonrpc === "undefined" ||
+          raw.jsonrpc !== "2.0" ||
+          typeof raw.result !== "object"
+        ) {
           this.increaseErrors();
-          reject('Daemon response is not properly formatted');
+          reject(new Error("Daemon response is not properly formatted"));
         } else {
           resolve(raw.result);
         }
-      }).fail((data: any) => {
+      } catch (error: any) {
         this._isWorking = false;
         this.increaseErrors();
-        reject(data);
-      });
+
+        if (error.name === "AbortError") {
+          console.error(
+            `Node ${this._url} makeRpcRequest timeout after ${this.timeout}ms (errors: ${this._errors + 1})`
+          );
+          reject(new Error("Request timeout"));
+        } else {
+          console.error(
+            `Node ${this._url} makeRpcRequest failed: %s (errors: ${this._errors + 1})`,
+            error.message
+          );
+          reject(error);
+        }
+      }
     });
-  }
+  };
 
   get isWorking(): boolean {
     return this._isWorking;
@@ -465,15 +533,25 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     try {
       if (config.publicNodes) {
         try {
-          const response = await $.ajax({
-            method: 'GET',
-            timeout: 10 * 1000,
-            url: config.publicNodes + '/list?hasSSL=true'
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10 * 1000);
+
+          const response = await fetch(config.publicNodes + "/list?hasSSL=true", {
+            method: "GET",
+            signal: controller.signal,
           });
 
-          if (response.success && (response.list.length > 0)) {
-            for (let i = 0; i < response.list.length; ++i) {
-              let finalUrl = "https://" + response.list[i].url.host + "/";
+          clearTimeout(timeoutId);
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+
+          const result = await response.json();
+
+          if (result.success && result.list.length > 0) {
+            for (let i = 0; i < result.list.length; ++i) {
+              let finalUrl = "https://" + result.list[i].url.host + "/";
   
               if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
                 config.nodeList.push(finalUrl);

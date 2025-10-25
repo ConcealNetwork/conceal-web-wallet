@@ -15,3 +15,4 @@ src/translations/H*.json
 .cursorrules
 vite-project/
 src/lib/config/allowedPages.js
+.env
