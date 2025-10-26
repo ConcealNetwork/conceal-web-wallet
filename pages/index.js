@@ -38,16 +38,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../model/WalletRepository", "../providers/BlockchainExplorerProvider", "../lib/numbersLab/DependencyInjector", "../lib/numbersLab/VueAnnotate", "../lib/numbersLab/DestructableView", "../model/Wallet", "../model/AppState"], function (require, exports, WalletRepository_1, BlockchainExplorerProvider_1, DependencyInjector_1, VueAnnotate_1, DestructableView_1, Wallet_1, AppState_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, "default", false);
     var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
     if (wallet !== null) {
-        window.location.href = '#account';
+        window.location.href = "#account";
     }
     var IndexView = /** @class */ (function (_super) {
         __extends(IndexView, _super);
         function IndexView(container) {
             var _this = _super.call(this, container) || this;
-            _this.isWalletLoaded = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false) !== null;
+            _this.isWalletLoaded = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, "default", false) !== null;
             WalletRepository_1.WalletRepository.hasOneStored().then(function (status) {
                 _this.hasLocalWallet = status;
             });
@@ -70,7 +70,7 @@ define(["require", "exports", "../model/WalletRepository", "../providers/Blockch
         ], IndexView.prototype, "isWalletLoaded", void 0);
         return IndexView;
     }(DestructableView_1.DestructableView));
-    var newIndexView = new IndexView('#app');
+    var newIndexView = new IndexView("#app");
 });
 /*
 function readFile(fileEnty:any){
@@ -122,4 +122,4 @@ window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs : any) {
 
 }, onErrorLoadFs);
 
-*/ 
+*/

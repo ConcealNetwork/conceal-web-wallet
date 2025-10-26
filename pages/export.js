@@ -38,7 +38,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../lib/numbersLab/DestructableView", "../model/Constants", "../model/WalletRepository", "../model/Mnemonic"], function (require, exports, VueAnnotate_1, DependencyInjector_1, Wallet_1, DestructableView_1, Constants_1, WalletRepository_1, Mnemonic_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, "default", false);
     var blockchainExplorer = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Constants_1.Constants.BLOCKCHAIN_EXPLORER);
     var ExportView = /** @class */ (function (_super) {
         __extends(ExportView, _super);
@@ -54,11 +54,11 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         };
         ExportView.prototype.askUserPassword = function () {
             return swal({
-                input: 'password',
+                input: "password",
                 showCancelButton: true,
-                title: i18n.t('global.openWalletModal.title'),
-                confirmButtonText: i18n.t('exportPage.mnemonicLangSelectionModal.confirmText'),
-                cancelButtonText: i18n.t('exportPage.mnemonicKeyModal.confirmText'),
+                title: i18n.t("global.openWalletModal.title"),
+                confirmButtonText: i18n.t("exportPage.mnemonicLangSelectionModal.confirmText"),
+                cancelButtonText: i18n.t("exportPage.mnemonicKeyModal.confirmText"),
             }).then(function (result) {
                 if (result.value) {
                     var savePassword_1 = result.value;
@@ -70,10 +70,10 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                         }
                         else {
                             swal({
-                                type: 'error',
-                                title: i18n.t('global.invalidPasswordModal.title'),
-                                text: i18n.t('global.invalidPasswordModal.content'),
-                                confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
+                                type: "error",
+                                title: i18n.t("global.invalidPasswordModal.title"),
+                                text: i18n.t("global.invalidPasswordModal.content"),
+                                confirmButtonText: i18n.t("global.invalidPasswordModal.confirmText"),
                             });
                         }
                         return null;
@@ -86,11 +86,11 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             this.askUserPassword().then(function (params) {
                 if (params !== null && params.wallet !== null) {
                     swal({
-                        title: i18n.t('exportPage.walletKeysModal.title'),
-                        confirmButtonText: i18n.t('exportPage.walletKeysModal.confirmText'),
-                        html: i18n.t('exportPage.walletKeysModal.content', {
+                        title: i18n.t("exportPage.walletKeysModal.title"),
+                        confirmButtonText: i18n.t("exportPage.walletKeysModal.confirmText"),
+                        html: i18n.t("exportPage.walletKeysModal.content", {
                             privViewKey: params.wallet.keys.priv.view,
-                            privSpendKey: params.wallet.keys.priv.spend
+                            privSpendKey: params.wallet.keys.priv.spend,
                         }),
                     });
                 }
@@ -100,31 +100,31 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             this.askUserPassword().then(function (params) {
                 if (params !== null && params.wallet !== null) {
                     swal({
-                        title: i18n.t('exportPage.mnemonicLangSelectionModal.title'),
-                        input: 'select',
+                        title: i18n.t("exportPage.mnemonicLangSelectionModal.title"),
+                        input: "select",
                         showCancelButton: true,
-                        confirmButtonText: i18n.t('exportPage.mnemonicLangSelectionModal.confirmText'),
+                        confirmButtonText: i18n.t("exportPage.mnemonicLangSelectionModal.confirmText"),
                         inputOptions: {
-                            'english': 'English',
-                            'chinese': 'Chinese (simplified)',
-                            'dutch': 'Dutch',
-                            'electrum': 'Electrum',
-                            'esperanto': 'Esperanto',
-                            'french': 'French',
-                            'italian': 'Italian',
-                            'japanese': 'Japanese',
-                            'lojban': 'Lojban',
-                            'portuguese': 'Portuguese',
-                            'russian': 'Russian',
-                            'spanish': 'Spanish',
-                        }
+                            english: "English",
+                            chinese: "Chinese (simplified)",
+                            dutch: "Dutch",
+                            electrum: "Electrum",
+                            esperanto: "Esperanto",
+                            french: "French",
+                            italian: "Italian",
+                            japanese: "Japanese",
+                            lojban: "Lojban",
+                            portuguese: "Portuguese",
+                            russian: "Russian",
+                            spanish: "Spanish",
+                        },
                     }).then(function (mnemonicLangResult) {
                         if (mnemonicLangResult.value) {
                             var mnemonic = Mnemonic_1.Mnemonic.mn_encode(params.wallet.keys.priv.spend, mnemonicLangResult.value);
                             swal({
-                                title: i18n.t('exportPage.mnemonicKeyModal.title'),
-                                confirmButtonText: i18n.t('exportPage.mnemonicKeyModal.confirmText'),
-                                html: i18n.t('exportPage.mnemonicKeyModal.content', {
+                                title: i18n.t("exportPage.mnemonicKeyModal.title"),
+                                confirmButtonText: i18n.t("exportPage.mnemonicKeyModal.confirmText"),
+                                html: i18n.t("exportPage.mnemonicKeyModal.content", {
                                     mnemonic: mnemonic,
                                 }),
                             });
@@ -136,7 +136,9 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         ExportView.prototype.fileExport = function () {
             this.askUserPassword().then(function (params) {
                 if (params !== null && params.wallet !== null) {
-                    var blob = new Blob([JSON.stringify(WalletRepository_1.WalletRepository.getEncrypted(params.wallet, params.password))], { type: "application/json" });
+                    var blob = new Blob([JSON.stringify(WalletRepository_1.WalletRepository.getEncrypted(params.wallet, params.password))], {
+                        type: "application/json",
+                    });
                     saveAs(blob, "wallet.json");
                 }
             });
@@ -149,7 +151,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             });
         };
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ExportView.prototype, "publicAddress", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
@@ -157,7 +159,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         return ExportView;
     }(DestructableView_1.DestructableView));
     if (wallet !== null && blockchainExplorer !== null)
-        new ExportView('#app');
+        new ExportView("#app");
     else
-        window.location.href = '#index';
+        window.location.href = "#index";
 });

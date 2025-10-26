@@ -38,9 +38,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../lib/numbersLab/DestructableView", "../model/Constants", "../model/AppState", "../model/WalletWatchdog", "../model/Translations"], function (require, exports, VueAnnotate_1, DependencyInjector_1, Wallet_1, DestructableView_1, Constants_1, AppState_1, WalletWatchdog_1, Translations_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, "default", false);
     var blockchainExplorer = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Constants_1.Constants.BLOCKCHAIN_EXPLORER);
-    var walletWatchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
+    var walletWatchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name, "default", false);
     var AccountView = /** @class */ (function (_super) {
         __extends(AccountView, _super);
         function AccountView(container) {
@@ -62,11 +62,14 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                 return _super.prototype.destruct.call(_this);
             };
             _this.refresh = function () {
-                blockchainExplorer.getHeight().then(function (height) {
+                blockchainExplorer
+                    .getHeight()
+                    .then(function (height) {
                     _this.blockchainHeight = height;
                     _this.refreshWallet();
                     _this.updateMessageNotifications();
-                }).catch(function (err) {
+                })
+                    .catch(function (err) {
                     _this.refreshWallet();
                 });
             };
@@ -74,7 +77,8 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                 _this.refreshWallet();
             };
             _this.checkOptimization = function () {
-                blockchainExplorer.getHeight()
+                blockchainExplorer
+                    .getHeight()
                     .then(function (blockchainHeight) {
                     try {
                         var optimizeInfo = wallet.optimizationNeeded(blockchainHeight, config.optimizeThreshold);
@@ -108,10 +112,14 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             };
             _this.optimizeWallet = function () {
                 _this.optimizeLoading = true; // set loading state to true
-                blockchainExplorer.getHeight().then(function (blockchainHeight) {
-                    wallet.createFusionTransaction(blockchainHeight, config.optimizeThreshold, blockchainExplorer, function (amounts, numberOuts) {
+                blockchainExplorer
+                    .getHeight()
+                    .then(function (blockchainHeight) {
+                    wallet
+                        .createFusionTransaction(blockchainHeight, config.optimizeThreshold, blockchainExplorer, function (amounts, numberOuts) {
                         return blockchainExplorer.getRandomOuts(amounts, numberOuts);
-                    }).then(function (processedOuts) {
+                    })
+                        .then(function (processedOuts) {
                         var watchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name);
                         //force a mempool check so the user is up to date
                         if (watchdog !== null) {
@@ -121,14 +129,16 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                         setTimeout(function () {
                             _this.checkOptimization(); // check if optimization is still needed
                         }, 1000);
-                    }).catch(function (err) {
+                    })
+                        .catch(function (err) {
                         console.error("optimize error:", err);
                         _this.optimizeLoading = false; // set loading state to false
                         setTimeout(function () {
                             _this.checkOptimization(); // check if optimization is still needed
                         }, 1000);
                     });
-                }).catch(function (err) {
+                })
+                    .catch(function (err) {
                     console.error("Error in optimizeWallet, trying to call getHeight", err);
                 });
             };
@@ -139,31 +149,31 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             _this.moreInfoOnTx = function (transaction) {
                 var explorerUrlHash = config.testnet ? config.testnetExplorerUrlHash : config.mainnetExplorerUrlHash;
                 var explorerUrlBlock = config.testnet ? config.testnetExplorerUrlBlock : config.mainnetExplorerUrlBlock;
-                var feesHtml = '';
+                var feesHtml = "";
                 if (transaction.fees > 0) {
-                    feesHtml = "<div><span class=\"txDetailsLabel\">".concat(i18n.t('accountPage.txDetails.feesOnTx'), "</span>:<span class=\"txDetailsValue\">").concat((transaction.fees / Math.pow(10, config.coinUnitPlaces)), "</a></span></div>");
+                    feesHtml = "<div><span class=\"txDetailsLabel\">".concat(i18n.t("accountPage.txDetails.feesOnTx"), "</span>:<span class=\"txDetailsValue\">").concat(transaction.fees / Math.pow(10, config.coinUnitPlaces), "</a></span></div>");
                 }
-                var paymentId = '';
+                var paymentId = "";
                 if (transaction.paymentId) {
-                    paymentId = "<div><span class=\"txDetailsLabel\">".concat(i18n.t('accountPage.txDetails.paymentId'), "</span>:<span class=\"txDetailsValue\">").concat(transaction.paymentId, "</a></span></div>");
+                    paymentId = "<div><span class=\"txDetailsLabel\">".concat(i18n.t("accountPage.txDetails.paymentId"), "</span>:<span class=\"txDetailsValue\">").concat(transaction.paymentId, "</a></span></div>");
                 }
-                var txPrivKeyMessage = '';
+                var txPrivKeyMessage = "";
                 var txPrivKey = wallet.findTxPrivateKeyWithHash(transaction.hash);
                 if (txPrivKey) {
-                    txPrivKeyMessage = "<div><span class=\"txDetailsLabel\">".concat(i18n.t('accountPage.txDetails.txPrivKey'), "</span>:<span class=\"txDetailsValue\">").concat(txPrivKey, "</a></span></div>");
+                    txPrivKeyMessage = "<div><span class=\"txDetailsLabel\">".concat(i18n.t("accountPage.txDetails.txPrivKey"), "</span>:<span class=\"txDetailsValue\">").concat(txPrivKey, "</a></span></div>");
                 }
-                var messageText = '';
+                var messageText = "";
                 if (transaction.message) {
-                    messageText = "<div><span class=\"txDetailsLabel\">".concat(i18n.t('accountPage.txDetails.message'), "</span>:<div style=\"color: #e2e2e2; border: 1px solid #212529; border-radius: 4px; background-color: #343a40; padding: 8px; margin-top: 4px;\"><span class=\"txDetailsValue\">").concat(transaction.message, "</span></div></div>");
+                    messageText = "<div><span class=\"txDetailsLabel\">".concat(i18n.t("accountPage.txDetails.message"), "</span>:<div style=\"color: #e2e2e2; border: 1px solid #212529; border-radius: 4px; background-color: #343a40; padding: 8px; margin-top: 4px;\"><span class=\"txDetailsValue\">").concat(transaction.message, "</span></div></div>");
                     // Set message as viewed and update the transaction in wallet
                     wallet.updateTransactionFlags(transaction.hash, { messageViewed: true });
                 }
                 new Promise(function (resolve) {
                     setTimeout(function () {
                         swal({
-                            title: i18n.t('accountPage.txDetails.title'),
-                            customClass: 'swal-wide',
-                            html: "\n            <div class=\"tl\" >\n              <div><span class=\"txDetailsLabel\">".concat(i18n.t('accountPage.txDetails.txHash'), "</span>:<span class=\"txDetailsValue\"><a href=\"").concat(explorerUrlHash.replace('{ID}', transaction.hash), "\" target=\"_blank\">").concat(transaction.hash, "</a></span></div>\n              ").concat(paymentId, "\n              ").concat(feesHtml, "\n              ").concat(txPrivKeyMessage, "\n              <div><span class=\"txDetailsLabel\">").concat(i18n.t('accountPage.txDetails.blockHeight'), "</span>:<span class=\"txDetailsValue\"><a href=\"").concat(explorerUrlBlock.replace('{ID}', '' + transaction.blockHeight), "\" target=\"_blank\">").concat(transaction.blockHeight, "</a></span></div>\n              ").concat(transaction.fusion ? '<div><span class="txDetailsLabel">Fusion:</span><span class="txDetailsValue">true</span></div>' : '', "\n              ").concat(messageText, "\n            </div>")
+                            title: i18n.t("accountPage.txDetails.title"),
+                            customClass: "swal-wide",
+                            html: "\n            <div class=\"tl\" >\n              <div><span class=\"txDetailsLabel\">".concat(i18n.t("accountPage.txDetails.txHash"), "</span>:<span class=\"txDetailsValue\"><a href=\"").concat(explorerUrlHash.replace("{ID}", transaction.hash), "\" target=\"_blank\">").concat(transaction.hash, "</a></span></div>\n              ").concat(paymentId, "\n              ").concat(feesHtml, "\n              ").concat(txPrivKeyMessage, "\n              <div><span class=\"txDetailsLabel\">").concat(i18n.t("accountPage.txDetails.blockHeight"), "</span>:<span class=\"txDetailsValue\"><a href=\"").concat(explorerUrlBlock.replace("{ID}", "" + transaction.blockHeight), "\" target=\"_blank\">").concat(transaction.blockHeight, "</a></span></div>\n              ").concat(transaction.fusion ? '<div><span class="txDetailsLabel">Fusion:</span><span class="txDetailsValue">true</span></div>' : "", "\n              ").concat(messageText, "\n            </div>"),
                         });
                         resolve(true);
                         // Force UI update after the modal is shown
@@ -180,8 +190,8 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                 _this.processingQueue = walletWatchdog.getBlockList().getSize();
                 _this.lastBlockLoading = walletWatchdog.getLastBlockLoading();
                 _this.currentScanBlock = wallet.lastHeight;
-                _this.isWalletSyncing = (wallet.lastHeight + 2) < _this.blockchainHeight;
-                _this.isWalletProcessing = _this.isWalletSyncing || (walletWatchdog.getBlockList().getTxQueue().hasData());
+                _this.isWalletSyncing = wallet.lastHeight + 2 < _this.blockchainHeight;
+                _this.isWalletProcessing = _this.isWalletSyncing || walletWatchdog.getBlockList().getTxQueue().hasData();
                 if (oldIsWalletSyncing && !_this.isWalletSyncing) {
                     _this.checkOptimization();
                 }
@@ -190,7 +200,9 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                     _this.oldTxFilter = _this.txFilter;
                     filterChanged = true;
                 }
-                if ((((_this.refreshTimestamp < wallet.modifiedTimestamp()) || (_this.lastPending > 0)) && (timeDiff > _this.refreshInterval)) || forceRedraw || filterChanged) {
+                if (((_this.refreshTimestamp < wallet.modifiedTimestamp() || _this.lastPending > 0) && timeDiff > _this.refreshInterval) ||
+                    forceRedraw ||
+                    filterChanged) {
                     logDebugMsg("refreshWallet", _this.currentScanBlock);
                     _this.walletAmount = wallet.amount;
                     _this.unlockedWalletAmount = wallet.availableAmount(_this.currentScanBlock);
@@ -199,7 +211,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                     _this.lastPending = _this.walletAmount - _this.unlockedWalletAmount;
                     _this.futureLockedInterest = wallet.futureDepositInterest(_this.currentScanBlock).locked;
                     _this.futureUnlockedInterest = wallet.futureDepositInterest(_this.currentScanBlock).unlocked;
-                    if ((_this.refreshTimestamp < wallet.modifiedTimestamp()) || forceRedraw || filterChanged) {
+                    if (_this.refreshTimestamp < wallet.modifiedTimestamp() || forceRedraw || filterChanged) {
                         var allTransactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
                         if (_this.txFilter) {
                             allTransactions = allTransactions.filter(function (tx) {
@@ -221,11 +233,11 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             _this.download = function () {
                 // credit: https://www.bitdegree.org/learn/javascript-download
                 var text = JSON.stringify(_this.transactions);
-                var filename = 'cats.json';
-                var element = document.createElement('a');
-                element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text));
-                element.setAttribute('download', filename);
-                element.style.display = 'none';
+                var filename = "cats.json";
+                var element = document.createElement("a");
+                element.setAttribute("href", "data:application/json;charset=utf-8," + encodeURIComponent(text));
+                element.setAttribute("download", filename);
+                element.style.display = "none";
                 document.body.appendChild(element);
                 element.click();
                 document.body.removeChild(element);
@@ -234,8 +246,8 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             _this.lastPending = 0;
             _this.pagesCount = 1;
             _this.txPerPage = 200;
-            _this.oldTxFilter = '';
-            _this.txFilter = '';
+            _this.oldTxFilter = "";
+            _this.txFilter = "";
             // Initialize ticker from store
             Translations_1.tickerStore.initialize().then(function () {
                 _this.useShortTicker = Translations_1.tickerStore.useShortTicker;
@@ -268,11 +280,11 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                 if (newMessagesCount > this.messagesCountRecord) {
                     var messageItem = document.querySelector('#menu a[href="#!messages"]');
                     if (messageItem) {
-                        var messageText = messageItem.querySelector('span:last-child');
+                        var messageText = messageItem.querySelector("span:last-child");
                         if (messageText && messageText.textContent) {
-                            messageItem.classList.add('font-bold');
-                            if (messageText.textContent.includes('(+')) {
-                                messageText.textContent = messageText.textContent.split('(')[0] + "(+".concat(newMessagesCount, ")");
+                            messageItem.classList.add("font-bold");
+                            if (messageText.textContent.includes("(+")) {
+                                messageText.textContent = messageText.textContent.split("(")[0] + "(+".concat(newMessagesCount, ")");
                             }
                             else {
                                 messageText.textContent += " (+".concat(newMessagesCount, ")");
@@ -285,12 +297,12 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         };
         AccountView.prototype.getTTLCountdown = function (transaction) {
             if (!transaction.ttl || transaction.ttl === 0 || transaction.blockHeight !== 0) {
-                return '';
+                return "";
             }
             var currentTimestamp = Math.floor(Date.now() / 1000);
             var remainingSeconds = transaction.ttl - currentTimestamp;
             if (remainingSeconds <= 0) {
-                return 'Expired';
+                return "Expired";
             }
             var hours = Math.floor(remainingSeconds / 3600);
             var minutes = Math.floor((remainingSeconds % 3600) / 60);
@@ -309,7 +321,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             (0, VueAnnotate_1.VueVar)([])
         ], AccountView.prototype, "transactions", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], AccountView.prototype, "txFilter", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(0)
@@ -348,7 +360,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             (0, VueAnnotate_1.VueVar)(0)
         ], AccountView.prototype, "txPerPage", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], AccountView.prototype, "ticker", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
@@ -395,7 +407,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         return AccountView;
     }(DestructableView_1.DestructableView));
     if (wallet !== null && blockchainExplorer !== null)
-        new AccountView('#app');
+        new AccountView("#app");
     else
-        window.location.href = '#index';
+        window.location.href = "#index";
 });

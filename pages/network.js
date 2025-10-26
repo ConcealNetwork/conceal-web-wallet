@@ -67,9 +67,11 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         NetworkView.prototype.refreshStats = function () {
             var _this = this;
-            $('#pageLoading').show();
+            $("#pageLoading").show();
             blockchainExplorer.initialize().then(function (success) {
-                blockchainExplorer.getNetworkInfo().then(function (info) {
+                blockchainExplorer
+                    .getNetworkInfo()
+                    .then(function (info) {
                     _this.nodeList = __spreadArray([], info.nodes, true);
                     _this.networkDifficulty = info.difficulty;
                     _this.networkHashrate = (0, Filters_1.VueFilterHashrate)(info.difficulty / config.avgBlockTime);
@@ -77,9 +79,10 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     _this.lastReward = info.reward / Math.pow(10, config.coinUnitPlaces);
                     _this.ticker = config.coinSymbol;
                     _this.lastBlockFound = info.timestamp;
-                    $('#pageLoading').hide();
-                }).catch(function (err) {
-                    $('#pageLoading').hide();
+                    $("#pageLoading").hide();
+                })
+                    .catch(function (err) {
+                    $("#pageLoading").hide();
                 });
             });
         };
@@ -105,9 +108,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             (0, VueAnnotate_1.VueVar)(0)
         ], NetworkView.prototype, "ticker", void 0);
         NetworkView = __decorate([
-            (0, VueAnnotate_1.VueRequireFilter)('hashrate', Filters_1.VueFilterHashrate)
+            (0, VueAnnotate_1.VueRequireFilter)("hashrate", Filters_1.VueFilterHashrate)
         ], NetworkView);
         return NetworkView;
     }(DestructableView_1.DestructableView));
-    new NetworkView('#app');
+    new NetworkView("#app");
 });

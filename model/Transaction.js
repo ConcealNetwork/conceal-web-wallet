@@ -64,16 +64,16 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
         function TransactionOut() {
             var _this = this;
             this.amount = 0;
-            this.keyImage = '';
+            this.keyImage = "";
             this.outputIdx = 0;
             this.globalIndex = 0;
-            this.type = '';
+            this.type = "";
             this.term = 0;
-            this.ephemeralPub = '';
-            this.pubKey = '';
-            this.rtcOutPk = '';
-            this.rtcMask = '';
-            this.rtcAmount = '';
+            this.ephemeralPub = "";
+            this.pubKey = "";
+            this.rtcOutPk = "";
+            this.rtcMask = "";
+            this.rtcAmount = "";
             this.export = function () {
                 var data = {
                     keyImage: _this.keyImage,
@@ -83,15 +83,15 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
                     type: _this.type,
                     term: _this.term,
                 };
-                if (_this.rtcOutPk !== '')
+                if (_this.rtcOutPk !== "")
                     data.rtcOutPk = _this.rtcOutPk;
-                if (_this.rtcMask !== '')
+                if (_this.rtcMask !== "")
                     data.rtcMask = _this.rtcMask;
-                if (_this.rtcAmount !== '')
+                if (_this.rtcAmount !== "")
                     data.rtcAmount = _this.rtcAmount;
-                if (_this.ephemeralPub !== '')
+                if (_this.ephemeralPub !== "")
                     data.ephemeralPub = _this.ephemeralPub;
-                if (_this.pubKey !== '')
+                if (_this.pubKey !== "")
                     data.pubKey = _this.pubKey;
                 return data;
             };
@@ -119,15 +119,15 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
             nout.amount = raw.amount;
             nout.type = raw.type;
             nout.term = raw.term;
-            if (typeof raw.ephemeralPub !== 'undefined')
+            if (typeof raw.ephemeralPub !== "undefined")
                 nout.ephemeralPub = raw.ephemeralPub;
-            if (typeof raw.pubKey !== 'undefined')
+            if (typeof raw.pubKey !== "undefined")
                 nout.pubKey = raw.pubKey;
-            if (typeof raw.rtcOutPk !== 'undefined')
+            if (typeof raw.rtcOutPk !== "undefined")
                 nout.rtcOutPk = raw.rtcOutPk;
-            if (typeof raw.rtcMask !== 'undefined')
+            if (typeof raw.rtcMask !== "undefined")
                 nout.rtcMask = raw.rtcMask;
-            if (typeof raw.rtcAmount !== 'undefined')
+            if (typeof raw.rtcAmount !== "undefined")
                 nout.rtcAmount = raw.rtcAmount;
             return nout;
         };
@@ -138,10 +138,10 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
         function TransactionIn() {
             var _this = this;
             this.outputIndex = -1;
-            this.keyImage = '';
+            this.keyImage = "";
             //if < 0, means the in has been seen but not checked (view only wallet)
             this.amount = 0;
-            this.type = '';
+            this.type = "";
             this.term = 0;
             this.export = function () {
                 return {
@@ -149,7 +149,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
                     keyImage: _this.keyImage,
                     amount: _this.amount,
                     term: _this.term,
-                    type: _this.type
+                    type: _this.type,
                 };
             };
             this.copy = function () {
@@ -164,8 +164,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
         }
         TransactionIn.fromRaw = function (raw) {
             var nin = new TransactionIn();
-            nin.outputIndex = raw.outputIndex,
-                nin.keyImage = raw.keyImage;
+            (nin.outputIndex = raw.outputIndex), (nin.keyImage = raw.keyImage);
             nin.amount = raw.amount;
             nin.type = raw.type;
             nin.term = raw.term;
@@ -178,15 +177,15 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
         function Transaction() {
             var _this = this;
             this.blockHeight = 0;
-            this.txPubKey = '';
-            this.hash = '';
+            this.txPubKey = "";
+            this.hash = "";
             this.outs = [];
             this.ins = [];
             this.timestamp = 0;
-            this.paymentId = '';
+            this.paymentId = "";
             this.fees = 0;
             this.fusion = false;
-            this.message = '';
+            this.message = "";
             this.messageViewed = false;
             this.ttl = 0; // TTL timestamp (absolute UNIX timestamp in seconds)
             this.export = function () {
@@ -212,9 +211,9 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
                     }
                     data.outs = routs;
                 }
-                if (_this.paymentId !== '')
+                if (_this.paymentId !== "")
                     data.paymentId = _this.paymentId;
-                if (_this.message !== '')
+                if (_this.message !== "")
                     data.message = _this.message;
                 if (_this.fees !== 0)
                     data.fees = _this.fees;
@@ -243,7 +242,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
                 return amount;
             };
             this.isCoinbase = function () {
-                return _this.outs.length == 1 && _this.outs[0].rtcAmount === '';
+                return _this.outs.length == 1 && _this.outs[0].rtcAmount === "";
             };
             this.isConfirmed = function (blockchainHeight) {
                 if (_this.blockHeight === 0) {
@@ -258,7 +257,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
                 return false;
             };
             this.isFullyChecked = function () {
-                if (_this.getAmount() === 0 || _this.getAmount() === (-1 * config.minimumFee_V2)) {
+                if (_this.getAmount() === 0 || _this.getAmount() === -1 * config.minimumFee_V2) {
                     if (_this.isFusion) {
                         return true;
                     }
@@ -281,7 +280,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
             };
             this.hasMessage = function () {
                 var txAmount = _this.getAmount();
-                return (_this.message !== '') && (txAmount > 0) && (txAmount !== (1 * config.remoteNodeFee)) && (txAmount !== (10 * config.remoteNodeFee)); // no envelope for a suspectedremote node fee transaction
+                return _this.message !== "" && txAmount > 0 && txAmount !== 1 * config.remoteNodeFee && txAmount !== 10 * config.remoteNodeFee; // no envelope for a suspectedremote node fee transaction
             };
             this.copy = function () {
                 var aCopy = new Transaction();
@@ -329,7 +328,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
                 if (this.outs.some(function (out) { return out.type === "03"; }) || this.ins.some(function (input) { return input.type === "03"; })) {
                     return false;
                 }
-                return (((inputsCount > Currency_1.Currency.fusionTxMinInputCount) && ((inputsCount / outputsCount) > config.fusionTxMinInOutCountRatio)) || this.fusion);
+                return (inputsCount > Currency_1.Currency.fusionTxMinInputCount && inputsCount / outputsCount > config.fusionTxMinInOutCountRatio) || this.fusion;
             },
             enumerable: false,
             configurable: true
@@ -339,7 +338,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
             transac.blockHeight = raw.blockHeight;
             transac.txPubKey = raw.txPubKey;
             transac.timestamp = raw.timestamp;
-            if (typeof raw.ins !== 'undefined') {
+            if (typeof raw.ins !== "undefined") {
                 var ins = [];
                 for (var _i = 0, _a = raw.ins; _i < _a.length; _i++) {
                     var rin = _a[_i];
@@ -347,7 +346,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
                 }
                 transac.ins = ins;
             }
-            if (typeof raw.outs !== 'undefined') {
+            if (typeof raw.outs !== "undefined") {
                 var outs = [];
                 for (var _b = 0, _c = raw.outs; _b < _c.length; _b++) {
                     var rout = _c[_b];
@@ -355,19 +354,19 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
                 }
                 transac.outs = outs;
             }
-            if (typeof raw.paymentId !== 'undefined')
+            if (typeof raw.paymentId !== "undefined")
                 transac.paymentId = raw.paymentId;
-            if (typeof raw.fees !== 'undefined')
+            if (typeof raw.fees !== "undefined")
                 transac.fees = raw.fees;
-            if (typeof raw.hash !== 'undefined')
+            if (typeof raw.hash !== "undefined")
                 transac.hash = raw.hash;
-            if (typeof raw.message !== 'undefined')
+            if (typeof raw.message !== "undefined")
                 transac.message = raw.message;
-            if (typeof raw.fusion !== 'undefined')
+            if (typeof raw.fusion !== "undefined")
                 transac.fusion = raw.fusion;
-            if (typeof raw.messageViewed !== 'undefined')
+            if (typeof raw.messageViewed !== "undefined")
                 transac.messageViewed = raw.messageViewed;
-            if (typeof raw.ttl !== 'undefined')
+            if (typeof raw.ttl !== "undefined")
                 transac.ttl = raw.ttl;
             return transac;
         };
@@ -377,7 +376,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
     var BaseBanking = /** @class */ (function () {
         function BaseBanking() {
             this.term = 0;
-            this.txHash = '';
+            this.txHash = "";
             this.amount = 0;
             this.interest = 0;
             this.timestamp = 0;
@@ -385,7 +384,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
             this.unlockHeight = 0;
             this.globalOutputIndex = 0;
             this.indexInVout = 0;
-            this.txPubKey = '';
+            this.txPubKey = "";
         }
         BaseBanking.fromRaw = function (raw) {
             var deposit = new Deposit();
@@ -395,7 +394,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
             deposit.interest = raw.interest;
             deposit.timestamp = raw.timestamp;
             deposit.blockHeight = raw.blockHeight;
-            deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
+            deposit.unlockHeight = raw.unlockHeight || raw.blockHeight + raw.term;
             deposit.globalOutputIndex = raw.globalOutputIndex;
             deposit.indexInVout = raw.indexInVout;
             deposit.txPubKey = raw.txPubKey;
@@ -412,7 +411,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
                 unlockHeight: this.unlockHeight,
                 globalOutputIndex: this.globalOutputIndex,
                 indexInVout: this.indexInVout,
-                txPubKey: this.txPubKey
+                txPubKey: this.txPubKey,
             };
         };
         BaseBanking.prototype.copy = function () {
@@ -435,7 +434,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
         __extends(Deposit, _super);
         function Deposit() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.spentTx = '';
+            _this.spentTx = "";
             _this.keys = []; // Array of public keys for multisignature deposit
             _this.withdrawPending = false;
             _this.copy = function () {
@@ -459,7 +458,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
             deposit.globalOutputIndex = raw.globalOutputIndex; //used to build Multisig input for withdrawals
             deposit.indexInVout = raw.indexInVout; //used to generate_signature for withdrawals
             deposit.txPubKey = raw.txPubKey;
-            deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
+            deposit.unlockHeight = raw.unlockHeight || raw.blockHeight + raw.term;
             deposit.keys = raw.keys || [];
             deposit.withdrawPending = raw.withdrawPending;
             return deposit;
@@ -468,7 +467,7 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
             return Object.assign(_super.prototype.export.call(this), {
                 spentTx: this.spentTx,
                 withdrawPending: this.withdrawPending,
-                keys: this.keys
+                keys: this.keys,
             });
         };
         // Get total amount (principal + interest)
@@ -486,13 +485,13 @@ define(["require", "exports", "./Currency"], function (require, exports, Currenc
         // Get deposit status
         Deposit.prototype.getStatus = function (currentHeight) {
             if (this.isSpent()) {
-                return 'Spent';
+                return "Spent";
             }
             else if (this.isUnlocked(currentHeight)) {
-                return 'Unlocked';
+                return "Unlocked";
             }
             else {
-                return 'Locked';
+                return "Locked";
             }
         };
         return Deposit;

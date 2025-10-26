@@ -26,5 +26,5 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../model/Ap
         }
         return SupportView;
     }(DestructableView_1.DestructableView));
-    new SupportView('#app');
+    new SupportView("#app");
 });

@@ -42,5 +42,5 @@ define(["require", "exports", "../model/AppState", "../lib/numbersLab/Destructab
         }
         return DonateView;
     }(DestructableView_1.DestructableView));
-    new DonateView('#app');
+    new DonateView("#app");
 });

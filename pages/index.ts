@@ -15,49 +15,47 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {WalletRepository} from "../model/WalletRepository";
-import {BlockchainExplorer} from "../model/blockchain/BlockchainExplorer";
-import {BlockchainExplorerProvider} from "../providers/BlockchainExplorerProvider";
-import {DependencyInjectorInstance} from "../lib/numbersLab/DependencyInjector";
-import {VueRequireFilter, VueVar} from "../lib/numbersLab/VueAnnotate";
-import {DestructableView} from "../lib/numbersLab/DestructableView";
-import {Wallet} from "../model/Wallet";
-import {AppState} from "../model/AppState";
+import { WalletRepository } from "../model/WalletRepository";
+import { BlockchainExplorer } from "../model/blockchain/BlockchainExplorer";
+import { BlockchainExplorerProvider } from "../providers/BlockchainExplorerProvider";
+import { DependencyInjectorInstance } from "../lib/numbersLab/DependencyInjector";
+import { VueRequireFilter, VueVar } from "../lib/numbersLab/VueAnnotate";
+import { DestructableView } from "../lib/numbersLab/DestructableView";
+import { Wallet } from "../model/Wallet";
+import { AppState } from "../model/AppState";
 
-let wallet : Wallet = DependencyInjectorInstance().getInstance(Wallet.name,'default', false);
+let wallet: Wallet = DependencyInjectorInstance().getInstance(Wallet.name, "default", false);
 let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
 
-if(wallet !== null){
-	window.location.href = '#account';
+if (wallet !== null) {
+  window.location.href = "#account";
 }
 
-class IndexView extends DestructableView{
-	@VueVar(false) hasLocalWallet !: boolean;
-	@VueVar(false) isWalletLoaded !: boolean;
-	constructor(container : string){
-		super(container);
+class IndexView extends DestructableView {
+  @VueVar(false) hasLocalWallet!: boolean;
+  @VueVar(false) isWalletLoaded!: boolean;
+  constructor(container: string) {
+    super(container);
 
-    this.isWalletLoaded = DependencyInjectorInstance().getInstance(Wallet.name,'default', false) !== null;
-    WalletRepository.hasOneStored().then((status : boolean)=>{
+    this.isWalletLoaded = DependencyInjectorInstance().getInstance(Wallet.name, "default", false) !== null;
+    WalletRepository.hasOneStored().then((status: boolean) => {
       this.hasLocalWallet = status;
     });
     AppState.disableLeftMenu();
-	}
+  }
 
-	destruct(): Promise<void> {
-		return super.destruct();
-	}
+  destruct(): Promise<void> {
+    return super.destruct();
+  }
 
-	loadWallet(){
-    blockchainExplorer.initialize().then((success : boolean) => {      
+  loadWallet() {
+    blockchainExplorer.initialize().then((success: boolean) => {
       AppState.askUserOpenWallet();
     });
-	}
-
+  }
 }
 
-let newIndexView = new IndexView('#app');
-
+let newIndexView = new IndexView("#app");
 
 /*
 function readFile(fileEnty:any){

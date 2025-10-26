@@ -23,6 +23,6 @@ define(["require", "exports", "../model/AppState", "../lib/numbersLab/Destructab
         }
         return PrivacyPolicyView;
     }(DestructableView_1.DestructableView));
-    new PrivacyPolicyView('#app');
+    new PrivacyPolicyView("#app");
     AppState_1.AppState.enableLeftMenu();
 });

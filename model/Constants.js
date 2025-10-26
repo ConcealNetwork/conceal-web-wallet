@@ -21,7 +21,7 @@ define(["require", "exports"], function (require, exports) {
     var Constants = /** @class */ (function () {
         function Constants() {
         }
-        Constants.BLOCKCHAIN_EXPLORER = 'blockchainExplorer';
+        Constants.BLOCKCHAIN_EXPLORER = "blockchainExplorer";
         return Constants;
     }());
     exports.Constants = Constants;

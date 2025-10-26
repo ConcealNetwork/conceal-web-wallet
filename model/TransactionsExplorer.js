@@ -53,7 +53,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
     exports.TX_EXTRA_NONCE = 0x02;
     exports.TX_EXTRA_MERGE_MINING_TAG = 0x03;
     exports.TX_EXTRA_MESSAGE_TAG = 0x04;
-    exports.TX_EXTRA_MYSTERIOUS_MINERGATE_TAG = 0xDE;
+    exports.TX_EXTRA_MYSTERIOUS_MINERGATE_TAG = 0xde;
     exports.TX_EXTRA_NONCE_PAYMENT_ID = 0x00;
     exports.TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID = 0x01;
     exports.TX_EXTRA_TTL = 0x05;
@@ -69,9 +69,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 try {
                     var extraSize = 0;
                     var startOffset = 0;
-                    if (extra[0] === exports.TX_EXTRA_NONCE ||
-                        extra[0] === exports.TX_EXTRA_MERGE_MINING_TAG ||
-                        extra[0] === exports.TX_EXTRA_MYSTERIOUS_MINERGATE_TAG) {
+                    if (extra[0] === exports.TX_EXTRA_NONCE || extra[0] === exports.TX_EXTRA_MERGE_MINING_TAG || extra[0] === exports.TX_EXTRA_MYSTERIOUS_MINERGATE_TAG) {
                         extraSize = extra[1];
                         startOffset = 2;
                     }
@@ -93,15 +91,15 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }
                     if (extraSize === 0) {
                         if (!hasFoundPubKey) {
-                            throw 'Invalid extra size ' + extra[0];
+                            throw "Invalid extra size " + extra[0];
                         }
                         break;
                     }
-                    if ((startOffset > 0) && (extraSize > 0)) {
+                    if (startOffset > 0 && extraSize > 0) {
                         var data = extra.slice(startOffset, startOffset + extraSize);
                         extras.push({
                             type: extra[0],
-                            data: data
+                            data: data,
                         });
                         extra = extra.slice(startOffset + extraSize);
                     }
@@ -123,7 +121,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 return false;
             }
             if (!Array.isArray(rawTransaction.vout) || rawTransaction.vout.length === 0) {
-                console.error('Weird tx !', rawTransaction);
+                console.error("Weird tx !", rawTransaction);
                 return false;
             }
             try {
@@ -134,7 +132,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             }
         };
         TransactionsExplorer.ownsTx = function (rawTransaction, wallet) {
-            var tx_pub_key = '';
+            var tx_pub_key = "";
             var txExtras = [];
             try {
                 var hexExtra = [];
@@ -145,7 +143,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 txExtras = this.parseExtra(hexExtra);
             }
             catch (e) {
-                console.error('Error when scanning transaction on block ' + rawTransaction.height, e);
+                console.error("Error when scanning transaction on block " + rawTransaction.height, e);
                 return false;
             }
             for (var _i = 0, txExtras_1 = txExtras; _i < txExtras_1.length; _i++) {
@@ -157,7 +155,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     break;
                 }
             }
-            if (tx_pub_key === '') {
+            if (tx_pub_key === "") {
                 console.error("tx_pub_key === null", rawTransaction.height, rawTransaction.hash);
                 return false;
             }
@@ -167,18 +165,18 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 derivation = Cn_1.CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
             }
             catch (e) {
-                console.error('UNABLE TO CREATE DERIVATION', e);
+                console.error("UNABLE TO CREATE DERIVATION", e);
                 return false;
             }
             if (!derivation) {
-                console.error('UNABLE TO CREATE DERIVATION');
+                console.error("UNABLE TO CREATE DERIVATION");
                 return false;
             }
             var keyIndex = 0;
             for (var iOut = 0; iOut < rawTransaction.vout.length; iOut++) {
                 var out = rawTransaction.vout[iOut];
                 var txout_k = out.target.data;
-                if (out.target.type == "02" && typeof txout_k.key !== 'undefined') {
+                if (out.target.type == "02" && typeof txout_k.key !== "undefined") {
                     var publicEphemeral = Cn_1.CnNativeBride.derive_public_key(derivation, keyIndex, wallet.keys.pub.spend);
                     if (txout_k.key == publicEphemeral) {
                         logDebugMsg("Found our tx...");
@@ -186,7 +184,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }
                     ++keyIndex;
                 }
-                else if (out.target.type == "03" && (typeof txout_k.keys !== 'undefined')) {
+                else if (out.target.type == "03" && typeof txout_k.keys !== "undefined") {
                     for (var iKey = 0; iKey < txout_k.keys.length; iKey++) {
                         var key = txout_k.keys[iKey];
                         var publicEphemeral = Cn_1.CnNativeBride.derive_public_key(derivation, iOut, wallet.keys.pub.spend);
@@ -198,7 +196,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 }
             }
             //check if no read only wallet
-            if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
+            if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== "") {
                 var keyImages = wallet.getTransactionKeyImages();
                 for (var iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
                     var vin = rawTransaction.vin[iIn];
@@ -243,7 +241,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             return false;
         };
         TransactionsExplorer.decryptMessage = function (index, txPubKey, recepientSecretSpendKey, rawMessage) {
-            var decryptedMessage = '';
+            var decryptedMessage = "";
             var mlen = rawMessage.length / 2;
             if (mlen < exports.TX_EXTRA_MESSAGE_CHECKSUM_SIZE) {
                 return null;
@@ -253,7 +251,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 derivation = Cn_1.CnNativeBride.generate_key_derivation(txPubKey, recepientSecretSpendKey);
             }
             catch (e) {
-                console.error('UNABLE TO CREATE DERIVATION', e);
+                console.error("UNABLE TO CREATE DERIVATION", e);
                 return null;
             }
             var magick1 = "80";
@@ -286,9 +284,9 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             var transaction = null;
             var withdrawals = [];
             var deposits = [];
-            var tx_pub_key = '';
+            var tx_pub_key = "";
             var paymentId = null;
-            var rawMessage = '';
+            var rawMessage = "";
             var ttl = 0;
             var txExtras = [];
             try {
@@ -300,7 +298,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 txExtras = this.parseExtra(hexExtra);
             }
             catch (e) {
-                console.error('Error when scanning transaction on block ' + rawTransaction.height, e);
+                console.error("Error when scanning transaction on block " + rawTransaction.height, e);
                 return null;
             }
             for (var _i = 0, txExtras_2 = txExtras; _i < txExtras_2.length; _i++) {
@@ -312,7 +310,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     break;
                 }
             }
-            if (tx_pub_key === '') {
+            if (tx_pub_key === "") {
                 console.error("tx_pub_key === null", rawTransaction.height, rawTransaction.hash);
                 return null;
             }
@@ -323,7 +321,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 var extra = txExtras_3[_b];
                 if (extra.type === exports.TX_EXTRA_NONCE) {
                     if (extra.data[0] === exports.TX_EXTRA_NONCE_PAYMENT_ID) {
-                        paymentId = '';
+                        paymentId = "";
                         for (var i = 1; i < extra.data.length; ++i) {
                             paymentId += String.fromCharCode(extra.data[i]);
                         }
@@ -331,7 +329,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                         //break;
                     }
                     else if (extra.data[0] === exports.TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID) {
-                        encryptedPaymentId = '';
+                        encryptedPaymentId = "";
                         for (var i = 1; i < extra.data.length; ++i) {
                             encryptedPaymentId += String.fromCharCode(extra.data[i]);
                         }
@@ -347,7 +345,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     rawMessage = Cn_1.CnUtils.bintohex(rawMessage);
                 }
                 else if (extra.type === exports.TX_EXTRA_TTL) {
-                    var rawTTL = '';
+                    var rawTTL = "";
                     for (var i = 0; i < extra.data.length; ++i) {
                         rawTTL += String.fromCharCode(extra.data[i]);
                     }
@@ -362,7 +360,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 derivation = Cn_1.CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
             }
             catch (e) {
-                console.error('UNABLE TO CREATE DERIVATION', e);
+                console.error("UNABLE TO CREATE DERIVATION", e);
                 return null;
             }
             var outs = [];
@@ -382,10 +380,10 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 var generated_tx_pubkey = Cn_1.CnNativeBride.derive_public_key(derivation, output_idx_in_tx, wallet.keys.pub.spend);
                 // check if generated public key matches the current output's key
                 var mine_output = false;
-                if (out.target.type == "02" && typeof txout_k.key !== 'undefined') {
-                    mine_output = (txout_k.key == generated_tx_pubkey);
+                if (out.target.type == "02" && typeof txout_k.key !== "undefined") {
+                    mine_output = txout_k.key == generated_tx_pubkey;
                 }
-                else if (out.target.type == "03" && typeof txout_k.keys !== 'undefined') {
+                else if (out.target.type == "03" && typeof txout_k.keys !== "undefined") {
                     for (var iKey = 0; iKey < txout_k.keys.length; iKey++) {
                         if (txout_k.keys[iKey] == generated_tx_pubkey) {
                             mine_output = true;
@@ -394,29 +392,29 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 }
                 if (mine_output) {
                     var transactionOut = new Transaction_1.TransactionOut();
-                    if (typeof rawTransaction.global_index_start !== 'undefined')
+                    if (typeof rawTransaction.global_index_start !== "undefined")
                         transactionOut.globalIndex = rawTransaction.output_indexes[output_idx_in_tx];
                     else
                         transactionOut.globalIndex = output_idx_in_tx;
                     transactionOut.amount = amount;
-                    if (out.target.type == "02" && typeof txout_k.key !== 'undefined') {
+                    if (out.target.type == "02" && typeof txout_k.key !== "undefined") {
                         transactionOut.pubKey = txout_k.key;
                         transactionOut.type = "02";
                     }
-                    else if (out.target.type == "03" && typeof txout_k.keys !== 'undefined') {
+                    else if (out.target.type == "03" && typeof txout_k.keys !== "undefined") {
                         transactionOut.pubKey = generated_tx_pubkey; // assume
                         transactionOut.type = "03";
                         if (out.target.data && out.target.data.term) {
                             var deposit = new Transaction_1.Deposit();
-                            if (typeof rawTransaction.height !== 'undefined')
+                            if (typeof rawTransaction.height !== "undefined")
                                 deposit.blockHeight = rawTransaction.height;
-                            if (typeof rawTransaction.hash !== 'undefined')
+                            if (typeof rawTransaction.hash !== "undefined")
                                 deposit.txHash = rawTransaction.hash;
-                            if (typeof rawTransaction.ts !== 'undefined')
+                            if (typeof rawTransaction.ts !== "undefined")
                                 deposit.timestamp = rawTransaction.ts;
                             deposit.amount = transactionOut.amount;
                             deposit.term = out.target.data.term;
-                            if (rawTransaction.output_indexes && typeof rawTransaction.output_indexes[iOut] !== 'undefined') {
+                            if (rawTransaction.output_indexes && typeof rawTransaction.output_indexes[iOut] !== "undefined") {
                                 deposit.globalOutputIndex = rawTransaction.output_indexes[iOut];
                             }
                             else {
@@ -435,13 +433,13 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }
                     transactionOut.outputIdx = output_idx_in_tx;
                     /*
-                    if (!minerTx) {
-                      transactionOut.rtcOutPk = rawTransaction.rct_signatures.outPk[output_idx_in_tx];
-                      transactionOut.rtcMask = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].mask;
-                      transactionOut.rtcAmount = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].amount;
-                    }
-                    */
-                    if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
+                     if (!minerTx) {
+                       transactionOut.rtcOutPk = rawTransaction.rct_signatures.outPk[output_idx_in_tx];
+                       transactionOut.rtcMask = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].mask;
+                       transactionOut.rtcAmount = rawTransaction.rct_signatures.ecdhInfo[output_idx_in_tx].amount;
+                     }
+                     */
+                    if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== "") {
                         var m_key_image = Cn_1.CnTransactions.generate_key_image_helper({
                             view_secret_key: wallet.keys.priv.view,
                             spend_secret_key: wallet.keys.priv.spend,
@@ -454,7 +452,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 } //  if (mine_output)
             }
             //check if no read only wallet
-            if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== '') {
+            if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== "") {
                 var keyImages = wallet.getTransactionKeyImages();
                 for (var iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
                     var vin = rawTransaction.vin[iIn];
@@ -474,14 +472,14 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                                 if (vin.type == "03") {
                                     if (vin.value && vin.value.term) {
                                         var withdrawal = new Transaction_1.Deposit();
-                                        withdrawal.globalOutputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
-                                        if (typeof rawTransaction.height !== 'undefined')
+                                        withdrawal.globalOutputIndex = vin.value && vin.value.outputIndex ? vin.value.outputIndex : 0;
+                                        if (typeof rawTransaction.height !== "undefined")
                                             withdrawal.blockHeight = rawTransaction.height;
-                                        if (typeof rawTransaction.hash !== 'undefined')
+                                        if (typeof rawTransaction.hash !== "undefined")
                                             withdrawal.txHash = rawTransaction.hash;
-                                        if (typeof rawTransaction.ts !== 'undefined')
+                                        if (typeof rawTransaction.ts !== "undefined")
                                             withdrawal.timestamp = rawTransaction.ts;
-                                        withdrawal.term = (vin.value && vin.value.term) ? vin.value.term : 0;
+                                        withdrawal.term = vin.value && vin.value.term ? vin.value.term : 0;
                                         withdrawal.amount = transactionIn.amount;
                                         withdrawals.push(withdrawal);
                                         wasAdded = true;
@@ -493,26 +491,26 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                         }
                     }
                     // add the withdrawal if it was not yet processed
-                    if ((!wasAdded) && (vin.type == "03")) {
+                    if (!wasAdded && vin.type == "03") {
                         var transactionIn = new Transaction_1.TransactionIn();
                         transactionIn.type = "03"; // Set type explicitly for withdrawal
-                        transactionIn.term = (vin.value && vin.value.term) ? vin.value.term : 0;
+                        transactionIn.term = vin.value && vin.value.term ? vin.value.term : 0;
                         if (vin.value && vin.value.amount) {
                             transactionIn.amount = parseInt(vin.value.amount);
                         }
                         // Add the transaction input to the array
                         ins.push(transactionIn);
                         var withdrawal = new Transaction_1.Deposit();
-                        if (typeof rawTransaction.ts !== 'undefined')
+                        if (typeof rawTransaction.ts !== "undefined")
                             withdrawal.timestamp = rawTransaction.ts;
-                        if (typeof rawTransaction.hash !== 'undefined')
+                        if (typeof rawTransaction.hash !== "undefined")
                             withdrawal.txHash = rawTransaction.hash;
-                        if (typeof rawTransaction.height !== 'undefined')
+                        if (typeof rawTransaction.height !== "undefined")
                             withdrawal.blockHeight = rawTransaction.height;
                         if (vin.value && vin.value.amount)
                             withdrawal.amount = parseInt((_a = vin.value) === null || _a === void 0 ? void 0 : _a.amount);
-                        withdrawal.globalOutputIndex = (vin.value && vin.value.outputIndex) ? vin.value.outputIndex : 0;
-                        withdrawal.term = (vin.value && vin.value.term) ? vin.value.term : 0;
+                        withdrawal.globalOutputIndex = vin.value && vin.value.outputIndex ? vin.value.outputIndex : 0;
+                        withdrawal.term = vin.value && vin.value.term ? vin.value.term : 0;
                         withdrawals.push(withdrawal);
                         wasAdded = true;
                     }
@@ -555,11 +553,11 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             if (outs.length > 0 || ins.length) {
                 transactionData = new Transaction_1.TransactionData();
                 transaction = new Transaction_1.Transaction();
-                if (typeof rawTransaction.height !== 'undefined')
+                if (typeof rawTransaction.height !== "undefined")
                     transaction.blockHeight = rawTransaction.height;
-                if (typeof rawTransaction.ts !== 'undefined')
+                if (typeof rawTransaction.ts !== "undefined")
                     transaction.timestamp = rawTransaction.ts;
-                if (typeof rawTransaction.hash !== 'undefined')
+                if (typeof rawTransaction.hash !== "undefined")
                     transaction.hash = rawTransaction.hash;
                 transaction.txPubKey = tx_pub_key;
                 if (paymentId !== null)
@@ -567,18 +565,19 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 if (encryptedPaymentId !== null) {
                     transaction.paymentId = Cn_1.Cn.decrypt_payment_id(encryptedPaymentId, tx_pub_key, wallet.keys.priv.view);
                 }
-                if (rawTransaction.vin[0].type === 'ff') {
+                if (rawTransaction.vin[0].type === "ff") {
                     transaction.fees = 0;
                 }
                 else {
                     transaction.fees = rawTransaction.fee;
                 }
-                transaction.fusion = ((rawTransaction.vin.length > Currency_1.Currency.fusionTxMinInputCount) &&
-                    (rawTransaction.vout.length <= config.maxFusionOutputs) &&
-                    ((rawTransaction.vin.length / rawTransaction.vout.length) > config.fusionTxMinInOutCountRatio) &&
-                    (rawTransaction.vin.some(function (vin) { return vin.type != "03"; })) &&
-                    (rawTransaction.vout.some(function (vout) { return vout.target.type != "03"; }))) &&
-                    (transaction.fees === 0 || transaction.fees === parseInt(config.minimumFee_V2));
+                transaction.fusion =
+                    rawTransaction.vin.length > Currency_1.Currency.fusionTxMinInputCount &&
+                        rawTransaction.vout.length <= config.maxFusionOutputs &&
+                        rawTransaction.vin.length / rawTransaction.vout.length > config.fusionTxMinInOutCountRatio &&
+                        rawTransaction.vin.some(function (vin) { return vin.type != "03"; }) &&
+                        rawTransaction.vout.some(function (vout) { return vout.target.type != "03"; }) &&
+                        (transaction.fees === 0 || transaction.fees === parseInt(config.minimumFee_V2));
                 // fill the transaction info
                 transaction.outs = outs;
                 transaction.ins = ins;
@@ -586,18 +585,18 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 transactionData.transaction = transaction;
                 transactionData.withdrawals = withdrawals;
                 transactionData.deposits = deposits;
-                if (rawMessage !== '') {
+                if (rawMessage !== "") {
                     // decode message
                     try {
                         var message = this.decryptMessage(extraIndex, tx_pub_key, wallet.keys.priv.spend, rawMessage);
                         transaction.message = message;
                     }
                     catch (e) {
-                        console.error('ERROR IN DECRYPTING MESSAGE: ', e);
+                        console.error("ERROR IN DECRYPTING MESSAGE: ", e);
                     }
                 }
             }
-            if (transaction && typeof ttl !== 'undefined') {
+            if (transaction && typeof ttl !== "undefined") {
                 transaction.ttl = ttl;
             }
             return transactionData;
@@ -622,7 +621,8 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 var tr = _a[_i];
                 //todo improve to take into account miner tx ... well, if the user is smart enough to mine, he should be able to toggle the "Read miner tx" option in settings.
                 //only add outs unlocked
-                if (!tr.isConfirmed(blockchainHeight - 2)) { // -2 extra buffer
+                if (!tr.isConfirmed(blockchainHeight - 2)) {
+                    // -2 extra buffer
                     continue;
                 }
                 for (var _b = 0, _c = tr.outs; _b < _c.length; _b++) {
@@ -639,7 +639,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                         index: out.outputIdx,
                         global_index: out.globalIndex,
                         tx_pub_key: tr.txPubKey,
-                        keys: []
+                        keys: [],
                     });
                 }
             }
@@ -690,10 +690,10 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }
                     signed = Cn_1.CnTransactions.create_transaction({
                         spend: wallet.keys.pub.spend,
-                        view: wallet.keys.pub.view
+                        view: wallet.keys.pub.view,
                     }, {
                         spend: wallet.keys.priv.spend,
-                        view: wallet.keys.priv.view
+                        view: wallet.keys.priv.view,
                     }, splittedDsts, wallet.getPublicAddress(), usingOuts, mix_outs, mixin, neededFee, payment_id, pid_encrypt, realDestViewKey, 0, rct, message, messageTo, ttl, transactionType, term);
                     logDebugMsg("signed tx: ", signed);
                     //console.log('Pre-serialization transaction:', JSON.stringify(signed, null, 2));
@@ -707,9 +707,9 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             });
         };
         TransactionsExplorer.createTx = function (userDestinations, userPaymentId, wallet, blockchainHeight, obtainMixOutsCallback, confirmCallback, mixin, message, ttl, transactionType, term) {
-            if (userPaymentId === void 0) { userPaymentId = ''; }
+            if (userPaymentId === void 0) { userPaymentId = ""; }
             if (mixin === void 0) { mixin = config.defaultMixin; }
-            if (message === void 0) { message = ''; }
+            if (message === void 0) { message = ""; }
             if (ttl === void 0) { ttl = 0; }
             if (transactionType === void 0) { transactionType = "regular"; }
             if (term === void 0) { term = 0; }
@@ -718,7 +718,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 var pid_encrypt = false; //don't encrypt payment ID unless we find an integrated one
                 var totalAmountWithoutFee = new JSBigInt(0);
                 var paymentIdIncluded = 0;
-                var paymentId = '';
+                var paymentId = "";
                 var dsts = [];
                 for (var _i = 0, userDestinations_1 = userDestinations; _i < userDestinations_1.length; _i++) {
                     var dest = userDestinations_1[_i];
@@ -731,29 +731,29 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     }
                     dsts.push({
                         address: dest.address,
-                        amount: new JSBigInt(dest.amount)
+                        amount: new JSBigInt(dest.amount),
                     });
                 }
                 if (paymentIdIncluded > 1) {
-                    reject('multiple_payment_ids');
+                    reject("multiple_payment_ids");
                     return;
                 }
-                if (paymentId !== '' && userPaymentId !== '') {
-                    reject('address_payment_id_conflict_user_payment_id');
+                if (paymentId !== "" && userPaymentId !== "") {
+                    reject("address_payment_id_conflict_user_payment_id");
                     return;
                 }
                 if (totalAmountWithoutFee.compare(0) <= 0) {
-                    reject('negative_amount');
+                    reject("negative_amount");
                     return;
                 }
-                if (paymentId === '' && userPaymentId !== '') {
+                if (paymentId === "" && userPaymentId !== "") {
                     if (userPaymentId.length <= 16 && /^[0-9a-fA-F]+$/.test(userPaymentId)) {
-                        userPaymentId = ('0000000000000000' + userPaymentId).slice(-16);
+                        userPaymentId = ("0000000000000000" + userPaymentId).slice(-16);
                     }
                     // now double check if ok
                     if ((userPaymentId.length !== 16 && userPaymentId.length !== 64) ||
-                        (!(/^[0-9a-fA-F]{16}$/.test(userPaymentId)) && !(/^[0-9a-fA-F]{64}$/.test(userPaymentId)))) {
-                        reject('invalid_payment_id');
+                        (!/^[0-9a-fA-F]{16}$/.test(userPaymentId) && !/^[0-9a-fA-F]{64}$/.test(userPaymentId))) {
+                        reject("invalid_payment_id");
                         return;
                     }
                     pid_encrypt = userPaymentId.length === 16;
@@ -777,15 +777,24 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     usingOuts_amount = usingOuts_amount.add(out.amount);
                 }
                 logDebugMsg("Selected outs:", usingOuts);
-                logDebugMsg('using amount of ' + usingOuts_amount + ' for sending ' + totalAmountWithoutFee + ' with fees of ' + (neededFee / Math.pow(10, config.coinUnitPlaces)) + ' CCX');
+                logDebugMsg("using amount of " +
+                    usingOuts_amount +
+                    " for sending " +
+                    totalAmountWithoutFee +
+                    " with fees of " +
+                    neededFee / Math.pow(10, config.coinUnitPlaces) +
+                    " CCX");
                 confirmCallback(totalAmountWithoutFee, neededFee).then(function () {
                     if (usingOuts_amount.compare(totalAmount) < 0) {
-                        logDebugMsg("Not enough spendable outputs / balance too low (have "
-                            + Cn_1.Cn.formatMoneyFull(usingOuts_amount) + " but need "
-                            + Cn_1.Cn.formatMoneyFull(totalAmount)
-                            + " (estimated fee " + Cn_1.Cn.formatMoneyFull(neededFee) + " CCX included)");
+                        logDebugMsg("Not enough spendable outputs / balance too low (have " +
+                            Cn_1.Cn.formatMoneyFull(usingOuts_amount) +
+                            " but need " +
+                            Cn_1.Cn.formatMoneyFull(totalAmount) +
+                            " (estimated fee " +
+                            Cn_1.Cn.formatMoneyFull(neededFee) +
+                            " CCX included)");
                         // return;
-                        reject({ error: 'balance_too_low' });
+                        reject({ error: "balance_too_low" });
                         return;
                     }
                     else if (usingOuts_amount.compare(totalAmount) > 0) {
@@ -794,28 +803,27 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                             changeAmount = changeAmount.add(neededFee);
                         }
                         //add entire change for rct
-                        logDebugMsg("1) Sending change of " + Cn_1.Cn.formatMoneySymbol(changeAmount)
-                            + " to " + wallet.getPublicAddress());
+                        logDebugMsg("1) Sending change of " + Cn_1.Cn.formatMoneySymbol(changeAmount) + " to " + wallet.getPublicAddress());
                         dsts.push({
                             address: wallet.getPublicAddress(),
-                            amount: changeAmount
+                            amount: changeAmount,
                         });
                     }
                     /* Not applicable for CCX
-           
-                        else if (usingOuts_amount.compare(totalAmount) === 0) {
-           
-                      //create random destination to keep 2 outputs always in case of 0 change
-           
-                      let fakeAddress = Cn.create_address(CnRandom.random_scalar()).public_addr;
-                      logDebugMsg("Sending 0 CCX to a fake address to keep tx uniform (no change exists): " + fakeAddress);
-                      dsts.push({
-                        address: fakeAddress,
-                        amount: 0
-                      });
-                    }
-                    */
-                    logDebugMsg('destinations', dsts);
+            
+                         else if (usingOuts_amount.compare(totalAmount) === 0) {
+            
+                       //create random destination to keep 2 outputs always in case of 0 change
+            
+                       let fakeAddress = Cn.create_address(CnRandom.random_scalar()).public_addr;
+                       logDebugMsg("Sending 0 CCX to a fake address to keep tx uniform (no change exists): " + fakeAddress);
+                       dsts.push({
+                         address: fakeAddress,
+                         amount: 0
+                       });
+                     }
+                     */
+                    logDebugMsg("destinations", dsts);
                     var amounts = [];
                     for (var l = 0; l < usingOuts.length; l++) {
                         amounts.push(usingOuts[l].amount);
@@ -824,9 +832,9 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     // Request nbOutsNeeded mixouts for each output (including duplicates)
                     var nbOutsRequested = nbOutsNeeded + 3; // Request 3 more to account for potentialduplicates
                     obtainMixOutsCallback(amounts, nbOutsRequested).then(function (lotsMixOuts) {
-                        logDebugMsg('------------------------------mix_outs');
-                        logDebugMsg('amounts', amounts);
-                        logDebugMsg('lots_mix_outs', lotsMixOuts);
+                        logDebugMsg("------------------------------mix_outs");
+                        logDebugMsg("amounts", amounts);
+                        logDebugMsg("lots_mix_outs", lotsMixOuts);
                         // 1. Check for duplicates and remove them
                         var removedDuplicateMixOuts = TransactionsExplorer.removeDuplicateMixOuts(lotsMixOuts);
                         // 2. Shuffle and select exactly nbOutsNeeded mixouts per amount
@@ -837,9 +845,11 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                             reject(new Error(validation.reason));
                             return;
                         }
-                        TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, selectedMixOuts, mixin, neededFee, paymentId, message, ttl, transactionType, term).then(function (data) {
+                        TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, selectedMixOuts, mixin, neededFee, paymentId, message, ttl, transactionType, term)
+                            .then(function (data) {
                             resolve(data);
-                        }).catch(function (e) {
+                        })
+                            .catch(function (e) {
                             reject(e);
                         });
                     });
@@ -848,8 +858,8 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
         };
         TransactionsExplorer.createWithdrawTx = function (deposit, wallet, blockchainHeight, obtainMixOutsCallback, confirmCallback, mixin, paymentId, message, ttl, transactionType, term) {
             if (mixin === void 0) { mixin = 0; }
-            if (paymentId === void 0) { paymentId = ''; }
-            if (message === void 0) { message = ''; }
+            if (paymentId === void 0) { paymentId = ""; }
+            if (message === void 0) { message = ""; }
             if (ttl === void 0) { ttl = 0; }
             if (transactionType === void 0) { transactionType = "withdraw"; }
             if (term === void 0) { term = 0; }
@@ -858,27 +868,28 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 var totalInterest = deposit.interest;
                 var totalAmount = lockedAmount + totalInterest;
                 var pid_encrypt = false; // don't encrypt payment ID for withdrawals
-                var paymentId = '';
+                var paymentId = "";
                 // Check if the deposit is unlocked
                 if (deposit.unlockHeight > blockchainHeight) {
                     reject(new Error("Deposit is still locked"));
                     return;
                 }
-                logDebugMsg('Withdrawing deposit with amount', totalAmount);
+                logDebugMsg("Withdrawing deposit with amount", totalAmount);
                 // For withdrawals, we want a small fee for the transaction
                 var neededFee = new JSBigInt(config.depositSmallWithdrawFee);
                 var totalAmountWithoutFee = new JSBigInt(totalAmount);
                 if (lockedAmount < 1) {
-                    reject(new Error('such a deposit cannot could not have been created'));
+                    reject(new Error("such a deposit cannot could not have been created"));
                     return;
                 }
-                confirmCallback(totalAmountWithoutFee.subtract(neededFee), neededFee).then(function () {
+                confirmCallback(totalAmountWithoutFee.subtract(neededFee), neededFee)
+                    .then(function () {
                     var usingOuts = [];
                     // Create the multisignature input for the deposit
                     var depositOutput = {
-                        keyImage: '', // Not needed for deposit withdrawal
+                        keyImage: "", // Not needed for deposit withdrawal
                         amount: deposit.amount,
-                        public_key: deposit.keys[0], // to be corrected 
+                        public_key: deposit.keys[0], // to be corrected
                         index: deposit.indexInVout,
                         global_index: deposit.globalOutputIndex,
                         tx_pub_key: deposit.txPubKey,
@@ -889,31 +900,35 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     usingOuts.push(depositOutput);
                     var changeAmount = totalAmountWithoutFee.subtract(neededFee);
                     var dsts = [];
-                    logDebugMsg("Sending withdrawn amount of " + Cn_1.Cn.formatMoneySymbol(changeAmount)
-                        + " to " + wallet.getPublicAddress());
+                    logDebugMsg("Sending withdrawn amount of " + Cn_1.Cn.formatMoneySymbol(changeAmount) + " to " + wallet.getPublicAddress());
                     dsts.push({
                         address: wallet.getPublicAddress(),
-                        amount: changeAmount
+                        amount: changeAmount,
                     });
-                    logDebugMsg('destinations', dsts);
+                    logDebugMsg("destinations", dsts);
                     var amounts = [];
                     for (var l = 0; l < usingOuts.length; l++) {
                         amounts.push(usingOuts[l].amount);
                     }
                     var nbOutsNeeded = mixin + 1;
-                    obtainMixOutsCallback(amounts, nbOutsNeeded).then(function (lotsMixOuts) {
-                        logDebugMsg('------------------------------mix_outs');
-                        logDebugMsg('amounts', amounts);
-                        logDebugMsg('lots_mix_outs', lotsMixOuts);
-                        TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId, message, ttl, "withdraw", deposit.term).then(function (data) {
+                    obtainMixOutsCallback(amounts, nbOutsNeeded)
+                        .then(function (lotsMixOuts) {
+                        logDebugMsg("------------------------------mix_outs");
+                        logDebugMsg("amounts", amounts);
+                        logDebugMsg("lots_mix_outs", lotsMixOuts);
+                        TransactionsExplorer.createRawTx(dsts, wallet, false, usingOuts, pid_encrypt, lotsMixOuts, mixin, neededFee, paymentId, message, ttl, "withdraw", deposit.term)
+                            .then(function (data) {
                             resolve(data);
-                        }).catch(function (e) {
+                        })
+                            .catch(function (e) {
                             reject(e);
                         });
-                    }).catch(function (error) {
+                    })
+                        .catch(function (error) {
                         reject(error);
                     });
-                }).catch(function (error) {
+                })
+                    .catch(function (error) {
                     reject(error);
                 });
             });
@@ -928,7 +943,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             if (mixOuts.length !== usingOuts.length) {
                 return {
                     valid: false,
-                    reason: 'Wrong number of mixout groups provided'
+                    reason: "Wrong number of mixout groups provided",
                 };
             }
             // Check each output has enough mixouts
@@ -938,7 +953,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 if (!mixOutGroup || mixOutGroup.amount !== out.amount) {
                     return {
                         valid: false,
-                        reason: 'Mixout group mismatch'
+                        reason: "Mixout group mismatch",
                     };
                 }
                 var availableMixouts = mixOutGroup.outs.length;
@@ -946,13 +961,13 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 if (availableMixouts < requiredMixouts) {
                     return {
                         valid: false,
-                        reason: 'Not enough mixouts available, try smaller amount'
+                        reason: "Not enough mixouts available, try smaller amount",
                     };
                 }
             }
             return {
                 valid: true,
-                reason: 'All outputs have sufficient mixouts'
+                reason: "All outputs have sufficient mixouts",
             };
         };
         /**
@@ -989,7 +1004,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     // Add to selected mixouts (one entry per output)
                     selectedMixOuts.push({
                         amount: out.amount,
-                        outs: selectedMixouts
+                        outs: selectedMixouts,
                     });
                 }
                 else {
@@ -1013,7 +1028,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 }
                 mixOuts[i] = {
                     amount: group.amount,
-                    outs: uniqueOuts
+                    outs: uniqueOuts,
                 };
             }
             // Second loop: if a global index appears in multiple objects, remove it from the object with more mixouts

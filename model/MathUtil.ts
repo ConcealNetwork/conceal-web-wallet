@@ -15,33 +15,29 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+export class MathUtil {
+  static randomFloat() {
+    const randomBuffer = new Uint32Array(1);
+    window.crypto.getRandomValues(randomBuffer);
+    return randomBuffer[0] / (0xffffffff + 1);
+  }
 
-export class MathUtil{
+  static randomUint32() {
+    const randomBuffer = new Uint32Array(1);
+    window.crypto.getRandomValues(randomBuffer);
+    return randomBuffer[0];
+  }
 
-	static randomFloat(){
-		const randomBuffer = new Uint32Array(1);
-		window.crypto.getRandomValues(randomBuffer);
-		return randomBuffer[0] / (0xffffffff + 1);
-	}
+  static getRandomInt(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 
-	static randomUint32(){
-		const randomBuffer = new Uint32Array(1);
-		window.crypto.getRandomValues(randomBuffer);
-		return randomBuffer[0];
-	}
-
-	static getRandomInt(min : number, max : number) {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
-	}
-
-	static randomTriangularSimplified(max : number){
-		let r = MathUtil.randomUint32() % (1 << 53);
-		let frac = Math.sqrt(r / (1 << 53));
-		let i = (frac*max)|0;
-		// just in case rounding up to 1 occurs after sqrt
-		if (i == max)
-			--i;
-		return i;
-	}
-
+  static randomTriangularSimplified(max: number) {
+    let r = MathUtil.randomUint32() % (1 << 53);
+    let frac = Math.sqrt(r / (1 << 53));
+    let i = (frac * max) | 0;
+    // just in case rounding up to 1 occurs after sqrt
+    if (i == max) --i;
+    return i;
+  }
 }

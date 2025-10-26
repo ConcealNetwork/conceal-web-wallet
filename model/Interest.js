@@ -134,9 +134,9 @@ define(["require", "exports"], function (require, exports) {
                 // Investment calculation - same as C++ implementation
                 var mq = config.investmentMq || 1.4473; // From C++ code, use config if available
                 var termQuarters = term / 64800;
-                var m8 = 100.0 * Math.pow(1.0 + (mq / 100.0), termQuarters) - 100.0;
+                var m8 = 100.0 * Math.pow(1.0 + mq / 100.0, termQuarters) - 100.0;
                 var m5 = termQuarters * 0.5;
-                var m7 = m8 * (1 + (m5 / 100));
+                var m7 = m8 * (1 + m5 / 100);
                 var rate = m7 * qTier;
                 var interest = amount * (rate / 100);
                 return Math.floor(interest);
@@ -147,7 +147,7 @@ define(["require", "exports"], function (require, exports) {
                 // Use config values if available, otherwise fall back to hardcoded values
                 var baseInterest = config.weeklyBaseInterest || 0.0696; // Base weekly interest rate
                 var interestPerWeek = config.weeklyInterestIncrement || 0.0002; // Additional interest per week
-                var interestRate = baseInterest + (weeks * interestPerWeek);
+                var interestRate = baseInterest + weeks * interestPerWeek;
                 var interest = amount * ((weeks * interestRate) / 100);
                 return Math.floor(interest);
             }

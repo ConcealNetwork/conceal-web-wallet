@@ -26,6 +26,8 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
             var self = this;
             wallet.addObserver(Observable_1.Observable.EVENT_MODIFIED, function () {
                 if (self.intervalSave === 0)
+                    // biome-ignore lint
+                    // biome-ignore format
                     self.intervalSave = setTimeout(function () {
                         self.save();
                         self.intervalSave = 0;
@@ -48,63 +50,67 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
             var watchdog = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance().start(wallet);
             (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, watchdog);
             (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, walletWorker);
-            $('body').addClass('connected');
+            $("body").addClass("connected");
             if (wallet.isViewOnly()) {
-                $('body').addClass('viewOnlyWallet');
+                $("body").addClass("viewOnlyWallet");
             }
         };
         AppState.disconnect = function () {
-            var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
-            var walletWorker = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWorker.name, 'default', false);
-            var walletWatchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
+            var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, "default", false);
+            var walletWorker = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWorker.name, "default", false);
+            var walletWatchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name, "default", false);
             if (walletWatchdog !== null) {
                 walletWatchdog.stop();
             }
             // Clean up the blockchain explorer session to ensure fresh node selection on next connection
             var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
             blockchainExplorer.cleanupSession();
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, undefined, 'default');
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, undefined, 'default');
-            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, undefined, 'default');
-            $('body').removeClass('connected');
-            $('body').removeClass('viewOnlyWallet');
+            (0, DependencyInjector_1.DependencyInjectorInstance)().register(Wallet_1.Wallet.name, undefined, "default");
+            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWorker.name, undefined, "default");
+            (0, DependencyInjector_1.DependencyInjectorInstance)().register(WalletWatchdog_1.WalletWatchdog.name, undefined, "default");
+            $("body").removeClass("connected");
+            $("body").removeClass("viewOnlyWallet");
         };
         AppState.enableLeftMenu = function () {
             if (!this.leftMenuEnabled) {
                 this.leftMenuEnabled = true;
-                $('body').removeClass('menuDisabled');
+                $("body").removeClass("menuDisabled");
             }
         };
         AppState.disableLeftMenu = function () {
             if (this.leftMenuEnabled) {
                 this.leftMenuEnabled = false;
-                $('body').addClass('menuDisabled');
+                $("body").addClass("menuDisabled");
             }
         };
         AppState.askUserOpenWallet = function (redirectToHome) {
             if (redirectToHome === void 0) { redirectToHome = true; }
             return new Promise(function (resolve, reject) {
                 swal({
-                    title: i18n.t('global.openWalletModal.title'),
-                    input: 'password',
+                    title: i18n.t("global.openWalletModal.title"),
+                    input: "password",
                     showCancelButton: true,
-                    confirmButtonText: i18n.t('global.openWalletModal.confirmText'),
-                    cancelButtonText: i18n.t('global.openWalletModal.cancelText'),
-                }).then(function (result) {
-                    $('#pageLoading').show();
-                    BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance().initialize().then(function (success) {
-                        $('#pageLoading').hide();
+                    confirmButtonText: i18n.t("global.openWalletModal.confirmText"),
+                    cancelButtonText: i18n.t("global.openWalletModal.cancelText"),
+                })
+                    .then(function (result) {
+                    $("#pageLoading").show();
+                    BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance()
+                        .initialize()
+                        .then(function (success) {
+                        $("#pageLoading").hide();
                         setTimeout(function () {
+                            //for async
                             if (result.value) {
                                 swal({
-                                    type: 'info',
-                                    title: i18n.t('global.loading'),
+                                    type: "info",
+                                    title: i18n.t("global.loading"),
                                     onOpen: function () {
                                         swal.showLoading();
-                                    }
+                                    },
                                 });
                                 var savePassword_1 = result.value;
-                                var memoryWallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+                                var memoryWallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, "default", false);
                                 if (memoryWallet === null) {
                                     // Migration and wallet loading logic
                                     WalletRepository_1.WalletRepository.migrateWallet()
@@ -127,7 +133,7 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
                                 }
                                 else {
                                     swal.close();
-                                    window.location.href = '#account';
+                                    window.location.href = "#account";
                                     resolve();
                                 }
                             }
@@ -135,14 +141,16 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
                                 reject();
                             }
                         }, 1);
-                    }).catch(function (err) {
+                    })
+                        .catch(function (err) {
                         console.log(err);
-                        $('#pageLoading').hide();
+                        $("#pageLoading").hide();
                         reject(err);
                     });
-                }).catch(function (err) {
+                })
+                    .catch(function (err) {
                     console.log(err);
-                    $('#pageLoading').hide();
+                    $("#pageLoading").hide();
                     reject(err);
                 });
             });
@@ -159,25 +167,25 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "./Wallet"
         resolve();
         AppState.openWallet(wallet, savePassword);
         if (redirectToHome) {
-            window.location.href = '#account';
+            window.location.href = "#account";
         }
     }
     function showInvalidPasswordError() {
         swal({
-            type: 'error',
-            title: i18n.t('global.invalidPasswordModal.title'),
-            text: i18n.t('global.invalidPasswordModal.content'),
-            confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
+            type: "error",
+            title: i18n.t("global.invalidPasswordModal.title"),
+            text: i18n.t("global.invalidPasswordModal.content"),
+            confirmButtonText: i18n.t("global.invalidPasswordModal.confirmText"),
             onOpen: function () {
                 swal.hideLoading();
-            }
+            },
         });
     }
     function updateWalletTransactions(wallet) {
         var blockchainHeightToRescanObj = {};
         for (var _i = 0, _a = wallet.getTransactionsCopy(); _i < _a.length; _i++) {
             var tx = _a[_i];
-            if (tx.hash === '') {
+            if (tx.hash === "") {
                 blockchainHeightToRescanObj[tx.blockHeight] = true;
             }
         }

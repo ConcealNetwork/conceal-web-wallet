@@ -75,7 +75,7 @@ define(["require", "exports", "./Storage"], function (require, exports, Storage_
                     switch (_b.label) {
                         case 0:
                             _a = this;
-                            return [4 /*yield*/, Storage_1.Storage.getItem('useShortTicker', false)];
+                            return [4 /*yield*/, Storage_1.Storage.getItem("useShortTicker", false)];
                         case 1:
                             _a._useShortTicker = _b.sent();
                             return [2 /*return*/];
@@ -106,7 +106,7 @@ define(["require", "exports", "./Storage"], function (require, exports, Storage_
                     switch (_a.label) {
                         case 0:
                             this._useShortTicker = useShortTicker;
-                            return [4 /*yield*/, Storage_1.Storage.setItem('useShortTicker', useShortTicker)];
+                            return [4 /*yield*/, Storage_1.Storage.setItem("useShortTicker", useShortTicker)];
                         case 1:
                             _a.sent();
                             this.notifyListeners();
@@ -135,15 +135,15 @@ define(["require", "exports", "./Storage"], function (require, exports, Storage_
         function Translations() {
         }
         Translations.getBrowserLang = function () {
-            var browserUserLang = '' + (navigator.language || navigator.userLanguage);
-            browserUserLang = browserUserLang.toLowerCase().split('-')[0];
+            var browserUserLang = "" + (navigator.language || navigator.userLanguage);
+            browserUserLang = browserUserLang.toLowerCase().split("-")[0];
             return browserUserLang;
         };
         Translations.getLang = function () {
-            return Storage_1.Storage.getItem('user-lang', Translations.getBrowserLang());
+            return Storage_1.Storage.getItem("user-lang", Translations.getBrowserLang());
         };
         Translations.setBrowserLang = function (lang) {
-            Storage_1.Storage.setItem('user-lang', lang);
+            Storage_1.Storage.setItem("user-lang", lang);
         };
         Translations.getTickerPreference = function () {
             return exports.tickerStore.initialize().then(function () { return exports.tickerStore.useShortTicker; });
@@ -155,40 +155,56 @@ define(["require", "exports", "./Storage"], function (require, exports, Storage_
             return exports.tickerStore.currentTicker;
         };
         Translations.loadLangTranslation = function (lang) {
+            var _this = this;
             //console.log('setting lang to '+lang);
             var promise;
-            if (typeof Translations.storedTranslations[lang] !== 'undefined')
+            if (typeof Translations.storedTranslations[lang] !== "undefined")
                 promise = Promise.resolve(Translations.storedTranslations[lang]);
             else
-                promise = new Promise(function (resolve, reject) {
-                    $.ajax({
-                        url: './translations/' + lang + '.json'
-                    }).then(function (data) {
-                        if (typeof data === 'string')
-                            data = JSON.parse(data);
-                        Translations.storedTranslations[lang] = data;
-                        resolve(data);
-                    }).fail(function () {
-                        reject();
+                promise = new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var response, data, error_1;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 3, , 4]);
+                                return [4 /*yield*/, fetch("./translations/" + lang + ".json")];
+                            case 1:
+                                response = _a.sent();
+                                if (!response.ok) {
+                                    throw new Error("HTTP ".concat(response.status, ": ").concat(response.statusText));
+                                }
+                                return [4 /*yield*/, response.json()];
+                            case 2:
+                                data = _a.sent();
+                                Translations.storedTranslations[lang] = data;
+                                resolve(data);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                error_1 = _a.sent();
+                                console.error("Failed to load translation for %s: %s", lang, error_1.message);
+                                reject();
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
+                        }
                     });
-                });
+                }); });
             promise.then(function (data) {
-                if (typeof data.date !== 'undefined')
+                if (typeof data.date !== "undefined")
                     i18n.setDateTimeFormat(lang, data.date);
-                if (typeof data.number !== 'undefined')
+                if (typeof data.number !== "undefined")
                     i18n.setNumberFormat(lang, data.number);
-                if (typeof data.messages !== 'undefined')
+                if (typeof data.messages !== "undefined")
                     i18n.setLocaleMessage(lang, data.messages);
                 i18n.locale = lang;
-                $('title').html(data.website.title);
-                $('meta[property="og:title"]').attr('content', data.website.title);
-                $('meta[property="twitter:title"]').attr('content', data.website.title);
-                $('meta[name="description"]').attr('content', data.website.description);
-                $('meta[property="og:description"]').attr('content', data.website.description);
-                $('meta[property="twitter:description"]').attr('content', data.website.description);
-                var htmlDocument = document.querySelector('html');
+                $("title").html(data.website.title);
+                $('meta[property="og:title"]').attr("content", data.website.title);
+                $('meta[property="twitter:title"]').attr("content", data.website.title);
+                $('meta[name="description"]').attr("content", data.website.description);
+                $('meta[property="og:description"]').attr("content", data.website.description);
+                $('meta[property="twitter:description"]').attr("content", data.website.description);
+                var htmlDocument = document.querySelector("html");
                 if (htmlDocument !== null)
-                    htmlDocument.setAttribute('lang', lang);
+                    htmlDocument.setAttribute("lang", lang);
             });
             return promise;
         };

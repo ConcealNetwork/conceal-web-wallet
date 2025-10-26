@@ -87,7 +87,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         ImportView.prototype.formValid = function () {
             if (this.password != this.password2)
                 return false;
-            if (!(this.password !== '' && (!this.insecurePassword || this.forceInsecurePassword)))
+            if (!(this.password !== "" && (!this.insecurePassword || this.forceInsecurePassword)))
                 return false;
             if (this.rawFile === null)
                 return false;
@@ -98,7 +98,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             var element = $('<input type="file">');
             self.invalidRawFile = true;
             self.fileSelected = false;
-            element.on('change', function (event) {
+            element.on("change", function (event) {
                 var files = event.target.files; // FileList object
                 if (files.length > 0) {
                     self.fileName = files[0].name;
@@ -115,10 +115,10 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             self.invalidRawFile = true;
                             self.fileSelected = false;
                             swal({
-                                type: 'error',
-                                title: i18n.t('global.error'),
-                                text: i18n.t('importFromFilePage.walletBlock.invalidFile'),
-                                confirmButtonText: i18n.t('global.confirmText'),
+                                type: "error",
+                                title: i18n.t("global.error"),
+                                text: i18n.t("importFromFilePage.walletBlock.invalidFile"),
+                                confirmButtonText: i18n.t("global.confirmText"),
                             });
                         }
                     };
@@ -134,7 +134,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     switch (_a.label) {
                         case 0:
                             self = this;
-                            $('#pageLoading').show();
+                            $("#pageLoading").show();
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 6, , 7]);
@@ -149,7 +149,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             return [4 /*yield*/, blockchainExplorer.getHeight()];
                         case 4:
                             currentHeight = _a.sent();
-                            $('#pageLoading').hide();
+                            $("#pageLoading").hide();
                             // Small delay before wallet operations
                             return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 100); })];
                         case 5:
@@ -159,22 +159,22 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             if (newWallet !== null) {
                                 newWallet.recalculateIfNotViewOnly();
                                 AppState_1.AppState.openWallet(newWallet, self.password);
-                                window.location.href = '#account';
+                                window.location.href = "#account";
                             }
                             else {
                                 swal({
-                                    type: 'error',
-                                    title: i18n.t('global.invalidPasswordModal.title'),
-                                    text: i18n.t('global.invalidPasswordModal.content'),
-                                    confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText'),
+                                    type: "error",
+                                    title: i18n.t("global.invalidPasswordModal.title"),
+                                    text: i18n.t("global.invalidPasswordModal.content"),
+                                    confirmButtonText: i18n.t("global.invalidPasswordModal.confirmText"),
                                 });
                             }
                             console.log("Current height: ", currentHeight);
                             return [3 /*break*/, 7];
                         case 6:
                             err_1 = _a.sent();
-                            console.log('Import wallet failed:', err_1);
-                            $('#pageLoading').hide();
+                            console.log("Import wallet failed:", err_1);
+                            $("#pageLoading").hide();
                             return [3 /*break*/, 7];
                         case 7: return [2 /*return*/];
                     }
@@ -193,10 +193,10 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             self.forceInsecurePassword = true;
         };
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ImportView.prototype, "password", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ImportView.prototype, "password2", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
@@ -208,12 +208,12 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             (0, VueAnnotate_1.VueVar)(false)
         ], ImportView.prototype, "fileSelected", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ImportView.prototype, "fileName", void 0);
         __decorate([
             (0, VueAnnotate_1.VueWatched)()
         ], ImportView.prototype, "passwordWatch", null);
         return ImportView;
     }(DestructableView_1.DestructableView));
-    new ImportView('#app');
+    new ImportView("#app");
 });

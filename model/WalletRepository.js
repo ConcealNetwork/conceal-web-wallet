@@ -23,19 +23,23 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
         }
         WalletRepository.migrateWallet = function () {
             return new Promise(function (resolve, reject) {
-                StorageOld_1.StorageOld.getItem('wallet', null).then(function (walletAsString) {
+                StorageOld_1.StorageOld.getItem("wallet", null)
+                    .then(function (walletAsString) {
                     if (walletAsString !== null) {
-                        Storage_1.Storage.setItem('wallet', walletAsString).then(function () {
-                            StorageOld_1.StorageOld.remove('wallet');
+                        Storage_1.Storage.setItem("wallet", walletAsString)
+                            .then(function () {
+                            StorageOld_1.StorageOld.remove("wallet");
                             resolve(true);
-                        }).catch(function (err) {
+                        })
+                            .catch(function (err) {
                             reject(err);
                         });
                     }
                     else {
                         resolve(false);
                     }
-                }).catch(function (err) {
+                })
+                    .catch(function (err) {
                     reject(err);
                 });
             });
@@ -43,11 +47,13 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
         WalletRepository.hasOneStored = function () {
             var _this = this;
             return new Promise(function (resolve, reject) {
-                _this.migrateWallet().then(function (isSuccess) {
-                    Storage_1.Storage.getItem('wallet', null).then(function (wallet) {
+                _this.migrateWallet()
+                    .then(function (isSuccess) {
+                    Storage_1.Storage.getItem("wallet", null).then(function (wallet) {
                         resolve(wallet !== null);
                     });
-                }).catch(function (err) {
+                })
+                    .catch(function (err) {
                     resolve(false);
                 });
             });
@@ -56,7 +62,7 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
             if (password.length > 32)
                 password = password.substr(0, 32);
             if (password.length < 32) {
-                password = ('00000000000000000000000000000000' + password).slice(-32);
+                password = ("00000000000000000000000000000000" + password).slice(-32);
             }
             var privKey = new TextEncoder("utf8").encode(password);
             // fix cyrillic (non-latin) passwords
@@ -67,7 +73,8 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
             var nonce = new TextEncoder("utf8").encode(rawWallet.nonce);
             var decodedRawWallet = null;
             //detect if old type or new type of wallet
-            if (typeof rawWallet.data !== 'undefined') { //RawFullyEncryptedWallet
+            if (typeof rawWallet.data !== "undefined") {
+                //RawFullyEncryptedWallet
                 //console.log('new wallet format');
                 var rawFullyEncrypted = rawWallet;
                 var encrypted = new Uint8Array(rawFullyEncrypted.data);
@@ -81,7 +88,8 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
                     decodedRawWallet = null;
                 }
             }
-            else { //RawWallet
+            else {
+                //RawWallet
                 //console.log('old wallet format');
                 var oldRawWallet = rawWallet;
                 var encrypted = new Uint8Array(oldRawWallet.encryptedKeys);
@@ -101,7 +109,7 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
         };
         WalletRepository.getLocalWalletWithPassword = function (password) {
             var _this = this;
-            return Storage_1.Storage.getItem('wallet', null).then(function (existingWallet) {
+            return Storage_1.Storage.getItem("wallet", null).then(function (existingWallet) {
                 if (existingWallet !== null) {
                     return _this.decodeWithPassword(JSON.parse(existingWallet), password);
                 }
@@ -111,13 +119,13 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
             });
         };
         WalletRepository.save = function (wallet, password) {
-            return Storage_1.Storage.setItem('wallet', JSON.stringify(this.getEncrypted(wallet, password)));
+            return Storage_1.Storage.setItem("wallet", JSON.stringify(this.getEncrypted(wallet, password)));
         };
         WalletRepository.getEncrypted = function (wallet, password) {
             if (password.length > 32)
                 password = password.substr(0, 32);
             if (password.length < 32) {
-                password = ('00000000000000000000000000000000' + password).slice(-32);
+                password = ("00000000000000000000000000000000" + password).slice(-32);
             }
             var privKey = new TextEncoder("utf8").encode(password);
             // Fix cyrillic (non-latin) passwords
@@ -135,58 +143,58 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
             }
             var fullEncryptedWallet = {
                 data: tabEncrypted,
-                nonce: rawNonce
+                nonce: rawNonce,
             };
             return fullEncryptedWallet;
         };
         WalletRepository.deleteLocalCopy = function () {
-            return Storage_1.Storage.remove('wallet');
+            return Storage_1.Storage.remove("wallet");
         };
         WalletRepository.downloadEncryptedPdf = function (wallet) {
-            if (wallet.keys.priv.spend === '')
-                throw 'missing_spend';
+            if (wallet.keys.priv.spend === "")
+                throw "missing_spend";
             var coinWalletUri = CoinUri_1.CoinUri.encodeWalletKeys(wallet.getPublicAddress(), wallet.keys.priv.spend, wallet.keys.priv.view, wallet.creationHeight);
             var coinWalletUriM = CoinUri_1.CoinUri.encodeWalletKeys(wallet.getPublicAddress(), wallet.keys.priv.spend, wallet.keys.priv.view);
             var publicQrCode = kjua({
-                render: 'canvas',
+                render: "canvas",
                 text: wallet.getPublicAddress(),
                 size: 300,
             });
             var privateSpendQrCode = kjua({
-                render: 'canvas',
+                render: "canvas",
                 text: coinWalletUri,
                 size: 300,
             });
             var importQrCode = kjua({
-                render: 'canvas',
+                render: "canvas",
                 text: coinWalletUriM,
-                ecLevel: 'M',
+                ecLevel: "M",
                 size: 333,
             });
-            var doc = new jsPDF('landscape');
+            var doc = new jsPDF("landscape");
             //creating background
             doc.setFillColor(48, 70, 108);
-            doc.rect(0, 0, 297, 210, 'F');
+            doc.rect(0, 0, 297, 210, "F");
             //white blocks
             doc.setFillColor(255, 255, 255);
-            doc.rect(108, 8, 80, 90, 'F');
-            doc.rect(10, 113, 80, 90, 'F');
-            doc.rect(210, 8, 80, 90, 'F');
+            doc.rect(108, 8, 80, 90, "F");
+            doc.rect(10, 113, 80, 90, "F");
+            doc.rect(210, 8, 80, 90, "F");
             //blue blocks
             doc.setFillColor(0, 160, 227);
-            doc.rect(108, 113, 80, 90, 'F');
+            doc.rect(108, 113, 80, 90, "F");
             //blue background for texts
             doc.setFillColor(0, 160, 227);
-            doc.rect(108, 8, 80, 20, 'F'); //Private key
-            doc.rect(10, 113, 80, 20, 'F'); //Public address
-            doc.rect(210, 8, 80, 20, 'F'); //QR code for Import
+            doc.rect(108, 8, 80, 20, "F"); //Private key
+            doc.rect(10, 113, 80, 20, "F"); //Public address
+            doc.rect(210, 8, 80, 20, "F"); //QR code for Import
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(30);
             doc.text(15, 128, "Public address");
             doc.text(123, 19, "Private key");
             doc.text(225, 19, "Private key");
             doc.setFontSize(10);
-            doc.setFontStyle('italic');
+            doc.setFontStyle("italic");
             doc.text(125, 26, "(to import from QR feature)");
             doc.text(228, 26, "(to import from QR feature)");
             doc.setTextColor(0, 0, 0);
@@ -203,7 +211,7 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
             var radius = 5; // Corner radius
             // Fill and draw outer square with rounded corners
             doc.setFillColor(240, 240, 240); // Light gray fill for outer square
-            doc.roundedRect(outerX, outerY, outerSize, outerSize, radius, radius, 'FD'); // 'FD' means Fill and Draw
+            doc.roundedRect(outerX, outerY, outerSize, outerSize, radius, radius, "FD"); // 'FD' means Fill and Draw
             // Inner square (safe door)
             var innerSize = 68; // Size of inner square
             var innerX = outerX + (outerSize - innerSize) / 2; // Center inner square
@@ -211,26 +219,27 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
             var innerRadius = 3; // Slightly smaller radius for inner square
             // Fill and draw inner square with rounded corners
             doc.setFillColor(220, 220, 220); // Slightly darker gray for inner square
-            doc.roundedRect(innerX, innerY, innerSize, innerSize, innerRadius, innerRadius, 'FD'); // 'FD' means Fill and Draw
+            doc.roundedRect(innerX, innerY, innerSize, innerSize, innerRadius, innerRadius, "FD"); // 'FD' means Fill and Draw
             // Add a combination lock dial to the safe door
             var handleX = innerX + innerSize - 9;
             var handleY = innerY + innerSize / 2;
             var handleRadius = 3;
             // Draw the outer handle circle (dial)
             doc.setFillColor(180, 180, 180); // Darker gray for handle
-            doc.circle(handleX, handleY, handleRadius, 'F'); // Fill the handle
+            doc.circle(handleX, handleY, handleRadius, "F"); // Fill the handle
             doc.setDrawColor(0, 0, 0); // Black outline
-            doc.circle(handleX, handleY, handleRadius, 'S'); // Draw handle outline
+            doc.circle(handleX, handleY, handleRadius, "S"); // Draw handle outline
             // Draw the inner circle of the dial
             var innerHandleRadius = 1.5;
             doc.setFillColor(220, 220, 220); // Lighter gray for inner circle
-            doc.circle(handleX, handleY, innerHandleRadius, 'F');
-            doc.circle(handleX, handleY, innerHandleRadius, 'S');
+            doc.circle(handleX, handleY, innerHandleRadius, "F");
+            doc.circle(handleX, handleY, innerHandleRadius, "S");
             // Add dial markings (small lines around the dial)
             var markingLength = 0.5;
             var markingDistance = handleRadius + 0.2;
-            for (var i = 0; i < 12; i++) { // 12 markings like a clock
-                var angle = (i * 30) * (Math.PI / 180); // Convert degrees to radians
+            for (var i = 0; i < 12; i++) {
+                // 12 markings like a clock
+                var angle = i * 30 * (Math.PI / 180); // Convert degrees to radians
                 var startX = handleX + Math.cos(angle) * markingDistance;
                 var startY = handleY + Math.sin(angle) * markingDistance;
                 var endX = handleX + Math.cos(angle) * (markingDistance + markingLength);
@@ -244,9 +253,9 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
             doc.line(198, 0, 198, 210); //right line
             doc.line(0, 105, 297, 105); //middle line
             //adding qr codes
-            doc.addImage(publicQrCode.toDataURL(), 'JPEG', 28, 143, 45, 45);
-            doc.addImage(privateSpendQrCode.toDataURL(), 'JPEG', 126, 38, 45, 45);
-            doc.addImage(importQrCode.toDataURL(), 'JPEG', 224, 36, 50, 50);
+            doc.addImage(publicQrCode.toDataURL(), "JPEG", 28, 143, 45, 45);
+            doc.addImage(privateSpendQrCode.toDataURL(), "JPEG", 126, 38, 45, 45);
+            doc.addImage(importQrCode.toDataURL(), "JPEG", 224, 36, 50, 50);
             //wallet help
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
@@ -254,7 +263,7 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
             doc.text(110, 125, "over the Conceal Network to the public address.");
             doc.text(115, 132, "DO NOT REVEAL THE PRIVATE KEY");
             //adding Conceal Network logos
-            var c = document.getElementById('canvasExport');
+            var c = document.getElementById("canvasExport");
             if (c !== null) {
                 var ctx = c.getContext("2d");
                 // First logo (vertical)
@@ -265,7 +274,7 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
                     ctx.drawImage(verticalLogo, 0, 0);
                     var ratio = verticalLogo.width / 45;
                     var smallHeight = verticalLogo.height / ratio;
-                    doc.addImage(c.toDataURL(), 'JPEG', 224, 106 + (100 - smallHeight) / 2, 45, smallHeight);
+                    doc.addImage(c.toDataURL(), "JPEG", 224, 106 + (100 - smallHeight) / 2, 45, smallHeight);
                 }
                 // Second logo (cham)
                 var chamLogo = document.getElementById("chamLogo");
@@ -276,14 +285,14 @@ define(["require", "exports", "./Wallet", "./StorageOld", "./Storage", "./CoinUr
                     ctx.drawImage(chamLogo, 0, 0);
                     var ratio = chamLogo.width / 60;
                     var smallHeight = chamLogo.height / ratio;
-                    doc.addImage(c.toDataURL(), 'JPEG', 120, 106 + (120 - smallHeight) / 2, 60, smallHeight);
+                    doc.addImage(c.toDataURL(), "JPEG", 120, 106 + (120 - smallHeight) / 2, 60, smallHeight);
                 }
             }
             try {
-                doc.save('keys.pdf');
+                doc.save("keys.pdf");
             }
             catch (e) {
-                alert('Error ' + e);
+                alert("Error " + e);
             }
         };
         return WalletRepository;

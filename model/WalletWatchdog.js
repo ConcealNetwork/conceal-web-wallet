@@ -81,24 +81,24 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
         function TxQueue(wallet, processingCallback) {
             var _this = this;
             this.initWorker = function () {
-                _this.workerProcess = new Worker('./workers/ParseTransactionsEntrypoint.js');
+                _this.workerProcess = new Worker("./workers/ParseTransactionsEntrypoint.js");
                 _this.workerProcess.onmessage = function (data) {
                     var message = data.data;
-                    if (message === 'ready') {
-                        logDebugMsg('worker ready...');
+                    if (message === "ready") {
+                        logDebugMsg("worker ready...");
                         // post the wallet to the worker
                         _this.workerProcess.postMessage({
-                            type: 'initWallet'
+                            type: "initWallet",
                         });
                     }
                     else if (message === "missing_wallet") {
                         logDebugMsg("Wallet is missing for the worker...");
                     }
                     else if (message.type) {
-                        if (message.type === 'readyWallet') {
+                        if (message.type === "readyWallet") {
                             _this.setIsReady(true);
                         }
-                        else if (message.type === 'processed') {
+                        else if (message.type === "processed") {
                             if (message.transactions.length > 0) {
                                 for (var _i = 0, _a = message.transactions; _i < _a.length; _i++) {
                                     var txData = _a[_i];
@@ -126,7 +126,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                     //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
                     //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
                     if (_this.countProcessed >= 5 * 1000) {
-                        logDebugMsg('Recreated parseWorker..');
+                        logDebugMsg("Recreated parseWorker..");
                         _this.restartWorker();
                         setTimeout(function () {
                             _this.runProcessLoop();
@@ -146,7 +146,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                                     transactions: txQueueItem.transactions,
                                     maxBlock: txQueueItem.maxBlockNum,
                                     wallet: _this.wallet.exportToRaw(),
-                                    type: 'process'
+                                    type: "process",
                                 });
                             }
                             else {
@@ -171,7 +171,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             this.addTransactions = function (transactions, maxBlockNum) {
                 var txQueueItem = {
                     transactions: transactions,
-                    maxBlockNum: maxBlockNum
+                    maxBlockNum: maxBlockNum,
                 };
                 _this.processingQueue.push(txQueueItem);
                 _this.runProcessLoop();
@@ -219,15 +219,15 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                     endBlock: endBlock,
                     finished: false,
                     timestamp: new Date(),
-                    transactions: []
+                    transactions: [],
                 };
                 if (_this.blocks.length > 0) {
                     for (var i = _this.blocks.length - 1; i >= 0; i--) {
-                        if ((startBlock === _this.blocks[i].startBlock) && (endBlock === _this.blocks[i].endBlock)) {
+                        if (startBlock === _this.blocks[i].startBlock && endBlock === _this.blocks[i].endBlock) {
                             return;
                         }
                         else if (endBlock > _this.blocks[i].endBlock) {
-                            if (i = _this.blocks.length) {
+                            if ((i = _this.blocks.length)) {
                                 _this.blocks.push(rangeData);
                             }
                             else {
@@ -276,7 +276,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                 for (var i = 0; i < _this.blocks.length; ++i) {
                     if (!_this.blocks[i].finished) {
                         var timeDiff = new Date().getTime() - _this.blocks[i].timestamp.getTime();
-                        if ((timeDiff / 1000) > 30) {
+                        if (timeDiff / 1000 > 30) {
                             if (reset) {
                                 _this.blocks[i].timestamp = new Date();
                             }
@@ -317,26 +317,26 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
         function ParseWorker(wallet, watchdog, blockList, parseTxCallback) {
             var _this = this;
             this.initWorker = function () {
-                _this.workerProcess = new Worker('./workers/TransferProcessingEntrypoint.js');
+                _this.workerProcess = new Worker("./workers/TransferProcessingEntrypoint.js");
                 _this.workerProcess.onmessage = function (data) {
                     var message = data.data;
-                    if (message === 'ready') {
-                        logDebugMsg('worker ready...');
+                    if (message === "ready") {
+                        logDebugMsg("worker ready...");
                         // signal the wallet update
                         _this.watchdog.checkMempool();
                         // post the wallet to the worker
                         _this.workerProcess.postMessage({
-                            type: 'initWallet'
+                            type: "initWallet",
                         });
                     }
                     else if (message === "missing_wallet") {
                         logDebugMsg("Wallet is are missing for the worker...");
                     }
                     else if (message.type) {
-                        if (message.type === 'readyWallet') {
+                        if (message.type === "readyWallet") {
                             _this.setIsReady(true);
                         }
-                        else if (message.type === 'processed') {
+                        else if (message.type === "processed") {
                             // we are done processing now
                             _this.blockList.finishBlockRange(message.maxHeight, message.transactions);
                             _this.setIsWorking(false);
@@ -384,17 +384,21 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             this.fetchBlocks = function (startBlock, endBlock) {
                 _this.isWorking = true;
                 return new Promise(function (resolve, reject) {
-                    _this.explorer.getTransactionsForBlocks(startBlock, endBlock, _this.wallet.options.checkMinerTx).then(function (transactions) {
+                    _this.explorer
+                        .getTransactionsForBlocks(startBlock, endBlock, _this.wallet.options.checkMinerTx)
+                        .then(function (transactions) {
                         resolve({
                             transactions: transactions,
-                            lastBlock: endBlock
+                            lastBlock: endBlock,
                         });
-                    }).catch(function (err) {
+                    })
+                        .catch(function (err) {
                         reject({
                             transactions: [],
-                            lastBlock: endBlock
+                            lastBlock: endBlock,
                         });
-                    }).finally(function () {
+                    })
+                        .finally(function () {
                         _this.isWorking = false;
                     });
                 });
@@ -439,7 +443,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                 _this.remoteNodes = Math.min(config.maxRemoteNodes, config.nodeList.length, _this.cpuCores);
             };
             this.signalWalletUpdate = function () {
-                logDebugMsg('wallet update in progress');
+                logDebugMsg("wallet update in progress");
                 // reset the last block loading
                 _this.lastBlockLoading = -1; //reset scanning
                 _this.checkMempool();
@@ -452,7 +456,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                     }
                     _this.intervalMempool = setInterval(function () {
                         _this.checkMempool();
-                    }, config.avgBlockTime / 4 * 1000);
+                    }, (config.avgBlockTime / 4) * 1000);
                 }
                 _this.checkMempool();
             };
@@ -491,21 +495,25 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             };
             this.checkMempool = function () {
                 logDebugMsg("checkMempool", _this.lastMaximumHeight, _this.wallet.lastHeight);
-                if (((_this.lastMaximumHeight - _this.wallet.lastHeight) > 1) && (_this.lastMaximumHeight > 0)) { //only check memory pool if the user is up to date to ensure outs & ins will be found in the wallet
+                if (_this.lastMaximumHeight - _this.wallet.lastHeight > 1 && _this.lastMaximumHeight > 0) {
+                    //only check memory pool if the user is up to date to ensure outs & ins will be found in the wallet
                     return false;
                 }
                 _this.wallet.clearMemTx();
-                _this.explorer.getTransactionPool().then(function (pool) {
-                    if (typeof pool !== 'undefined') {
+                _this.explorer
+                    .getTransactionPool()
+                    .then(function (pool) {
+                    if (typeof pool !== "undefined") {
                         for (var _i = 0, pool_1 = pool; _i < pool_1.length; _i++) {
                             var rawTx = pool_1[_i];
                             var txData = TransactionsExplorer_1.TransactionsExplorer.parse(rawTx, _this.wallet);
-                            if ((txData !== null) && (txData.transaction !== null)) {
+                            if (txData !== null && txData.transaction !== null) {
                                 _this.wallet.addNewMemTx(txData.transaction);
                             }
                         }
                     }
-                }).catch(function (err) {
+                })
+                    .catch(function (err) {
                     if (err) {
                         console.error("checkMempool error:", err);
                     }
@@ -527,7 +535,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                                 readMinersTx: _this.wallet.options.checkMinerTx,
                                 maxBlock: transactionsToProcess.lastBlock,
                                 wallet: _this.wallet.exportToRaw(),
-                                type: 'process',
+                                type: "process",
                             });
                         }
                     }
@@ -610,7 +618,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                                     case 8:
                                         if (!(self.lastBlockLoading < height)) return [3 /*break*/, 11];
                                         if (!(self.blockList.getSize() >= config.maxBlockQueue)) return [3 /*break*/, 10];
-                                        logDebugMsg('Block range list is to big', self.blockList.getSize());
+                                        logDebugMsg("Block range list is to big", self.blockList.getSize());
                                         return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 500); })];
                                     case 9:
                                         _a.sent();
@@ -633,14 +641,17 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                                         return [3 /*break*/, 0];
                                     case 13:
                                         // try to fetch the block range with a currently selected sync worker
-                                        freeWorker.fetchBlocks(startBlock, endBlock).then(function (blockData) {
+                                        freeWorker
+                                            .fetchBlocks(startBlock, endBlock)
+                                            .then(function (blockData) {
                                             if (blockData.transactions.length > 0) {
                                                 self.processTransactions(blockData.transactions, blockData.lastBlock);
                                             }
                                             else {
                                                 self.blockList.finishBlockRange(blockData.lastBlock, []);
                                             }
-                                        }).catch(function (blockData) {
+                                        })
+                                            .catch(function (blockData) {
                                             self.blockList.markIdleBlockRange(blockData.lastBlock);
                                         });
                                         return [3 /*break*/, 16];
@@ -665,9 +676,9 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                     return [2 /*return*/];
                 });
             }); };
-            console.log('WalletWatchdog');
+            console.log("WalletWatchdog");
             // by default we use all cores but limited up to config.maxWorkerCores
-            this.maxCpuCores = Math.min(window.navigator.hardwareConcurrency ? (Math.max(window.navigator.hardwareConcurrency - 1, 1)) : 1, config.maxWorkerCores);
+            this.maxCpuCores = Math.min(window.navigator.hardwareConcurrency ? Math.max(window.navigator.hardwareConcurrency - 1, 1) : 1, config.maxWorkerCores);
             this.wallet = wallet;
             this.explorer = explorer;
             this.blockList = new BlockList(wallet, this);

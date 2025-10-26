@@ -27,12 +27,12 @@ define(["require", "exports", "./Cn"], function (require, exports, Cn_1) {
             return {
                 pub: {
                     view: pubView,
-                    spend: pubSpend
+                    spend: pubSpend,
                 },
                 priv: {
                     view: view,
                     spend: spend,
-                }
+                },
             };
         };
         return KeysRepository;

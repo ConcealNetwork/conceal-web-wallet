@@ -38,27 +38,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../lib/numbersLab/DestructableView", "../lib/numbersLab/VueAnnotate", "../model/CoinUri", "../model/Nfc", "../model/Cn"], function (require, exports, DependencyInjector_1, Wallet_1, DestructableView_1, VueAnnotate_1, CoinUri_1, Nfc_1, Cn_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, "default", false);
     function setTextInClipboard(inputId) {
         /*let inputElement : HTMLInputElement = <HTMLInputElement>document.getElementById(inputId);
-        let textarea : HTMLInputElement = <HTMLInputElement> document.getElementById('clipboardTextarea');
-        if(textarea !== null && inputElement !== null) {
-            textarea.value = inputElement.value;
-            textarea.select();
-        }
-        try {
-            document.execCommand('copy');
-        } catch (err) {
-        }*/
+          let textarea : HTMLInputElement = <HTMLInputElement> document.getElementById('clipboardTextarea');
+          if(textarea !== null && inputElement !== null) {
+              textarea.value = inputElement.value;
+              textarea.select();
+          }
+          try {
+              document.execCommand('copy');
+          } catch (err) {
+          }*/
         var inputElement = document.getElementById(inputId);
         if (inputElement !== null) {
             inputElement.select();
         }
         try {
-            document.execCommand('copy');
+            document.execCommand("copy");
         }
-        catch (err) {
-        }
+        catch (err) { }
     }
     var AccountView = /** @class */ (function (_super) {
         __extends(AccountView, _super);
@@ -72,26 +71,26 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "../model/
             return _this;
         }
         AccountView.prototype.stringToHex = function (str) {
-            var hex = '';
+            var hex = "";
             for (var i = 0; i < str.length; i++) {
-                hex += '' + str.charCodeAt(i).toString(16);
+                hex += "" + str.charCodeAt(i).toString(16);
             }
             return hex;
         };
         AccountView.prototype.amountWatch = function () {
             var parsedAmount = parseFloat(this.amount);
             if (!isNaN(parsedAmount)) {
-                if (this.amount.indexOf('.') !== -1 && ('' + parsedAmount).indexOf('.') === -1)
-                    this.amount = '' + parsedAmount + '.';
+                if (this.amount.indexOf(".") !== -1 && ("" + parsedAmount).indexOf(".") === -1)
+                    this.amount = "" + parsedAmount + ".";
                 else
-                    this.amount = '' + parsedAmount;
+                    this.amount = "" + parsedAmount;
             }
             else
-                this.amount = '';
+                this.amount = "";
         };
         AccountView.prototype.paymentIdWatch = function () {
-            if (this.paymentId !== '' && this.paymentId.length <= 8) {
-                var paymentId8 = ('00000000' + this.stringToHex(this.paymentId)).slice(-16);
+            if (this.paymentId !== "" && this.paymentId.length <= 8) {
+                var paymentId8 = ("00000000" + this.stringToHex(this.paymentId)).slice(-16);
                 //console.log(paymentId8+'==>'+this.stringToHex(this.paymentId));
                 this.address = Cn_1.Cn.get_account_integrated_address(wallet.getPublicAddress(), paymentId8);
             }
@@ -101,53 +100,55 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "../model/
         AccountView.prototype.generateQrCode = function () {
             var el = kjua({
                 text: this.getAddressEncoded(),
-                image: document.getElementById('qrCodeLogo'),
+                image: document.getElementById("qrCodeLogo"),
                 size: 300,
-                mode: 'image',
-                ecLevel: 'H',
+                mode: "image",
+                ecLevel: "H",
                 mSize: 30,
                 mPosX: 50,
                 mPosY: 50,
             });
-            $('#qrCodeContainer').html(el);
+            $("#qrCodeContainer").html(el);
         };
         AccountView.prototype.getAddressEncoded = function () {
-            return CoinUri_1.CoinUri.encodeTx(this.address, this.paymentId !== '' ? this.paymentId : null, this.amount !== '' ? this.amount : null, this.recipientName !== '' ? this.recipientName : null, this.txDescription !== '' ? this.txDescription : null);
+            return CoinUri_1.CoinUri.encodeTx(this.address, this.paymentId !== "" ? this.paymentId : null, this.amount !== "" ? this.amount : null, this.recipientName !== "" ? this.recipientName : null, this.txDescription !== "" ? this.txDescription : null);
         };
         AccountView.prototype.setInClipboard = function (inputId) {
-            if (inputId === void 0) { inputId = 'rawAddress'; }
+            if (inputId === void 0) { inputId = "rawAddress"; }
             setTextInClipboard(inputId);
         };
         AccountView.prototype.writeOnNfc = function () {
             var _this = this;
             swal({
-                title: i18n.t('receivePage.waitingNfcToWriteModal.title'),
-                html: i18n.t('receivePage.waitingNfcToWriteModal.content'),
+                title: i18n.t("receivePage.waitingNfcToWriteModal.title"),
+                html: i18n.t("receivePage.waitingNfcToWriteModal.content"),
                 onOpen: function () {
                     swal.showLoading();
                 },
                 onClose: function () {
                     _this.nfc.cancelWriteNdef();
-                }
-            }).then(function (result) {
-            });
-            this.nfc.writeNdef({
-                lang: 'en',
-                content: this.getAddressEncoded()
-            }).then(function () {
+                },
+            }).then(function (result) { });
+            this.nfc
+                .writeNdef({
+                lang: "en",
+                content: this.getAddressEncoded(),
+            })
+                .then(function () {
                 swal({
-                    type: 'success',
-                    title: i18n.t('receivePage.waitingNfcToWriteModal.titleSuccess'),
+                    type: "success",
+                    title: i18n.t("receivePage.waitingNfcToWriteModal.titleSuccess"),
                 });
-            }).catch(function (data) {
-                if (data === 'tag_capacity') {
+            })
+                .catch(function (data) {
+                if (data === "tag_capacity") {
                     swal({
-                        type: 'error',
-                        title: i18n.t('receivePage.nfcErrorModal.titleInsufficientCapacity'),
+                        type: "error",
+                        title: i18n.t("receivePage.nfcErrorModal.titleInsufficientCapacity"),
                     });
                 }
                 else {
-                    alert('Unknown error:' + JSON.stringify(data));
+                    alert("Unknown error:" + JSON.stringify(data));
                     swal.close();
                 }
                 _this.nfc.cancelWriteNdef();
@@ -156,26 +157,28 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "../model/
         AccountView.prototype.shareWithNfc = function () {
             var _this = this;
             swal({
-                title: 'Sharing your payment address',
-                html: 'Bring closer the other device to share your public information',
+                title: "Sharing your payment address",
+                html: "Bring closer the other device to share your public information",
                 onOpen: function () {
                     swal.showLoading();
                 },
                 onClose: function () {
                     _this.nfc.unshareNdef();
-                }
-            }).then(function (result) {
-            });
-            this.nfc.shareNdef({
-                lang: 'en',
-                content: this.getAddressEncoded()
-            }).then(function () {
+                },
+            }).then(function (result) { });
+            this.nfc
+                .shareNdef({
+                lang: "en",
+                content: this.getAddressEncoded(),
+            })
+                .then(function () {
                 swal({
-                    type: 'success',
-                    title: 'Information shared',
+                    type: "success",
+                    title: "Information shared",
                 });
                 _this.nfc.unshareNdef();
-            }).catch(function () {
+            })
+                .catch(function () {
                 _this.nfc.unshareNdef();
             });
         };
@@ -186,22 +189,22 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "../model/
             return _super.prototype.destruct.call(this);
         };
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], AccountView.prototype, "rawAddress", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], AccountView.prototype, "address", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], AccountView.prototype, "paymentId", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], AccountView.prototype, "amount", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], AccountView.prototype, "recipientName", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], AccountView.prototype, "txDescription", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
@@ -221,7 +224,7 @@ define(["require", "exports", "../lib/numbersLab/DependencyInjector", "../model/
         return AccountView;
     }(DestructableView_1.DestructableView));
     if (wallet !== null)
-        new AccountView('#app');
+        new AccountView("#app");
     else
-        window.location.href = '#index';
+        window.location.href = "#index";
 });

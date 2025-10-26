@@ -41,6 +41,6 @@ define(["require", "exports", "../model/AppState", "../lib/numbersLab/Destructab
         }
         return ImportView;
     }(DestructableView_1.DestructableView));
-    new ImportView('#app');
+    new ImportView("#app");
     AppState_1.AppState.enableLeftMenu();
 });

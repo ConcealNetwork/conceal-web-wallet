@@ -73,67 +73,133 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 if (body === void 0) { body = undefined; }
                 _this._isWorking = true;
                 ++_this._requests;
-                return new Promise(function (resolve, reject) {
-                    $.ajax({
-                        url: _this._url + path,
-                        method: method,
-                        timeout: _this.timeout,
-                        data: typeof body === 'string' ? body : JSON.stringify(body)
-                    }).done(function (raw) {
-                        _this._isWorking = false;
-                        resolve(raw);
-                    }).fail(function (data, textStatus) {
-                        console.error("Node ".concat(_this._url, " makeRequest failed: ").concat(textStatus, " (errors: ").concat(_this._errors + 1, ")"));
-                        _this._isWorking = false;
-                        _this.increaseErrors();
-                        reject(data);
+                return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var url, requestBody, controller_1, timeoutId, response, data, error_1;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 3, , 4]);
+                                url = this._url + path;
+                                requestBody = typeof body === "string" ? body : JSON.stringify(body);
+                                controller_1 = new AbortController();
+                                timeoutId = setTimeout(function () { return controller_1.abort(); }, this.timeout);
+                                return [4 /*yield*/, fetch(url, {
+                                        method: method,
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                        },
+                                        body: method === "POST" ? requestBody : undefined,
+                                        signal: controller_1.signal,
+                                    })];
+                            case 1:
+                                response = _a.sent();
+                                clearTimeout(timeoutId);
+                                this._isWorking = false;
+                                if (!response.ok) {
+                                    throw new Error("HTTP ".concat(response.status, ": ").concat(response.statusText));
+                                }
+                                return [4 /*yield*/, response.json()];
+                            case 2:
+                                data = _a.sent();
+                                resolve(data);
+                                return [3 /*break*/, 4];
+                            case 3:
+                                error_1 = _a.sent();
+                                this._isWorking = false;
+                                this.increaseErrors();
+                                if (error_1.name === "AbortError") {
+                                    console.error("Node ".concat(this._url, " makeRequest timeout after ").concat(this.timeout, "ms (errors: ").concat(this._errors + 1, ")"));
+                                    reject(new Error("Request timeout"));
+                                }
+                                else {
+                                    console.error("Node ".concat(this._url, " makeRequest failed: %s (errors: ").concat(this._errors + 1, ")"), error_1.message);
+                                    reject(error_1);
+                                }
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
+                        }
                     });
-                });
+                }); });
             };
             this.makeRpcRequest = function (method, params) {
                 if (params === void 0) { params = {}; }
                 _this._isWorking = true;
                 ++_this._requests;
-                return new Promise(function (resolve, reject) {
-                    $.ajax({
-                        url: _this._url + 'json_rpc',
-                        method: 'POST',
-                        timeout: _this.timeout,
-                        data: JSON.stringify({
-                            jsonrpc: '2.0',
-                            method: method,
-                            params: params,
-                            id: 0
-                        }),
-                        contentType: 'application/json'
-                    }).done(function (raw) {
-                        _this._isWorking = false;
-                        if (typeof raw.id === 'undefined' || typeof raw.jsonrpc === 'undefined' || raw.jsonrpc !== '2.0' || typeof raw.result !== 'object') {
-                            _this.increaseErrors();
-                            reject('Daemon response is not properly formatted');
+                return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                    var url, requestBody, controller_2, timeoutId, response, raw, error_2;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                _a.trys.push([0, 3, , 4]);
+                                url = this._url + "json_rpc";
+                                requestBody = JSON.stringify({
+                                    jsonrpc: "2.0",
+                                    method: method,
+                                    params: params,
+                                    id: 0,
+                                });
+                                controller_2 = new AbortController();
+                                timeoutId = setTimeout(function () { return controller_2.abort(); }, this.timeout);
+                                return [4 /*yield*/, fetch(url, {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                        },
+                                        body: requestBody,
+                                        signal: controller_2.signal,
+                                    })];
+                            case 1:
+                                response = _a.sent();
+                                clearTimeout(timeoutId);
+                                this._isWorking = false;
+                                if (!response.ok) {
+                                    throw new Error("HTTP ".concat(response.status, ": ").concat(response.statusText));
+                                }
+                                return [4 /*yield*/, response.json()];
+                            case 2:
+                                raw = _a.sent();
+                                // Validate RPC response format
+                                if (typeof raw.id === "undefined" ||
+                                    typeof raw.jsonrpc === "undefined" ||
+                                    raw.jsonrpc !== "2.0" ||
+                                    typeof raw.result !== "object") {
+                                    this.increaseErrors();
+                                    reject(new Error("Daemon response is not properly formatted"));
+                                }
+                                else {
+                                    resolve(raw.result);
+                                }
+                                return [3 /*break*/, 4];
+                            case 3:
+                                error_2 = _a.sent();
+                                this._isWorking = false;
+                                this.increaseErrors();
+                                if (error_2.name === "AbortError") {
+                                    console.error("Node ".concat(this._url, " makeRpcRequest timeout after ").concat(this.timeout, "ms (errors: ").concat(this._errors + 1, ")"));
+                                    reject(new Error("Request timeout"));
+                                }
+                                else {
+                                    console.error("Node ".concat(this._url, " makeRpcRequest failed: %s (errors: ").concat(this._errors + 1, ")"), error_2.message);
+                                    reject(error_2);
+                                }
+                                return [3 /*break*/, 4];
+                            case 4: return [2 /*return*/];
                         }
-                        else {
-                            resolve(raw.result);
-                        }
-                    }).fail(function (data) {
-                        _this._isWorking = false;
-                        _this.increaseErrors();
-                        reject(data);
                     });
-                });
+                }); });
             };
             this.increaseErrors = function () {
                 ++_this._errors;
                 ++_this._allErrors;
             };
             this.hasToManyErrors = function () {
-                return ((_this._errors >= _this.maxTempErrors) || (_this._allErrors >= _this.maxAllErrors));
+                return _this._errors >= _this.maxTempErrors || _this._allErrors >= _this.maxAllErrors;
             };
             this.getStatus = function () {
-                if ((_this._errors < _this.maxTempErrors) && (_this._allErrors < _this.maxAllErrors)) {
+                if (_this._errors < _this.maxTempErrors && _this._allErrors < _this.maxAllErrors) {
                     return 0;
                 }
-                else if ((_this._errors >= _this.maxTempErrors) && (_this._allErrors < _this.maxAllErrors)) {
+                else if (_this._errors >= _this.maxTempErrors && _this._allErrors < _this.maxAllErrors) {
                     return 1;
                 }
                 else if (_this._allErrors >= _this.maxAllErrors) {
@@ -204,7 +270,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 return _this.executeWithSessionFailover(function (node) { return node.makeRequest(method, path, body); });
             };
             this.executeWithSessionFailover = function (operation) { return __awaiter(_this, void 0, void 0, function () {
-                var lastError, attempts, sessionNode, error_1;
+                var lastError, attempts, sessionNode, error_3;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -217,13 +283,13 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                             _a.trys.push([2, 4, , 5]);
                             sessionNode = this.getSessionNode();
                             if (!sessionNode) {
-                                throw new Error('No available nodes');
+                                throw new Error("No available nodes");
                             }
                             return [4 /*yield*/, operation(sessionNode)];
                         case 3: return [2 /*return*/, _a.sent()];
                         case 4:
-                            error_1 = _a.sent();
-                            lastError = error_1;
+                            error_3 = _a.sent();
+                            lastError = error_3;
                             this.sessionErrorCount++;
                             // If we've reached max session errors, reset the session to pick a new node
                             if (this.sessionErrorCount >= this.maxSessionErrors) {
@@ -283,13 +349,11 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             this.usedNodeUrls.clear(); // Clear used nodes to allow fresh random selection
         };
         NodeWorkersList.prototype.isSessionExpired = function () {
-            return (Date.now() - this.sessionStartTime) > this.sessionDuration;
+            return Date.now() - this.sessionStartTime > this.sessionDuration;
         };
         NodeWorkersList.prototype.pickRandomNode = function () {
             var _this = this;
-            var availableNodes = this.nodes.filter(function (node) {
-                return !node.hasToManyErrors() && !_this.usedNodeUrls.has(node.url);
-            });
+            var availableNodes = this.nodes.filter(function (node) { return !node.hasToManyErrors() && !_this.usedNodeUrls.has(node.url); });
             if (availableNodes.length === 0) {
                 // If all nodes have been used, reset and try again
                 this.usedNodeUrls.clear();
@@ -329,7 +393,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                     console.log("New session node selected: ".concat(this.sessionNode.url));
                 }
                 else {
-                    console.log('No available nodes found');
+                    console.log("No available nodes found");
                 }
             }
             return this.sessionNode;
@@ -340,38 +404,40 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             return new Promise(function (resolve, reject) {
                 // Use the session failover system instead of direct node calls
                 _this.executeWithSessionFailover(function (sessionNode) { return __awaiter(_this, void 0, void 0, function () {
-                    var response, error_2, info, fallbackError_1;
+                    var response, error_4, info, fallbackError_1;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 _a.trys.push([0, 2, , 7]);
-                                return [4 /*yield*/, sessionNode.makeRequest('GET', 'feeaddress')];
+                                return [4 /*yield*/, sessionNode.makeRequest("GET", "feeaddress")];
                             case 1:
                                 response = _a.sent();
-                                if (response.status !== 'OK') {
-                                    throw new Error('Invalid fee address response');
+                                if (response.status !== "OK") {
+                                    throw new Error("Invalid fee address response");
                                 }
-                                return [2 /*return*/, response.fee_address || ''];
+                                return [2 /*return*/, response.fee_address || ""];
                             case 2:
-                                error_2 = _a.sent();
-                                console.warn("Fee address endpoint failed for node ".concat(sessionNode.url, ":"), error_2);
+                                error_4 = _a.sent();
+                                console.warn("Fee address endpoint failed for node ".concat(sessionNode.url, ":"), error_4);
                                 _a.label = 3;
                             case 3:
                                 _a.trys.push([3, 5, , 6]);
-                                return [4 /*yield*/, sessionNode.makeRequest('GET', 'getinfo')];
+                                return [4 /*yield*/, sessionNode.makeRequest("GET", "getinfo")];
                             case 4:
                                 info = _a.sent();
-                                return [2 /*return*/, info.fee_address || ''];
+                                return [2 /*return*/, info.fee_address || ""];
                             case 5:
                                 fallbackError_1 = _a.sent();
                                 console.warn("Getinfo fallback also failed for node ".concat(sessionNode.url, ":"), fallbackError_1);
                                 // If both fail, return empty string (will use donation address)
-                                return [2 /*return*/, ''];
+                                return [2 /*return*/, ""];
                             case 6: return [3 /*break*/, 7];
                             case 7: return [2 /*return*/];
                         }
                     });
-                }); }).then(resolve).catch(reject);
+                }); })
+                    .then(resolve)
+                    .catch(reject);
             });
         };
         return NodeWorkersList;
@@ -386,21 +452,21 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             this.cacheHeight = 0;
             this.cacheInfo = null;
             this.getInfo = function () {
-                if (((Date.now() - _this.lastTimeRetrieveInfo) < 20 * 1000) && (_this.cacheInfo !== null)) {
+                if (Date.now() - _this.lastTimeRetrieveInfo < 20 * 1000 && _this.cacheInfo !== null) {
                     return Promise.resolve(_this.cacheInfo);
                 }
                 _this.lastTimeRetrieveInfo = Date.now();
-                return _this.nodeWorkers.makeRequest('GET', 'getinfo').then(function (data) {
+                return _this.nodeWorkers.makeRequest("GET", "getinfo").then(function (data) {
                     _this.cacheInfo = data;
                     return data;
                 });
             };
             this.getHeight = function () {
-                if (((Date.now() - _this.lastTimeRetrieveHeight) < 20 * 1000) && (_this.cacheHeight !== 0)) {
+                if (Date.now() - _this.lastTimeRetrieveHeight < 20 * 1000 && _this.cacheHeight !== 0) {
                     return Promise.resolve(_this.cacheHeight);
                 }
                 _this.lastTimeRetrieveHeight = Date.now();
-                return _this.nodeWorkers.makeRequest('GET', 'getheight').then(function (data) {
+                return _this.nodeWorkers.makeRequest("GET", "getheight").then(function (data) {
                     var height = parseInt(data.height);
                     _this.cacheHeight = height;
                     return height;
@@ -410,7 +476,8 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 return _this.scannedHeight;
             };
             this.resetNodes = function () {
-                return Storage_1.Storage.getItem('customNodeUrl', null).then(function (customNodeUrl) {
+                return Storage_1.Storage.getItem("customNodeUrl", null)
+                    .then(function (customNodeUrl) {
                     // Clean up current session before changing nodes
                     _this.nodeWorkers.cleanupSession();
                     _this.nodeWorkers.stop();
@@ -423,14 +490,12 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                             var randomIndex = Math.floor(Math.random() * currentIndex);
                             currentIndex--;
                             // And swap it with the current element.
-                            _a = [
-                                array[randomIndex], array[currentIndex]
-                            ], array[currentIndex] = _a[0], array[randomIndex] = _a[1];
+                            _a = [array[randomIndex], array[currentIndex]], array[currentIndex] = _a[0], array[randomIndex] = _a[1];
                         }
                     }
                     // Ensure we have nodes to work with
                     if (!config || !config.nodeList || config.nodeList.length === 0) {
-                        throw new Error('No nodes available in configuration');
+                        throw new Error("No nodes available in configuration");
                     }
                     if (customNodeUrl) {
                         _this.nodeWorkers.start([customNodeUrl]);
@@ -440,12 +505,13 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                         shuffle(config.nodeList);
                         _this.nodeWorkers.start(config.nodeList);
                     }
-                    // Note: initializeSession() is already called in NodeWorkersList.start()     
+                    // Note: initializeSession() is already called in NodeWorkersList.start()
                     // Verify that nodes are actually available before proceeding
                     if (_this.nodeWorkers.getNodes().length === 0) {
-                        throw new Error('Failed to initialize nodes');
+                        throw new Error("Failed to initialize nodes");
                     }
-                }).catch(function (err) {
+                })
+                    .catch(function (err) {
                     console.error("resetNodes failed", err);
                     throw err;
                 });
@@ -454,7 +520,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 return _this.initialized;
             };
             this.initialize = function () { return __awaiter(_this, void 0, void 0, function () {
-                var doesMatch, response, i, finalUrl, error_3, error_4;
+                var doesMatch, controller_3, timeoutId, response, result, i, finalUrl, error_5, error_6;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -468,49 +534,57 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                             }
                             _a.label = 1;
                         case 1:
-                            _a.trys.push([1, 7, , 8]);
-                            if (!config.publicNodes) return [3 /*break*/, 5];
+                            _a.trys.push([1, 8, , 9]);
+                            if (!config.publicNodes) return [3 /*break*/, 6];
                             _a.label = 2;
                         case 2:
-                            _a.trys.push([2, 4, , 5]);
-                            return [4 /*yield*/, $.ajax({
-                                    method: 'GET',
-                                    timeout: 10 * 1000,
-                                    url: config.publicNodes + '/list?hasSSL=true'
+                            _a.trys.push([2, 5, , 6]);
+                            controller_3 = new AbortController();
+                            timeoutId = setTimeout(function () { return controller_3.abort(); }, 10 * 1000);
+                            return [4 /*yield*/, fetch(config.publicNodes + "/list?hasSSL=true", {
+                                    method: "GET",
+                                    signal: controller_3.signal,
                                 })];
                         case 3:
                             response = _a.sent();
-                            if (response.success && (response.list.length > 0)) {
-                                for (i = 0; i < response.list.length; ++i) {
-                                    finalUrl = "https://" + response.list[i].url.host + "/";
+                            clearTimeout(timeoutId);
+                            if (!response.ok) {
+                                throw new Error("HTTP ".concat(response.status, ": ").concat(response.statusText));
+                            }
+                            return [4 /*yield*/, response.json()];
+                        case 4:
+                            result = _a.sent();
+                            if (result.success && result.list.length > 0) {
+                                for (i = 0; i < result.list.length; ++i) {
+                                    finalUrl = "https://" + result.list[i].url.host + "/";
                                     if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
                                         config.nodeList.push(finalUrl);
                                     }
                                 }
                             }
-                            return [3 /*break*/, 5];
-                        case 4:
-                            error_3 = _a.sent();
-                            console.warn('Failed to fetch public nodes, using config nodes only:', error_3);
-                            return [3 /*break*/, 5];
+                            return [3 /*break*/, 6];
                         case 5:
+                            error_5 = _a.sent();
+                            console.warn("Failed to fetch public nodes, using config nodes only:", error_5);
+                            return [3 /*break*/, 6];
+                        case 6:
                             this.initialized = true;
                             // Wait for resetNodes to complete before returning
                             return [4 /*yield*/, this.resetNodes()];
-                        case 6:
+                        case 7:
                             // Wait for resetNodes to complete before returning
                             _a.sent();
                             // Double-check that nodes are ready
                             if (this.nodeWorkers.getNodes().length === 0) {
-                                throw new Error('Node initialization failed - no nodes available');
+                                throw new Error("Node initialization failed - no nodes available");
                             }
                             console.log("Initialized with ".concat(this.nodeWorkers.getNodes().length, " nodes"));
                             return [2 /*return*/, true];
-                        case 7:
-                            error_4 = _a.sent();
-                            console.error('Node initialization failed:', error_4);
-                            throw error_4;
-                        case 8: return [2 /*return*/];
+                        case 8:
+                            error_6 = _a.sent();
+                            console.error("Node initialization failed:", error_6);
+                            throw error_6;
+                        case 9: return [2 /*return*/];
                     }
                 });
             }); };
@@ -519,7 +593,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
                 watchdog.start();
                 return watchdog;
             };
-            console.log('BlockchainExplorerRpcDaemon');
+            console.log("BlockchainExplorerRpcDaemon");
             this.nodeWorkers = new NodeWorkersList();
         }
         /**
@@ -542,14 +616,16 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             else {
                 tempStartBlock = startBlock;
             }
-            return this.nodeWorkers.makeRequest('POST', 'get_raw_transactions_by_heights', {
+            return this.nodeWorkers
+                .makeRequest("POST", "get_raw_transactions_by_heights", {
                 heights: [tempStartBlock, endBlock],
                 include_miner_txs: includeMinerTxs,
-                range: true
-            }).then(function (response) {
+                range: true,
+            })
+                .then(function (response) {
                 var formatted = [];
-                if (response.status !== 'OK') {
-                    throw 'invalid_transaction_answer';
+                if (response.status !== "OK") {
+                    throw "invalid_transaction_answer";
                 }
                 if (response.transactions.length > 0) {
                     for (var _i = 0, _a = response.transactions; _i < _a.length; _i++) {
@@ -574,7 +650,7 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             });
         };
         BlockchainExplorerRpcDaemon.prototype.getTransactionPool = function () {
-            return this.nodeWorkers.makeRequest('GET', 'getrawtransactionspool').then(function (response) {
+            return this.nodeWorkers.makeRequest("GET", "getrawtransactionspool").then(function (response) {
                 var formatted = [];
                 for (var _i = 0, _a = response.transactions; _i < _a.length; _i++) {
                     var rawTx = _a[_i];
@@ -597,12 +673,14 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             });
         };
         BlockchainExplorerRpcDaemon.prototype.getRandomOuts = function (amounts, nbOutsNeeded) {
-            return this.nodeWorkers.makeRequest('POST', 'getrandom_outs', {
+            return this.nodeWorkers
+                .makeRequest("POST", "getrandom_outs", {
                 amounts: amounts,
-                outs_count: nbOutsNeeded
-            }).then(function (response) {
-                if (response.status !== 'OK')
-                    throw 'invalid_getrandom_outs_answer';
+                outs_count: nbOutsNeeded,
+            })
+                .then(function (response) {
+                if (response.status !== "OK")
+                    throw "invalid_getrandom_outs_answer";
                 // if (response.outs.length > 0) {
                 //   logDebugMsg(response.outs);
                 // }
@@ -610,13 +688,15 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             });
         };
         BlockchainExplorerRpcDaemon.prototype.sendRawTx = function (rawTx) {
-            return this.nodeWorkers.makeRequest('POST', 'sendrawtransaction', {
+            return this.nodeWorkers
+                .makeRequest("POST", "sendrawtransaction", {
                 tx_as_hex: rawTx,
-                do_not_relay: false
-            }).then(function (transactions) {
-                if (!transactions.status || transactions.status !== 'OK') {
+                do_not_relay: false,
+            })
+                .then(function (transactions) {
+                if (!transactions.status || transactions.status !== "OK") {
                     // Create a meaningful error message from the status
-                    var errorMessage = 'Failed to send raw transaction';
+                    var errorMessage = "Failed to send raw transaction";
                     if (transactions.status) {
                         errorMessage += ": ".concat(transactions.status);
                     }
@@ -630,34 +710,34 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             });
         };
         BlockchainExplorerRpcDaemon.prototype.resolveOpenAlias = function (domain) {
-            return this.nodeWorkers.makeRpcRequest('resolve_open_alias', { url: domain }).then(function (response) {
+            return this.nodeWorkers.makeRpcRequest("resolve_open_alias", { url: domain }).then(function (response) {
                 if (response.addresses && response.addresses.length > 0)
                     return { address: response.addresses[0], name: null };
-                throw 'not_found';
+                throw "not_found";
             });
         };
         BlockchainExplorerRpcDaemon.prototype.getNetworkInfo = function () {
             var _this = this;
-            return this.nodeWorkers.makeRpcRequest('getlastblockheader').then(function (raw) {
+            return this.nodeWorkers.makeRpcRequest("getlastblockheader").then(function (raw) {
                 var nodeList = _this.nodeWorkers.getNodes();
                 var usedNodes = [];
                 for (var i = 0; i < nodeList.length; i++) {
                     usedNodes.push({
-                        'url': nodeList[i].url,
-                        'requests': nodeList[i].requests,
-                        'errors': nodeList[i].errors,
-                        'allErrors': nodeList[i].allErrors,
-                        'status': nodeList[i].getStatus()
+                        url: nodeList[i].url,
+                        requests: nodeList[i].requests,
+                        errors: nodeList[i].errors,
+                        allErrors: nodeList[i].allErrors,
+                        status: nodeList[i].getStatus(),
                     });
                 }
                 return {
-                    'nodes': usedNodes,
-                    'major_version': raw.block_header['major_version'],
-                    'hash': raw.block_header['hash'],
-                    'reward': raw.block_header['reward'],
-                    'height': raw.block_header['height'],
-                    'timestamp': raw.block_header['timestamp'],
-                    'difficulty': raw.block_header['difficulty']
+                    nodes: usedNodes,
+                    major_version: raw.block_header["major_version"],
+                    hash: raw.block_header["hash"],
+                    reward: raw.block_header["reward"],
+                    height: raw.block_header["height"],
+                    timestamp: raw.block_header["timestamp"],
+                    difficulty: raw.block_header["difficulty"],
                 };
             });
         };
@@ -665,8 +745,8 @@ define(["require", "exports", "../Storage", "../WalletWatchdog"], function (requ
             // TODO change to /feeaddress
             return this.getInfo().then(function (info) {
                 return {
-                    'fee_address': info['fee_address'],
-                    'status': info['status']
+                    fee_address: info["fee_address"],
+                    status: info["status"],
                 };
             });
         };

@@ -38,9 +38,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numbersLab/VueAnnotate", "../model/WalletRepository", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../model/AppState", "../model/Password", "../providers/BlockchainExplorerProvider", "../model/WalletWatchdog"], function (require, exports, DestructableView_1, VueAnnotate_1, WalletRepository_1, DependencyInjector_1, Wallet_1, AppState_1, Password_1, BlockchainExplorerProvider_1, WalletWatchdog_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, "default", false);
     var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
-    var walletWatchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name, 'default', false);
+    var walletWatchdog = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(WalletWatchdog_1.WalletWatchdog.name, "default", false);
     var ChangeWalletPasswordView = /** @class */ (function (_super) {
         __extends(ChangeWalletPasswordView, _super);
         function ChangeWalletPasswordView(container) {
@@ -66,34 +66,34 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 this.insecurePassword = false;
         };
         ChangeWalletPasswordView.prototype.changePassword = function () {
-            var walletWorker = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(AppState_1.WalletWorker.name, 'default', false);
+            var walletWorker = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(AppState_1.WalletWorker.name, "default", false);
             if (walletWorker !== null) {
                 walletWorker.password = this.walletPassword;
                 walletWorker.save();
                 swal({
-                    type: 'success',
-                    title: i18n.t('changeWalletPasswordPage.modalSuccess.title'),
-                    confirmButtonText: i18n.t('changeWalletPasswordPage.modalSuccess.confirmText'),
+                    type: "success",
+                    title: i18n.t("changeWalletPasswordPage.modalSuccess.title"),
+                    confirmButtonText: i18n.t("changeWalletPasswordPage.modalSuccess.confirmText"),
                 });
-                this.oldPassword = '';
-                this.walletPassword = '';
-                this.walletPassword2 = '';
+                this.oldPassword = "";
+                this.walletPassword = "";
+                this.walletPassword2 = "";
                 this.insecurePassword = false;
                 this.forceInsecurePassword = false;
                 this.invalidOldPassword = false;
             }
         };
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ChangeWalletPasswordView.prototype, "oldPassword", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
         ], ChangeWalletPasswordView.prototype, "invalidOldPassword", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ChangeWalletPasswordView.prototype, "walletPassword", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ChangeWalletPasswordView.prototype, "walletPassword2", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
@@ -110,7 +110,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         return ChangeWalletPasswordView;
     }(DestructableView_1.DestructableView));
     if (wallet !== null && blockchainExplorer !== null)
-        new ChangeWalletPasswordView('#app');
+        new ChangeWalletPasswordView("#app");
     else
-        window.location.href = '#index';
+        window.location.href = "#index";
 });

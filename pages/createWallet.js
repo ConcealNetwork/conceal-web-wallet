@@ -81,7 +81,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                             return __generator(this, function (_b) {
                                 switch (_b.label) {
                                     case 0:
-                                        $('#pageLoading').show();
+                                        $("#pageLoading").show();
                                         _b.label = 1;
                                     case 1:
                                         _b.trys.push([1, 5, , 6]);
@@ -91,7 +91,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                                         return [4 /*yield*/, blockchainExplorer.getHeight()];
                                     case 3:
                                         currentHeight = _b.sent();
-                                        $('#pageLoading').hide();
+                                        $("#pageLoading").hide();
                                         seed = Cn_1.CnNativeBride.sc_reduce32(Cn_1.CnRandom.rand_32());
                                         keys = Cn_1.Cn.create_address(seed);
                                         newWallet = new Wallet_1.Wallet();
@@ -105,7 +105,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                                         return [4 /*yield*/, Translations_1.Translations.getLang()];
                                     case 4:
                                         userLang = _b.sent();
-                                        langToExport = 'english';
+                                        langToExport = "english";
                                         for (_i = 0, _a = MnemonicLang_1.MnemonicLang.getLangs(); _i < _a.length; _i++) {
                                             lang = _a[_i];
                                             if (lang.shortLang === userLang) {
@@ -122,8 +122,8 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                                         return [3 /*break*/, 6];
                                     case 5:
                                         err_1 = _b.sent();
-                                        console.log('Wallet generation failed:', err_1);
-                                        $('#pageLoading').hide();
+                                        console.log("Wallet generation failed:", err_1);
+                                        $("#pageLoading").hide();
                                         return [3 /*break*/, 6];
                                     case 6: return [2 /*return*/];
                                 }
@@ -147,20 +147,20 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         CreateViewWallet.prototype.forceInsecurePasswordCheck = function () {
             var self = this;
             /*swal({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                type: 'warning',
-                showCancelButton: true,
-                reverseButtons:true,
-                confirmButtonText: 'Yes'
-            }).then((result:{value:boolean}) => {
-                if (result.value) {*/
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    reverseButtons:true,
+                    confirmButtonText: 'Yes'
+                }).then((result:{value:boolean}) => {
+                    if (result.value) {*/
             self.forceInsecurePassword = true;
             // }
             // });
         };
         CreateViewWallet.prototype.exportStep = function () {
-            if (this.walletPassword !== '' && (!this.insecurePassword || this.forceInsecurePassword)) {
+            if (this.walletPassword !== "" && (!this.insecurePassword || this.forceInsecurePassword)) {
                 this.step = 2;
             }
         };
@@ -172,17 +172,17 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         CreateViewWallet.prototype.finish = function () {
             if (this.newWallet !== null) {
                 AppState_1.AppState.openWallet(this.newWallet, this.walletPassword);
-                window.location.href = '#account';
+                window.location.href = "#account";
             }
         };
         __decorate([
             (0, VueAnnotate_1.VueVar)(0)
         ], CreateViewWallet.prototype, "step", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], CreateViewWallet.prototype, "walletPassword", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], CreateViewWallet.prototype, "walletPassword2", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
@@ -197,7 +197,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             (0, VueAnnotate_1.VueVar)(null)
         ], CreateViewWallet.prototype, "newWallet", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], CreateViewWallet.prototype, "mnemonicPhrase", void 0);
         __decorate([
             (0, VueAnnotate_1.VueWatched)()
@@ -207,5 +207,5 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
         ], CreateViewWallet.prototype, "stepWatch", null);
         return CreateViewWallet;
     }(DestructableView_1.DestructableView));
-    new CreateViewWallet('#app');
+    new CreateViewWallet("#app");
 });

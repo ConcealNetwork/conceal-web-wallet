@@ -33,20 +33,20 @@
  *     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { Currency } from './Currency';
+import { Currency } from "./Currency";
 export class TransactionOut {
   amount: number = 0;
-  keyImage: string = '';
+  keyImage: string = "";
   outputIdx: number = 0;
   globalIndex: number = 0;
-  type: string = '';
+  type: string = "";
   term: number = 0;
 
-  ephemeralPub: string = '';
-  pubKey: string = '';
-  rtcOutPk: string = '';
-  rtcMask: string = '';
-  rtcAmount: string = '';
+  ephemeralPub: string = "";
+  pubKey: string = "";
+  rtcOutPk: string = "";
+  rtcMask: string = "";
+  rtcAmount: string = "";
 
   static fromRaw = (raw: any) => {
     let nout = new TransactionOut();
@@ -57,14 +57,14 @@ export class TransactionOut {
     nout.type = raw.type;
     nout.term = raw.term;
 
-    if (typeof raw.ephemeralPub !== 'undefined') nout.ephemeralPub = raw.ephemeralPub;
-    if (typeof raw.pubKey !== 'undefined') nout.pubKey = raw.pubKey;
-    if (typeof raw.rtcOutPk !== 'undefined') nout.rtcOutPk = raw.rtcOutPk;
-    if (typeof raw.rtcMask !== 'undefined') nout.rtcMask = raw.rtcMask;
-    if (typeof raw.rtcAmount !== 'undefined') nout.rtcAmount = raw.rtcAmount;
+    if (typeof raw.ephemeralPub !== "undefined") nout.ephemeralPub = raw.ephemeralPub;
+    if (typeof raw.pubKey !== "undefined") nout.pubKey = raw.pubKey;
+    if (typeof raw.rtcOutPk !== "undefined") nout.rtcOutPk = raw.rtcOutPk;
+    if (typeof raw.rtcMask !== "undefined") nout.rtcMask = raw.rtcMask;
+    if (typeof raw.rtcAmount !== "undefined") nout.rtcAmount = raw.rtcAmount;
 
     return nout;
-  }
+  };
 
   export = () => {
     let data: any = {
@@ -75,16 +75,16 @@ export class TransactionOut {
       type: this.type,
       term: this.term,
     };
-    if (this.rtcOutPk !== '') data.rtcOutPk = this.rtcOutPk;
-    if (this.rtcMask !== '') data.rtcMask = this.rtcMask;
-    if (this.rtcAmount !== '') data.rtcAmount = this.rtcAmount;
-    if (this.ephemeralPub !== '') data.ephemeralPub = this.ephemeralPub;
-    if (this.pubKey !== '') data.pubKey = this.pubKey;
+    if (this.rtcOutPk !== "") data.rtcOutPk = this.rtcOutPk;
+    if (this.rtcMask !== "") data.rtcMask = this.rtcMask;
+    if (this.rtcAmount !== "") data.rtcAmount = this.rtcAmount;
+    if (this.ephemeralPub !== "") data.ephemeralPub = this.ephemeralPub;
+    if (this.pubKey !== "") data.pubKey = this.pubKey;
 
     return data;
-  }
+  };
 
-  copy = () => { 
+  copy = () => {
     let aCopy = new TransactionOut();
 
     aCopy.amount = this.amount;
@@ -93,35 +93,34 @@ export class TransactionOut {
     aCopy.globalIndex = this.globalIndex;
     aCopy.type = this.type;
     aCopy.term = this.term;
-  
+
     aCopy.ephemeralPub = this.ephemeralPub;
     aCopy.pubKey = this.pubKey;
     aCopy.rtcOutPk = this.rtcOutPk;
     aCopy.rtcMask = this.rtcMask;
     aCopy.rtcAmount = this.rtcAmount;
-  
+
     return aCopy;
-  }
+  };
 }
 
 export class TransactionIn {
   outputIndex: number = -1;
-  keyImage: string = '';
+  keyImage: string = "";
   //if < 0, means the in has been seen but not checked (view only wallet)
   amount: number = 0;
-  type: string = '';
+  type: string = "";
   term: number = 0;
 
   static fromRaw = (raw: any) => {
     let nin = new TransactionIn();
-    nin.outputIndex = raw.outputIndex,
-    nin.keyImage = raw.keyImage;
+    (nin.outputIndex = raw.outputIndex), (nin.keyImage = raw.keyImage);
     nin.amount = raw.amount;
     nin.type = raw.type;
-    nin.term =  raw.term;
+    nin.term = raw.term;
 
     return nin;
-  }
+  };
 
   export = () => {
     return {
@@ -129,11 +128,11 @@ export class TransactionIn {
       keyImage: this.keyImage,
       amount: this.amount,
       term: this.term,
-      type: this.type
+      type: this.type,
     };
-  }
+  };
 
-  copy = () => { 
+  copy = () => {
     let aCopy = new TransactionIn();
 
     aCopy.outputIndex = this.outputIndex;
@@ -141,55 +140,55 @@ export class TransactionIn {
     aCopy.amount = this.amount;
     aCopy.type = this.type;
     aCopy.term = this.term;
-      
+
     return aCopy;
-  }
+  };
 }
 
 export class Transaction {
   blockHeight: number = 0;
-  txPubKey: string = '';
-  hash: string = '';
+  txPubKey: string = "";
+  hash: string = "";
 
   outs: TransactionOut[] = [];
   ins: TransactionIn[] = [];
 
   timestamp: number = 0;
-  paymentId: string = '';
+  paymentId: string = "";
   fees: number = 0;
   fusion: boolean = false;
-  message: string = '';
+  message: string = "";
   messageViewed: boolean = false;
   ttl: number = 0; // TTL timestamp (absolute UNIX timestamp in seconds)
-  
+
   static fromRaw = (raw: any) => {
     let transac = new Transaction();
     transac.blockHeight = raw.blockHeight;
     transac.txPubKey = raw.txPubKey;
     transac.timestamp = raw.timestamp;
-    if (typeof raw.ins !== 'undefined') {
+    if (typeof raw.ins !== "undefined") {
       let ins: TransactionIn[] = [];
       for (let rin of raw.ins) {
         ins.push(TransactionIn.fromRaw(rin));
       }
       transac.ins = ins;
     }
-    if (typeof raw.outs !== 'undefined') {
+    if (typeof raw.outs !== "undefined") {
       let outs: TransactionOut[] = [];
       for (let rout of raw.outs) {
         outs.push(TransactionOut.fromRaw(rout));
       }
       transac.outs = outs;
     }
-    if (typeof raw.paymentId !== 'undefined') transac.paymentId = raw.paymentId;
-    if (typeof raw.fees !== 'undefined') transac.fees = raw.fees;
-    if (typeof raw.hash !== 'undefined') transac.hash = raw.hash;
-    if (typeof raw.message !== 'undefined') transac.message = raw.message;
-    if (typeof raw.fusion !== 'undefined') transac.fusion = raw.fusion;
-    if (typeof raw.messageViewed !== 'undefined') transac.messageViewed = raw.messageViewed;
-    if (typeof raw.ttl !== 'undefined') transac.ttl = raw.ttl;
+    if (typeof raw.paymentId !== "undefined") transac.paymentId = raw.paymentId;
+    if (typeof raw.fees !== "undefined") transac.fees = raw.fees;
+    if (typeof raw.hash !== "undefined") transac.hash = raw.hash;
+    if (typeof raw.message !== "undefined") transac.message = raw.message;
+    if (typeof raw.fusion !== "undefined") transac.fusion = raw.fusion;
+    if (typeof raw.messageViewed !== "undefined") transac.messageViewed = raw.messageViewed;
+    if (typeof raw.ttl !== "undefined") transac.ttl = raw.ttl;
     return transac;
-  }
+  };
 
   export = () => {
     let data: any = {
@@ -208,37 +207,37 @@ export class Transaction {
     if (this.outs.length > 0) {
       let routs: any[] = [];
       for (let nout of this.outs) {
-          routs.push(nout.export());
+        routs.push(nout.export());
       }
       data.outs = routs;
     }
-    if (this.paymentId !== '') data.paymentId = this.paymentId;
-    if (this.message !== '') data.message = this.message;
+    if (this.paymentId !== "") data.paymentId = this.paymentId;
+    if (this.message !== "") data.message = this.message;
     if (this.fees !== 0) data.fees = this.fees;
     if (this.fusion) data.fusion = this.fusion;
     if (this.messageViewed) data.messageViewed = this.messageViewed;
     if (this.ttl !== 0) data.ttl = this.ttl;
     return data;
-  }
+  };
 
   getAmount = () => {
     let amount = 0;
     for (let out of this.outs) {
       if (out.type !== "03") {
         amount += out.amount;
-      }      
+      }
     }
     for (let nin of this.ins) {
       if (nin.type !== "03") {
         amount -= nin.amount;
-      }      
+      }
     }
     return amount;
-  }
+  };
 
   isCoinbase = () => {
-      return this.outs.length == 1 && this.outs[0].rtcAmount === '';
-  }
+    return this.outs.length == 1 && this.outs[0].rtcAmount === "";
+  };
 
   isConfirmed = (blockchainHeight: number) => {
     if (this.blockHeight === 0) {
@@ -248,12 +247,12 @@ export class Transaction {
     } else if (!this.isCoinbase() && this.blockHeight + config.txMinConfirms < blockchainHeight) {
       return true;
     }
-    
+
     return false;
-  }
+  };
 
   isFullyChecked = () => {
-    if (this.getAmount() === 0 || this.getAmount() === (-1 * config.minimumFee_V2)) {
+    if (this.getAmount() === 0 || this.getAmount() === -1 * config.minimumFee_V2) {
       if (this.isFusion) {
         return true;
       } else if (this.ttl > 0) {
@@ -269,33 +268,33 @@ export class Transaction {
       }
       return true;
     }
-  }
+  };
 
   hasMessage = () => {
     let txAmount = this.getAmount();
-    return (this.message !== '') && (txAmount > 0) && (txAmount !== (1 * config.remoteNodeFee)) && (txAmount !== (10 * config.remoteNodeFee)); // no envelope for a suspectedremote node fee transaction
-  }
+    return this.message !== "" && txAmount > 0 && txAmount !== 1 * config.remoteNodeFee && txAmount !== 10 * config.remoteNodeFee; // no envelope for a suspectedremote node fee transaction
+  };
 
   get isDeposit() {
     // Check if any of the outputs has a type "03", which indicates it's a deposit transaction
-    return this.outs.some(out => out.type === "03");
+    return this.outs.some((out) => out.type === "03");
   }
 
   get isWithdrawal() {
     // Check if any of the inputs has a type "03", which indicates it's a withdrawal transaction
-    return this.ins.some(input => input.type === "03");
+    return this.ins.some((input) => input.type === "03");
   }
 
   get isFusion() {
     let outputsCount = this.outs.length;
     let inputsCount = this.ins.length;
-    if (this.outs.some(out => out.type === "03") || this.ins.some(input => input.type === "03")) {
+    if (this.outs.some((out) => out.type === "03") || this.ins.some((input) => input.type === "03")) {
       return false;
     }
-    return (((inputsCount > Currency.fusionTxMinInputCount) && ((inputsCount / outputsCount) > config.fusionTxMinInOutCountRatio)) || this.fusion);
+    return (inputsCount > Currency.fusionTxMinInputCount && inputsCount / outputsCount > config.fusionTxMinInOutCountRatio) || this.fusion;
   }
 
-  copy = () => { 
+  copy = () => {
     let aCopy = new Transaction();
 
     aCopy.blockHeight = this.blockHeight;
@@ -315,14 +314,14 @@ export class Transaction {
     for (let nout of this.outs) {
       aCopy.outs.push(nout.copy());
     }
-  
+
     return aCopy;
-  }  
+  };
 }
 
 class BaseBanking {
   term: number = 0;
-  txHash: string = '';
+  txHash: string = "";
   amount: number = 0;
   interest: number = 0;
   timestamp: number = 0;
@@ -330,7 +329,7 @@ class BaseBanking {
   unlockHeight: number = 0;
   globalOutputIndex: number = 0;
   indexInVout: number = 0;
-  txPubKey: string = '';
+  txPubKey: string = "";
 
   static fromRaw(raw: any) {
     let deposit = new Deposit();
@@ -340,7 +339,7 @@ class BaseBanking {
     deposit.interest = raw.interest;
     deposit.timestamp = raw.timestamp;
     deposit.blockHeight = raw.blockHeight;
-    deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
+    deposit.unlockHeight = raw.unlockHeight || raw.blockHeight + raw.term;
     deposit.globalOutputIndex = raw.globalOutputIndex;
     deposit.indexInVout = raw.indexInVout;
     deposit.txPubKey = raw.txPubKey;
@@ -359,11 +358,11 @@ class BaseBanking {
       unlockHeight: this.unlockHeight,
       globalOutputIndex: this.globalOutputIndex,
       indexInVout: this.indexInVout,
-      txPubKey: this.txPubKey
+      txPubKey: this.txPubKey,
     };
   }
 
-  copy() { 
+  copy() {
     let aCopy = new Deposit();
 
     aCopy.term = this.term;
@@ -376,29 +375,29 @@ class BaseBanking {
     aCopy.globalOutputIndex = this.globalOutputIndex;
     aCopy.indexInVout = this.indexInVout;
     aCopy.txPubKey = this.txPubKey;
-  
+
     return aCopy;
   }
 }
 
 export class Deposit extends BaseBanking {
-  spentTx: string = '';
+  spentTx: string = "";
   keys: string[] = []; // Array of public keys for multisignature deposit
   withdrawPending: boolean = false;
-  
+
   static fromRaw(raw: any) {
     let deposit = new Deposit();
     deposit.term = raw.term;
     deposit.txHash = raw.txHash;
     deposit.amount = raw.amount;
     deposit.interest = raw.interest;
-    deposit.spentTx = raw.spentTx; 
+    deposit.spentTx = raw.spentTx;
     deposit.timestamp = raw.timestamp;
     deposit.blockHeight = raw.blockHeight;
-    deposit.globalOutputIndex = raw.globalOutputIndex;      //used to build Multisig input for withdrawals
-    deposit.indexInVout = raw.indexInVout;                  //used to generate_signature for withdrawals
+    deposit.globalOutputIndex = raw.globalOutputIndex; //used to build Multisig input for withdrawals
+    deposit.indexInVout = raw.indexInVout; //used to generate_signature for withdrawals
     deposit.txPubKey = raw.txPubKey;
-    deposit.unlockHeight = raw.unlockHeight || (raw.blockHeight + raw.term);
+    deposit.unlockHeight = raw.unlockHeight || raw.blockHeight + raw.term;
     deposit.keys = raw.keys || [];
     deposit.withdrawPending = raw.withdrawPending;
     return deposit;
@@ -408,44 +407,43 @@ export class Deposit extends BaseBanking {
     return Object.assign(super.export(), {
       spentTx: this.spentTx,
       withdrawPending: this.withdrawPending,
-      keys: this.keys
+      keys: this.keys,
     });
   }
 
-  copy = () => { 
-    let aCopy = super.copy();  
+  copy = () => {
+    let aCopy = super.copy();
     aCopy.spentTx = this.spentTx;
     aCopy.withdrawPending = this.withdrawPending;
     aCopy.keys = [...this.keys];
     return aCopy;
-  }
-  
+  };
+
   // Get total amount (principal + interest)
   getTotalAmount(): number {
     return this.amount + this.interest;
   }
-  
+
   // Check if deposit is unlocked at current height
   isUnlocked(currentHeight: number): boolean {
     return currentHeight >= this.unlockHeight;
   }
-  
+
   // Check if deposit has been spent
   isSpent(): boolean {
     return !!this.spentTx;
   }
-  
+
   // Get deposit status
-  getStatus(currentHeight: number): 'Locked' | 'Unlocked' | 'Spent' {
+  getStatus(currentHeight: number): "Locked" | "Unlocked" | "Spent" {
     if (this.isSpent()) {
-      return 'Spent';
+      return "Spent";
     } else if (this.isUnlocked(currentHeight)) {
-      return 'Unlocked';
+      return "Unlocked";
     } else {
-      return 'Locked';
+      return "Locked";
     }
   }
-  
 }
 
 export class Withdrawal extends BaseBanking {}
@@ -455,7 +453,7 @@ export class TransactionData {
   withdrawals: Deposit[] = [];
   deposits: Deposit[] = [];
 
-  static fromRaw = (raw: any) =>  {
+  static fromRaw = (raw: any) => {
     let txData = new TransactionData();
     txData.transaction = Transaction.fromRaw(raw.transaction);
 
@@ -466,13 +464,13 @@ export class TransactionData {
     }
 
     if (raw.deposits) {
-      for (let deposit  of raw.deposits) {
+      for (let deposit of raw.deposits) {
         txData.deposits.push(Deposit.fromRaw(deposit));
       }
     }
 
     return txData;
-  }
+  };
 
   export = () => {
     let txData: any = {};
@@ -493,15 +491,15 @@ export class TransactionData {
       for (let withdrawal of this.withdrawals) {
         withdrawals.push(withdrawal.export());
       }
-    }    
+    }
 
     txData.deposits = deposits;
     txData.withdrawals = withdrawals;
 
     return txData;
-  }
+  };
 
-  copy = () => { 
+  copy = () => {
     let aCopy = new TransactionData();
     aCopy.transaction = this.transaction ? this.transaction.copy() : null;
 
@@ -513,5 +511,5 @@ export class TransactionData {
     }
 
     return aCopy;
-  }
+  };
 }

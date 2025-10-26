@@ -22,40 +22,41 @@ define(["require", "exports"], function (require, exports) {
         function CoinUri() {
         }
         CoinUri.decodeTx = function (str) {
-            if (str.startsWith(CoinUri.coinAddressPrefix)) { // legacy code use to check .coinTxPrefix
+            if (str.startsWith(CoinUri.coinAddressPrefix)) {
+                // legacy code use to check .coinTxPrefix
                 var data = str; //legacy .replace(this.coinTxPrefix,'');
-                var temp = data.replace(/&/g, '?').trim();
-                var exploded = temp.split('?');
+                var temp = data.replace(/&/g, "?").trim();
+                var exploded = temp.split("?");
                 if (exploded.length == 0)
-                    throw 'missing_address';
+                    throw "missing_address";
                 if (exploded[0].length !== this.coinAddressLength)
-                    throw 'invalid_address_length';
+                    throw "invalid_address_length";
                 var decodedUri = {
-                    address: exploded[0]
+                    address: exploded[0],
                 };
                 for (var i = 0; i < exploded.length; ++i) {
-                    var optionParts = exploded[i].split('=');
+                    var optionParts = exploded[i].split("=");
                     if (optionParts.length === 2) {
                         switch (optionParts[0].trim()) {
-                            case 'payment_id':
+                            case "payment_id":
                                 decodedUri.paymentId = optionParts[1];
                                 break;
-                            case 'tx_payment_id':
+                            case "tx_payment_id":
                                 decodedUri.paymentId = optionParts[1];
                                 break;
-                            case 'recipient_name':
+                            case "recipient_name":
                                 decodedUri.recipientName = optionParts[1];
                                 break;
-                            case 'amount':
+                            case "amount":
                                 decodedUri.amount = optionParts[1];
                                 break;
-                            case 'tx_amount':
+                            case "tx_amount":
                                 decodedUri.amount = optionParts[1];
                                 break;
-                            case 'tx_description':
+                            case "tx_description":
                                 decodedUri.description = optionParts[1];
                                 break;
-                            case 'label':
+                            case "label":
                                 decodedUri.description = optionParts[1];
                                 break;
                         }
@@ -63,7 +64,7 @@ define(["require", "exports"], function (require, exports) {
                 }
                 return decodedUri;
             }
-            throw 'missing_prefix';
+            throw "missing_prefix";
         };
         CoinUri.isTxValid = function (str) {
             try {
@@ -81,62 +82,62 @@ define(["require", "exports"], function (require, exports) {
             if (description === void 0) { description = null; }
             var encoded = address; //legacy this.coinTxPrefix + address;
             if (address.length !== this.coinAddressLength)
-                throw 'invalid_address_length';
+                throw "invalid_address_length";
             if (paymentId !== null)
-                encoded += '?payment_id=' + paymentId;
+                encoded += "?payment_id=" + paymentId;
             if (amount !== null)
-                encoded += '?amount=' + amount;
+                encoded += "?amount=" + amount;
             if (recipientName !== null)
-                encoded += '?recipient_name=' + recipientName;
+                encoded += "?recipient_name=" + recipientName;
             if (description !== null)
-                encoded += '?label=' + description;
+                encoded += "?label=" + description;
             return encoded;
         };
         CoinUri.decodeWallet = function (str) {
             if (str.startsWith(CoinUri.coinWalletPrefix)) {
-                var data = str.replace(this.coinWalletPrefix, '').trim();
-                var exploded = data.split('?');
+                var data = str.replace(this.coinWalletPrefix, "").trim();
+                var exploded = data.split("?");
                 if (exploded.length == 0)
-                    throw 'missing_address';
+                    throw "missing_address";
                 if (exploded[0].length !== this.coinAddressLength)
-                    throw 'invalid_address_length';
+                    throw "invalid_address_length";
                 var decodedUri = {
-                    address: exploded[0]
+                    address: exploded[0],
                 };
                 for (var i = 1; i < exploded.length; ++i) {
-                    var optionParts = exploded[i].split('=');
+                    var optionParts = exploded[i].split("=");
                     if (optionParts.length === 2) {
                         switch (optionParts[0].trim()) {
-                            case 'spend_key':
+                            case "spend_key":
                                 decodedUri.spendKey = optionParts[1];
                                 break;
-                            case 'view_key':
+                            case "view_key":
                                 decodedUri.viewKey = optionParts[1];
                                 break;
-                            case 'mnemonic_seed':
+                            case "mnemonic_seed":
                                 decodedUri.mnemonicSeed = optionParts[1];
                                 break;
-                            case 'height':
+                            case "height":
                                 decodedUri.height = optionParts[1];
                                 break;
-                            case 'nonce':
+                            case "nonce":
                                 decodedUri.nonce = optionParts[1];
                                 break;
-                            case 'encrypt_method':
+                            case "encrypt_method":
                                 decodedUri.encryptMethod = optionParts[1];
                                 break;
                         }
                     }
                 }
-                if (typeof decodedUri.mnemonicSeed !== 'undefined' ||
-                    typeof decodedUri.spendKey !== 'undefined' ||
-                    (typeof decodedUri.viewKey !== 'undefined' && typeof decodedUri.address !== 'undefined')) {
+                if (typeof decodedUri.mnemonicSeed !== "undefined" ||
+                    typeof decodedUri.spendKey !== "undefined" ||
+                    (typeof decodedUri.viewKey !== "undefined" && typeof decodedUri.address !== "undefined")) {
                     return decodedUri;
                 }
                 else
-                    throw 'missing_seeds';
+                    throw "missing_seeds";
             }
-            throw 'missing_prefix';
+            throw "missing_prefix";
         };
         CoinUri.isWalletValid = function (str) {
             try {
@@ -154,22 +155,22 @@ define(["require", "exports"], function (require, exports) {
             if (nonce === void 0) { nonce = null; }
             var encoded = this.coinWalletPrefix + address;
             if (address.length !== this.coinAddressLength)
-                throw 'invalid_address_length';
+                throw "invalid_address_length";
             if (spendKey !== null)
-                encoded += '?spend_key=' + spendKey;
+                encoded += "?spend_key=" + spendKey;
             if (viewKey !== null)
-                encoded += '?view_key=' + viewKey;
+                encoded += "?view_key=" + viewKey;
             if (height !== null)
-                encoded += '?height=' + height;
+                encoded += "?height=" + height;
             if (nonce !== null)
-                encoded += '?nonce=' + nonce;
+                encoded += "?nonce=" + nonce;
             if (encryptMethod !== null)
-                encoded += '?encrypt_method=' + encryptMethod;
+                encoded += "?encrypt_method=" + encryptMethod;
             return encoded;
         };
-        CoinUri.coinTxPrefix = 'conceal.'; //legacy, used to be 'conceal:', but the char ':' was creating scanning issue
-        CoinUri.coinAddressPrefix = 'ccx7'; //coin Address prefix, to check address , without using coinTxPrefix
-        CoinUri.coinWalletPrefix = 'conceal.'; //legacy, used to be 'conceal:'
+        CoinUri.coinTxPrefix = "conceal."; //legacy, used to be 'conceal:', but the char ':' was creating scanning issue
+        CoinUri.coinAddressPrefix = "ccx7"; //coin Address prefix, to check address , without using coinTxPrefix
+        CoinUri.coinWalletPrefix = "conceal."; //legacy, used to be 'conceal:'
         CoinUri.coinAddressLength = 98;
         return CoinUri;
     }());

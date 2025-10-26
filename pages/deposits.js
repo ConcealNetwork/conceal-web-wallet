@@ -72,7 +72,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numbersLab/VueAnnotate", "../model/TransactionsExplorer", "../lib/numbersLab/DependencyInjector", "../model/Wallet", "../model/AppState", "../providers/BlockchainExplorerProvider", "../model/WalletWatchdog", "../model/WalletRepository", "../model/Interest", "../model/Translations"], function (require, exports, DestructableView_1, VueAnnotate_1, TransactionsExplorer_1, DependencyInjector_1, Wallet_1, AppState_1, BlockchainExplorerProvider_1, WalletWatchdog_1, WalletRepository_1, Interest_1, Translations_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+    var wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, "default", false);
     var blockchainExplorer = BlockchainExplorerProvider_1.BlockchainExplorerProvider.getInstance();
     var DepositsView = /** @class */ (function (_super) {
         __extends(DepositsView, _super);
@@ -94,14 +94,17 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 return _super.prototype.destruct.call(_this);
             };
             _this.refresh = function () {
-                blockchainExplorer.getHeight().then(function (height) {
-                    _this.isWalletSyncing = (wallet.lastHeight + 2) < height;
+                blockchainExplorer
+                    .getHeight()
+                    .then(function (height) {
+                    _this.isWalletSyncing = wallet.lastHeight + 2 < height;
                     _this.blockchainHeight = height;
                     _this.refreshWallet();
                     // Update isDepositDisabled based on syncing status and max amount
                     _this.isDepositDisabled = _this.isWalletSyncing || _this.maxDepositAmount < 1;
                     _this.isWithdrawDisabled = _this.isWalletSyncing;
-                }).catch(function (err) {
+                })
+                    .catch(function (err) {
                     _this.refreshWallet();
                 });
             };
@@ -110,7 +113,8 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 _this.deposits = wallet.getDepositsCopy().reverse();
                 _this.currentScanBlock = wallet.lastHeight;
                 var timeDiff = new Date().getTime() - _this.refreshTimestamp.getTime();
-                if ((((_this.refreshTimestamp < wallet.modifiedTimestamp()) || (_this.lastPending > 0)) && (timeDiff > _this.refreshInterval)) || forceRedraw /*|| filterChanged*/) {
+                if (((_this.refreshTimestamp < wallet.modifiedTimestamp() || _this.lastPending > 0) && timeDiff > _this.refreshInterval) ||
+                    forceRedraw /*|| filterChanged*/) {
                     logDebugMsg("refreshWallet", _this.currentScanBlock);
                     _this.walletAmount = wallet.amount;
                     _this.unlockedWalletAmount = wallet.availableAmount(_this.currentScanBlock);
@@ -127,13 +131,13 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     // Earliest unlockable
                     var earliest = wallet.earliestUnlockableDeposit(_this.currentScanBlock);
                     if (earliest) {
-                        var unlockTimestamp = (earliest.timestamp + (earliest.term * 120)) * 1000;
+                        var unlockTimestamp = (earliest.timestamp + earliest.term * 120) * 1000;
                         _this.earliestUnlockableDate = new Date(unlockTimestamp).toLocaleDateString();
                         var now = Date.now();
                         _this.earliestUnlockableIsPast = unlockTimestamp < now;
                     }
                     else {
-                        _this.earliestUnlockableDate = '-';
+                        _this.earliestUnlockableDate = "-";
                         _this.earliestUnlockableIsPast = false;
                     }
                 }
@@ -156,18 +160,66 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     spendingHeight = spendingTx.blockHeight;
                 }
                 /*
-                    if ((deposit.blockHeight + deposit.term) <= this.blockchainHeight) {
-                      if (deposit.spentTx) {
-                        status = 'Spent'
-                      } else {
-                        status = 'Unlocked'
-                      }
-                    }
-                */
+                if ((deposit.blockHeight + deposit.term) <= this.blockchainHeight) {
+                  if (deposit.spentTx) {
+                    status = 'Spent'
+                  } else {
+                    status = 'Unlocked'
+                  }
+                }
+            */
                 swal({
-                    title: i18n.t('depositsPage.depositDetails.title'),
-                    customClass: 'swal-wide',
-                    html: "\n        <div class=\"tl\" >\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.txHash') + "</span>:<span class=\"txDetailsValue\"><a href=\"" + explorerUrlHash.replace('{ID}', deposit.txHash) + "\" target=\"_blank\">" + deposit.txHash + "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.spendingTx') + "</span>:<span class=\"txDetailsValue\"><a href=\"" + explorerUrlHash.replace('{ID}', deposit.spentTx) + "\" target=\"_blank\">" + deposit.spentTx + "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.status') + "</span>:<span class=\"txDetailsValue\">" + status + "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.amount') + "</span>:<span class=\"txDetailsValue\">" + (deposit.amount / Math.pow(10, config.coinUnitPlaces)) + "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.term') + "</span>:<span class=\"txDetailsValue\">" + deposit.term + "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.creationHeight') + "</span>:<span class=\"txDetailsValue\">" + deposit.blockHeight + "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.creationTime') + "</span>:<span class=\"txDetailsValue\">" + new Date(creatingTimestamp * 1000).toDateString() + "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.unlockHeight') + "</span>:<span class=\"txDetailsValue\">" + (deposit.unlockHeight) + "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.interest') + "</span>:<span class=\"txDetailsValue\">" + (deposit.interest / Math.pow(10, config.coinUnitPlaces)) + "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.spendingTime') + "</span>:<span class=\"txDetailsValue\">" + (spendingTimestamp == 0 ? "unspent" : new Date(spendingTimestamp * 1000).toDateString()) + "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" + i18n.t('depositsPage.depositDetails.spendingHeight') + "</span>:<span class=\"txDetailsValue\">" + (spendingHeight == 0 ? "unspent" : spendingHeight) + "</a></span></div>\n        </div>"
+                    title: i18n.t("depositsPage.depositDetails.title"),
+                    customClass: "swal-wide",
+                    html: "\n        <div class=\"tl\" >\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.txHash") +
+                        "</span>:<span class=\"txDetailsValue\"><a href=\"" +
+                        explorerUrlHash.replace("{ID}", deposit.txHash) +
+                        "\" target=\"_blank\">" +
+                        deposit.txHash +
+                        "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.spendingTx") +
+                        "</span>:<span class=\"txDetailsValue\"><a href=\"" +
+                        explorerUrlHash.replace("{ID}", deposit.spentTx) +
+                        "\" target=\"_blank\">" +
+                        deposit.spentTx +
+                        "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.status") +
+                        "</span>:<span class=\"txDetailsValue\">" +
+                        status +
+                        "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.amount") +
+                        "</span>:<span class=\"txDetailsValue\">" +
+                        deposit.amount / Math.pow(10, config.coinUnitPlaces) +
+                        "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.term") +
+                        "</span>:<span class=\"txDetailsValue\">" +
+                        deposit.term +
+                        "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.creationHeight") +
+                        "</span>:<span class=\"txDetailsValue\">" +
+                        deposit.blockHeight +
+                        "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.creationTime") +
+                        "</span>:<span class=\"txDetailsValue\">" +
+                        new Date(creatingTimestamp * 1000).toDateString() +
+                        "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.unlockHeight") +
+                        "</span>:<span class=\"txDetailsValue\">" +
+                        deposit.unlockHeight +
+                        "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.interest") +
+                        "</span>:<span class=\"txDetailsValue\">" +
+                        deposit.interest / Math.pow(10, config.coinUnitPlaces) +
+                        "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.spendingTime") +
+                        "</span>:<span class=\"txDetailsValue\">" +
+                        (spendingTimestamp == 0 ? "unspent" : new Date(spendingTimestamp * 1000).toDateString()) +
+                        "</a></span></div>\n          <div><span class=\"txDetailsLabel\">" +
+                        i18n.t("depositsPage.depositDetails.spendingHeight") +
+                        "</span>:<span class=\"txDetailsValue\">" +
+                        (spendingHeight == 0 ? "unspent" : spendingHeight) +
+                        "</a></span></div>\n        </div>",
                 });
             };
             _this.withdrawDeposit = function (deposit) { return __awaiter(_this, void 0, void 0, function () {
@@ -177,15 +229,12 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                         case 0:
                             _a.trys.push([0, 2, 3, 4]);
                             this.lockedForm = true;
-                            foundDeposit_1 = this.deposits.find(function (d) {
-                                return d.txHash === deposit.txHash &&
-                                    d.globalOutputIndex === deposit.globalOutputIndex;
-                            });
+                            foundDeposit_1 = this.deposits.find(function (d) { return d.txHash === deposit.txHash && d.globalOutputIndex === deposit.globalOutputIndex; });
                             if (!foundDeposit_1 || foundDeposit_1.withdrawPending || foundDeposit_1.isSpent()) {
                                 swal({
-                                    type: 'error',
-                                    title: i18n.t('depositsPage.withdrawError'),
-                                    text: i18n.t('depositsPage.withdrawPending')
+                                    type: "error",
+                                    title: i18n.t("depositsPage.withdrawError"),
+                                    text: i18n.t("depositsPage.withdrawPending"),
                                 });
                                 return [2 /*return*/];
                             }
@@ -199,49 +248,57 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             }, function (amount, feesAmount) {
                                 if (feesAmount > wallet.availableAmount(blockchainHeight_1)) {
                                     swal({
-                                        type: 'error',
-                                        title: i18n.t('sendPage.notEnoughMoneyModal.title'),
-                                        text: i18n.t('sendPage.notEnoughMoneyModal.content'),
-                                        confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
+                                        type: "error",
+                                        title: i18n.t("sendPage.notEnoughMoneyModal.title"),
+                                        text: i18n.t("sendPage.notEnoughMoneyModal.content"),
+                                        confirmButtonText: i18n.t("sendPage.notEnoughMoneyModal.confirmText"),
                                         onOpen: function () {
                                             swal.hideLoading();
-                                        }
+                                        },
                                     });
-                                    throw '';
+                                    throw "";
                                 }
                                 return new Promise(function (resolve, reject) {
                                     setTimeout(function () {
+                                        //prevent bug with swal when code is too fast
                                         swal({
-                                            title: i18n.t('sendPage.confirmTransactionModal.title'),
-                                            html: i18n.t('sendPage.confirmTransactionModal.content', {
+                                            title: i18n.t("sendPage.confirmTransactionModal.title"),
+                                            html: i18n.t("sendPage.confirmTransactionModal.content", {
                                                 amount: (amount + feesAmount) / Math.pow(10, config.coinUnitPlaces),
                                                 fees: feesAmount / Math.pow(10, config.coinUnitPlaces),
                                                 total: amount / Math.pow(10, config.coinUnitPlaces),
                                             }),
                                             showCancelButton: true,
-                                            confirmButtonText: i18n.t('sendPage.confirmTransactionModal.confirmText'),
-                                            cancelButtonText: i18n.t('sendPage.confirmTransactionModal.cancelText'),
-                                        }).then(function (result) {
+                                            confirmButtonText: i18n.t("sendPage.confirmTransactionModal.confirmText"),
+                                            cancelButtonText: i18n.t("sendPage.confirmTransactionModal.cancelText"),
+                                        })
+                                            .then(function (result) {
                                             if (result.dismiss) {
-                                                reject('');
+                                                reject("");
                                             }
                                             else {
-                                                wallet.updateDepositFlags(foundDeposit_1.txHash, { withdrawPending: true }); // Update the deposit in the wallet
+                                                wallet.updateDepositFlags(foundDeposit_1.txHash, {
+                                                    withdrawPending: true,
+                                                }); // Update the deposit in the wallet
                                                 swal({
-                                                    title: i18n.t('sendPage.finalizingTransferModal.title'),
-                                                    html: i18n.t('sendPage.finalizingTransferModal.content'),
+                                                    title: i18n.t("sendPage.finalizingTransferModal.title"),
+                                                    html: i18n.t("sendPage.finalizingTransferModal.content"),
                                                     onOpen: function () {
                                                         swal.showLoading();
-                                                    }
+                                                    },
                                                 });
                                                 resolve();
                                             }
-                                        }).catch(reject);
+                                        })
+                                            .catch(reject);
                                     }, 500);
                                 });
-                            }, mixinToSendWith, "", "", 0, "withdraw", foundDeposit_1.term).then(function (rawTxData) {
+                            }, mixinToSendWith, "", "", 0, "withdraw", foundDeposit_1.term)
+                                .then(function (rawTxData) {
                                 //console.log('Raw transaction data:', rawTxData.raw.raw);
-                                blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
+                                blockchainExplorer
+                                    .sendRawTx(rawTxData.raw.raw)
+                                    .then(function () {
                                     setTimeout(function () {
                                         //save the tx private key
                                         wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
@@ -251,43 +308,53 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                                             watchdog.checkMempool();
                                         // Success
                                         swal({
-                                            type: 'success',
-                                            title: i18n.t('depositsPage.createDeposit.withdrawSuccess'),
-                                            html: "TxHash:<br>\n                <a href=\"".concat(config.mainnetExplorerUrlHash.replace('{ID}', rawTxData.raw.hash), "\" \n                target=\"_blank\" class=\"tx-hash-value\">").concat(rawTxData.raw.hash, "</a>")
+                                            type: "success",
+                                            title: i18n.t("depositsPage.createDeposit.withdrawSuccess"),
+                                            html: "TxHash:<br>\n                <a href=\"".concat(config.mainnetExplorerUrlHash.replace("{ID}", rawTxData.raw.hash), "\" \n                target=\"_blank\" class=\"tx-hash-value\">").concat(rawTxData.raw.hash, "</a>"),
                                         });
                                         var promise = Promise.resolve();
                                         promise.then(function () {
-                                            console.log('Withdrawal successfully submitted to the blockchain');
+                                            console.log("Withdrawal successfully submitted to the blockchain");
                                         });
                                     }, 5);
-                                }).catch(function (data) {
+                                })
+                                    .catch(function (data) {
                                     setTimeout(function () {
-                                        wallet.updateDepositFlags(foundDeposit_1.txHash, { withdrawPending: false });
+                                        wallet.updateDepositFlags(foundDeposit_1.txHash, {
+                                            withdrawPending: false,
+                                        });
                                         swal({
-                                            type: 'error',
-                                            title: i18n.t('sendPage.transferExceptionModal.title'),
-                                            html: i18n.t('sendPage.transferExceptionModal.content', { details: JSON.stringify(data) }),
-                                            confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                            type: "error",
+                                            title: i18n.t("sendPage.transferExceptionModal.title"),
+                                            html: i18n.t("sendPage.transferExceptionModal.content", {
+                                                details: JSON.stringify(data),
+                                            }),
+                                            confirmButtonText: i18n.t("sendPage.transferExceptionModal.confirmText"),
                                         });
                                     }, 5);
                                 });
                                 swal.close();
-                            }).catch(function (error) {
+                            })
+                                .catch(function (error) {
                                 setTimeout(function () {
-                                    if (error && error !== '') {
-                                        if (typeof error === 'string')
+                                    if (error && error !== "") {
+                                        if (typeof error === "string")
                                             swal({
-                                                type: 'error',
-                                                title: i18n.t('sendPage.transferExceptionModal.title'),
-                                                html: i18n.t('sendPage.transferExceptionModal.content', { details: error }),
-                                                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                                type: "error",
+                                                title: i18n.t("sendPage.transferExceptionModal.title"),
+                                                html: i18n.t("sendPage.transferExceptionModal.content", {
+                                                    details: error,
+                                                }),
+                                                confirmButtonText: i18n.t("sendPage.transferExceptionModal.confirmText"),
                                             });
                                         else
                                             swal({
-                                                type: 'error',
-                                                title: i18n.t('sendPage.transferExceptionModal.title'),
-                                                html: i18n.t('sendPage.transferExceptionModal.content', { details: JSON.stringify(error) }),
-                                                confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                                type: "error",
+                                                title: i18n.t("sendPage.transferExceptionModal.title"),
+                                                html: i18n.t("sendPage.transferExceptionModal.content", {
+                                                    details: JSON.stringify(error),
+                                                }),
+                                                confirmButtonText: i18n.t("sendPage.transferExceptionModal.confirmText"),
                                             });
                                     }
                                 }, 100);
@@ -295,11 +362,11 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             return [3 /*break*/, 4];
                         case 2:
                             error_1 = _a.sent();
-                            console.error('Error withdrawing deposit:', error_1);
+                            console.error("Error withdrawing deposit:", error_1);
                             swal({
-                                type: 'error',
-                                title: i18n.t('depositsPage.withdrawError'),
-                                text: error_1 instanceof Error ? error_1.message : String(error_1)
+                                type: "error",
+                                title: i18n.t("depositsPage.withdrawError"),
+                                text: error_1 instanceof Error ? error_1.message : String(error_1),
                             });
                             return [3 /*break*/, 4];
                         case 3:
@@ -323,7 +390,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             fee = new JSBigInt(config.coinFee);
                             neededAmount = amountToDeposit.add(fee);
                             if (neededAmount > wallet.availableAmount(blockchainHeight_2)) {
-                                console.log('Not enough money to deposit');
+                                console.log("Not enough money to deposit");
                                 return [2 /*return*/];
                             }
                             termToDeposit = term > 12 ? 12 * config.depositMinTermBlock : term * config.depositMinTermBlock;
@@ -339,28 +406,31 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             }, function (amount, feesAmount) {
                                 if (amount + feesAmount > wallet.availableAmount(blockchainHeight_2)) {
                                     swal({
-                                        type: 'error',
-                                        title: i18n.t('sendPage.notEnoughMoneyModal.title'),
-                                        text: i18n.t('sendPage.notEnoughMoneyModal.content'),
-                                        confirmButtonText: i18n.t('sendPage.notEnoughMoneyModal.confirmText'),
+                                        type: "error",
+                                        title: i18n.t("sendPage.notEnoughMoneyModal.title"),
+                                        text: i18n.t("sendPage.notEnoughMoneyModal.content"),
+                                        confirmButtonText: i18n.t("sendPage.notEnoughMoneyModal.confirmText"),
                                         onOpen: function () {
                                             swal.hideLoading();
-                                        }
+                                        },
                                     });
-                                    throw '';
+                                    throw "";
                                 }
                                 else if (amount < config.depositMinAmountCoin * Math.pow(10, config.coinUnitPlaces)) {
                                     swal({
-                                        type: 'error',
-                                        title: i18n.t('depositsPage.createDeposit.amountError'),
-                                        confirmButtonText: 'OK'
+                                        type: "error",
+                                        title: i18n.t("depositsPage.createDeposit.amountError"),
+                                        confirmButtonText: "OK",
                                     });
-                                    throw '';
+                                    throw "";
                                 }
                                 return Promise.resolve();
-                            }, mixinToSendWith, "", 0, "deposit", termToDeposit).then(function (rawTxData) {
+                            }, mixinToSendWith, "", 0, "deposit", termToDeposit)
+                                .then(function (rawTxData) {
                                 // console.log(JSON.stringify(rawTxData, null, 2));
-                                blockchainExplorer.sendRawTx(rawTxData.raw.raw).then(function () {
+                                blockchainExplorer
+                                    .sendRawTx(rawTxData.raw.raw)
+                                    .then(function () {
                                     //save the tx private key
                                     wallet.addTxPrivateKeyWithTxHash(rawTxData.raw.hash, rawTxData.raw.prvkey);
                                     //force a mempool check so the user is up to date
@@ -369,56 +439,62 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                                         watchdog.checkMempool();
                                     // Success
                                     swal({
-                                        type: 'success',
-                                        title: i18n.t('depositsPage.createDeposit.createSuccess'),
-                                        html: "TxHash:<br>\n                <a href=\"".concat(config.mainnetExplorerUrlHash.replace('{ID}', rawTxData.raw.hash), "\" \n                target=\"_blank\" class=\"tx-hash-value\">").concat(rawTxData.raw.hash, "</a>")
+                                        type: "success",
+                                        title: i18n.t("depositsPage.createDeposit.createSuccess"),
+                                        html: "TxHash:<br>\n                <a href=\"".concat(config.mainnetExplorerUrlHash.replace("{ID}", rawTxData.raw.hash), "\" \n                target=\"_blank\" class=\"tx-hash-value\">").concat(rawTxData.raw.hash, "</a>"),
                                     });
                                     var promise = Promise.resolve();
                                     promise.then(function () {
-                                        console.log('Deposit successfully submitted to the blockchain');
+                                        console.log("Deposit successfully submitted to the blockchain");
                                     });
-                                }).catch(function (error) {
-                                    console.error('Transaction creation error:', error);
+                                })
+                                    .catch(function (error) {
+                                    console.error("Transaction creation error:", error);
                                     // Wait a short moment to ensure all console logs are printed
                                     setTimeout(function () {
                                         swal({
-                                            type: 'error',
-                                            title: i18n.t('sendPage.transferExceptionModal.title'),
-                                            html: i18n.t('sendPage.transferExceptionModal.content', {
-                                                details: error instanceof Error ? error.message : JSON.stringify(error)
+                                            type: "error",
+                                            title: i18n.t("sendPage.transferExceptionModal.title"),
+                                            html: i18n.t("sendPage.transferExceptionModal.content", {
+                                                details: error instanceof Error ? error.message : JSON.stringify(error),
                                             }),
-                                            confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                            confirmButtonText: i18n.t("sendPage.transferExceptionModal.confirmText"),
                                         });
                                     }, 100);
                                 });
                                 swal.close();
-                            }).catch(function (error) {
+                            })
+                                .catch(function (error) {
                                 //console.log(error);
-                                if (error && error !== '') {
-                                    if (typeof error === 'string')
+                                if (error && error !== "") {
+                                    if (typeof error === "string")
                                         swal({
-                                            type: 'error',
-                                            title: i18n.t('sendPage.transferExceptionModal.title'),
-                                            html: i18n.t('sendPage.transferExceptionModal.content', { details: error }),
-                                            confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                            type: "error",
+                                            title: i18n.t("sendPage.transferExceptionModal.title"),
+                                            html: i18n.t("sendPage.transferExceptionModal.content", {
+                                                details: error,
+                                            }),
+                                            confirmButtonText: i18n.t("sendPage.transferExceptionModal.confirmText"),
                                         });
                                     else
                                         swal({
-                                            type: 'error',
-                                            title: i18n.t('sendPage.transferExceptionModal.title'),
-                                            html: i18n.t('sendPage.transferExceptionModal.content', { details: JSON.stringify(error) }),
-                                            confirmButtonText: i18n.t('sendPage.transferExceptionModal.confirmText'),
+                                            type: "error",
+                                            title: i18n.t("sendPage.transferExceptionModal.title"),
+                                            html: i18n.t("sendPage.transferExceptionModal.content", {
+                                                details: JSON.stringify(error),
+                                            }),
+                                            confirmButtonText: i18n.t("sendPage.transferExceptionModal.confirmText"),
                                         });
                                 }
                             });
                             return [3 /*break*/, 4];
                         case 2:
                             error_2 = _a.sent();
-                            console.error('Error creating deposit:', error_2);
+                            console.error("Error creating deposit:", error_2);
                             swal({
-                                type: 'error',
-                                title: i18n.t('depositsPage.createError'),
-                                text: error_2 instanceof Error ? error_2.message : String(error_2)
+                                type: "error",
+                                title: i18n.t("depositsPage.createError"),
+                                text: error_2 instanceof Error ? error_2.message : String(error_2),
                             });
                             return [3 /*break*/, 4];
                         case 3:
@@ -443,16 +519,16 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 // Calculate max amount once to ensure consistency
                 var maxAmount = _this.maxDepositAmount;
                 swal({
-                    title: i18n.t('depositsPage.createDeposit.title'),
-                    html: "\n          <div class=\"deposit-form\" style=\"width: 100%; max-width: 400px; margin: 0 auto;\">\n            <div class=\"input-group\" style=\"margin-bottom: 20px;\">\n              <input id=\"depositAmount\" type=\"number\" min=\"".concat(config.depositMinAmountCoin, "\" step=\"1\" max=\"").concat(maxAmount, "\" pattern=\"\\d*\" class=\"swal2-input\" \n                placeholder=\"").concat(i18n.t('depositsPage.createDeposit.amount'), "\"\n                onkeypress=\"return event.charCode >= 48 && event.charCode <= 57\"\n                style=\"width: 100%; max-width: 300px; margin: 8px auto;\">\n              <p style=\"text-align: center; color: #666; margin: 4px 0 0 0; font-size: 0.9em; cursor: pointer;\" id=\"maxAmountText\">\n                ").concat(i18n.t('depositsPage.createDeposit.maxAmount', { amount: maxAmount }), "\n              </p>\n            </div>\n            <div class=\"input-group\">\n              <input id=\"depositTerm\" type=\"number\" min=\"").concat(config.depositMinTermMonth, "\" max=\"").concat(config.depositMaxTermMonth, "\" step=\"1\" pattern=\"\\d*\" class=\"swal2-input\" \n                placeholder=\"").concat(i18n.t('depositsPage.createDeposit.term'), "\"\n                onkeypress=\"return event.charCode >= 48 && event.charCode <= 57\"\n                style=\"width: 100%; max-width: 300px; margin: 8px auto;\">\n            </div>\n            <p style=\"text-align: center; color: #666; margin: 10px 0 0 0; font-size: 1em; font-weight: bold;\" id=\"rewardText\">\n              ").concat(i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: '0' }), "\n            </p>\n          </div>\n        "),
+                    title: i18n.t("depositsPage.createDeposit.title"),
+                    html: "\n          <div class=\"deposit-form\" style=\"width: 100%; max-width: 400px; margin: 0 auto;\">\n            <div class=\"input-group\" style=\"margin-bottom: 20px;\">\n              <input id=\"depositAmount\" type=\"number\" min=\"".concat(config.depositMinAmountCoin, "\" step=\"1\" max=\"").concat(maxAmount, "\" pattern=\"\\d*\" class=\"swal2-input\" \n                placeholder=\"").concat(i18n.t("depositsPage.createDeposit.amount"), "\"\n                onkeypress=\"return event.charCode >= 48 && event.charCode <= 57\"\n                style=\"width: 100%; max-width: 300px; margin: 8px auto;\">\n              <p style=\"text-align: center; color: #666; margin: 4px 0 0 0; font-size: 0.9em; cursor: pointer;\" id=\"maxAmountText\">\n                ").concat(i18n.t("depositsPage.createDeposit.maxAmount", { amount: maxAmount }), "\n              </p>\n            </div>\n            <div class=\"input-group\">\n              <input id=\"depositTerm\" type=\"number\" min=\"").concat(config.depositMinTermMonth, "\" max=\"").concat(config.depositMaxTermMonth, "\" step=\"1\" pattern=\"\\d*\" class=\"swal2-input\" \n                placeholder=\"").concat(i18n.t("depositsPage.createDeposit.term"), "\"\n                onkeypress=\"return event.charCode >= 48 && event.charCode <= 57\"\n                style=\"width: 100%; max-width: 300px; margin: 8px auto;\">\n            </div>\n            <p style=\"text-align: center; color: #666; margin: 10px 0 0 0; font-size: 1em; font-weight: bold;\" id=\"rewardText\">\n              ").concat(i18n.t("depositsPage.createDeposit.rewardAtTerm", { reward: "0" }), "\n            </p>\n          </div>\n        "),
                     showCancelButton: true,
-                    confirmButtonText: i18n.t('depositsPage.createDeposit.confirm'),
-                    cancelButtonText: i18n.t('depositsPage.createDeposit.cancel'),
+                    confirmButtonText: i18n.t("depositsPage.createDeposit.confirm"),
+                    cancelButtonText: i18n.t("depositsPage.createDeposit.cancel"),
                     onOpen: function () {
                         var _a;
                         // Add click event handler to the maximum amount text
-                        (_a = document.getElementById('maxAmountText')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () {
-                            var depositAmountInput = document.getElementById('depositAmount');
+                        (_a = document.getElementById("maxAmountText")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", function () {
+                            var depositAmountInput = document.getElementById("depositAmount");
                             if (depositAmountInput) {
                                 depositAmountInput.value = maxAmount.toString();
                                 // Update reward info based on the new amount value
@@ -460,23 +536,23 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             }
                         });
                         // Add input event listener to update reward information when deposit amount changes
-                        var depositAmountInput = document.getElementById('depositAmount');
-                        var depositTermInput = document.getElementById('depositTerm');
+                        var depositAmountInput = document.getElementById("depositAmount");
+                        var depositTermInput = document.getElementById("depositTerm");
                         if (depositAmountInput) {
-                            depositAmountInput.addEventListener('input', function () {
+                            depositAmountInput.addEventListener("input", function () {
                                 updateRewardInfo();
                             });
                         }
                         // Add input event listener for term changes as well
                         if (depositTermInput) {
-                            depositTermInput.addEventListener('input', function () {
+                            depositTermInput.addEventListener("input", function () {
                                 updateRewardInfo();
                             });
                         }
                         // Function to update the reward calculation
                         function updateRewardInfo() {
-                            var amount = parseInt(document.getElementById('depositAmount').value) || 0;
-                            var term = parseInt(document.getElementById('depositTerm').value) || 0;
+                            var amount = parseInt(document.getElementById("depositAmount").value) || 0;
+                            var term = parseInt(document.getElementById("depositTerm").value) || 0;
                             var aprIndex = 0;
                             if (amount >= 20000) {
                                 aprIndex = 2;
@@ -487,45 +563,48 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             // Calculate interest using the InterestCalculator class
                             var termBlocks = term * config.depositMinTermBlock; // Convert term (months) to blocks
                             // Get current blockchain height for interest calculation
-                            blockchainExplorer.getHeight().then(function (height) {
+                            blockchainExplorer
+                                .getHeight()
+                                .then(function (height) {
                                 // Calculate the interest using our Interest class
                                 var reward = Interest_1.InterestCalculator.calculateInterest(amount * Math.pow(10, config.coinUnitPlaces), // Convert to atomic units
                                 termBlocks, height) / Math.pow(10, config.coinUnitPlaces); // Convert back to human-readable amount
                                 // Update reward text
-                                var rewardText = document.getElementById('rewardText');
+                                var rewardText = document.getElementById("rewardText");
                                 if (rewardText) {
                                     // First format with full decimal places
                                     var rewardFixed = reward.toFixed(config.coinUnitPlaces); // 6 decimals
                                     // Remove trailing zeros using a for loop (up to 4 times)
                                     for (var i = 0; i < 4; i++) {
-                                        if (rewardFixed.endsWith('0')) {
+                                        if (rewardFixed.endsWith("0")) {
                                             rewardFixed = rewardFixed.slice(0, -1);
                                         }
                                         else {
                                             break;
                                         }
                                     }
-                                    rewardText.textContent = i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: rewardFixed });
+                                    rewardText.textContent = i18n.t("depositsPage.createDeposit.rewardAtTerm", { reward: rewardFixed });
                                 }
-                            }).catch(function (error) {
-                                console.log('Failed to get blockchain height:', error);
+                            })
+                                .catch(function (error) {
+                                console.log("Failed to get blockchain height:", error);
                                 // Fallback to the old calculation method if we can't get the height
                                 var aprRate = config.depositRateV3[aprIndex];
                                 var adjustedRate = aprRate + (term - 1) * 0.001;
-                                var reward = amount * term * adjustedRate / 12;
+                                var reward = (amount * term * adjustedRate) / 12;
                                 // Update reward text
-                                var rewardText = document.getElementById('rewardText');
+                                var rewardText = document.getElementById("rewardText");
                                 if (rewardText) {
                                     var rewardFixed = reward.toFixed(config.coinUnitPlaces);
                                     for (var i = 0; i < 4; i++) {
-                                        if (rewardFixed.endsWith('0')) {
+                                        if (rewardFixed.endsWith("0")) {
                                             rewardFixed = rewardFixed.slice(0, -1);
                                         }
                                         else {
                                             break;
                                         }
                                     }
-                                    rewardText.textContent = i18n.t('depositsPage.createDeposit.rewardAtTerm', { reward: rewardFixed });
+                                    rewardText.textContent = i18n.t("depositsPage.createDeposit.rewardAtTerm", { reward: rewardFixed });
                                 }
                             });
                         }
@@ -533,29 +612,29 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                         updateRewardInfo();
                     },
                     preConfirm: function () {
-                        var amountInput = document.getElementById('depositAmount').value;
-                        var termInput = document.getElementById('depositTerm').value;
+                        var amountInput = document.getElementById("depositAmount").value;
+                        var termInput = document.getElementById("depositTerm").value;
                         // Clean and validate amount
-                        var cleanAmount = amountInput.replace(/[^0-9]/g, '');
+                        var cleanAmount = amountInput.replace(/[^0-9]/g, "");
                         var amount = parseInt(cleanAmount);
                         // Clean and validate term
-                        var cleanTerm = termInput.replace(/[^0-9]/g, '');
+                        var cleanTerm = termInput.replace(/[^0-9]/g, "");
                         var term = parseInt(cleanTerm);
                         // Validate amount
                         if (isNaN(amount) || amount < 1 || !Number.isInteger(amount) || amount > maxAmount) {
                             swal({
-                                title: i18n.t('depositsPage.createDeposit.amountError'),
-                                type: 'error',
-                                confirmButtonText: 'OK'
+                                title: i18n.t("depositsPage.createDeposit.amountError"),
+                                type: "error",
+                                confirmButtonText: "OK",
                             });
                             return false;
                         }
                         // Validate term
                         if (isNaN(term) || term < 1 || term > 12 || !Number.isInteger(term)) {
                             swal({
-                                title: i18n.t('depositsPage.createDeposit.termError'),
-                                type: 'error',
-                                confirmButtonText: 'OK'
+                                title: i18n.t("depositsPage.createDeposit.termError"),
+                                type: "error",
+                                confirmButtonText: "OK",
                             });
                             return false;
                         }
@@ -565,32 +644,34 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             DepositsView.currentInstance.depositTerm = term;
                         }
                         return true;
-                    }
-                }).then(function (result) {
+                    },
+                })
+                    .then(function (result) {
                     if (result && result.value) {
                         // After initial modal confirmation, show password prompt
                         return swal({
-                            title: i18n.t('depositsPage.confirmDeposit.title'),
-                            text: i18n.t('depositsPage.confirmDeposit.message', {
+                            title: i18n.t("depositsPage.confirmDeposit.title"),
+                            text: i18n.t("depositsPage.confirmDeposit.message", {
                                 amount: _this.depositAmount,
-                                term: _this.depositTerm
+                                term: _this.depositTerm,
                             }),
-                            input: 'password',
+                            input: "password",
                             showCancelButton: true,
-                            confirmButtonText: i18n.t('depositsPage.confirmDeposit.confirm'),
-                            cancelButtonText: i18n.t('depositsPage.confirmDeposit.cancel')
+                            confirmButtonText: i18n.t("depositsPage.confirmDeposit.confirm"),
+                            cancelButtonText: i18n.t("depositsPage.confirmDeposit.cancel"),
                         });
                     }
-                }).then(function (result) {
+                })
+                    .then(function (result) {
                     if (result && result.value) {
                         var savePassword = result.value;
                         // Show loading state
                         swal({
-                            type: 'info',
-                            title: i18n.t('global.loading'),
+                            type: "info",
+                            title: i18n.t("global.loading"),
                             onOpen: function () {
                                 swal.showLoading();
-                            }
+                            },
                         });
                         // Verify password using WalletRepository
                         return WalletRepository_1.WalletRepository.getLocalWalletWithPassword(savePassword)
@@ -603,24 +684,25 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             else {
                                 // Password is incorrect
                                 return swal({
-                                    type: 'error',
-                                    title: i18n.t('global.invalidPasswordModal.title'),
-                                    text: i18n.t('global.invalidPasswordModal.content'),
-                                    confirmButtonText: i18n.t('global.invalidPasswordModal.confirmText')
+                                    type: "error",
+                                    title: i18n.t("global.invalidPasswordModal.title"),
+                                    text: i18n.t("global.invalidPasswordModal.content"),
+                                    confirmButtonText: i18n.t("global.invalidPasswordModal.confirmText"),
                                 });
                             }
                         })
                             .catch(function (error) {
-                            console.error('Error validating password:', error);
+                            console.error("Error validating password:", error);
                             return swal({
-                                type: 'error',
-                                title: i18n.t('global.error'),
-                                text: i18n.t('global.invalidPasswordModal.content')
+                                type: "error",
+                                title: i18n.t("global.error"),
+                                text: i18n.t("global.invalidPasswordModal.content"),
                             });
                         });
                     }
-                }).catch(function (error) {
-                    console.error('Error in deposit modal:', error);
+                })
+                    .catch(function (error) {
+                    console.error("Error in deposit modal:", error);
                 });
             };
             _this.intervalRefresh = setInterval(function () {
@@ -701,13 +783,13 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             (0, VueAnnotate_1.VueVar)(0)
         ], DepositsView.prototype, "futureInterestUnlocked", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], DepositsView.prototype, "earliestUnlockableDate", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
         ], DepositsView.prototype, "earliestUnlockableIsPast", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], DepositsView.prototype, "ticker", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(0)
@@ -724,15 +806,17 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         return DepositsView;
     }(DestructableView_1.DestructableView));
     if (wallet !== null && blockchainExplorer !== null)
-        new DepositsView('#app');
+        new DepositsView("#app");
     else {
-        AppState_1.AppState.askUserOpenWallet(false).then(function () {
-            wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, 'default', false);
+        AppState_1.AppState.askUserOpenWallet(false)
+            .then(function () {
+            wallet = (0, DependencyInjector_1.DependencyInjectorInstance)().getInstance(Wallet_1.Wallet.name, "default", false);
             if (wallet === null)
-                throw 'e';
-            new DepositsView('#app');
-        }).catch(function () {
-            window.location.href = '#index';
+                throw "e";
+            new DepositsView("#app");
+        })
+            .catch(function () {
+            window.location.href = "#index";
         });
     }
 });

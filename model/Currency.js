@@ -34,7 +34,7 @@ define(["require", "exports"], function (require, exports) {
         function Currency() {
         }
         //Fusion
-        Currency.fusionTxMaxSize = CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE * 30 / 100;
+        Currency.fusionTxMaxSize = (CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE * 30) / 100;
         Currency.fusionTxMinInputCount = 12; // 12 is the default value in C++
         Currency.fusionTxMaxInputCount = 100; // 100 is the default value in C++
         Currency.fusionTxMinInOutCountRatio = 4;
@@ -71,8 +71,12 @@ define(["require", "exports"], function (require, exports) {
             // Calculate sizes of different transaction components
             var outputsSize = outputCount * (OUTPUT_TAG_SIZE + OUTPUT_KEY_SIZE + AMOUNT_SIZE);
             var headerSize = TRANSACTION_VERSION_SIZE + TRANSACTION_UNLOCK_TIME_SIZE + EXTRA_TAG_SIZE + PUBLIC_KEY_SIZE;
-            var inputSize = INPUT_TAG_SIZE + AMOUNT_SIZE + KEY_IMAGE_SIZE + SIGNATURE_SIZE +
-                GLOBAL_INDEXES_VECTOR_SIZE_SIZE + GLOBAL_INDEXES_INITIAL_VALUE_SIZE +
+            var inputSize = INPUT_TAG_SIZE +
+                AMOUNT_SIZE +
+                KEY_IMAGE_SIZE +
+                SIGNATURE_SIZE +
+                GLOBAL_INDEXES_VECTOR_SIZE_SIZE +
+                GLOBAL_INDEXES_INITIAL_VALUE_SIZE +
                 mixinCount * (GLOBAL_INDEXES_DIFFERENCE_SIZE + SIGNATURE_SIZE);
             // Calculate and return the maximum number of inputs that can fit
             return Math.floor((transactionSize - headerSize - outputsSize) / inputSize);
@@ -81,11 +85,15 @@ define(["require", "exports"], function (require, exports) {
             // Calculate sizes of different transaction components
             var outputsSize = outputCount * (OUTPUT_TAG_SIZE + OUTPUT_KEY_SIZE + AMOUNT_SIZE);
             var headerSize = TRANSACTION_VERSION_SIZE + TRANSACTION_UNLOCK_TIME_SIZE + EXTRA_TAG_SIZE + PUBLIC_KEY_SIZE;
-            var inputSize = INPUT_TAG_SIZE + AMOUNT_SIZE + KEY_IMAGE_SIZE + SIGNATURE_SIZE +
-                GLOBAL_INDEXES_VECTOR_SIZE_SIZE + GLOBAL_INDEXES_INITIAL_VALUE_SIZE +
+            var inputSize = INPUT_TAG_SIZE +
+                AMOUNT_SIZE +
+                KEY_IMAGE_SIZE +
+                SIGNATURE_SIZE +
+                GLOBAL_INDEXES_VECTOR_SIZE_SIZE +
+                GLOBAL_INDEXES_INITIAL_VALUE_SIZE +
                 mixinCount * (GLOBAL_INDEXES_DIFFERENCE_SIZE + SIGNATURE_SIZE);
             // Return total approximate size
-            return headerSize + (inputCount * inputSize) + outputsSize;
+            return headerSize + inputCount * inputSize + outputsSize;
         };
         return Currency;
     }());

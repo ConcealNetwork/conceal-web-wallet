@@ -57,13 +57,13 @@ define(["require", "exports"], function (require, exports) {
     var IndexedDBStorage = /** @class */ (function () {
         function IndexedDBStorage() {
             var _this = this;
-            this.dbName = 'mydb';
-            this.storeName = 'storage';
+            this.dbName = "mydb";
+            this.storeName = "storage";
             this.ready = new Promise(function (resolve, reject) {
                 var request = indexedDB.open(_this.dbName);
                 request.onupgradeneeded = function (event) {
                     _this.db = event.target.result;
-                    _this.db.createObjectStore(_this.storeName, { keyPath: 'key' });
+                    _this.db.createObjectStore(_this.storeName, { keyPath: "key" });
                 };
                 request.onsuccess = function (event) {
                     _this.db = event.target.result;
@@ -82,7 +82,7 @@ define(["require", "exports"], function (require, exports) {
                         case 0: return [4 /*yield*/, this.ready];
                         case 1:
                             _a.sent();
-                            transaction = this.db.transaction(this.storeName, 'readwrite');
+                            transaction = this.db.transaction(this.storeName, "readwrite");
                             store = transaction.objectStore(this.storeName);
                             return [4 /*yield*/, store.put({ key: key, value: value })];
                         case 2:
@@ -102,7 +102,7 @@ define(["require", "exports"], function (require, exports) {
                         case 1:
                             _a.sent();
                             return [2 /*return*/, new Promise(function (resolve, reject) {
-                                    var transaction = _this.db.transaction(_this.storeName, 'readonly');
+                                    var transaction = _this.db.transaction(_this.storeName, "readonly");
                                     var store = transaction.objectStore(_this.storeName);
                                     var request = store.get(key);
                                     request.onsuccess = function () {
@@ -125,7 +125,7 @@ define(["require", "exports"], function (require, exports) {
                         case 0: return [4 /*yield*/, this.ready];
                         case 1:
                             _a.sent();
-                            transaction = this.db.transaction(this.storeName, 'readonly');
+                            transaction = this.db.transaction(this.storeName, "readonly");
                             store = transaction.objectStore(this.storeName);
                             return [4 /*yield*/, store.getAllKeys()];
                         case 2:
@@ -143,7 +143,7 @@ define(["require", "exports"], function (require, exports) {
                         case 0: return [4 /*yield*/, this.ready];
                         case 1:
                             _a.sent();
-                            transaction = this.db.transaction(this.storeName, 'readwrite');
+                            transaction = this.db.transaction(this.storeName, "readwrite");
                             store = transaction.objectStore(this.storeName);
                             return [4 /*yield*/, store.delete(key)];
                         case 2:
@@ -161,7 +161,7 @@ define(["require", "exports"], function (require, exports) {
                         case 0: return [4 /*yield*/, this.ready];
                         case 1:
                             _a.sent();
-                            transaction = this.db.transaction(this.storeName, 'readwrite');
+                            transaction = this.db.transaction(this.storeName, "readwrite");
                             store = transaction.objectStore(this.storeName);
                             return [4 /*yield*/, store.clear()];
                         case 2:

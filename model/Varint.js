@@ -28,7 +28,7 @@ define(["require", "exports"], function (require, exports) {
         if (offset === void 0) { offset = 0; }
         if (Number.MAX_SAFE_INTEGER && num > Number.MAX_SAFE_INTEGER) {
             exports.encode.bytes = 0;
-            throw new RangeError('Could not encode varint');
+            throw new RangeError("Could not encode varint");
         }
         var oldOffset = offset;
         while (num >= INT) {
@@ -50,7 +50,7 @@ define(["require", "exports"], function (require, exports) {
         do {
             if (shift > l) {
                 exports.decode.bytes = 0;
-                throw new RangeError('Could not decode varint');
+                throw new RangeError("Could not decode varint");
             }
             b = buf[counter++];
             res += (b & REST) * shift;

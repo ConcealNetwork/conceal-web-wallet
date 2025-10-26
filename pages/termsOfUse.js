@@ -23,6 +23,6 @@ define(["require", "exports", "../model/AppState", "../lib/numbersLab/Destructab
         }
         return TermsOfUseView;
     }(DestructableView_1.DestructableView));
-    new TermsOfUseView('#app');
+    new TermsOfUseView("#app");
     AppState_1.AppState.enableLeftMenu();
 });

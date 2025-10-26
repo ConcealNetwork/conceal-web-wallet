@@ -47,27 +47,27 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         __extends(ImportView, _super);
         function ImportView(container) {
             var _this = _super.call(this, container) || this;
-            _this.languages.push({ key: 'auto', name: 'Detect automatically' });
-            _this.languages.push({ key: 'english', name: 'English' });
-            _this.languages.push({ key: 'chinese', name: 'Chinese (simplified)' });
-            _this.languages.push({ key: 'dutch', name: 'Dutch' });
-            _this.languages.push({ key: 'electrum', name: 'Electrum' });
-            _this.languages.push({ key: 'esperanto', name: 'Esperanto' });
-            _this.languages.push({ key: 'french', name: 'French' });
-            _this.languages.push({ key: 'italian', name: 'Italian' });
-            _this.languages.push({ key: 'japanese', name: 'Japanese' });
-            _this.languages.push({ key: 'lojban', name: 'Lojban' });
-            _this.languages.push({ key: 'portuguese', name: 'Portuguese' });
-            _this.languages.push({ key: 'russian', name: 'Russian' });
-            _this.languages.push({ key: 'spanish', name: 'Spanish' });
-            _this.languages.push({ key: 'ukrainian', name: 'Ukrainian' });
-            _this.language = 'auto';
+            _this.languages.push({ key: "auto", name: "Detect automatically" });
+            _this.languages.push({ key: "english", name: "English" });
+            _this.languages.push({ key: "chinese", name: "Chinese (simplified)" });
+            _this.languages.push({ key: "dutch", name: "Dutch" });
+            _this.languages.push({ key: "electrum", name: "Electrum" });
+            _this.languages.push({ key: "esperanto", name: "Esperanto" });
+            _this.languages.push({ key: "french", name: "French" });
+            _this.languages.push({ key: "italian", name: "Italian" });
+            _this.languages.push({ key: "japanese", name: "Japanese" });
+            _this.languages.push({ key: "lojban", name: "Lojban" });
+            _this.languages.push({ key: "portuguese", name: "Portuguese" });
+            _this.languages.push({ key: "russian", name: "Russian" });
+            _this.languages.push({ key: "spanish", name: "Spanish" });
+            _this.languages.push({ key: "ukrainian", name: "Ukrainian" });
+            _this.language = "auto";
             return _this;
         }
         ImportView.prototype.formValid = function () {
             if (this.password != this.password2)
                 return false;
-            if (!(this.password !== '' && (!this.insecurePassword || this.forceInsecurePassword)))
+            if (!(this.password !== "" && (!this.insecurePassword || this.forceInsecurePassword)))
                 return false;
             if (!this.validMnemonicPhrase)
                 return false;
@@ -75,17 +75,21 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         };
         ImportView.prototype.importWallet = function () {
             var self = this;
-            $('#pageLoading').show();
-            blockchainExplorer.initialize().then(function () {
+            $("#pageLoading").show();
+            blockchainExplorer
+                .initialize()
+                .then(function () {
                 // Add a small delay to ensure nodes are fully ready
                 setTimeout(function () {
-                    blockchainExplorer.getHeight().then(function (currentHeight) {
-                        $('#pageLoading').hide();
+                    blockchainExplorer
+                        .getHeight()
+                        .then(function (currentHeight) {
+                        $("#pageLoading").hide();
                         var newWallet = new Wallet_1.Wallet();
                         var mnemonic = self.mnemonicPhrase.trim();
                         // let current_lang = 'english';
-                        var current_lang = 'english';
-                        if (self.language === 'auto') {
+                        var current_lang = "english";
+                        if (self.language === "auto") {
                             var detectedLang = Mnemonic_1.Mnemonic.detectLang(self.mnemonicPhrase.trim());
                             if (detectedLang !== null)
                                 current_lang = detectedLang;
@@ -105,24 +109,26 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                             newWallet_1.lastHeight = height;
                             newWallet_1.creationHeight = newWallet_1.lastHeight;
                             AppState_1.AppState.openWallet(newWallet_1, self.password);
-                            window.location.href = '#account';
+                            window.location.href = "#account";
                         }
                         else {
                             swal({
-                                type: 'error',
-                                title: i18n.t('global.invalidMnemonicModal.title'),
-                                text: i18n.t('global.invalidMnemonicModal.content'),
-                                confirmButtonText: i18n.t('global.invalidMnemonicModal.confirmText'),
+                                type: "error",
+                                title: i18n.t("global.invalidMnemonicModal.title"),
+                                text: i18n.t("global.invalidMnemonicModal.content"),
+                                confirmButtonText: i18n.t("global.invalidMnemonicModal.confirmText"),
                             });
                         }
-                    }).catch(function (err) {
+                    })
+                        .catch(function (err) {
                         console.log(err);
-                        $('#pageLoading').hide();
+                        $("#pageLoading").hide();
                     });
                 }, 100); // 100ms delay to ensure nodes are ready
-            }).catch(function (err) {
+            })
+                .catch(function (err) {
                 console.log(err);
-                $('#pageLoading').hide();
+                $("#pageLoading").hide();
             });
         };
         ImportView.prototype.passwordWatch = function () {
@@ -133,12 +139,12 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                 this.insecurePassword = false;
         };
         ImportView.prototype.importHeightWatch = function () {
-            if (this.importHeight === '')
+            if (this.importHeight === "")
                 this.importHeight = 0;
             if (this.importHeight < 0) {
                 this.importHeight = 0;
             }
-            this.importHeight = parseInt('' + this.importHeight);
+            this.importHeight = parseInt("" + this.importHeight);
         };
         ImportView.prototype.mnemonicPhraseWatch = function () {
             this.checkMnemonicValidity();
@@ -147,13 +153,13 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             this.checkMnemonicValidity();
         };
         ImportView.prototype.checkMnemonicValidity = function () {
-            var splitted = this.mnemonicPhrase.trim().split(' ');
+            var splitted = this.mnemonicPhrase.trim().split(" ");
             if (splitted.length != 25) {
                 this.validMnemonicPhrase = false;
             }
             else {
                 var detected = Mnemonic_1.Mnemonic.detectLang(this.mnemonicPhrase.trim());
-                if (this.language === 'auto')
+                if (this.language === "auto")
                     this.validMnemonicPhrase = detected !== null;
                 else
                     this.validMnemonicPhrase = detected === this.language;
@@ -164,10 +170,10 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             self.forceInsecurePassword = true;
         };
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ImportView.prototype, "password", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ImportView.prototype, "password2", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)(false)
@@ -179,13 +185,13 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             (0, VueAnnotate_1.VueVar)(0)
         ], ImportView.prototype, "importHeight", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ImportView.prototype, "mnemonicPhrase", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ImportView.prototype, "validMnemonicPhrase", void 0);
         __decorate([
-            (0, VueAnnotate_1.VueVar)('')
+            (0, VueAnnotate_1.VueVar)("")
         ], ImportView.prototype, "language", void 0);
         __decorate([
             (0, VueAnnotate_1.VueVar)([])
@@ -204,5 +210,5 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
         ], ImportView.prototype, "languageWatch", null);
         return ImportView;
     }(DestructableView_1.DestructableView));
-    new ImportView('#app');
+    new ImportView("#app");
 });

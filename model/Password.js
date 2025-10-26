@@ -44,10 +44,10 @@ define(["require", "exports"], function (require, exports) {
             if (password.length < 8 || numUpper < 1 || numLower < 1 || numNums < 1 || numSpecials < 1) {
                 if (raiseError) {
                     swal({
-                        type: 'error',
-                        title: i18n.t('global.passwordNotComplexEnoughModal.title'),
-                        text: i18n.t('global.passwordInvalidRequirements'),
-                        confirmButtonText: i18n.t('global.passwordNotComplexEnoughModal.confirmText'),
+                        type: "error",
+                        title: i18n.t("global.passwordNotComplexEnoughModal.title"),
+                        text: i18n.t("global.passwordInvalidRequirements"),
+                        confirmButtonText: i18n.t("global.passwordNotComplexEnoughModal.confirmText"),
                     });
                 }
                 return false;

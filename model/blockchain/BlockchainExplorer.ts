@@ -15,92 +15,92 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import {Wallet} from "../Wallet";
-import {CnTransactions} from "../Cn";
+import { Wallet } from "../Wallet";
+import { CnTransactions } from "../Cn";
 
 export type RawDaemon_Transaction = {
-    extra: string,
-    vout: {
-        amount: number,
-        target:{
-            type: string,
-            data: {
-	            key?: string,
-              keys?: string[],
-              required_signatures?: number,
-              term?: number
-            }
-        }
-    }[],
-    vin: {
-        type: string,
-        value?: CnTransactions.Vin,
-        gen?: { height: number }
-    }[],
-    rct_signatures: CnTransactions.RctSignature,
-    unlock_time: number,
-    version: number,
-    ctsig_prunable: any,
-    global_index_start?: number,
-    output_indexes: number[],
-    height?: number,
-    ts?: number,//timestamp
-    hash?: string,
-    fee: number
+  extra: string;
+  vout: {
+    amount: number;
+    target: {
+      type: string;
+      data: {
+        key?: string;
+        keys?: string[];
+        required_signatures?: number;
+        term?: number;
+      };
+    };
+  }[];
+  vin: {
+    type: string;
+    value?: CnTransactions.Vin;
+    gen?: { height: number };
+  }[];
+  rct_signatures: CnTransactions.RctSignature;
+  unlock_time: number;
+  version: number;
+  ctsig_prunable: any;
+  global_index_start?: number;
+  output_indexes: number[];
+  height?: number;
+  ts?: number; //timestamp
+  hash?: string;
+  fee: number;
 };
 
 export type NetworkInfo = {
-    nodes: string[],
-    major_version: number,
-    hash: string,
-    reward: number,
-    height: number,
-    timestamp: number,
-    difficulty: number,
+  nodes: string[];
+  major_version: number;
+  hash: string;
+  reward: number;
+  height: number;
+  timestamp: number;
+  difficulty: number;
 };
 
 export type RemoteNodeInformation = {
-    fee_address: string,
-    status: string
+  fee_address: string;
+  status: string;
 };
 
 export type RawDaemon_Out = {
-    global_index: number, 
-    public_key: string
-}
+  global_index: number;
+  public_key: string;
+};
 
 export interface BlockchainExplorer {
-    resolveOpenAlias(str: string): Promise<{ address: string, name: string | null }>;
+  resolveOpenAlias(str: string): Promise<{ address: string; name: string | null }>;
 
-    isInitialized(): boolean;
+  isInitialized(): boolean;
 
-    initialize(): Promise<boolean>;
-  
-    getHeight(): Promise<number>;
+  initialize(): Promise<boolean>;
 
-    getScannedHeight(): number;
+  getHeight(): Promise<number>;
 
-    resetNodes(): void;
+  getScannedHeight(): number;
 
-    start(wallet: Wallet): void;
+  resetNodes(): void;
 
-    getTransactionPool(): Promise<RawDaemon_Transaction[]>;
+  start(wallet: Wallet): void;
 
-    getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTx: boolean): Promise<RawDaemon_Transaction[]>;
+  getTransactionPool(): Promise<RawDaemon_Transaction[]>;
 
-    sendRawTx(rawTx: string): Promise<any>;
+  getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTx: boolean): Promise<RawDaemon_Transaction[]>;
 
-    getRandomOuts(amounts: number[], nbOutsNeeded: number): Promise<RawDaemon_Out[]>;
+  sendRawTx(rawTx: string): Promise<any>;
 
-    getNetworkInfo(): Promise<NetworkInfo>;
+  getRandomOuts(amounts: number[], nbOutsNeeded: number): Promise<RawDaemon_Out[]>;
 
-    getRemoteNodeInformation(): Promise<RemoteNodeInformation>;
+  getNetworkInfo(): Promise<NetworkInfo>;
 
-    // Session management methods
-    initializeSession(): void;
-    
-    cleanupSession(): void;
+  getRemoteNodeInformation(): Promise<RemoteNodeInformation>;
 
-    // Get the current session node's fee address
-    getSessionNodeFeeAddress(): Promise<string>;
+  // Session management methods
+  initializeSession(): void;
+
+  cleanupSession(): void;
+
+  // Get the current session node's fee address
+  getSessionNodeFeeAddress(): Promise<string>;
 }
