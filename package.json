@@ -18,7 +18,7 @@
   },
   "main": "index.js",
   "dependencies": {
-    "@babel/helper-validator-identifier": "^7.27.1",
+    "@babel/helper-validator-identifier": "^7.28.5",
     "@types/node": "^24.9.1",
     "dotenv": "^17.2.3",
     "typescript": "^5.9.3",
