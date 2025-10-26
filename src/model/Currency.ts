@@ -28,85 +28,83 @@ const TRANSACTION_VERSION_SIZE = 1; // sizeof(uint8_t)
 const TRANSACTION_UNLOCK_TIME_SIZE = 8; // sizeof(uint64_t)
 const CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE = 100000;
 
-
 export class Currency {
-//Fusion
-    public static fusionTxMaxSize = CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE * 30 / 100;
-    public static fusionTxMinInputCount = 12; // 12 is the default value in C++
-    public static fusionTxMaxInputCount = 100; // 100 is the default value in C++
-    public static fusionTxMinInOutCountRatio = 4;
+  //Fusion
+  public static fusionTxMaxSize = (CRYPTONOTE_BLOCK_GRANTED_FULL_REWARD_ZONE * 30) / 100;
+  public static fusionTxMinInputCount = 12; // 12 is the default value in C++
+  public static fusionTxMaxInputCount = 100; // 100 is the default value in C++
+  public static fusionTxMinInOutCountRatio = 4;
 
-/**
- * Checks if an amount is applicable in a fusion transaction input.
- * @param amount The amount to check.
- * @param threshold The threshold amount for fusion.
- * @param height The current blockchain height.
- * @returns { applicable: boolean; amountPowerOfTen?: number }
- */
-    public static isAmountApplicableInFusionTransactionInput = (
-        amount: number,
-        threshold: number,
-        height: number
-      ): { applicable: boolean; amountPowerOfTen?: number } => {
-    
-        if (amount >= threshold) {
-          return { applicable: false };
-        }
-    
-        if (height < config.UPGRADE_HEIGHT_V4 && amount < config.dustThreshold) {
-          return { applicable: false };
-        }
-    
-        const PRETTY_AMOUNTS = config.PRETTY_AMOUNTS;
-        let idx = PRETTY_AMOUNTS.findIndex(a => a >= amount);
-    
-        if (idx === -1 || PRETTY_AMOUNTS[idx] !== amount) {
-          return { applicable: false };
-        }
-    
-        const amountPowerOfTen = Math.floor(idx / 9);
-    
-        return { applicable: true, amountPowerOfTen };
-      }
-
-
-    /**
-     * Calculates the approximate maximum number of inputs that can fit in a transaction of given size.
-     * @param transactionSize The total size of the transaction in bytes
-     * @param outputCount The number of outputs in the transaction
-     * @param mixinCount The number of mixins per input
-     * @returns The approximate maximum number of inputs that can fit
-     */
-    public static getApproximateMaximumInputCount = (
-        transactionSize: number,
-        outputCount: number,
-        mixinCount: number
-    ): number => {
-        // Calculate sizes of different transaction components
-        const outputsSize = outputCount * (OUTPUT_TAG_SIZE + OUTPUT_KEY_SIZE + AMOUNT_SIZE);
-        const headerSize = TRANSACTION_VERSION_SIZE + TRANSACTION_UNLOCK_TIME_SIZE + EXTRA_TAG_SIZE + PUBLIC_KEY_SIZE;
-        const inputSize = INPUT_TAG_SIZE + AMOUNT_SIZE + KEY_IMAGE_SIZE + SIGNATURE_SIZE + 
-                         GLOBAL_INDEXES_VECTOR_SIZE_SIZE + GLOBAL_INDEXES_INITIAL_VALUE_SIZE + 
-                         mixinCount * (GLOBAL_INDEXES_DIFFERENCE_SIZE + SIGNATURE_SIZE);
-
-        // Calculate and return the maximum number of inputs that can fit
-        return Math.floor((transactionSize - headerSize - outputsSize) / inputSize);
+  /**
+   * Checks if an amount is applicable in a fusion transaction input.
+   * @param amount The amount to check.
+   * @param threshold The threshold amount for fusion.
+   * @param height The current blockchain height.
+   * @returns { applicable: boolean; amountPowerOfTen?: number }
+   */
+  public static isAmountApplicableInFusionTransactionInput = (
+    amount: number,
+    threshold: number,
+    height: number
+  ): { applicable: boolean; amountPowerOfTen?: number } => {
+    if (amount >= threshold) {
+      return { applicable: false };
     }
 
-    public static getApproximateTransactionSize = (
-        inputCount: number,
-        outputCount: number,
-        mixinCount: number
-    ): number => {
-        // Calculate sizes of different transaction components
-        const outputsSize = outputCount * (OUTPUT_TAG_SIZE + OUTPUT_KEY_SIZE + AMOUNT_SIZE);
-        const headerSize = TRANSACTION_VERSION_SIZE + TRANSACTION_UNLOCK_TIME_SIZE + EXTRA_TAG_SIZE + PUBLIC_KEY_SIZE;
-        const inputSize = INPUT_TAG_SIZE + AMOUNT_SIZE + KEY_IMAGE_SIZE + SIGNATURE_SIZE + 
-                         GLOBAL_INDEXES_VECTOR_SIZE_SIZE + GLOBAL_INDEXES_INITIAL_VALUE_SIZE + 
-                         mixinCount * (GLOBAL_INDEXES_DIFFERENCE_SIZE + SIGNATURE_SIZE);
-
-        // Return total approximate size
-        return headerSize + (inputCount * inputSize) + outputsSize;
+    if (height < config.UPGRADE_HEIGHT_V4 && amount < config.dustThreshold) {
+      return { applicable: false };
     }
 
+    const PRETTY_AMOUNTS = config.PRETTY_AMOUNTS;
+    let idx = PRETTY_AMOUNTS.findIndex((a) => a >= amount);
+
+    if (idx === -1 || PRETTY_AMOUNTS[idx] !== amount) {
+      return { applicable: false };
+    }
+
+    const amountPowerOfTen = Math.floor(idx / 9);
+
+    return { applicable: true, amountPowerOfTen };
+  };
+
+  /**
+   * Calculates the approximate maximum number of inputs that can fit in a transaction of given size.
+   * @param transactionSize The total size of the transaction in bytes
+   * @param outputCount The number of outputs in the transaction
+   * @param mixinCount The number of mixins per input
+   * @returns The approximate maximum number of inputs that can fit
+   */
+  public static getApproximateMaximumInputCount = (transactionSize: number, outputCount: number, mixinCount: number): number => {
+    // Calculate sizes of different transaction components
+    const outputsSize = outputCount * (OUTPUT_TAG_SIZE + OUTPUT_KEY_SIZE + AMOUNT_SIZE);
+    const headerSize = TRANSACTION_VERSION_SIZE + TRANSACTION_UNLOCK_TIME_SIZE + EXTRA_TAG_SIZE + PUBLIC_KEY_SIZE;
+    const inputSize =
+      INPUT_TAG_SIZE +
+      AMOUNT_SIZE +
+      KEY_IMAGE_SIZE +
+      SIGNATURE_SIZE +
+      GLOBAL_INDEXES_VECTOR_SIZE_SIZE +
+      GLOBAL_INDEXES_INITIAL_VALUE_SIZE +
+      mixinCount * (GLOBAL_INDEXES_DIFFERENCE_SIZE + SIGNATURE_SIZE);
+
+    // Calculate and return the maximum number of inputs that can fit
+    return Math.floor((transactionSize - headerSize - outputsSize) / inputSize);
+  };
+
+  public static getApproximateTransactionSize = (inputCount: number, outputCount: number, mixinCount: number): number => {
+    // Calculate sizes of different transaction components
+    const outputsSize = outputCount * (OUTPUT_TAG_SIZE + OUTPUT_KEY_SIZE + AMOUNT_SIZE);
+    const headerSize = TRANSACTION_VERSION_SIZE + TRANSACTION_UNLOCK_TIME_SIZE + EXTRA_TAG_SIZE + PUBLIC_KEY_SIZE;
+    const inputSize =
+      INPUT_TAG_SIZE +
+      AMOUNT_SIZE +
+      KEY_IMAGE_SIZE +
+      SIGNATURE_SIZE +
+      GLOBAL_INDEXES_VECTOR_SIZE_SIZE +
+      GLOBAL_INDEXES_INITIAL_VALUE_SIZE +
+      mixinCount * (GLOBAL_INDEXES_DIFFERENCE_SIZE + SIGNATURE_SIZE);
+
+    // Return total approximate size
+    return headerSize + inputCount * inputSize + outputsSize;
+  };
 }

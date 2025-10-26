@@ -169,15 +169,20 @@ export class Router {
 	 * @returns {Promise<string>}
 	 */
 	loadContent(url: string): Promise<string> {
-		return new Promise<string>(function (resolve, reject) {
-			$.ajax({
-				url: url,
-				dataType: 'text',
-			}).done(function (html: string) {
+		return new Promise<string>(async (resolve, reject) => {
+			try {
+				const response = await fetch(url);
+				
+				if (!response.ok) {
+					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+				}
+				
+				const html = await response.text();
 				resolve(html);
-			}).fail(function () {
+			} catch (error: any) {
+				console.error("Failed to load content from %s: %s", url, error.message);
 				reject();
-			});
+			}
 		});
 	}
 

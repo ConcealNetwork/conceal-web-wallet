@@ -23,44 +23,44 @@ const TWO_POWER_SEVEN = Math.pow(2, 7);
 
 export const encode = function (num: number, out: number[] | Uint8Array = [], offset = 0): number[] | Uint8Array {
   if (Number.MAX_SAFE_INTEGER && num > Number.MAX_SAFE_INTEGER) {
-    encode.bytes = 0
-    throw new RangeError('Could not encode varint')
+    encode.bytes = 0;
+    throw new RangeError("Could not encode varint");
   }
-  const oldOffset = offset
+  const oldOffset = offset;
 
   while (num >= INT) {
-    out[offset++] = (num & 0xff) | MSB
-    num /= 128
+    out[offset++] = (num & 0xff) | MSB;
+    num /= 128;
   }
   while (num & MSBALL) {
-    out[offset++] = (num & 0xff) | MSB
-    num >>>= 7
+    out[offset++] = (num & 0xff) | MSB;
+    num >>>= 7;
   }
-  out[offset] = num | 0
+  out[offset] = num | 0;
 
-  encode.bytes = offset - oldOffset + 1
+  encode.bytes = offset - oldOffset + 1;
 
-  return out
-} as ((num: number, out?: number[] | Uint8Array, offset?: number) => number[] | Uint8Array) & { bytes: number }
+  return out;
+} as ((num: number, out?: number[] | Uint8Array, offset?: number) => number[] | Uint8Array) & { bytes: number };
 
 export const decode = function (buf: ArrayLike<number>, offset = 0): number {
   let res = 0,
     shift = 1,
     counter = offset,
-    b
-  const l = Math.pow(TWO_POWER_SEVEN, buf.length - offset < 8 ? (buf.length - offset) * 7 : 49)
+    b;
+  const l = Math.pow(TWO_POWER_SEVEN, buf.length - offset < 8 ? (buf.length - offset) * 7 : 49);
 
   do {
     if (shift > l) {
-      decode.bytes = 0
-      throw new RangeError('Could not decode varint')
+      decode.bytes = 0;
+      throw new RangeError("Could not decode varint");
     }
-    b = buf[counter++]
-    res += (b & REST) * shift
-    shift = shift * TWO_POWER_SEVEN
-  } while (b >= MSB)
+    b = buf[counter++];
+    res += (b & REST) * shift;
+    shift = shift * TWO_POWER_SEVEN;
+  } while (b >= MSB);
 
-  decode.bytes = counter - offset
+  decode.bytes = counter - offset;
 
-  return res
-} as ((buf: ArrayLike<number>, offset?: number) => number) & { bytes: number }
+  return res;
+} as ((buf: ArrayLike<number>, offset?: number) => number) & { bytes: number };

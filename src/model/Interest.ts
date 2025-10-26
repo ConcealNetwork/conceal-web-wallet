@@ -54,7 +54,7 @@ export class InterestCalculator {
    */
   public static calculateInterest(amount: number, term: number, lockHeight: number): number {
     const m_coin = Math.pow(10, config.coinUnitPlaces); // Amount divider to get human-readable amounts
-    
+
     // Special case handling for block with missing interest
     if (lockHeight === this.BLOCK_WITH_MISSING_INTEREST) {
       lockHeight = lockHeight + term;
@@ -72,21 +72,21 @@ export class InterestCalculator {
 
     // If we reach here, it's a V1 deposit (fallback, should not happen in current Conceal)
     logDebugMsg("Warning: Using legacy V1 interest calculation");
-    
+
     const m_depositMaxTerm = this.DEPOSIT_MAX_TERM_V1;
 
     const a = term * this.DEPOSIT_MAX_TOTAL_RATE - this.DEPOSIT_MIN_TOTAL_RATE_FACTOR;
     // In JS we don't need mul128/div128 as JS Numbers can handle larger values
     let interestAmount = (amount * a) / (100 * m_depositMaxTerm);
-    
+
     // Early deposit multiplier
     const END_MULTIPLIER_BLOCK = 1000000; // Placeholder - need actual value
     const MULTIPLIER_FACTOR = 3; // Placeholder - need actual value
-    
+
     if (lockHeight <= END_MULTIPLIER_BLOCK) {
       interestAmount = interestAmount * MULTIPLIER_FACTOR;
     }
-    
+
     return Math.floor(interestAmount);
   }
 
@@ -98,35 +98,34 @@ export class InterestCalculator {
    */
   private static calculateInterestV3(amount: number, term: number): number {
     const m_coin = Math.pow(10, config.coinUnitPlaces);
-    
+
     const amount4Humans = amount / m_coin;
-    
+
     // Base interest rates depending on amount tiers
     let baseInterest = config.depositRateV3[0] || 0.029; // Basic rate for amounts < 10000
-       
-      // Use config values as primary source
-      if (amount4Humans >= 20000) {
-        baseInterest = config.depositRateV3[2] || 0.049; // Highest rate for amounts >= 20000
-      } else if (amount4Humans >= 10000) {
-        baseInterest = config.depositRateV3[1] || 0.039; // Medium rate for amounts between 10000-20000
-      }
-    
-    
+
+    // Use config values as primary source
+    if (amount4Humans >= 20000) {
+      baseInterest = config.depositRateV3[2] || 0.049; // Highest rate for amounts >= 20000
+    } else if (amount4Humans >= 10000) {
+      baseInterest = config.depositRateV3[1] || 0.039; // Medium rate for amounts between 10000-20000
+    }
+
     // Calculate months
     let months = term / this.DEPOSIT_MIN_TERM_V3;
     if (months > 12) {
       months = 12; // Cap at 12 months
     }
-    
+
     // Calculate effective annual rate with term bonus
     const ear = baseInterest + (months - 1) * 0.001;
-    
+
     // Calculate effective interest rate for the period
     const eir = (ear / 12) * months;
-    
+
     // Calculate interest
     const interest = amount * eir;
-    
+
     return Math.floor(interest);
   }
 
@@ -138,11 +137,11 @@ export class InterestCalculator {
    */
   private static calculateInterestV2(amount: number, term: number): number {
     const m_coin = Math.pow(10, config.coinUnitPlaces);
-    
+
     // Investment term (64800 blocks - quarterly)
     if (term % 64800 === 0) {
       const amount4Humans = amount / m_coin;
-      
+
       // Quantity tier bonus - exact same tiers as in C++ code
       let qTier = 1;
       if (amount4Humans > 110000 && amount4Humans < 180000) qTier = 1.01;
@@ -160,31 +159,31 @@ export class InterestCalculator {
       if (amount4Humans >= 1610000 && amount4Humans < 1800000) qTier = 1.13;
       if (amount4Humans >= 1800000 && amount4Humans < 2000000) qTier = 1.14;
       if (amount4Humans > 2000000) qTier = 1.15;
-      
+
       // Investment calculation - same as C++ implementation
       const mq = config.investmentMq || 1.4473; // From C++ code, use config if available
       const termQuarters = term / 64800;
-      const m8 = 100.0 * Math.pow(1.0 + (mq / 100.0), termQuarters) - 100.0;
+      const m8 = 100.0 * Math.pow(1.0 + mq / 100.0, termQuarters) - 100.0;
       const m5 = termQuarters * 0.5;
-      const m7 = m8 * (1 + (m5 / 100));
+      const m7 = m8 * (1 + m5 / 100);
       const rate = m7 * qTier;
       const interest = amount * (rate / 100);
-      
+
       return Math.floor(interest);
     }
-    
+
     // Weekly deposits (5040 blocks)
     if (term % this.DEPOSIT_MIN_TERM === 0) {
       const weeks = term / this.DEPOSIT_MIN_TERM;
       // Use config values if available, otherwise fall back to hardcoded values
       const baseInterest = config.weeklyBaseInterest || 0.0696; // Base weekly interest rate
       const interestPerWeek = config.weeklyInterestIncrement || 0.0002; // Additional interest per week
-      const interestRate = baseInterest + (weeks * interestPerWeek);
+      const interestRate = baseInterest + weeks * interestPerWeek;
       const interest = amount * ((weeks * interestRate) / 100);
-      
+
       return Math.floor(interest);
     }
-    
+
     return 0;
   }
-} 
+}

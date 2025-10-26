@@ -29,7 +29,7 @@
  */
 
 export class Functions {
-    public static randInt() {
-        return Math.floor(Math.random() * Math.floor(config.apiUrl.length));
-    }
+  public static randInt() {
+    return Math.floor(Math.random() * Math.floor(config.apiUrl.length));
+  }
 }
