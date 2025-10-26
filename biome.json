@@ -1,39 +1,36 @@
 {
-    "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-    "vcs": {
-      "enabled": false
-    },
-    "files": {
-      "includes": [
-        "src/model/**/*.ts",
-        "src/pages/**/*.ts",
-        "src/pages/**/*.html"
-      ]
-    },
-    "formatter": {
-      "enabled": true,
-      "indentStyle": "space",
-      "indentWidth": 2,
-      "lineEnding": "lf"
-    },
-    "linter": {
-      "enabled": true,
-      "rules": {
-        "recommended": true,
-        "style": {
-          "useConst": "off"
-        },
-        "complexity": {
-          "useRegexLiterals": "off"
-        }
-      }
-    },
-    "javascript": {
-      "formatter": {
-        "quoteStyle": "double",
-        "semicolons": "always",
-        "trailingCommas": "es5"
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "vcs": {
+    "enabled": false
+  },
+  "files": {
+    "includes": ["src/model/**/*.ts", "src/pages/**/*.ts", "src/pages/**/*.html", "!src/model/ChaCha8.ts"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 120,
+    "lineEnding": "lf"
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        "useConst": "off"
+      },
+      "complexity": {
+        "useRegexLiterals": "off"
       }
     }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always",
+      "lineWidth": 140,
+      "trailingCommas": "es5"
+    }
   }
-  
+}

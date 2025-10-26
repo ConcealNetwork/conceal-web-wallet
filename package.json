@@ -8,7 +8,13 @@
   "scripts": {
     "start": "serve .\\src\\",
     "build": "node ./node_modules/typescript/bin/tsc --project tsconfig.prod.json && node build.js && serve .\\src\\",
-    "test": ""
+    "test": "",
+    "format": "biome format --write",
+    "format:check": "biome format",
+    "lint": "biome lint --write",
+    "lint:check": "biome lint",
+    "check": "biome check --write",
+    "check:check": "biome check"
   },
   "main": "index.js",
   "dependencies": {
