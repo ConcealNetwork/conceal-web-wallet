@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/ConcealNetwork/conceal-web-wallet#readme",
   "devDependencies": {
-    "@biomejs/biome": "2.3.0",
+    "@biomejs/biome": "2.3.1",
     "@types/node": "^24.9.1"
   }
 }
