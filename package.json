@@ -22,7 +22,7 @@
     "@types/node": "^24.9.1",
     "dotenv": "^17.2.3",
     "typescript": "^5.9.3",
-    "workbox-build": "^7.3.0"
+    "workbox-build": "^7.4.0"
   },
   "repository": {
     "type": "git",
