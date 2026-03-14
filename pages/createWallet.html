@@ -85,12 +85,15 @@
 								</div>
 							</div>
 							<div class="tc actions" >
-								<button @click="walletBackupMade=true" class="btn">{{ $t("createWalletPage.finalizationStep.backupBlock.confirmManuallyWritten") }}</button>
+									<div class="snake-button-wrapper" :class="{ 'snake-active': !walletBackupMade }">
+										<span v-if="!walletBackupMade" class="snake-head"></span>
+										<button @click="walletBackupMade=true" class="btn">{{ $t("createWalletPage.finalizationStep.backupBlock.confirmManuallyWritten") }}</button>
+									</div>
 							</div>
 						</div>
 					</div>
 					<div v-html="$t('createWalletPage.finalizationStep.backupBlock.warningMessage')"></div>
-					<div class="actions" >
+					<div class="actions tc" >
 						<button :disabled="!walletBackupMade" @click="finish()" class="btn green">{{ $t("createWalletPage.finalizationStep.backupBlock.finishButton") }}</button>
 					</div>
 				</div>
