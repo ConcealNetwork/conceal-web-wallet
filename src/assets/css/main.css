@@ -2721,3 +2721,71 @@ body {
 .version-info div {
 	margin: 2px 0;
 }
+
+/* Snake animation around button - simple moving border effect */
+.snake-button-wrapper {
+	position: relative;
+	display: inline-block;
+	border-radius: 6px;
+}
+
+/* The moving snake border - 5px solid #ff9900 */
+.snake-button-wrapper.snake-active {
+	position: relative;
+}
+
+/* Remove button margin to prevent gap in border animation */
+.snake-button-wrapper .btn {
+	margin-top: 0;
+}
+
+.snake-button-wrapper.snake-active::before {
+	content: "";
+	position: absolute;
+	top: -2px;
+	left: -2px;
+	right: -2px;
+	bottom: -2px;
+	border: 4px solid #ff9900;
+	animation: snake-border-move 3s linear infinite;
+}
+
+.snake-button-wrapper.snake-active .btn {
+	position: relative;
+	z-index: 1;
+}
+
+/* Border appears to move around the button */
+@keyframes snake-border-move {
+	0% {
+		border-top-color: #ff9900;
+		border-right-color: transparent;
+		border-bottom-color: transparent;
+		border-left-color: transparent;
+	}
+	25% {
+		border-top-color: transparent;
+		border-right-color: #ff9900;
+		border-bottom-color: transparent;
+		border-left-color: transparent;
+	}
+	50% {
+		border-top-color: transparent;
+		border-right-color: transparent;
+		border-bottom-color: #ff9900;
+		border-left-color: transparent;
+	}
+	75% {
+		border-top-color: transparent;
+		border-right-color: transparent;
+		border-bottom-color: transparent;
+		border-left-color: #ff9900;
+	}
+	100% {
+		border-top-color: #ff9900;
+		border-right-color: transparent;
+		border-bottom-color: transparent;
+		border-left-color: transparent;
+	}
+}
+  
