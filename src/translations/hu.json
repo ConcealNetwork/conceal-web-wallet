@@ -214,7 +214,10 @@
       "getInTouchBlock": {
         "title": "Lépjünk kapcsolatba!",
         "content": "Ha bármilyen problémája van a pénztárcájával, forduljon hozzánk!",
-        "discord": "Conceal Discord-csatorna"
+        "support": "Lépjünk kapcsolatba a közösség tagjaival!",
+        "supportLink": "Egy tiketet nyitunk",
+        "discord": "Kérdéseket kérdezhetsz a közösség tagjaival, Csatlakozhatsz a",
+        "discordLink": "Conceal Discord közösséghez"
       }
     },
     "forgotPasswordPage": {

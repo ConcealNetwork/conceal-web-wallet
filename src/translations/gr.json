@@ -214,7 +214,10 @@
       "getInTouchBlock": {
         "title": "Ας έρθουμε σε επικοινωνία!",
         "content": "'Εάν έχετε οποιοδήποτε πρόβλημα με το πορτοφόλι σας, επικοινωνήστε μαζί μας!",
-        "discord": "Conceal Discord Channel"
+        "support": "Επισκεφθείτε το αρμόδιο Κέντρο Υποστήριξης μας:",
+        "supportLink": "Άνοιγμα ενός Ticket",
+        "discord": "Ζητήστε ερωτήσεις σε άλλα μέλη της κοινότητας, Συμμετάσχετε στο",
+        "discordLink": "Conceal Discord Community"
       }
     },
     "forgotPasswordPage": {

@@ -2,8 +2,8 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
- * Copyright (c) 2022-2025 Conceal Network
+ * Copyright (c) 2018-2026 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2022-2026 Conceal Network
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -650,24 +650,6 @@ body.transparent #copyright {
 
 /* Old desktop-specific message history styles removed - now using grid layout for all screens */
 
-/* 
-.messageHistory .transactions .trnsaction .timestamp {
-	width: 20%;
-	font-size: 18px;
-}
-
-.messageHistory .transactions .transaction .messageText {
-	width: 60%;
-	font-size: 18px;
-}
-
-.messageHistory .transactions .transaction .blockHeight {
-	width: 15%;
-	font-size: 18px;
-  padding-right: 1em;
-}
-*/
-
 .message-status-dot {
 	font-size: 0.8em;
 	margin-left: 10px;
@@ -792,25 +774,6 @@ body.transparent #copyright {
 	width: 100%;
 }
 
-.importKeys {}
-
-/*
-.sendTab{
-
-}
-.sendTab .icon{
-	text-align: center;
-	padding-top:20px;
-}
-.sendTab .icon i{
-	font-size: 60px;
-	color:#146DBD;
-}
-.sendTab label{
-	display: block;
-	text-align: left;
-	font-size: 18px;
-}*/
 
 .sendTab .destinationInput {
 	display: block;
@@ -833,18 +796,6 @@ body.transparent #copyright {
 	height: 100%;
 }
 
-/*
-.sendTab .amountInput{
-	display: block;
-	width: 100%;
-	padding:5px;
-}
-
-.sendTab .row{
-	padding:20px 10px;
-	text-align: center;
-}
-*/
 .qrCodeScanningContainer {
 	position: fixed;
 	top: 0;
@@ -959,22 +910,6 @@ body.transparent #copyright {
 	border-width: 0 2px 2px 0;
 }
 
-/*
-.button{
-	display: inline-block;
-	padding: 10px;
-	font-size: 16px;
-	background: none;
-	border: 3px solid #005B95;
-	color:#005B95;
-	text-decoration: none;
-}
-.button:hover{
-	background: #005B95;
-	color:white;
-}
-*/
-
 
 /*===================INDEX PAGE==============*/
 .indexTab .container {
@@ -1057,12 +992,6 @@ body.native .indexTab .mainBlock .headline {
 	font-size: 1.3rem;
 }
 
-/* xSMall & Small */
-/* @media only screen and (max-width: 960px) {
-	.indexTab .mainBlock > .actions{
-		height: 125px !important;
-	}
-} */
 
 .indexTab .mainBlock>.actions {
 	text-align: left;
@@ -1669,20 +1598,6 @@ body {
 }
 
 .field.checkbox label:before {
-	/* position: absolute;
-	top: 0;
-	left: 0;
-	width: 17px;
-	height: 17px;
-	content: '';
-	background: #fff;
-	border-radius: .21428571rem;
-	-webkit-transition: border .1s ease, opacity .1s ease, -webkit-transform .1s ease, -webkit-box-shadow .1s ease;
-	transition: border .1s ease, opacity .1s ease, -webkit-transform .1s ease, -webkit-box-shadow .1s ease;
-	transition: border .1s ease, opacity .1s ease, transform .1s ease, box-shadow .1s ease;
-	transition: border .1s ease, opacity .1s ease, transform .1s ease, box-shadow .1s ease, -webkit-transform .1s ease, -webkit-box-shadow .1s ease;
-	border: 1px solid #d4d4d5; */
-
 	display: block;
 	position: absolute;
 	content: '';

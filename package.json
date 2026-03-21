@@ -1,24 +1,24 @@
 {
   "name": "conceal-web-wallet",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "Web Wallet for Conceal Network",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
     "start": "serve .\\src\\",
-    "build": "node ./node_modules/typescript/bin/tsc --project tsconfig.prod.json && node build.js && serve .\\src\\",
+    "build": "node ./node_modules/typescript/bin/tsc --project tsconfig.prod.json && node build.js && echo 'Built successfully: serve ./src'",
     "test": "",
-    "format": "biome format --write",
-    "format:check": "biome format",
-    "lint": "biome lint --write",
-    "lint:check": "biome lint",
-    "check": "biome check --write",
-    "check:check": "biome check"
+    "format:fix": "biome format --write",
+    "format": "biome format",
+    "lint:fix": "biome lint --write",
+    "lint": "biome lint",
+    "check:fix": "biome check --write",
+    "check": "biome check"
   },
   "main": "index.js",
   "dependencies": {
-    "@babel/helper-validator-identifier": "^7.27.1",
+    "@babel/helper-validator-identifier": "^7.28.5",
     "@types/node": "^25.5.0",
     "dotenv": "^17.3.1",
     "typescript": "^5.9.3",
@@ -35,7 +35,7 @@
   },
   "homepage": "https://github.com/ConcealNetwork/conceal-web-wallet#readme",
   "devDependencies": {
-    "@biomejs/biome": "2.4.7",
+    "@biomejs/biome": "2.4.8",
     "@types/node": "^25.5.0"
   },
   "overrides": {

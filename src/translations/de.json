@@ -214,7 +214,10 @@
       "getInTouchBlock": {
         "title": "Nehmen wir Kontakt auf!",
         "content": "Wenn Sie Probleme mit Ihrer Brieftasche haben, schreiben Sie uns!",
-        "discord": "Conceal Discord Channel"
+        "support": "Besuchen Sie unseren offiziellen Support Center:",
+        "supportLink": "Einen Ticket öffnen",
+        "discord": "Fragen an andere Community Mitglieder stellen, Join",
+        "discordLink": "Conceal Discord Community"
       }
     },
     "forgotPasswordPage": {
