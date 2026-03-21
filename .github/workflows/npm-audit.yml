@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
 
@@ -22,7 +22,7 @@ jobs:
         run: npm ci
 
       - name: Check code formatting
-        run: npm run format:check
+        run: npm run format
 
       - name: TypeScript type check
         run: tsc --noEmit
