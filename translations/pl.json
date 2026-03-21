@@ -214,7 +214,10 @@
       "getInTouchBlock": {
         "title": "Bądźmy w kontakcie!",
         "content": "Jeśli masz problemy z portfelem, napisz do nas!",
-        "discord": "Conceal Discord"
+        "support": "Odwiedź nasz oficjalny centrum wsparcia:",
+        "supportLink": "Otwórz bilet",
+        "discord": "Zadaj pytania innym członkom społeczności, Dołącz do",
+        "discordLink": "Conceal Discord Community"
       }
     },
     "forgotPasswordPage": {

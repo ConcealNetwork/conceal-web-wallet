@@ -214,7 +214,10 @@
 		"getInTouchBlock": {
 		  "title": "Restons en contact !",
 		  "content": "Si vous rencontrez des problèmes avec votre portefeuille, contactez-nous !",
-		  "discord": "Discord Officiel de Conceal"
+		  "support": "Visitez notre Centre Officiel de Support:",
+		  "supportLink": "Ouvrir un ticket",
+		  "discord": "Demandez des questions aux autres membres de la communauté, Rejoignez",
+		  "discordLink": "Conceal Discord Community"
 		}
 	  },
 	  "forgotPasswordPage": {

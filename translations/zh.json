@@ -214,7 +214,10 @@
       "getInTouchBlock": {
         "title": "让我们联系吧！",
         "content": "如果您的钱包有任何问题，请联系我们！",
-        "discord": "卡博币 Discord频道"
+        "support": "访问我们的官方支持中心:",
+        "supportLink": "打开一个工单",
+        "discord": "向其他社区成员提问，加入",
+        "discordLink": "卡博币 Discord社区"
       }
     },
     "forgotPasswordPage": {

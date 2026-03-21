@@ -214,7 +214,10 @@
       "getInTouchBlock": {
         "title": "¡Pongámonos en Contacto!",
         "content": "Si tienes algún problema con tu billetera, ¡contáctanos!",
-        "discord": "Canal de Conceal en Discord"
+        "support": "Visita nuestro Centro de Soporte Oficial:",
+        "supportLink": "Abrir un ticket",
+        "discord": "Preguntar a otros miembros de la comunidad, Únete a",
+        "discordLink": "Conceal Discord Community"
       }
     },
     "forgotPasswordPage": {

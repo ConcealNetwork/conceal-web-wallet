@@ -214,7 +214,10 @@
       "getInTouchBlock": {
         "title": "Зв'яжіться з нами!",
         "content": "Якщо у вас виникли проблеми з гаманцем, напишіть нам!",
-        "discord": "Канал Conceal в Discord"
+        "support": "Посетите наш официальный центр поддержки:",
+        "supportLink": "Открыть тикет",
+        "discord": "Задайте вопросы другим участникам сообщества, присоединитесь к",
+        "discordLink": "Сообщество Conceal в Discord"
       }
     },
     "forgotPasswordPage": {
