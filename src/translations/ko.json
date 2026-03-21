@@ -214,7 +214,10 @@
       "getInTouchBlock": {
         "title": "코어팀에게 연락하고 싶습니다.",
         "content": "지갑에 문제가 있다면 연락주세요!",
-        "discord": "카르보 코인 디스코드 채널"
+        "support": "카르보 코인 공식 지원 센터:",
+        "supportLink": "카르보 코인 디스코드 채널",
+        "discord": "카르보 코인 디스코드 채널",
+        "discordLink": "카르보 코인 디스코드 채널"
       }
     },
     "forgotPasswordPage": {

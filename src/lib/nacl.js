@@ -131,6 +131,7 @@ var sigma = new Uint8Array([101, 120, 112, 97, 110, 100, 32, 51, 50, 45, 98, 121
 function crypto_stream_salsa20_xor(c,cpos,m,mpos,b,n,k) {
   var z = new Uint8Array(16), x = new Uint8Array(64);
   var u, i;
+  if (!n || n.length < 8 || !k || k.length < 32 || !c) return -1;
   if (!b) return 0;
   for (i = 0; i < 16; i++) z[i] = 0;
   for (i = 0; i < 8; i++) z[i] = n[i];

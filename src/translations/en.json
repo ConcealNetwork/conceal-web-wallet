@@ -214,7 +214,10 @@
       "getInTouchBlock": {
         "title": "Let's Get In Touch!",
         "content": "If you have any problems with your wallet, contact us!",
-        "discord": "Conceal Discord Channel"
+        "support": "Visit our official Support Center:",
+        "supportLink": "Open a ticket",
+        "discord": "Ask questions to other community members, Join",
+        "discordLink": "Conceal Discord Community"
       }
     },
     "forgotPasswordPage": {

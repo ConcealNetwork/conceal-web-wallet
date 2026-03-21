@@ -16,9 +16,9 @@
  */
 
 const workboxBuild = require('workbox-build');
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
 const dotenv = require('dotenv');
 
 // Load environment variables
@@ -66,13 +66,13 @@ const updateIntegrityHashes = () => {
 	const apiIntegrityHash = generateIntegrityHash(apiHtmlPath);
 	if (apiIntegrityHash) {
 		console.log(`Generated new integrity hash for api.html`);
-		if (!envContent.includes('API_INTEGRITY_HASH=')) {
-			envContent += `API_INTEGRITY_HASH=${apiIntegrityHash}`;
-		} else {
+		if (envContent.includes('API_INTEGRITY_HASH=')) {
 			envContent = envContent.replace(
 				/API_INTEGRITY_HASH=.*/,
 				`API_INTEGRITY_HASH=${apiIntegrityHash}`
 			);
+		} else {
+			envContent += `API_INTEGRITY_HASH=${apiIntegrityHash}`;
 		}
 	}
 
@@ -89,13 +89,12 @@ const updateIntegrityHashes = () => {
 	
 	// Get the content between square brackets, remove quotes and commas, then split and clean
 	const exceptionsContent = exceptionsMatch[1]
-		.replace(/['"]/g, '') // Remove quotes
-		.replace(/,/g, '')    // Remove commas
-		.replace(/\s+/g, '')  // Remove all whitespace
+		.replaceAll(/['"]/g, '') // Remove quotes
+		.replaceAll(/,/g, '')    // Remove commas
+		.replaceAll(/\s+/g, '')  // Remove all whitespace
 		.trim();              // Final trim
 		
 	const exceptionsHash = generateAllowedExceptionsHash([exceptionsContent]);
-	// console.log('Generated hash:', exceptionsHash);
 	
 	// Update the hash in the compiled JS file
 	const allowedPagesJsPath = path.join(__dirname, 'src', 'lib', 'config', 'allowedPages.js');
@@ -125,7 +124,7 @@ const buildSW = () => {
 		swDest: 'src/service-worker.js',
 		globDirectory: 'src',
 		globPatterns: [
-			'**\/*.{js,css,html,json,png,ico,jpg}',
+			'**/*.{js,css,html,json,png,ico,jpg}',
 		],
 		globIgnores:[
 			'd/Vue.js', 'src/service-worker-raw.js'

@@ -214,7 +214,10 @@
       "getInTouchBlock": {
         "title": "Mettiamoci in contatto!",
         "content": "Se hai problemi con il tuo portafoglio, contattaci!",
-        "discord": "Conceal Discord Channel"
+        "support": "Visita il nostro Centro di Supporto Ufficiale:",
+        "supportLink": "Apri un ticket",
+        "discord": "Chiedi aiuto agli altri membri della comunità, Unisciti a",
+        "discordLink": "Conceal Discord Community"
       }
     },
     "forgotPasswordPage": {
