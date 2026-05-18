@@ -46,8 +46,8 @@ onmessage = function (data: MessageEvent) {
                   currentWallet.addNew(txData.transaction);
                   transactions.push(txData.export());
                 }
-              } catch(err) {
-                console.error('Failed to parse tx:', rawTransaction);  
+              } catch (err) {
+                console.error('Failed to parse tx:', rawTransaction.hash ?? rawTransaction, err);
               }
             }
           }

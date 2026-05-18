@@ -2,6 +2,7 @@ define(["require", "exports", "../model/Wallet", "../model/TransactionsExplorer"
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     onmessage = function (data) {
+        var _a;
         // if(data.isTrusted){
         var event = data.data;
         try {
@@ -40,7 +41,7 @@ define(["require", "exports", "../model/Wallet", "../model/TransactionsExplorer"
                                     }
                                 }
                                 catch (err) {
-                                    console.error('Failed to parse tx:', rawTransaction);
+                                    console.error('Failed to parse tx:', (_a = rawTransaction.hash) !== null && _a !== void 0 ? _a : rawTransaction, err);
                                 }
                             }
                         }
