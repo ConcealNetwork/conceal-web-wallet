@@ -29,7 +29,7 @@ jobs:
         run: npm run format
 
       - name: TypeScript type check
-        run: tsc --noEmit
+        run: node ./node_modules/typescript/bin/tsc --noEmit
 
       - name: Run npm audit
         run: npm audit --audit-level=high
