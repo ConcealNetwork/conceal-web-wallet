@@ -62,7 +62,7 @@ declare var config: {
 import { Wallet } from "./Wallet";
 import { MathUtil } from "./MathUtil";
 import { JSChaCha8 } from "./ChaCha8";
-import { Cn, CnNativeBride, CnRandom, CnTransactions, CnUtils } from "./Cn";
+import { Cn, CnNativeBride, CnTransactions, CnUtils } from "./Cn";
 import { RawDaemon_Transaction, RawDaemon_Out } from "./blockchain/BlockchainExplorer";
 import { Transaction, TransactionData, Deposit, TransactionIn, TransactionOut } from "./Transaction";
 import { InterestCalculator } from "./Interest";
@@ -212,7 +212,7 @@ export class TransactionsExplorer {
 
     let derivation = null;
     try {
-      derivation = CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
+      derivation = concealjs.crypto.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
     } catch (e) {
       console.error("UNABLE TO CREATE DERIVATION", e);
       return false;
@@ -228,7 +228,7 @@ export class TransactionsExplorer {
       let out = rawTransaction.vout[iOut];
       let txout_k = out.target.data;
       if (out.target.type == "02" && typeof txout_k.key !== "undefined") {
-        let publicEphemeral = CnNativeBride.derive_public_key(derivation, keyIndex, wallet.keys.pub.spend);
+        let publicEphemeral = concealjs.crypto.derive_public_key(derivation, keyIndex, wallet.keys.pub.spend);
         if (txout_k.key == publicEphemeral) {
           logDebugMsg("Found our tx...");
           return true;
@@ -237,7 +237,7 @@ export class TransactionsExplorer {
       } else if (out.target.type == "03" && typeof txout_k.keys !== "undefined") {
         for (let iKey = 0; iKey < txout_k.keys.length; iKey++) {
           let key = txout_k.keys[iKey];
-          let publicEphemeral = CnNativeBride.derive_public_key(derivation, iOut, wallet.keys.pub.spend);
+          let publicEphemeral = concealjs.crypto.derive_public_key(derivation, iOut, wallet.keys.pub.spend);
           if (key == publicEphemeral) {
             return true;
           }
@@ -305,7 +305,7 @@ export class TransactionsExplorer {
 
     let derivation: string;
     try {
-      derivation = CnNativeBride.generate_key_derivation(txPubKey, recepientSecretSpendKey);
+      derivation = concealjs.crypto.generate_key_derivation(txPubKey, recepientSecretSpendKey);
     } catch (e) {
       console.error("UNABLE TO CREATE DERIVATION", e);
       return null;
@@ -424,7 +424,7 @@ export class TransactionsExplorer {
 
     let derivation = null;
     try {
-      derivation = CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
+      derivation = concealjs.crypto.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
     } catch (e) {
       console.error("UNABLE TO CREATE DERIVATION", e);
       return null;
@@ -445,7 +445,7 @@ export class TransactionsExplorer {
       }
 
       let output_idx_in_tx = iOut;
-      let generated_tx_pubkey = CnNativeBride.derive_public_key(derivation, output_idx_in_tx, wallet.keys.pub.spend);
+      let generated_tx_pubkey = concealjs.crypto.derive_public_key(derivation, output_idx_in_tx, wallet.keys.pub.spend);
 
       // check if generated public key matches the current output's key
       let mine_output: boolean = false;
@@ -969,7 +969,7 @@ export class TransactionsExplorer {
 
            //create random destination to keep 2 outputs always in case of 0 change
 
-           let fakeAddress = Cn.create_address(CnRandom.random_scalar()).public_addr;
+           let fakeAddress = Cn.create_address(concealjs.random.random_scalar()).public_addr;
            logDebugMsg("Sending 0 CCX to a fake address to keep tx uniform (no change exists): " + fakeAddress);
            dsts.push({
              address: fakeAddress,

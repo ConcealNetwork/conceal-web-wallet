@@ -16,6 +16,9 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "correctness": {
+        "noUnusedFunctionParameters": "error"
+      },
       "recommended": true,
       "style": {
         "useConst": "off"
