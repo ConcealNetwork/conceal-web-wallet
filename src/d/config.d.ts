@@ -15,6 +15,7 @@ declare var config : {
 	coinFee: typeof JSBigInt,
 	remoteNodeFee: typeof JSBigInt,
 	donationAddress: string,
+	donationAddresses: string[],
 	//fusion
   optimizeOutputs: number,
   optimizeThreshold: number,
@@ -45,7 +46,10 @@ declare var config : {
 	idleWarningDuration: number,
 	syncBlockCount: number,
   maxBlockQueue: number,
-  maxRemoteNodes: number
+	maxTxQueueHigh: number,
+	maxTxQueueLow: number,
+	maxTxQueuePackets: number,
+  maxRemoteNodes: number,
   maxWorkerCores: number,
 	maxBlockNumber: number,
 	avgBlockTime: number,

@@ -201,7 +201,9 @@ class MessagesView extends DestructableView {
         if (typeof txDetails.recipientName !== "undefined") self.txDestinationName = txDetails.recipientName;
         parsed = true;
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error("Error handling scan result", e);
+    }
 
     try {
       let txDetails = CoinUri.decodeWallet(result);
@@ -209,7 +211,9 @@ class MessagesView extends DestructableView {
         self.destinationAddressUser = txDetails.address;
         parsed = true;
       }
-    } catch (e) {}
+    } catch (e) {
+      console.error("Error handling scan result", e);
+    }
 
     if (!parsed) self.destinationAddressUser = result;
     self.stopScan();

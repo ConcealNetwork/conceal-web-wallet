@@ -18,9 +18,6 @@
 import { BlockchainExplorer, NetworkInfo, RawDaemon_Transaction, RawDaemon_Out, RemoteNodeInformation } from "./BlockchainExplorer";
 import { Wallet } from "../Wallet";
 import { Storage } from "../Storage";
-import { MathUtil } from "../MathUtil";
-import { CnTransactions, CnUtils } from "../Cn";
-import { Transaction } from "../Transaction";
 import { WalletWatchdog } from "../WalletWatchdog";
 
 export type NodeInfo = {
@@ -40,7 +37,7 @@ class NodeWorker {
   private _allErrors: number;
   private _requests: number;
   private _isWorking: boolean;
-  private errorInterval: NodeJS.Timer;
+  private errorInterval: NodeJS.Timeout;
 
   constructor(url: string) {
     this._url = url;
@@ -54,6 +51,10 @@ class NodeWorker {
       this._errors = Math.max(this._errors - 1, 0);
     }, 60 * 1000);
   }
+
+  destroy = () => {
+    clearInterval(this.errorInterval);
+  };
 
   makeRequest = (method: "GET" | "POST", path: string, body: any = undefined): Promise<any> => {
     this._isWorking = true;
@@ -364,6 +365,9 @@ class NodeWorkersList {
   };
 
   start = (nodes: string[]) => {
+    if (this.nodes.length > 0) {
+      this.stop();
+    }
     console.log(`NodeWorkersList.start: Initializing ${nodes.length} nodes`);
     for (let i = 0; i < nodes.length; i++) {
       this.nodes.push(new NodeWorker(nodes[i]));
@@ -373,6 +377,9 @@ class NodeWorkersList {
   };
 
   stop = () => {
+    for (const node of this.nodes) {
+      node.destroy();
+    }
     this.nodes = [];
   };
 }
@@ -442,7 +449,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
 
     this.lastTimeRetrieveHeight = Date.now();
     return this.nodeWorkers.makeRequest("GET", "getheight").then((data: any) => {
-      let height = parseInt(data.height);
+      let height = parseInt(data.height, 10);
       this.cacheHeight = height;
       return height;
     });
@@ -536,7 +543,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
             for (let i = 0; i < result.list.length; ++i) {
               let finalUrl = "https://" + result.list[i].url.host + "/";
 
-              if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
+              if (config.nodeList.findIndex(doesMatch(finalUrl)) === -1) {
                 config.nodeList.push(finalUrl);
               }
             }

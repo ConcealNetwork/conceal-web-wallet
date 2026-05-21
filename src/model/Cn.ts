@@ -316,24 +316,10 @@ export namespace CnUtils {
   }
 
   export function derivation_to_scalar(derivation: string, output_index: number) {
-    let buf = "";
     if (derivation.length !== STRUCT_SIZES.EC_POINT * 2) {
       throw "Invalid derivation length!";
     }
-    buf += derivation;
-    let enc = CnUtils.encode_varint(output_index);
-    if (enc.length > 10 * 2) {
-      throw "output_index didn't fit in 64-bit varint";
-    }
-    buf += enc;
-    let res1 = Cn.hash_to_scalar(buf);
-    let res2 = concealjs.cnutils.derivation_to_scalar(derivation, output_index);
-    if (res1 !== res2) {
-      console.log("mismatch between CNUtils and concealjs");
-    } else {
-      console.log("derivation_to_scalar result matches between CNUtils and concealjs");
-    }
-    return res1;
+    return concealjs.cnutils.derivation_to_scalar(derivation, output_index);
   }
 
   export function encode_varint(i: number | string) {
@@ -1497,7 +1483,7 @@ export namespace CnTransactions {
     //  vout: [{amount: uint64, target: {key: hex}},...],
     //  signatures: [[s,s,...],...]
     //}
-    logDebugMsg("serialize tx ", JSON.parse(JSON.stringify(tx)));
+    // logDebugMsg("serialize tx ", JSON.parse(JSON.stringify(tx)));
     let buf = "";
     buf += CnUtils.encode_varint(tx.version);
     buf += CnUtils.encode_varint(tx.unlock_time);
@@ -1530,7 +1516,7 @@ export namespace CnTransactions {
       }
       logDebugMsg("end vin", vin);
     }
-    logDebugMsg("serialize tx ", tx);
+    // logDebugMsg("serialize tx ", tx);
     buf += CnUtils.encode_varint(tx.vout.length);
     for (i = 0; i < tx.vout.length; i++) {
       let vout = tx.vout[i];
