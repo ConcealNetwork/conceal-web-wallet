@@ -26,7 +26,7 @@ import { WalletRepository } from "../model/WalletRepository";
 import { Translations } from "../model/Translations";
 import { MnemonicLang } from "../model/MnemonicLang";
 import { BlockchainExplorer } from "../model/blockchain/BlockchainExplorer";
-import { Cn, CnNativeBride, CnRandom } from "../model/Cn";
+import { Cn } from "../model/Cn";
 
 let blockchainExplorer: BlockchainExplorer = BlockchainExplorerProvider.getInstance();
 
@@ -63,7 +63,7 @@ class CreateViewWallet extends DestructableView {
         const currentHeight = await blockchainExplorer.getHeight();
         $("#pageLoading").hide();
 
-        let seed = CnNativeBride.sc_reduce32(CnRandom.rand_32());
+        let seed = concealjs.random.random_scalar();
         let keys = Cn.create_address(seed);
 
         let newWallet = new Wallet();

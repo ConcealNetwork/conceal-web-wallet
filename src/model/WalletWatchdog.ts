@@ -1,7 +1,7 @@
 /**
  *     Copyright (c) 2018-2020, ExploShot
  *     Copyright (c) 2018-2020, The Qwertycoin Project
- *     Copyright (c) 2018-2023, The Conceal Network
+ *     Copyright (c) 2018-2026, The Conceal Network, Conceal Devs
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -39,162 +39,68 @@ interface IBlockRange {
   endBlock: number;
   finished: boolean;
   timestamp: Date;
-  transactions: RawDaemon_Transaction[];
-}
-
-interface ITxQueueItem {
-  transactions: RawDaemon_Transaction[];
-  maxBlockNum: number;
+  parsedTransactions: any[];
+  fetched: boolean;
+  fetchedTransactions: RawDaemon_Transaction[];
+  filterDispatched: boolean;
+  screenComplete: boolean;
+  screenShardTotal: number;
+  screenNextShardIndex: number;
+  screenShardsCompleted: number;
+  screenHashes: Set<string>;
+  parseDispatched: boolean;
 }
 
 type ProcessingCallback = (blockNumber: number) => void;
 
+/** Applies pre-parsed sync results on the main wallet (no second ParseTransactions pass). */
 class TxQueue {
   private wallet: Wallet;
-  private isReady: boolean;
-  private isRunning: boolean;
-  private countAdded: number;
-  private workerProcess: Worker;
-  private countProcessed: number;
-  private processingQueue: ITxQueueItem[];
+  private isApplying: boolean;
   private processingCallback: ProcessingCallback;
 
   constructor(wallet: Wallet, processingCallback: ProcessingCallback) {
     this.wallet = wallet;
-    this.isReady = false;
-    this.isRunning = false;
-    this.countAdded = 0;
-    this.countProcessed = 0;
-    this.processingQueue = [];
-    this.workerProcess = this.initWorker();
+    this.isApplying = false;
     this.processingCallback = processingCallback;
   }
 
-  initWorker = (): Worker => {
-    this.workerProcess = new Worker("./workers/ParseTransactionsEntrypoint.js");
-    this.workerProcess.onmessage = (data: MessageEvent) => {
-      let message: string | any = data.data;
-      if (message === "ready") {
-        logDebugMsg("worker ready...");
-        // post the wallet to the worker
-        this.workerProcess.postMessage({
-          type: "initWallet",
-        });
-      } else if (message === "missing_wallet") {
-        logDebugMsg("Wallet is missing for the worker...");
-      } else if (message.type) {
-        if (message.type === "readyWallet") {
-          this.setIsReady(true);
-        } else if (message.type === "processed") {
-          if (message.transactions.length > 0) {
-            for (let txData of message.transactions) {
-              let txDataObject = TransactionData.fromRaw(txData);
+  applyParsedTransactions = (parsedTransactions: any[], maxBlockNum: number) => {
+    this.isApplying = true;
 
-              this.wallet.addNew(txDataObject.transaction);
-              this.wallet.addDeposits(txDataObject.deposits);
-              this.wallet.addWithdrawals(txDataObject.withdrawals);
-            }
+    try {
+      for (let txData of parsedTransactions) {
+        let txDataObject = TransactionData.fromRaw(txData);
 
-            // increase the number of transactions we actually added to wallet
-            this.countAdded = this.countAdded + message.transactions.length;
-            //console.log(`Added ${message.transactions.length} transactions to wallet. All count ${this.countAdded}`);
-          }
-
-          // we processed all
-          this.isRunning = false;
-          // signall progress and start next loop now
-          this.processingCallback(message.maxHeight);
-          this.runProcessLoop();
-        }
+        this.wallet.addNew(txDataObject.transaction);
+        this.wallet.addDeposits(txDataObject.deposits);
+        this.wallet.addWithdrawals(txDataObject.withdrawals);
       }
-    };
-
-    return this.workerProcess;
-  };
-
-  runProcessLoop = (): void => {
-    if (this.isReady) {
-      //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
-      //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
-      if (this.countProcessed >= 5 * 1000) {
-        logDebugMsg("Recreated parseWorker..");
-        this.restartWorker();
-        setTimeout(() => {
-          this.runProcessLoop();
-        }, 1000);
-        return;
-      }
-
-      if (!this.isRunning) {
-        this.isRunning = true;
-        // dequeue one item form the processing queue and check if its valid
-        let txQueueItem: ITxQueueItem | null = this.processingQueue.shift()!;
-
-        if (txQueueItem) {
-          // increase the number of transactions we actually processed
-          this.countProcessed = this.countProcessed + txQueueItem.transactions.length;
-
-          if (txQueueItem.transactions.length > 0) {
-            //console.log(`sending ${txQueueItem.transactions.length} transactions to process. Last block ${txQueueItem.maxBlockNum}. All count ${this.countProcessed}`);
-            this.workerProcess.postMessage({
-              transactions: txQueueItem.transactions,
-              maxBlock: txQueueItem.maxBlockNum,
-              wallet: this.wallet.exportToRaw(),
-              type: "process",
-            });
-          } else {
-            this.isRunning = false;
-            this.processingCallback(txQueueItem.maxBlockNum);
-            this.runProcessLoop();
-          }
-        } else {
-          this.isRunning = false;
-        }
-      }
-    } else {
-      if (!this.isReady) {
-        setTimeout(() => {
-          this.runProcessLoop();
-        }, 1000);
-      }
+    } finally {
+      this.isApplying = false;
     }
-  };
 
-  addTransactions = (transactions: RawDaemon_Transaction[], maxBlockNum: number) => {
-    let txQueueItem: ITxQueueItem = {
-      transactions: transactions,
-      maxBlockNum: maxBlockNum,
-    };
-
-    this.processingQueue.push(txQueueItem);
-    this.runProcessLoop();
-  };
-
-  restartWorker = () => {
-    this.isReady = false;
-    this.isRunning = false;
-    this.countProcessed = 0;
-    this.workerProcess.terminate();
-    this.workerProcess = this.initWorker();
-  };
-
-  setIsReady = (value: boolean) => {
-    this.isReady = value;
+    this.processingCallback(maxBlockNum);
   };
 
   hasData = (): boolean => {
-    return this.processingQueue.length > 0;
+    return this.isApplying;
   };
 
   getSize = (): number => {
-    return this.processingQueue.length;
+    return this.isApplying ? 1 : 0;
+  };
+
+  isIdle = (): boolean => {
+    return !this.isApplying;
+  };
+
+  isBusy = (): boolean => {
+    return this.isApplying;
   };
 
   reset = () => {
-    this.isReady = false;
-    this.isRunning = false;
-    this.processingQueue = [];
-    this.workerProcess = this.initWorker();
+    this.isApplying = false;
   };
 }
 
@@ -212,11 +118,18 @@ class BlockList {
     this.watchdog = watchdog;
     this.txQueue = new TxQueue(wallet, (blockNumber: number) => {
       this.wallet.lastHeight = Math.min(this.chainHeight, Math.max(this.wallet.lastHeight, blockNumber));
+      this.watchdog.setLastBlockLoadingFromApply(blockNumber);
       this.watchdog.checkMempool();
+      this.watchdog.notifyTxQueueDrain();
+      this.watchdog.tryScheduleFilter();
     });
   }
 
-  addBlockRange = (startBlock: number, endBlock: number, chainHeight: number) => {
+  addBlockRange = (startBlock: number, endBlock: number, chainHeight: number): boolean => {
+    if (endBlock <= startBlock) {
+      return false;
+    }
+
     this.chainHeight = Math.max(this.chainHeight, chainHeight);
 
     let rangeData: IBlockRange = {
@@ -224,47 +137,124 @@ class BlockList {
       endBlock: endBlock,
       finished: false,
       timestamp: new Date(),
-      transactions: [],
+      parsedTransactions: [],
+      fetched: false,
+      fetchedTransactions: [],
+      filterDispatched: false,
+      screenComplete: false,
+      screenShardTotal: 0,
+      screenNextShardIndex: 0,
+      screenShardsCompleted: 0,
+      screenHashes: new Set<string>(),
+      parseDispatched: false,
     };
 
-    if (this.blocks.length > 0) {
-      for (var i = this.blocks.length - 1; i >= 0; i--) {
-        if (startBlock === this.blocks[i].startBlock && endBlock === this.blocks[i].endBlock) {
-          return;
-        } else if (endBlock > this.blocks[i].endBlock) {
-          if ((i = this.blocks.length)) {
-            this.blocks.push(rangeData);
-          } else {
-            this.blocks.splice(i + 1, 0, rangeData);
-          }
-
-          break;
-        }
+    for (let i = 0; i < this.blocks.length; ++i) {
+      if (startBlock === this.blocks[i].startBlock && endBlock === this.blocks[i].endBlock) {
+        return false;
       }
-    } else {
-      this.blocks.push(rangeData);
+    }
+
+    this.blocks.push(rangeData);
+    this.blocks.sort((a, b) => a.startBlock - b.startBlock);
+    return true;
+  };
+
+  setFetchedTransactions = (startBlock: number, endBlock: number, transactions: RawDaemon_Transaction[]) => {
+    for (let i = 0; i < this.blocks.length; ++i) {
+      if (this.blocks[i].startBlock === startBlock && this.blocks[i].endBlock === endBlock) {
+        this.blocks[i].fetched = true;
+        this.blocks[i].fetchedTransactions = transactions;
+        return;
+      }
     }
   };
 
-  finishBlockRange = (lastBlock: number, transactions: RawDaemon_Transaction[]) => {
-    if (lastBlock > -1) {
-      for (let i = 0; i < this.blocks.length; ++i) {
-        if (lastBlock <= this.blocks[i].endBlock) {
-          this.blocks[i].transactions = transactions;
-          this.blocks[i].finished = true;
-          break;
-        }
-      }
+  /** Only the head range may be filtered; strict order is enforced by the queue. */
+  getNextRangeForFilter = (): IBlockRange | null => {
+    if (this.blocks.length === 0) {
+      return null;
+    }
 
-      // remove all finished block
-      while (this.blocks.length > 0) {
-        if (this.blocks[0].finished) {
-          let block = this.blocks.shift()!;
-          // add any transactions to the wallet
-          this.txQueue.addTransactions(block.transactions, block.endBlock);
-        } else {
-          break;
+    const range = this.blocks[0];
+    if (!range.fetched || range.finished) {
+      return null;
+    }
+
+    if (!range.screenComplete) {
+      if (!range.filterDispatched) {
+        return range;
+      }
+      return null;
+    }
+
+    if (!range.parseDispatched) {
+      return range;
+    }
+
+    return null;
+  };
+
+  /** Next range can be queued once the head chunk is downloaded (filter/apply may still run). */
+  canPrefetchNextRange = (): boolean => {
+    if (this.blocks.length === 0) {
+      return true;
+    }
+
+    const head = this.blocks[0];
+    return head.fetched || head.finished;
+  };
+
+  getTailQueuedEndBlock = (): number => {
+    if (this.blocks.length === 0) {
+      return Math.max(0, Number(this.wallet.lastHeight));
+    }
+
+    return this.blocks[this.blocks.length - 1].endBlock;
+  };
+
+  recordScreenShard = (startBlock: number, endBlock: number, hashes: string[]) => {
+    for (let i = 0; i < this.blocks.length; ++i) {
+      if (this.blocks[i].startBlock === startBlock && this.blocks[i].endBlock === endBlock) {
+        const range = this.blocks[i];
+        for (let h = 0; h < hashes.length; ++h) {
+          range.screenHashes.add(hashes[h]);
         }
+        range.screenShardsCompleted = range.screenShardsCompleted + 1;
+        if (range.screenShardsCompleted >= range.screenShardTotal) {
+          range.screenComplete = true;
+          range.filterDispatched = false;
+        }
+        return;
+      }
+    }
+  };
+
+  buildOwnedTransactions = (range: IBlockRange): RawDaemon_Transaction[] => {
+    const owned: RawDaemon_Transaction[] = [];
+    for (let raw of range.fetchedTransactions) {
+      if (raw?.height && raw.hash && range.screenHashes.has(raw.hash)) {
+        owned.push(raw);
+      }
+    }
+    return owned;
+  };
+
+  finishBlockRange = (startBlock: number, endBlock: number, parsedTransactions: any[]) => {
+    for (let i = 0; i < this.blocks.length; ++i) {
+      if (this.blocks[i].startBlock === startBlock && this.blocks[i].endBlock === endBlock) {
+        this.blocks[i].parsedTransactions = parsedTransactions;
+        this.blocks[i].finished = true;
+        break;
+      }
+    }
+
+    while (this.blocks.length > 0) {
+      if (this.blocks[0].finished) {
+        let block = this.blocks.shift()!;
+        this.txQueue.applyParsedTransactions(block.parsedTransactions, block.endBlock);
+      } else {
+        break;
       }
     }
   };
@@ -281,21 +271,23 @@ class BlockList {
   };
 
   getFirstIdleRange = (reset: boolean): IBlockRange | null => {
-    for (let i = 0; i < this.blocks.length; ++i) {
-      if (!this.blocks[i].finished) {
-        let timeDiff: number = new Date().getTime() - this.blocks[i].timestamp.getTime();
-        if (timeDiff / 1000 > 30) {
-          if (reset) {
-            this.blocks[i].timestamp = new Date();
-          }
-          return this.blocks[i];
-        }
-      } else {
-        return null;
-      }
+    if (this.blocks.length === 0) {
+      return null;
     }
 
-    // none found
+    const head = this.blocks[0];
+    if (head.finished || head.fetched) {
+      return null;
+    }
+
+    let timeDiff: number = new Date().getTime() - head.timestamp.getTime();
+    if (timeDiff / 1000 > 30) {
+      if (reset) {
+        head.timestamp = new Date();
+      }
+      return head;
+    }
+
     return null;
   };
 
@@ -357,9 +349,13 @@ class ParseWorker {
       } else if (message.type) {
         if (message.type === "readyWallet") {
           this.setIsReady(true);
+          this.parseTxCallback();
+        } else if (message.type === "screened") {
+          this.blockList.recordScreenShard(message.startBlock, message.maxHeight, message.hashes);
+          this.setIsWorking(false);
+          this.parseTxCallback();
         } else if (message.type === "processed") {
-          // we are done processing now
-          this.blockList.finishBlockRange(message.maxHeight, message.transactions);
+          this.blockList.finishBlockRange(message.startBlock, message.maxHeight, message.transactions);
           this.setIsWorking(false);
           this.parseTxCallback();
         }
@@ -402,45 +398,49 @@ class SyncWorker {
   private wallet: Wallet;
   private isWorking: boolean;
   private explorer: BlockchainExplorer;
+  private prefetchSlotIndex: number;
 
-  constructor(explorer: BlockchainExplorer, wallet: Wallet) {
+  constructor(explorer: BlockchainExplorer, wallet: Wallet, prefetchSlotIndex: number) {
     this.wallet = wallet;
     this.isWorking = false;
     this.explorer = explorer;
+    this.prefetchSlotIndex = prefetchSlotIndex;
   }
 
-  fetchBlocks = (startBlock: number, endBlock: number): Promise<{ transactions: RawDaemon_Transaction[]; lastBlock: number }> => {
+  fetchBlocks = (
+    startBlock: number,
+    endBlock: number
+  ): Promise<{ transactions: RawDaemon_Transaction[]; lastBlock: number; startBlock: number }> => {
     this.isWorking = true;
 
-    return new Promise<any>((resolve, reject) => {
-      this.explorer
-        .getTransactionsForBlocks(startBlock, endBlock, this.wallet.options.checkMinerTx)
-        .then((transactions: RawDaemon_Transaction[]) => {
-          resolve({
-            transactions: transactions,
-            lastBlock: endBlock,
-          });
-        })
-        .catch((err) => {
-          reject({
-            transactions: [],
-            lastBlock: endBlock,
-          });
-        })
-        .finally(() => {
-          this.isWorking = false;
-        });
-    });
+    const fetchPromise = this.explorer.getTransactionsForBlocksPrefetchSlot(
+      this.prefetchSlotIndex,
+      startBlock,
+      endBlock,
+      this.wallet.options.checkMinerTx
+    );
+
+    return fetchPromise
+      .then((transactions: RawDaemon_Transaction[]) => ({
+        transactions: transactions,
+        lastBlock: endBlock,
+        startBlock: startBlock,
+      }))
+      .catch(() => {
+        throw {
+          transactions: [],
+          lastBlock: endBlock,
+          startBlock: startBlock,
+        };
+      })
+      .finally(() => {
+        this.isWorking = false;
+      });
   };
 
   getIsWorking = (): boolean => {
     return this.isWorking;
   };
-}
-
-interface ITransacationQueue {
-  transactions: RawDaemon_Transaction[];
-  lastBlock: number;
 }
 
 export class WalletWatchdog {
@@ -450,13 +450,14 @@ export class WalletWatchdog {
   private cpuCores: number = 0;
   private maxCpuCores: number = 0;
   private remoteNodes: number = 0;
+  private maxConcurrentFetches: number = 1;
   private explorer: BlockchainExplorer;
   private syncWorkers: SyncWorker[] = [];
-  private parseWorkers: ParseWorker[] = [];
+  private filterWorkers: ParseWorker[] = [];
   private intervalMempool: any = 0;
   private lastBlockLoading: number = -1;
   private lastMaximumHeight: number = 0;
-  private transactionsToProcess: ITransacationQueue[] = [];
+  private txQueueWaiters: Array<() => void> = [];
 
   constructor(wallet: Wallet, explorer: BlockchainExplorer) {
     console.log("WalletWatchdog");
@@ -470,36 +471,33 @@ export class WalletWatchdog {
     this.explorer = explorer;
     this.blockList = new BlockList(wallet, this);
 
-    // create parse workers
-    for (let i = 0; i < this.maxCpuCores; ++i) {
-      let parseWorker: ParseWorker = new ParseWorker(this.wallet, this, this.blockList, this.processParseTransaction);
-      this.parseWorkers.push(parseWorker);
-    }
-
-    // create a worker for each random node
-    for (let i = 0; i < config.nodeList.length; ++i) {
-      this.syncWorkers.push(new SyncWorker(this.explorer, this.wallet));
+    for (let i = 0; i < config.maxPrefetchParallel; ++i) {
+      this.filterWorkers.push(new ParseWorker(this.wallet, this, this.blockList, this.tryScheduleFilter));
+      this.syncWorkers.push(new SyncWorker(this.explorer, this.wallet, i));
     }
 
     this.setupWorkers();
   }
 
   setupWorkers = () => {
-    this.cpuCores = this.maxCpuCores;
+    const poolSize = Math.max(1, this.explorer.getPrefetchNodePoolSize());
 
     if (this.wallet.options.readSpeed == 10) {
-      // use 3/4 of the cores for fast syncing
-      this.cpuCores = Math.min(Math.max(1, Math.floor(3 * (this.maxCpuCores / 4))), config.maxWorkerCores);
+      this.remoteNodes = Math.min(config.maxPrefetchParallel, poolSize, config.maxRemoteNodes);
     } else if (this.wallet.options.readSpeed == 50) {
-      // use half of the cores for medim syncing
-      this.cpuCores = Math.min(Math.max(1, Math.floor(this.maxCpuCores / 2)), config.maxWorkerCores);
+      this.remoteNodes = Math.min(
+        Math.max(1, Math.floor(poolSize / 2)),
+        config.maxPrefetchParallel,
+        config.maxRemoteNodes
+      );
     } else if (this.wallet.options.readSpeed == 100) {
-      // slowest, use only one core
-      this.cpuCores = 1;
+      this.remoteNodes = 1;
+    } else {
+      this.remoteNodes = Math.min(config.maxPrefetchParallel, poolSize, config.maxRemoteNodes);
     }
 
-    // random nodes are dependent both on max nodes available as well as on number of cores we have available and perfomance settings
-    this.remoteNodes = Math.min(config.maxRemoteNodes, config.nodeList.length, this.cpuCores);
+    // Main-thread apply is cheap; use full prefetch parallelism for fetches
+    this.maxConcurrentFetches = this.remoteNodes;
   };
 
   signalWalletUpdate = () => {
@@ -526,33 +524,210 @@ export class WalletWatchdog {
     this.checkMempool();
   };
 
-  acquireWorker = (): ParseWorker | null => {
-    let workingCount = 0;
-
-    // first check if max worker usage is reached
-    for (let i = 0; i < this.parseWorkers.length; ++i) {
-      if (this.parseWorkers[i].getIsWorking()) {
-        workingCount = workingCount + 1;
+  private acquireFilterWorker = (): ParseWorker | null => {
+    for (let i = 0; i < this.filterWorkers.length; ++i) {
+      if (this.filterWorkers[i].getIsReady() && !this.filterWorkers[i].getIsWorking()) {
+        return this.filterWorkers[i];
       }
     }
-
-    if (workingCount < this.cpuCores) {
-      for (let i = 0; i < this.parseWorkers.length; ++i) {
-        if (!this.parseWorkers[i].getIsWorking() && this.parseWorkers[i].getIsReady()) {
-          return this.parseWorkers[i];
-        }
-      }
-    }
-
     return null;
   };
 
+  private isFilterBusy = (): boolean => {
+    for (let i = 0; i < this.filterWorkers.length; ++i) {
+      if (this.filterWorkers[i].getIsWorking()) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  private getScreenShardCount = (txCount: number): number => {
+    const minPerShard = config.syncScreenMinTxPerShard;
+    const maxShards = config.maxPrefetchParallel;
+
+    if (txCount < minPerShard * 2) {
+      return 1;
+    }
+
+    return Math.min(maxShards, Math.ceil(txCount / minPerShard));
+  };
+
+  private initScreening = (range: IBlockRange): void => {
+    const txCount = range.fetchedTransactions.length;
+    range.filterDispatched = true;
+    range.screenShardTotal = this.getScreenShardCount(txCount);
+    range.screenNextShardIndex = 0;
+    range.screenShardsCompleted = 0;
+    range.screenHashes = new Set<string>();
+    range.screenComplete = false;
+    range.parseDispatched = false;
+
+    if (txCount === 0) {
+      range.screenComplete = true;
+      range.filterDispatched = false;
+    }
+  };
+
+  private dispatchScreenShards = (range: IBlockRange): void => {
+    const txs = range.fetchedTransactions;
+    const shardSize = Math.ceil(txs.length / range.screenShardTotal);
+    const walletRaw = this.wallet.exportToRaw();
+
+    while (range.screenNextShardIndex < range.screenShardTotal) {
+      const filterWorker = this.acquireFilterWorker();
+      if (!filterWorker) {
+        break;
+      }
+
+      const shardIndex = range.screenNextShardIndex;
+      const shardStart = shardIndex * shardSize;
+      const shardEnd = Math.min(shardStart + shardSize, txs.length);
+      const shard = txs.slice(shardStart, shardEnd);
+
+      range.screenNextShardIndex = range.screenNextShardIndex + 1;
+      filterWorker.setIsWorking(true);
+      filterWorker.incProcessed(shard.length);
+      filterWorker.getWorker().postMessage({
+        type: "screen",
+        transactions: shard,
+        shardIndex: shardIndex,
+        readMinersTx: this.wallet.options.checkMinerTx,
+        startBlock: range.startBlock,
+        maxBlock: range.endBlock,
+        wallet: walletRaw,
+      });
+    }
+  };
+
+  private dispatchParseOwned = (range: IBlockRange): void => {
+    const filterWorker = this.acquireFilterWorker();
+    if (!filterWorker) {
+      return;
+    }
+
+    const ownedTransactions = this.blockList.buildOwnedTransactions(range);
+
+    if (ownedTransactions.length === 0) {
+      range.parseDispatched = true;
+      this.blockList.finishBlockRange(range.startBlock, range.endBlock, []);
+      return;
+    }
+
+    range.parseDispatched = true;
+    filterWorker.setIsWorking(true);
+    filterWorker.incProcessed(ownedTransactions.length);
+    filterWorker.getWorker().postMessage({
+      type: "process",
+      transactions: ownedTransactions,
+      readMinersTx: this.wallet.options.checkMinerTx,
+      startBlock: range.startBlock,
+      maxBlock: range.endBlock,
+      wallet: this.wallet.exportToRaw(),
+    });
+  };
+
+  tryScheduleFilter = (): void => {
+    if (this.stopped) {
+      return;
+    }
+
+    if (!this.blockList.getTxQueue().isIdle()) {
+      return;
+    }
+
+    const head = this.blockList.getBlocks()[0];
+    if (head && head.fetched && !head.finished && !head.screenComplete && head.filterDispatched) {
+      this.dispatchScreenShards(head);
+    }
+
+    const range = this.blockList.getNextRangeForFilter();
+    if (!range) {
+      return;
+    }
+
+    if (!range.screenComplete) {
+      if (!range.filterDispatched) {
+        this.initScreening(range);
+      }
+      if (!range.screenComplete) {
+        this.dispatchScreenShards(range);
+      }
+      if (range.screenComplete) {
+        this.tryScheduleFilter();
+      }
+      return;
+    }
+
+    this.dispatchParseOwned(range);
+  };
+
   stop = () => {
-    this.transactionsToProcess = [];
+    this.releaseTxQueueWaiters();
     clearInterval(this.intervalMempool);
     this.blockList.getTxQueue().reset();
     this.blockList.reset();
     this.stopped = true;
+  };
+
+  private queuedTxCount = (): number => {
+    let count = 0;
+    for (const range of this.blockList.getBlocks()) {
+      if (!range.finished) {
+        count += range.fetchedTransactions.length;
+      }
+    }
+    return count;
+  };
+
+  private isTxQueueFull = (incomingTxCount: number = 0): boolean => {
+    return (
+      this.queuedTxCount() + incomingTxCount > config.maxTxQueueHigh ||
+      this.blockList.getSize() >= config.maxTxQueuePackets
+    );
+  };
+
+  private waitForQueueCapacity = async (incomingTxCount: number = 0): Promise<void> => {
+    while (this.isTxQueueFull(incomingTxCount) && !this.stopped) {
+      await new Promise<void>((resolve) => {
+        this.txQueueWaiters.push(resolve);
+      });
+    }
+  };
+
+  private releaseTxQueueWaiters = (): void => {
+    const waiters = this.txQueueWaiters.splice(0);
+    for (let i = 0; i < waiters.length; i++) {
+      waiters[i]();
+    }
+  };
+
+  private getTxQueuePacketsLowWatermark = (): number => {
+    return Math.max(1, Math.floor(config.maxTxQueuePackets * 0.2));
+  };
+
+  private isTxQueueBelowLowWatermark = (): boolean => {
+    return (
+      this.queuedTxCount() <= config.maxTxQueueLow &&
+      this.blockList.getSize() <= this.getTxQueuePacketsLowWatermark()
+    );
+  };
+
+  notifyTxQueueDrain = (): void => {
+    if (this.isTxQueueBelowLowWatermark()) {
+      this.releaseTxQueueWaiters();
+    }
+  };
+
+  setLastBlockLoadingFromApply = (blockNumber: number): void => {
+    this.lastBlockLoading = Math.max(this.lastBlockLoading, blockNumber);
+  };
+
+  /** Wallet scan progress vs chain tip (not lastBlockLoading, which can run ahead while prefetching). */
+  private needsMoreBlockRanges = (chainHeight: number): boolean => {
+    const walletHeight = Math.max(0, Number(this.wallet.lastHeight));
+    const queuedThrough = this.blockList.getTailQueuedEndBlock();
+    return walletHeight < chainHeight || queuedThrough < chainHeight;
   };
 
   start = () => {
@@ -597,42 +772,14 @@ export class WalletWatchdog {
     return true;
   };
 
-  processParseTransaction = () => {
-    if (this.transactionsToProcess.length > 0) {
-      let parseWorker = this.acquireWorker();
-
-      if (parseWorker) {
-        // define the transactions we need to process
-        let transactionsToProcess: ITransacationQueue | null = this.transactionsToProcess.shift()!;
-
-        if (transactionsToProcess) {
-          parseWorker.setIsWorking(true);
-          // increase the number of transactions we actually processed
-          parseWorker.incProcessed(transactionsToProcess.transactions.length);
-          parseWorker.getWorker().postMessage({
-            transactions: transactionsToProcess.transactions,
-            readMinersTx: this.wallet.options.checkMinerTx,
-            maxBlock: transactionsToProcess.lastBlock,
-            wallet: this.wallet.exportToRaw(),
-            type: "process",
-          });
-        }
-      }
-    }
+  private onBlockRangeFetched = (
+    startBlock: number,
+    endBlock: number,
+    transactions: RawDaemon_Transaction[]
+  ): void => {
+    this.blockList.setFetchedTransactions(startBlock, endBlock, transactions);
+    this.tryScheduleFilter();
   };
-
-  processTransactions(transactions: RawDaemon_Transaction[], lastBlock: number) {
-    let txList: ITransacationQueue = {
-      transactions: transactions,
-      lastBlock: lastBlock,
-    };
-
-    logDebugMsg(`processTransactions called...`, transactions);
-    // add the raw transaction to the processing FIFO list
-    this.transactionsToProcess.push(txList);
-    // parse the transactions immediately
-    this.processParseTransaction();
-  }
 
   getMultipleRandom = (arr: any[], num: number) => {
     const shuffled = [...arr].sort(() => 0.5 - Math.random());
@@ -649,7 +796,7 @@ export class WalletWatchdog {
       }
     }
 
-    if (workingCount < this.remoteNodes) {
+    if (workingCount < this.maxConcurrentFetches) {
       for (let i = 0; i < this.syncWorkers.length; ++i) {
         if (!this.syncWorkers[i].getIsWorking()) {
           return this.syncWorkers[i];
@@ -676,10 +823,15 @@ export class WalletWatchdog {
             self.lastBlockLoading = self.wallet.lastHeight;
           }
 
-          // check if transactions to process stack is to big
-          if (self.transactionsToProcess.length > 500) {
-            logDebugMsg(`Having more then 500 TX packets in FIFO queue`, self.transactionsToProcess.length);
-            await new Promise((r) => setTimeout(r, 5000));
+          // backpressure: avoid scheduling new fetches while the tx FIFO is at high watermark
+          if (self.isTxQueueFull(0)) {
+            logDebugMsg(
+              `Tx FIFO at high watermark`,
+              self.blockList.getSize(),
+              self.queuedTxCount(),
+              config.maxTxQueueHigh
+            );
+            await self.waitForQueueCapacity(0);
             continue;
           }
 
@@ -700,6 +852,8 @@ export class WalletWatchdog {
             }
           }
 
+          self.tryScheduleFilter();
+
           // get a free worker and check if we have idle blocks first
           let freeWorker: SyncWorker | null = self.getFreeWorker();
 
@@ -712,26 +866,46 @@ export class WalletWatchdog {
             if (idleRange) {
               startBlock = idleRange.startBlock;
               endBlock = idleRange.endBlock;
-            } else if (self.lastBlockLoading < height) {
+            } else if (self.needsMoreBlockRanges(height)) {
+              if (!self.blockList.canPrefetchNextRange()) {
+                self.tryScheduleFilter();
+                await new Promise((r) => setTimeout(r, 200));
+                continue;
+              }
+
               // check if block range list is to big
               if (self.blockList.getSize() >= config.maxBlockQueue) {
                 logDebugMsg("Block range list is to big", self.blockList.getSize());
+                self.tryScheduleFilter();
                 await new Promise((r) => setTimeout(r, 500));
                 continue;
               }
 
-              startBlock = Math.max(0, Number(self.lastBlockLoading));
+              startBlock = self.blockList.getTailQueuedEndBlock();
               endBlock = startBlock + config.syncBlockCount;
               // make sure endBlock is not over current height
               endBlock = Math.min(endBlock, height + 1);
+
+              if (startBlock >= endBlock) {
+                await new Promise((r) => setTimeout(r, 1000));
+                continue;
+              }
 
               if (startBlock > self.lastMaximumHeight) {
                 startBlock = self.lastMaximumHeight;
               }
 
+              if (startBlock >= endBlock) {
+                await new Promise((r) => setTimeout(r, 1000));
+                continue;
+              }
+
               // add the blocks to be processed to the block list
-              self.blockList.addBlockRange(startBlock, endBlock, height);
-              self.lastBlockLoading = Math.max(self.lastBlockLoading, endBlock);
+              if (!self.blockList.addBlockRange(startBlock, endBlock, height)) {
+                self.tryScheduleFilter();
+                await new Promise((r) => setTimeout(r, 200));
+                continue;
+              }
             } else {
               await new Promise((r) => setTimeout(r, 10 * 1000));
               continue;
@@ -740,17 +914,15 @@ export class WalletWatchdog {
             // try to fetch the block range with a currently selected sync worker
             freeWorker
               .fetchBlocks(startBlock, endBlock)
-              .then((blockData: { transactions: RawDaemon_Transaction[]; lastBlock: number }) => {
-                if (blockData.transactions.length > 0) {
-                  self.processTransactions(blockData.transactions, blockData.lastBlock);
-                } else {
-                  self.blockList.finishBlockRange(blockData.lastBlock, []);
-                }
+              .then((blockData: { transactions: RawDaemon_Transaction[]; lastBlock: number; startBlock: number }) => {
+                self.onBlockRangeFetched(blockData.startBlock, blockData.lastBlock, blockData.transactions);
               })
-              .catch((blockData: { transactions: RawDaemon_Transaction[]; lastBlock: number }) => {
+              .catch((blockData: { transactions: RawDaemon_Transaction[]; lastBlock: number; startBlock: number }) => {
                 self.blockList.markIdleBlockRange(blockData.lastBlock);
+                self.tryScheduleFilter();
               });
           } else {
+            self.tryScheduleFilter();
             await new Promise((r) => setTimeout(r, 500));
           }
         } catch (err) {

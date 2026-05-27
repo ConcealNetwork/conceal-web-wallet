@@ -1,0 +1,6 @@
+{
+  "name": "concealjs-prebuilt",
+  "private": true,
+  "main": "concealjs.js",
+  "types": "concealjs.d.ts"
+}

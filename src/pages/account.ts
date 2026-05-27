@@ -71,6 +71,8 @@ class AccountView extends DestructableView {
   private refreshTimestamp: Date;
   private oldTxFilter: string;
   private lastPending: number;
+  private filteredTransactionsCache: Transaction[] | null = null;
+  private filterCacheKey: string = "";
   private initMessagesCount: number = wallet.txsMem.concat(wallet.getTransactionsCopy()).filter((tx) => tx.message).length;
 
   private unsubscribeTicker: (() => void) | null = null;
@@ -105,7 +107,7 @@ class AccountView extends DestructableView {
 
     this.intervalRefresh = setInterval(() => {
       this.refresh();
-    }, 1 * 1000);
+    }, 3 * 1000);
 
     this.refresh();
 
@@ -121,6 +123,8 @@ class AccountView extends DestructableView {
     }
     if (this.optimizePanelTimeout) clearTimeout(this.optimizePanelTimeout);
     clearInterval(this.intervalRefresh);
+    this.filteredTransactionsCache = null;
+    this.filterCacheKey = "";
 
     return super.destruct();
   };
@@ -140,6 +144,33 @@ class AccountView extends DestructableView {
 
   onFilterChanged = () => {
     this.refreshWallet();
+  };
+
+  private getFilterCacheKey = (): string => {
+    return `${this.txFilter}|${wallet.modifiedTimestamp().getTime()}`;
+  };
+
+  private getFilteredTransactions = (allTransactions: Transaction[]): Transaction[] => {
+    const cacheKey = this.getFilterCacheKey();
+    if (this.filteredTransactionsCache !== null && this.filterCacheKey === cacheKey) {
+      return this.filteredTransactionsCache;
+    }
+
+    if (!this.txFilter) {
+      this.filteredTransactionsCache = allTransactions;
+    } else {
+      const filterUpper = this.txFilter.toUpperCase();
+      this.filteredTransactionsCache = allTransactions.filter((tx) => {
+        return (
+          tx.hash.toUpperCase().includes(filterUpper) ||
+          tx.paymentId.toUpperCase().includes(filterUpper) ||
+          tx.getAmount().toString().includes(filterUpper)
+        );
+      });
+    }
+
+    this.filterCacheKey = cacheKey;
+    return this.filteredTransactionsCache;
   };
 
   checkOptimization = () => {
@@ -301,16 +332,7 @@ class AccountView extends DestructableView {
 
       if (this.refreshTimestamp < wallet.modifiedTimestamp() || forceRedraw || filterChanged) {
         let allTransactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
-
-        if (this.txFilter) {
-          allTransactions = allTransactions.filter((tx) => {
-            return (
-              tx.hash.toUpperCase().includes(this.txFilter.toUpperCase()) ||
-              tx.paymentId.toUpperCase().includes(this.txFilter.toUpperCase()) ||
-              tx.getAmount().toString().toUpperCase().includes(this.txFilter.toUpperCase())
-            );
-          });
-        }
+        allTransactions = this.getFilteredTransactions(allTransactions);
 
         this.transactions = allTransactions.slice(0, this.pagesCount * this.txPerPage);
         this.allTransactionsCount = allTransactions.length;

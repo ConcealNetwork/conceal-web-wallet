@@ -189,7 +189,9 @@ export class Mnemonic {
         if (mnemonic_decoded !== null) {
           return lang.name;
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error("Error detecting language", e);
+      }
     }
     return null;
   }
