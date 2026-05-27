@@ -324,12 +324,7 @@ class NodeWorkersList {
   };
 
   /** Prefetch sync: fixed node by slot (no session failover). */
-  makeRequestForPrefetchSlot = (
-    slot: number,
-    method: "GET" | "POST",
-    path: string,
-    body: any = undefined
-  ): Promise<any> => {
+  makeRequestForPrefetchSlot = (slot: number, method: "GET" | "POST", path: string, body: any = undefined): Promise<any> => {
     const healthy = this.nodes.filter((node) => !node.hasToManyErrors());
     const pool = healthy.length > 0 ? healthy : this.nodes;
     if (pool.length === 0) {
@@ -671,7 +666,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
         range: true,
       })
       .then((response) => this.formatTransactionsByHeightsResponse(response));
-  };
+  }
 
   getTransactionsForBlocksPrefetchSlot = (
     prefetchSlot: number,

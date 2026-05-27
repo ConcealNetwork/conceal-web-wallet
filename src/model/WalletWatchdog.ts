@@ -485,11 +485,7 @@ export class WalletWatchdog {
     if (this.wallet.options.readSpeed == 10) {
       this.remoteNodes = Math.min(config.maxPrefetchParallel, poolSize, config.maxRemoteNodes);
     } else if (this.wallet.options.readSpeed == 50) {
-      this.remoteNodes = Math.min(
-        Math.max(1, Math.floor(poolSize / 2)),
-        config.maxPrefetchParallel,
-        config.maxRemoteNodes
-      );
+      this.remoteNodes = Math.min(Math.max(1, Math.floor(poolSize / 2)), config.maxPrefetchParallel, config.maxRemoteNodes);
     } else if (this.wallet.options.readSpeed == 100) {
       this.remoteNodes = 1;
     } else {
@@ -681,10 +677,7 @@ export class WalletWatchdog {
   };
 
   private isTxQueueFull = (incomingTxCount: number = 0): boolean => {
-    return (
-      this.queuedTxCount() + incomingTxCount > config.maxTxQueueHigh ||
-      this.blockList.getSize() >= config.maxTxQueuePackets
-    );
+    return this.queuedTxCount() + incomingTxCount > config.maxTxQueueHigh || this.blockList.getSize() >= config.maxTxQueuePackets;
   };
 
   private waitForQueueCapacity = async (incomingTxCount: number = 0): Promise<void> => {
@@ -707,10 +700,7 @@ export class WalletWatchdog {
   };
 
   private isTxQueueBelowLowWatermark = (): boolean => {
-    return (
-      this.queuedTxCount() <= config.maxTxQueueLow &&
-      this.blockList.getSize() <= this.getTxQueuePacketsLowWatermark()
-    );
+    return this.queuedTxCount() <= config.maxTxQueueLow && this.blockList.getSize() <= this.getTxQueuePacketsLowWatermark();
   };
 
   notifyTxQueueDrain = (): void => {
@@ -772,11 +762,7 @@ export class WalletWatchdog {
     return true;
   };
 
-  private onBlockRangeFetched = (
-    startBlock: number,
-    endBlock: number,
-    transactions: RawDaemon_Transaction[]
-  ): void => {
+  private onBlockRangeFetched = (startBlock: number, endBlock: number, transactions: RawDaemon_Transaction[]): void => {
     this.blockList.setFetchedTransactions(startBlock, endBlock, transactions);
     this.tryScheduleFilter();
   };
@@ -825,12 +811,7 @@ export class WalletWatchdog {
 
           // backpressure: avoid scheduling new fetches while the tx FIFO is at high watermark
           if (self.isTxQueueFull(0)) {
-            logDebugMsg(
-              `Tx FIFO at high watermark`,
-              self.blockList.getSize(),
-              self.queuedTxCount(),
-              config.maxTxQueueHigh
-            );
+            logDebugMsg(`Tx FIFO at high watermark`, self.blockList.getSize(), self.queuedTxCount(), config.maxTxQueueHigh);
             await self.waitForQueueCapacity(0);
             continue;
           }
