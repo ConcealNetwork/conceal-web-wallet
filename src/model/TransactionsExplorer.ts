@@ -5,8 +5,7 @@
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
  *     Copyright (c) 2022, The Karbo Developers
- *     Copyright (c) 2022 - 2025, Conceal Devs
- *     Copyright (c) 2022 - 2025, Conceal Network
+ *     Copyright (c) 2022 - 2026, Conceal Network, Conceal Devs
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -62,7 +61,7 @@ declare var config: {
 import { Wallet } from "./Wallet";
 import { MathUtil } from "./MathUtil";
 import { JSChaCha8 } from "./ChaCha8";
-import { Cn, CnNativeBride, CnTransactions, CnUtils } from "./Cn";
+import { Cn, CnTransactions, CnUtils } from "./Cn";
 import { RawDaemon_Transaction, RawDaemon_Out } from "./blockchain/BlockchainExplorer";
 import { Transaction, TransactionData, Deposit, TransactionIn, TransactionOut } from "./Transaction";
 import { InterestCalculator } from "./Interest";

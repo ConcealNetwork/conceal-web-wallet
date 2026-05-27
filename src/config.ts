@@ -52,11 +52,13 @@ myGlobal.config = {
 	idleTimeout: 30,
 	idleWarningDuration: 20,
 	syncBlockCount: 300, // how many block we sync at once for a single remote node
+	syncScreenMinTxPerShard: 800, // parallel ownsTx shards only when range has at least 2x this many txs
 	maxBlockQueue: 10, // how many watchdog blocks can be max in the queue before waiting
 	maxTxQueueHigh: 2000, // max raw txs in FIFO before producers block
 	maxTxQueueLow: 500, // resume producers once drained below this (hysteresis)
 	maxTxQueuePackets: 100, // max FIFO packets before producers block
   maxRemoteNodes: 8, // what is the max remote nodes we use in a sync process
+  maxPrefetchParallel: 4, // parallel block prefetch slots (distinct daemon nodes, not session failover)
   maxWorkerCores: 8, // max cores that the workers can use. If lower they will use numberOfCores - 1
 
 	coinSymbol: 'CCX',

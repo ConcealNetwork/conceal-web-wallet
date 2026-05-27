@@ -222,6 +222,7 @@ Rust unit tests verify **generate → check** round-trips against the same C `cr
 |---|---|---|---|
 | `chacha8(key, nonce, data)` | `key`: `Uint8Array[32]`; `nonce`: `Uint8Array[12]`; `data`: `Uint8Array` | `Uint8Array` | ChaCha8 (8 rounds). Throws on wrong key/nonce size |
 | `chacha12(key, nonce, data)` | `key`: `Uint8Array[32]`; `nonce`: `Uint8Array[12]`; `data`: `Uint8Array` | `Uint8Array` | ChaCha12 (12 rounds). Throws on wrong key/nonce size |
+| `chacha20(key, nonce, data)` | `key`: `Uint8Array[32]`; `nonce`: `Uint8Array[12]`; `data`: `Uint8Array` | `Uint8Array` | ChaCha20 (20 rounds, IETF). Throws on wrong key/nonce size |
 
 ---
 
@@ -249,7 +250,7 @@ Rust unit tests verify **generate → check** round-trips against the same C `cr
 | `generate_key_derivation` | `crypto` | **Rust WASM** | DH key derivation |
 | `derive_public_key / derive_secret_key` | `crypto` | **Rust WASM** | Sub-key derivation |
 | `create_address / decode_address` | `crypto` | **Rust WASM** | Address encode/decode |
-| `chacha8 / chacha12` | `cypher` | **Rust WASM** | Stream cipher — compute-heavy |
+| `chacha8 / chacha12 / chacha20` | `cypher` | **Rust WASM** | Stream cipher — compute-heavy |
 
 ---
 
