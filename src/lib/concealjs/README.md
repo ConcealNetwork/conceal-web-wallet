@@ -15,7 +15,7 @@
 ### Bundlers and Node (ESM)
 
 ```js
-import { mnemonic, random, cn, cnutils, crypto, cypher } from "concealjs";
+import { mnemonic, random, cn, cnutils, crypto, cypher, transactions } from "concealjs";
 ```
 
 Works with Vite, webpack, Rollup, and Node when your toolchain resolves the package `import` condition. WASM is loaded by the bundler automatically.
@@ -89,6 +89,19 @@ const result = concealjs.crypto.derive_secret_key(derivation, out_index, sec);
 
 ---
 
+### `sha3_384` — plain JavaScript (`src/js/tiers/sha3.js`)
+
+> NIST **SHA3-384** (js-sha3 `sha3` padding), not Keccak-384. Same implementation as the wallet’s former `src/lib/sha3.js`.
+> `keccak_256` remains internal to `cnutils.cn_fast_hash` (not exported from the package root).
+
+| Function | Parameters | Returns | Notes |
+|---|---|---|---|
+| `sha3_384` | `string` (UTF-8), `Uint8Array`, or `ArrayBuffer` | 96-char lowercase hex (48 bytes) | Top-level export: `import { sha3_384 } from "concealjs"` |
+
+Wallet integrity checks use `sha384-${sha3_384(content)}` — the `sha384-` prefix is wallet convention; this library returns hex only.
+
+---
+
 ### Namespace `cnutils` — JavaScript (`src/js/cnutils.js`)
 
 > Port of `CnUtils` from `conceal-web-wallet/src/model/Cn.ts`.
@@ -123,6 +136,51 @@ Exported constant: `STRUCT_SIZES`.
 |---|---|---|---|
 | `random_keypair()` | — | `{ sec: hex, pub: hex }` | `generate_keys(rand32())` |
 | `underive_public_key(derivation, out_index, pub)` | 64-char derivation, index, 64-char derived pub | 64-char base pub | `ge_sub(pub, ge_scalarmult_base(derivation_to_scalar(...)))`; throws if lengths ≠ 64 |
+
+---
+
+### Namespace `transactions` — JavaScript + WASM (`src/js/transactions.js`)
+
+> Wallet sync helpers: detect incoming outputs and spend ownership without per-output WASM crossings.
+> Maps daemon transaction fields to `TxScanInput` / `TxScanContext` in the web wallet (not raw `Wallet` types).
+
+| Function | Parameters | Returns | Notes |
+|---|---|---|---|
+| `extractTxPublicKey(extraHex)` | transaction `extra` as hex | 64-char hex or `null` | Parses tx_extra; first `TX_EXTRA_TAG_PUBKEY` |
+| `parseTxExtra(bytes)` | `number[]` or `Uint8Array` | `{ type, data }[]` | Port of `TransactionsExplorer.parseExtra` |
+| `buildReceiveOutputChecks(vouts)` | `TxVout[]` | `{ indices, keys }` | Type `"02"` uses incrementing index; `"03"` uses vout index |
+| `scanReceiveOutputs(txPub, viewSec, spendPub, vouts)` | keys + vouts | `boolean` | **One** `crypto.scan_receive_outputs` WASM call |
+| `scanSpendInputs(vins, ctx)` | vins + context | `boolean` | Key images (spend wallet) or global indexes (view-only) |
+| `ownsTx(tx, ctx)` | `TxScanInput` + `TxScanContext` | `boolean` | Receive scan, then spend scan |
+| `ownsTxBatch(txs, ctx)` | array + context | `boolean[]` | **One** `crypto.scan_receive_outputs_batch` WASM call + JS spend checks |
+
+**Low-level WASM (advanced):** `crypto.scan_receive_outputs(...)` per tx; `crypto.scan_receive_outputs_batch(view_sec, spend_pub, tx_pub_hex[], indices, keys, tx_offsets)` — `tx_offsets` length `txs.length + 1` (CSR slices into flat output arrays).
+
+**DTO sketch:**
+
+```js
+const owned = transactions.ownsTx(
+  {
+    extraHex: raw.extra,
+    vouts: raw.vout.map((o) => ({
+      type: o.target.type,
+      key: o.target.data?.key,
+      keys: o.target.data?.keys,
+    })),
+    vins: raw.vin.map((v) => ({
+      k_image: v.value?.k_image,
+      key_offsets: v.value?.key_offsets,
+    })),
+  },
+  {
+    viewSecretHex: wallet.keys.priv.view,
+    spendPublicHex: wallet.keys.pub.spend,
+    spendSecretHex: wallet.keys.priv.spend,
+    ownedKeyImages: [...], // spend wallet
+    knownGlobalOutputIndexes: [...], // view-only
+  },
+);
+```
 
 ---
 
@@ -173,6 +231,8 @@ All points are 64-char hex (32-byte compressed Edwards y format).
 | `generate_key_derivation(pub_hex, sec_hex)` | two 64-char hex keys | 64-char hex derivation | `8 × (sec · pub_point)` — DH shared key |
 | `derive_public_key(deriv_hex, index, base_pub_hex)` | derivation + u32 index + 64-char hex pub | 64-char hex pub | `base_pub + H(derivation‖varint(index)) · B` |
 | `derive_secret_key(deriv_hex, index, base_sec_hex)` | derivation + u32 index + 64-char hex sec | 64-char hex sec | `sc_add(base_sec, H(derivation‖varint(index)))` |
+| `scan_receive_outputs(tx_pub, view_sec, spend_pub, indices, keys)` | tx pubkey + view secret + spend pub + parallel `u32[]` + hex key array | `boolean` | One call: derivation + all output checks (wallet receive path) |
+| `scan_receive_outputs_batch(view_sec, spend_pub, tx_pub[], indices, keys, tx_offsets)` | shared keys + per-tx pub array + flat arrays + CSR offsets | `boolean[]` | One WASM call for many txs (`ownsTxBatch` receive path) |
 | `generate_key_image(pub_hex, sec_hex)` | two 64-char hex keys | 64-char hex key image | `sec × hash_to_ec(pub)` via internal `ge_p3` |
 | `hash_to_ec160(pub_hex)` | 64-char hex public key | **320-char hex** (160-byte `ge_p3`) | Wallet `CnUtils.hash_to_ec` — ring sigs, `ge_scalarmult` on `GE_P3` |
 | `hash_to_ec32(pub_hex)` | 64-char hex public key | **64-char hex** compressed point | Wallet `hash_to_ec_2` — `ge_double_scalarmult_postcomp_vartime`, etc. |
@@ -189,6 +249,7 @@ Port of `crypto_ops::generate_signature` / `generate_ring_signature` (conceal-co
 | `generate_signature(prefix_hex, pub_hex, sec_hex)` | 64-char hex hash + key pair | 128-char hex signature | Standard CN signature (`c \|\| r`) |
 | `generate_ring_signature(prefix_hex, image_hex, pubs_hex[], sec_hex, sec_index)` | prefix, key image, array of ring pub keys, secret, signer index | `string[]` of 128-char hex sigs | One signature per ring member |
 | `check_signature(prefix_hex, pub_hex, sig_hex)` | hash, public key, 128-char hex signature | `boolean` | |
+| `check_tx_proof(prefix_hex, r_pub_hex, a_pub_hex, d_pub_hex, sig_hex)` | prefix hash, tx public key `R`, ephemeral output key `A`, derivation `D`, 128-char hex signature | `boolean` | Wallet `checkTxProof`: `X = c·R + r·G`, `Y = c·D + r·G`, challenge `prefix \|\| D \|\| X \|\| Y`; invalid hex → `false` |
 | `check_ring_signature(prefix_hex, image_hex, pubs_hex[], sigs_hex[])` | same as generate + signature array | `boolean` | |
 
 `sec_hex` must be canonical (`sc_check`). For ring signatures, `key_image_hex` must equal `generate_key_image(pubs_hex[sec_index], sec_hex)`.
@@ -237,6 +298,7 @@ Rust unit tests verify **generate → check** round-trips against the same C `cr
 | `random_scalar` | `random` | **mixed** | `mn_random` + WASM `sc_reduce32` |
 | `random_keypair` / `underive_public_key` | `cn` | **mixed** | `random` + `cnutils` + `crypto` WASM |
 | `hextobin`, `encode_varint`, `ge_add`, … | `cnutils` | **plain JS** (+ `nacl.ll`) | `CnUtils` helpers |
+| `sha3_384` | package root | **plain JS** (`tiers/sha3.js`) | NIST SHA3-384; wallet `ALLOWED_EXCEPTIONS_INTEGRITY_HASH` |
 | `cn_fast_hash` | `cnutils` | **plain JS** (`tiers/sha3.js`) | Same Keccak as wallet; faster than WASM boundary for typical hex |
 | `cn_fast_hash` | `crypto` | **Rust WASM** | Same digest; use when already in WASM-only path |
 | `derivation_to_scalar`, RCT ECDH | `cnutils` → `crypto` | **mixed** | JS glue + WASM scalars |
@@ -249,6 +311,9 @@ Rust unit tests verify **generate → check** round-trips against the same C `cr
 | `generate_keys` | `crypto` | **Rust WASM** | Key generation |
 | `generate_key_derivation` | `crypto` | **Rust WASM** | DH key derivation |
 | `derive_public_key / derive_secret_key` | `crypto` | **Rust WASM** | Sub-key derivation |
+| `scan_receive_outputs` | `crypto` | **Rust WASM** | Batched receive-output scan |
+| `ownsTx` / `scanReceiveOutputs` | `transactions` | **mixed** | JS extra parse + one WASM receive scan |
+| `scanSpendInputs` | `transactions` | **plain JS** | Wallet context sets |
 | `create_address / decode_address` | `crypto` | **Rust WASM** | Address encode/decode |
 | `chacha8 / chacha12 / chacha20` | `cypher` | **Rust WASM** | Stream cipher — compute-heavy |
 

@@ -61,7 +61,7 @@ declare var config: {
 import { Wallet } from "./Wallet";
 import { MathUtil } from "./MathUtil";
 import { JSChaCha8 } from "./ChaCha8";
-import { Cn, CnTransactions, CnUtils } from "./Cn";
+import { Cn, CnTransactions } from "./Cn";
 import { RawDaemon_Transaction, RawDaemon_Out } from "./blockchain/BlockchainExplorer";
 import { Transaction, TransactionData, Deposit, TransactionIn, TransactionOut } from "./Transaction";
 import { InterestCalculator } from "./Interest";
@@ -100,6 +100,22 @@ type RawOutForTx = {
 type TxExtra = {
   type: number;
   data: number[];
+};
+
+/** Maps daemon RPC tx → conceal-lib-js `TxScanInput`. */
+type TxScanInput = {
+  extraHex: string;
+  vouts: Array<{ type: string; key?: string; keys?: string[] }>;
+  vins: Array<{ k_image?: string; key_offsets?: number[] }>;
+};
+
+/** Maps wallet keys/UTXOs → conceal-lib-js `TxScanContext`. */
+type TxScanContext = {
+  viewSecretHex: string;
+  spendPublicHex: string;
+  spendSecretHex?: string;
+  ownedKeyImages?: string[];
+  knownGlobalOutputIndexes?: number[];
 };
 
 export class TransactionsExplorer {
@@ -175,123 +191,134 @@ export class TransactionsExplorer {
     }
   }
 
-  static ownsTx(rawTransaction: RawDaemon_Transaction, wallet: Wallet): Boolean {
-    let tx_pub_key = "";
+  private static toTxScanInput(rawTransaction: RawDaemon_Transaction): TxScanInput {
+    const vouts: TxScanInput["vouts"] = [];
 
-    let txExtras = [];
-    try {
-      let hexExtra: number[] = [];
-      let uint8Array = CnUtils.hextobin(rawTransaction.extra);
+    for (let iOut = 0; iOut < rawTransaction.vout.length; iOut++) {
+      const out = rawTransaction.vout[iOut];
+      const txout_k = out.target.data;
+      const vout: { type: string; key?: string; keys?: string[] } = {
+        type: out.target.type,
+      };
 
-      for (let i = 0; i < uint8Array.byteLength; i++) {
-        hexExtra[i] = uint8Array[i];
+      if (out.target.type == "02" && typeof txout_k.key !== "undefined") {
+        vout.key = txout_k.key;
+      } else if (out.target.type == "03" && typeof txout_k.keys !== "undefined") {
+        vout.keys = txout_k.keys;
       }
 
-      txExtras = this.parseExtra(hexExtra);
+      vouts.push(vout);
+    }
+
+    const vins: TxScanInput["vins"] = [];
+    for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
+      const vin = rawTransaction.vin[iIn];
+      if (vin.value) {
+        vins.push({
+          k_image: vin.value.k_image,
+          key_offsets: vin.value.key_offsets,
+        });
+      }
+    }
+
+    return {
+      extraHex: rawTransaction.extra,
+      vouts,
+      vins,
+    };
+  }
+
+  /** UTXO-backed scan context (matches legacy key-image / global-index checks). */
+  private static toTxScanContext(wallet: Wallet): TxScanContext {
+    const hasSpend = wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== "";
+
+    const ctx: TxScanContext = {
+      viewSecretHex: wallet.keys.priv.view,
+      spendPublicHex: wallet.keys.pub.spend,
+    };
+
+    if (hasSpend) {
+      ctx.spendSecretHex = wallet.keys.priv.spend;
+      const ownedKeyImages: string[] = [];
+      for (const ut of wallet.getAllOuts()) {
+        if (ut.keyImage) {
+          ownedKeyImages.push(ut.keyImage);
+        }
+      }
+      ctx.ownedKeyImages = ownedKeyImages;
+    } else {
+      const knownGlobalOutputIndexes: number[] = [];
+      for (const ut of wallet.getAllOuts()) {
+        knownGlobalOutputIndexes.push(ut.globalIndex);
+      }
+      ctx.knownGlobalOutputIndexes = knownGlobalOutputIndexes;
+    }
+
+    return ctx;
+  }
+
+  static ownsTx(rawTransaction: RawDaemon_Transaction, wallet: Wallet): boolean {
+    try {
+      const owned = concealjs.transactions.ownsTx(
+        TransactionsExplorer.toTxScanInput(rawTransaction),
+        TransactionsExplorer.toTxScanContext(wallet)
+      );
+      if (owned) {
+        logDebugMsg("Found our tx...");
+      }
+      return owned;
     } catch (e) {
       console.error("Error when scanning transaction on block " + rawTransaction.height, e);
       return false;
     }
+  }
 
-    for (let extra of txExtras) {
-      if (extra.type === TX_EXTRA_TAG_PUBKEY) {
-        for (let i = 0; i < 32; ++i) {
-          tx_pub_key += String.fromCharCode(extra.data[i]);
-        }
-        break;
+  /**
+   * Screen a sync shard via `concealjs.transactions.ownsTxBatch` (one `scan_receive_outputs_batch`
+   * WASM call per shard on lib ≥0.2.2, then JS spend checks). Shard size drives FFI savings.
+   */
+  static screenShardForOwnedHashes(
+    rawTransactions: RawDaemon_Transaction[],
+    wallet: Wallet,
+    readMinersTx: boolean
+  ): string[] {
+    const candidates: RawDaemon_Transaction[] = [];
+
+    for (let i = 0; i < rawTransactions.length; i++) {
+      const raw = rawTransactions[i];
+      if (!raw?.height) {
+        continue;
       }
+      if (!readMinersTx && TransactionsExplorer.isMinerTx(raw)) {
+        continue;
+      }
+      candidates.push(raw);
     }
 
-    if (tx_pub_key === "") {
-      console.error(`tx_pub_key === null`, rawTransaction.height, rawTransaction.hash);
-      return false;
+    if (candidates.length === 0) {
+      return [];
     }
 
-    tx_pub_key = CnUtils.bintohex(tx_pub_key);
+    const ctx = TransactionsExplorer.toTxScanContext(wallet);
+    const inputs = candidates.map((raw) => TransactionsExplorer.toTxScanInput(raw));
 
-    let derivation = null;
+    let ownedFlags: boolean[];
     try {
-      derivation = concealjs.crypto.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
+      ownedFlags = concealjs.transactions.ownsTxBatch(inputs, ctx);
     } catch (e) {
-      console.error("UNABLE TO CREATE DERIVATION", e);
-      return false;
+      console.error("ownsTxBatch failed, falling back to per-tx screen:", e);
+      ownedFlags = candidates.map((raw) => TransactionsExplorer.ownsTx(raw, wallet));
     }
 
-    if (!derivation) {
-      console.error("UNABLE TO CREATE DERIVATION");
-      return false;
-    }
-
-    let keyIndex: number = 0;
-    for (let iOut = 0; iOut < rawTransaction.vout.length; iOut++) {
-      let out = rawTransaction.vout[iOut];
-      let txout_k = out.target.data;
-      if (out.target.type == "02" && typeof txout_k.key !== "undefined") {
-        let publicEphemeral = concealjs.crypto.derive_public_key(derivation, keyIndex, wallet.keys.pub.spend);
-        if (txout_k.key == publicEphemeral) {
-          logDebugMsg("Found our tx...");
-          return true;
-        }
-        ++keyIndex;
-      } else if (out.target.type == "03" && typeof txout_k.keys !== "undefined") {
-        for (let iKey = 0; iKey < txout_k.keys.length; iKey++) {
-          let key = txout_k.keys[iKey];
-          let publicEphemeral = concealjs.crypto.derive_public_key(derivation, iOut, wallet.keys.pub.spend);
-          if (key == publicEphemeral) {
-            return true;
-          }
-          ++keyIndex;
-        }
+    const hashes: string[] = [];
+    for (let i = 0; i < candidates.length; i++) {
+      const hash = candidates[i].hash;
+      if (ownedFlags[i] && hash) {
+        hashes.push(hash);
       }
     }
 
-    //check if no read only wallet
-    if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== "") {
-      let keyImages = wallet.getTransactionKeyImages();
-      for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
-        let vin = rawTransaction.vin[iIn];
-        if (vin.value && keyImages.indexOf(vin.value.k_image) !== -1) {
-          let walletOuts = wallet.getAllOuts();
-          for (let ut of walletOuts) {
-            if (ut.keyImage == vin.value.k_image) {
-              return true;
-            }
-          }
-        }
-      }
-    } else {
-      let txOutIndexes = wallet.getTransactionOutIndexes();
-      for (let iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
-        let vin = rawTransaction.vin[iIn];
-
-        if (!vin.value) {
-          continue;
-        }
-
-        let absoluteOffets = vin.value.key_offsets.slice();
-        for (let i = 1; i < absoluteOffets.length; ++i) {
-          absoluteOffets[i] += absoluteOffets[i - 1];
-        }
-
-        let ownTx = -1;
-        for (let index of absoluteOffets) {
-          if (txOutIndexes.indexOf(index) !== -1) {
-            ownTx = index;
-            break;
-          }
-        }
-
-        if (ownTx !== -1) {
-          let txOut = wallet.getOutWithGlobalIndex(ownTx);
-
-          if (txOut !== null) {
-            return true;
-          }
-        }
-      }
-    }
-
-    return false;
+    return hashes;
   }
 
   static decryptMessage(index: number, txPubKey: string, recepientSecretSpendKey: string, rawMessage: string): string | any {
@@ -314,8 +341,8 @@ export class TransactionsExplorer {
     let magick2: string = "00";
     let keyData: string = derivation + magick1 + magick2;
 
-    let hash: string = CnUtils.cn_fast_hash(keyData);
-    let hashBuf: Uint8Array = CnUtils.hextobin(hash);
+    let hash: string = concealjs.cnutils.cn_fast_hash(keyData);
+    let hashBuf: Uint8Array = concealjs.cnutils.hextobin(hash);
 
     let nonceBuf = new Uint8Array(12);
     for (let i = 0; i < 12; i++) {
@@ -323,7 +350,7 @@ export class TransactionsExplorer {
     }
 
     // make a binary array out of raw message
-    let rawMessArr = CnUtils.hextobin(rawMessage);
+    let rawMessArr = concealjs.cnutils.hextobin(rawMessage);
 
     // typescripted chacha
     const cha = new JSChaCha8(hashBuf, nonceBuf);
@@ -356,7 +383,7 @@ export class TransactionsExplorer {
     let txExtras = [];
     try {
       let hexExtra: number[] = [];
-      let uint8Array = CnUtils.hextobin(rawTransaction.extra);
+      let uint8Array = concealjs.cnutils.hextobin(rawTransaction.extra);
 
       for (let i = 0; i < uint8Array.byteLength; i++) {
         hexExtra[i] = uint8Array[i];
@@ -382,7 +409,7 @@ export class TransactionsExplorer {
       return null;
     }
 
-    tx_pub_key = CnUtils.bintohex(tx_pub_key);
+    tx_pub_key = concealjs.cnutils.bintohex(tx_pub_key);
     let encryptedPaymentId: string | null = null;
     let extraIndex: number = 0;
 
@@ -393,14 +420,14 @@ export class TransactionsExplorer {
           for (let i = 1; i < extra.data.length; ++i) {
             paymentId += String.fromCharCode(extra.data[i]);
           }
-          paymentId = CnUtils.bintohex(paymentId);
+          paymentId = concealjs.cnutils.bintohex(paymentId);
           //break;
         } else if (extra.data[0] === TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID) {
           encryptedPaymentId = "";
           for (let i = 1; i < extra.data.length; ++i) {
             encryptedPaymentId += String.fromCharCode(extra.data[i]);
           }
-          encryptedPaymentId = CnUtils.bintohex(encryptedPaymentId);
+          encryptedPaymentId = concealjs.cnutils.bintohex(encryptedPaymentId);
           //break;
         }
       } else if (extra.type === TX_EXTRA_MESSAGE_TAG) {
@@ -408,14 +435,14 @@ export class TransactionsExplorer {
         for (let i = 0; i < extra.data.length; ++i) {
           rawMessage += String.fromCharCode(extra.data[i]);
         }
-        rawMessage = CnUtils.bintohex(rawMessage);
+        rawMessage = concealjs.cnutils.bintohex(rawMessage);
       } else if (extra.type === TX_EXTRA_TTL) {
         let rawTTL: string = "";
         for (let i = 0; i < extra.data.length; ++i) {
           rawTTL += String.fromCharCode(extra.data[i]);
         }
-        let ttlStr = CnUtils.bintohex(rawTTL);
-        let uint8Array = CnUtils.hextobin(ttlStr);
+        let ttlStr = concealjs.cnutils.bintohex(rawTTL);
+        let uint8Array = concealjs.cnutils.hextobin(ttlStr);
         ttl = varintDecode(uint8Array);
       }
       extraIndex++;

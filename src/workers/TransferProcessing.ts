@@ -30,28 +30,14 @@ onmessage = function (data: MessageEvent) {
         return;
       }
 
-      for (let rawTransaction of rawTransactions) {
-        if (!rawTransaction?.height) {
-          continue;
-        }
-
-        if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
-          continue;
-        }
-
-        try {
-          if (TransactionsExplorer.ownsTx(rawTransaction, currentWallet)) {
-            if (rawTransaction.hash) {
-              hashes.push(rawTransaction.hash);
-            }
-          }
-        } catch (err) {
-          console.error(
-            'Failed to screen ownsTx for tx:',
-            rawTransaction.hash ?? rawTransaction,
-            err
-          );
-        }
+      try {
+        hashes = TransactionsExplorer.screenShardForOwnedHashes(
+          rawTransactions,
+          currentWallet,
+          readMinersTx
+        );
+      } catch (err) {
+        console.error('Failed to screen shard:', err);
       }
 
       postMessage({
@@ -65,6 +51,8 @@ onmessage = function (data: MessageEvent) {
       logDebugMsg(`process new transactions...`);
 
       let readMinersTx = typeof event.readMinersTx !== 'undefined' && event.readMinersTx;
+      const screenedOwned =
+        typeof event.screenedOwned !== 'undefined' && event.screenedOwned;
       let rawTransactions: RawDaemon_Transaction[] = event.transactions;
       let maxBlockNumber: number = event.maxBlock;
       let startBlockNumber: number = typeof event.startBlock !== "undefined" ? event.startBlock : 0;
@@ -84,40 +72,48 @@ onmessage = function (data: MessageEvent) {
 
       const addedHashes = new Set<string>();
 
+      const tryProcessTx = (rawTransaction: RawDaemon_Transaction): void => {
+        if (!rawTransaction?.height) {
+          return;
+        }
+
+        if (rawTransaction.hash && addedHashes.has(rawTransaction.hash)) {
+          return;
+        }
+
+        if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
+          return;
+        }
+
+        const isOwned =
+          screenedOwned || TransactionsExplorer.ownsTx(rawTransaction, currentWallet!);
+        if (!isOwned) {
+          return;
+        }
+
+        const txData = TransactionsExplorer.parse(rawTransaction, currentWallet!);
+
+        if (txData && txData.transaction) {
+          currentWallet!.addNew(txData.transaction);
+          currentWallet!.addDeposits(txData.deposits);
+          currentWallet!.addWithdrawals(txData.withdrawals);
+          transactions.push(txData.export());
+        }
+
+        if (rawTransaction.hash) {
+          addedHashes.add(rawTransaction.hash);
+        }
+      };
+
       // Two passes: merge each owned tx into the worker wallet so later spends
       // (same batch) see key images; second pass catches receive-before-spend ordering.
       for (let pass = 0; pass < 2; pass++) {
         for (let rawTransaction of rawTransactions) {
-          if (!rawTransaction?.height) {
-            continue;
-          }
-
-          if (rawTransaction.hash && addedHashes.has(rawTransaction.hash)) {
-            continue;
-          }
-
-          if (!readMinersTx && TransactionsExplorer.isMinerTx(rawTransaction)) {
-            continue;
-          }
-
           try {
-            if (TransactionsExplorer.ownsTx(rawTransaction, currentWallet)) {
-              let txData = TransactionsExplorer.parse(rawTransaction, currentWallet);
-
-              if (txData && txData.transaction) {
-                currentWallet.addNew(txData.transaction);
-                currentWallet.addDeposits(txData.deposits);
-                currentWallet.addWithdrawals(txData.withdrawals);
-                transactions.push(txData.export());
-              }
-
-              if (rawTransaction.hash) {
-                addedHashes.add(rawTransaction.hash);
-              }
-            }
+            tryProcessTx(rawTransaction);
           } catch (err) {
             console.error(
-              "Failed to process ownsTx for tx:",
+              "Failed to process tx:",
               rawTransaction.hash ?? rawTransaction,
               err
             );

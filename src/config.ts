@@ -52,7 +52,7 @@ myGlobal.config = {
 	idleTimeout: 30,
 	idleWarningDuration: 20,
 	syncBlockCount: 300, // how many block we sync at once for a single remote node
-	syncScreenMinTxPerShard: 800, // parallel ownsTx shards only when range has at least 2x this many txs
+	syncScreenMinTxPerShard: 800, // txs per screen shard (ownsTxBatch / one WASM batch per shard when ≥2x this in range)
 	maxBlockQueue: 10, // how many watchdog blocks can be max in the queue before waiting
 	maxTxQueueHigh: 2000, // max raw txs in FIFO before producers block
 	maxTxQueueLow: 500, // resume producers once drained below this (hysteresis)

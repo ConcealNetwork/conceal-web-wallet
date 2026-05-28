@@ -45,7 +45,7 @@ export function isAllowedException(url: string): boolean {
 export async function validateExceptionsIntegrity(): Promise<boolean> {
   // Calculate current hash using sha3 of just the exceptions array
   const exceptionsContent = allowedExceptions.join('').replace(/['"]/g, '').replace(/,/g, '').trim();
-  const currentHash = `sha384-${(window as any).sha3_384(exceptionsContent)}`;
+  const currentHash = `sha384-${concealjs.sha3_384(exceptionsContent)}`;
     
   return currentHash === ALLOWED_EXCEPTIONS_INTEGRITY_HASH;
 }
