@@ -37,8 +37,6 @@ import { Mnemonic } from "./Mnemonic";
 import { Constants } from "./Constants";
 import { JSChaCha8 } from "./ChaCha8";
 
-declare let Module: any;
-
 let HASH_STATE_BYTES = 200;
 let HASH_SIZE = 32;
 let ADDRESS_CHECKSUM_SIZE = 4;
@@ -169,17 +167,20 @@ export namespace CnVars {
 export namespace CnRandom {
   // Generate a 256-bit / 64-char / 32-byte crypto random
   export function rand_32() {
-    return Mnemonic.mn_random(256);
+    //return Mnemonic.mn_random(256);
+    return concealjs.mnemonic.mn_random(256);
   }
 
   // Generate a 128-bit / 32-char / 16-byte crypto random
   export function rand_16() {
-    return Mnemonic.mn_random(128);
+    //return Mnemonic.mn_random(128);
+    return concealjs.mnemonic.mn_random(128);
   }
 
   // Generate a 64-bit / 16-char / 8-byte crypto random
   export function rand_8() {
-    return Mnemonic.mn_random(64);
+    //return Mnemonic.mn_random(64);
+    return concealjs.mnemonic.mn_random(64);
   }
 
   export function random_scalar() {
@@ -191,47 +192,21 @@ export namespace CnRandom {
 
 export namespace CnUtils {
   export function hextobin(hex: string): Uint8Array {
-    if (hex.length % 2 !== 0) throw "Hex string has invalid length!";
-    let res = new Uint8Array(hex.length / 2);
-    for (let i = 0; i < hex.length / 2; ++i) {
-      res[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
-    }
-    return res;
+    return concealjs.cnutils.hextobin(hex);
   }
 
   export function bintohex(bin: Uint8Array | string): string {
-    let out = [];
-    if (typeof bin === "string") {
-      for (let i = 0; i < bin.length; ++i) {
-        out.push(("0" + bin[i].charCodeAt(0).toString(16)).slice(-2));
-      }
-    } else {
-      for (let i = 0; i < bin.length; ++i) {
-        out.push(("0" + bin[i].toString(16)).slice(-2));
-      }
-    }
-    return out.join("");
+    return concealjs.cnutils.bintohex(bin);
   }
 
   //switch byte order for hex string
   export function swapEndian(hex: string) {
-    if (hex.length % 2 !== 0) {
-      return "length must be a multiple of 2!";
-    }
-    let data = "";
-    for (let i = 1; i <= hex.length / 2; i++) {
-      data += hex.substr(0 - 2 * i, 2);
-    }
-    return data;
+    return concealjs.cnutils.swapEndian(hex);
   }
 
   //switch byte order charwise
   export function swapEndianC(string: string): string {
-    let data = "";
-    for (let i = 1; i <= string.length; i++) {
-      data += string.substr(0 - i, 1);
-    }
-    return data;
+    return concealjs.cnutils.swapEndianC(string);
   }
 
   //for most uses you'll also want to swapEndian after conversion
@@ -296,14 +271,14 @@ export namespace CnUtils {
     if (pub.length !== 64 || sec.length !== 64) {
       throw "Invalid input length";
     }
-    return CnUtils.bintohex(nacl.ll.ge_scalarmult(CnUtils.hextobin(pub), CnUtils.hextobin(sec)));
+    return concealjs.cnutils.ge_scalarmult(pub, sec);
   }
 
   export function ge_add(p1: string, p2: string) {
     if (p1.length !== 64 || p2.length !== 64) {
       throw "Invalid input length!";
     }
-    return bintohex(nacl.ll.ge_add(hextobin(p1), hextobin(p2)));
+    return concealjs.cnutils.ge_add(p1, p2);
   }
 
   //curve and scalar functions; split out to make their host functions cleaner and more readable
@@ -325,7 +300,7 @@ export namespace CnUtils {
     if (sec.length !== 64) {
       throw "Invalid sec length";
     }
-    return CnUtils.bintohex(nacl.ll.ge_scalarmult_base(hextobin(sec)));
+    return concealjs.cnutils.sec_key_to_pub(sec);
   }
 
   export function valid_hex(hex: string) {
@@ -383,13 +358,7 @@ export namespace CnUtils {
   }
 
   export function cn_fast_hash(input: string) {
-    if (input.length % 2 !== 0 || !CnUtils.valid_hex(input)) {
-      throw "Input invalid";
-    }
-    //update to use new keccak impl (approx 45x faster)
-    //let state = this.keccak(input, inlen, HASH_STATE_BYTES);
-    //return state.substr(0, HASH_SIZE * 2);
-    return keccak_256(CnUtils.hextobin(input));
+    return concealjs.cnutils.cn_fast_hash(input);
   }
 
   export function hex_xor(hex1: string, hex2: string) {
@@ -421,15 +390,14 @@ export namespace CnUtils {
     if (c.length !== 64 || P.length !== 64 || r.length !== 64) {
       throw "Invalid input length!";
     }
-    return bintohex(nacl.ll.ge_double_scalarmult_base_vartime(hextobin(c), hextobin(P), hextobin(r)));
+    return concealjs.cnutils.ge_double_scalarmult_base_vartime(c, P, r);
   }
 
   export function ge_double_scalarmult_postcomp_vartime(r: string, P: string, c: string, I: string) {
     if (c.length !== 64 || P.length !== 64 || r.length !== 64 || I.length !== 64) {
       throw "Invalid input length!";
     }
-    let Pb = CnNativeBride.hash_to_ec_2(P);
-    return bintohex(nacl.ll.ge_double_scalarmult_postcomp_vartime(hextobin(r), hextobin(Pb), hextobin(c), hextobin(I)));
+    return concealjs.cnutils.ge_double_scalarmult_postcomp_vartime(r, P, c, I);
   }
 
   export function decompose_amount_into_digits(amount: number | string) {
@@ -469,195 +437,45 @@ export namespace CnUtils {
 }
 
 export namespace CnNativeBride {
+  /** @deprecated Prefer `concealjs.crypto` directly in new code. */
   export function sc_reduce32(hex: string) {
-    let input = CnUtils.hextobin(hex);
-    if (input.length !== 32) {
-      throw "Invalid input length";
-    }
-    let mem = Module._malloc(32);
-    Module.HEAPU8.set(input, mem);
-    Module.ccall("sc_reduce32", "void", ["number"], [mem]);
-    let output = Module.HEAPU8.subarray(mem, mem + 32);
-    Module._free(mem);
-    return CnUtils.bintohex(output);
+    return concealjs.crypto.sc_reduce32(hex);
   }
 
   export function derive_secret_key(derivation: string, out_index: number, sec: string) {
-    if (derivation.length !== 64 || sec.length !== 64) {
-      throw "Invalid input length!";
-    }
-    let scalar_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    let scalar_b = CnUtils.hextobin(CnUtils.derivation_to_scalar(derivation, out_index));
-    Module.HEAPU8.set(scalar_b, scalar_m);
-    let base_m = Module._malloc(KEY_SIZE);
-    Module.HEAPU8.set(CnUtils.hextobin(sec), base_m);
-    let derived_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    Module.ccall("sc_add", "void", ["number", "number", "number"], [derived_m, base_m, scalar_m]);
-    let res = Module.HEAPU8.subarray(derived_m, derived_m + STRUCT_SIZES.EC_SCALAR);
-    Module._free(scalar_m);
-    Module._free(base_m);
-    Module._free(derived_m);
-    return CnUtils.bintohex(res);
+    return concealjs.crypto.derive_secret_key(derivation, out_index, sec);
   }
 
   export function hash_to_ec(key: string) {
-    if (key.length !== KEY_SIZE * 2) {
-      throw "Invalid input length";
-    }
-    let h_m = Module._malloc(HASH_SIZE);
-    let point_m = Module._malloc(STRUCT_SIZES.GE_P2);
-    let point2_m = Module._malloc(STRUCT_SIZES.GE_P1P1);
-    let res_m = Module._malloc(STRUCT_SIZES.GE_P3);
-    let hash = CnUtils.hextobin(CnUtils.cn_fast_hash(key));
-    Module.HEAPU8.set(hash, h_m);
-    Module.ccall("ge_fromfe_frombytes_vartime", "void", ["number", "number"], [point_m, h_m]);
-    Module.ccall("ge_mul8", "void", ["number", "number"], [point2_m, point_m]);
-    Module.ccall("ge_p1p1_to_p3", "void", ["number", "number"], [res_m, point2_m]);
-    let res = Module.HEAPU8.subarray(res_m, res_m + STRUCT_SIZES.GE_P3);
-    Module._free(h_m);
-    Module._free(point_m);
-    Module._free(point2_m);
-    Module._free(res_m);
-    return CnUtils.bintohex(res);
+    return concealjs.crypto.hash_to_ec160(key);
   }
 
-  //returns a 32 byte point via "ge_p3_tobytes" rather than a 160 byte "p3", otherwise same as above;
   export function hash_to_ec_2(key: string) {
-    if (key.length !== KEY_SIZE * 2) {
-      throw "Invalid input length";
-    }
-    let h_m = Module._malloc(HASH_SIZE);
-    let point_m = Module._malloc(STRUCT_SIZES.GE_P2);
-    let point2_m = Module._malloc(STRUCT_SIZES.GE_P1P1);
-    let res_m = Module._malloc(STRUCT_SIZES.GE_P3);
-    let hash = CnUtils.hextobin(CnUtils.cn_fast_hash(key));
-    let res2_m = Module._malloc(KEY_SIZE);
-    Module.HEAPU8.set(hash, h_m);
-    Module.ccall("ge_fromfe_frombytes_vartime", "void", ["number", "number"], [point_m, h_m]);
-    Module.ccall("ge_mul8", "void", ["number", "number"], [point2_m, point_m]);
-    Module.ccall("ge_p1p1_to_p3", "void", ["number", "number"], [res_m, point2_m]);
-    Module.ccall("ge_p3_tobytes", "void", ["number", "number"], [res2_m, res_m]);
-    let res = Module.HEAPU8.subarray(res2_m, res2_m + KEY_SIZE);
-    Module._free(h_m);
-    Module._free(point_m);
-    Module._free(point2_m);
-    Module._free(res_m);
-    Module._free(res2_m);
-    return CnUtils.bintohex(res);
+    return concealjs.crypto.hash_to_ec32(key);
   }
 
   export function generate_key_image_2(pub: string, sec: string) {
-    if (!pub || !sec || pub.length !== 64 || sec.length !== 64) {
-      throw "Invalid input length";
-    }
-    let pub_m = Module._malloc(KEY_SIZE);
-    let sec_m = Module._malloc(KEY_SIZE);
-    Module.HEAPU8.set(CnUtils.hextobin(pub), pub_m);
-    Module.HEAPU8.set(CnUtils.hextobin(sec), sec_m);
-    if (Module.ccall("sc_check", "number", ["number"], [sec_m]) !== 0) {
-      throw "sc_check(sec) != 0";
-    }
-    let point_m = Module._malloc(STRUCT_SIZES.GE_P3);
-    let point2_m = Module._malloc(STRUCT_SIZES.GE_P2);
-    let point_b = CnUtils.hextobin(CnNativeBride.hash_to_ec(pub));
-    Module.HEAPU8.set(point_b, point_m);
-    let image_m = Module._malloc(STRUCT_SIZES.KEY_IMAGE);
-    Module.ccall("ge_scalarmult", "void", ["number", "number", "number"], [point2_m, sec_m, point_m]);
-    Module.ccall("ge_tobytes", "void", ["number", "number"], [image_m, point2_m]);
-    let res = Module.HEAPU8.subarray(image_m, image_m + STRUCT_SIZES.KEY_IMAGE);
-    Module._free(pub_m);
-    Module._free(sec_m);
-    Module._free(point_m);
-    Module._free(point2_m);
-    Module._free(image_m);
-    return CnUtils.bintohex(res);
+    return concealjs.crypto.generate_key_image(pub, sec);
   }
 
-  //adds two scalars together
   export function sc_add(scalar1: string, scalar2: string) {
-    if (scalar1.length !== 64 || scalar2.length !== 64) {
-      throw "Invalid input length!";
-    }
-    let scalar1_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    let scalar2_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    Module.HEAPU8.set(CnUtils.hextobin(scalar1), scalar1_m);
-    Module.HEAPU8.set(CnUtils.hextobin(scalar2), scalar2_m);
-    let derived_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    Module.ccall("sc_add", "void", ["number", "number", "number"], [derived_m, scalar1_m, scalar2_m]);
-    let res = Module.HEAPU8.subarray(derived_m, derived_m + STRUCT_SIZES.EC_SCALAR);
-    Module._free(scalar1_m);
-    Module._free(scalar2_m);
-    Module._free(derived_m);
-    return CnUtils.bintohex(res);
+    return concealjs.crypto.sc_add(scalar1, scalar2);
   }
 
-  //subtracts one scalar from another
   export function sc_sub(scalar1: string, scalar2: string) {
-    if (scalar1.length !== 64 || scalar2.length !== 64) {
-      throw "Invalid input length!";
-    }
-    let scalar1_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    let scalar2_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    Module.HEAPU8.set(CnUtils.hextobin(scalar1), scalar1_m);
-    Module.HEAPU8.set(CnUtils.hextobin(scalar2), scalar2_m);
-    let derived_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    Module.ccall("sc_sub", "void", ["number", "number", "number"], [derived_m, scalar1_m, scalar2_m]);
-    let res = Module.HEAPU8.subarray(derived_m, derived_m + STRUCT_SIZES.EC_SCALAR);
-    Module._free(scalar1_m);
-    Module._free(scalar2_m);
-    Module._free(derived_m);
-    return CnUtils.bintohex(res);
+    return concealjs.crypto.sc_sub(scalar1, scalar2);
   }
 
-  //res = c - (ab) mod l; argument names copied from the signature implementation
   export function sc_mulsub(sigc: string, sec: string, k: string) {
-    if (
-      k.length !== KEY_SIZE * 2 ||
-      sigc.length !== KEY_SIZE * 2 ||
-      sec.length !== KEY_SIZE * 2 ||
-      !CnUtils.valid_hex(k) ||
-      !CnUtils.valid_hex(sigc) ||
-      !CnUtils.valid_hex(sec)
-    ) {
-      throw "bad scalar";
-    }
-    let sec_m = Module._malloc(KEY_SIZE);
-    Module.HEAPU8.set(CnUtils.hextobin(sec), sec_m);
-    let sigc_m = Module._malloc(KEY_SIZE);
-    Module.HEAPU8.set(CnUtils.hextobin(sigc), sigc_m);
-    let k_m = Module._malloc(KEY_SIZE);
-    Module.HEAPU8.set(CnUtils.hextobin(k), k_m);
-    let res_m = Module._malloc(KEY_SIZE);
-
-    Module.ccall("sc_mulsub", "void", ["number", "number", "number", "number"], [res_m, sigc_m, sec_m, k_m]);
-    let res = Module.HEAPU8.subarray(res_m, res_m + KEY_SIZE);
-    Module._free(k_m);
-    Module._free(sec_m);
-    Module._free(sigc_m);
-    Module._free(res_m);
-    return CnUtils.bintohex(res);
+    return concealjs.crypto.sc_mulsub(sigc, sec, k);
   }
 
-  // New function that takes binary directly
   export function sc_mulsub_bin(sigc_bin: Uint8Array, sec_bin: Uint8Array, k_bin: Uint8Array) {
-    let sigc_m = Module._malloc(KEY_SIZE);
-    Module.HEAPU8.set(sigc_bin, sigc_m);
-    let sec_m = Module._malloc(KEY_SIZE);
-    Module.HEAPU8.set(sec_bin, sec_m);
-    let k_m = Module._malloc(KEY_SIZE);
-    Module.HEAPU8.set(k_bin, k_m);
-    let res_m = Module._malloc(KEY_SIZE);
-
-    Module.ccall("sc_mulsub", "void", ["number", "number", "number", "number"], [res_m, sigc_m, sec_m, k_m]);
-    let res = Module.HEAPU8.subarray(res_m, res_m + KEY_SIZE);
-
-    // Clean up
-    Module._free(k_m);
-    Module._free(sec_m);
-    Module._free(sigc_m);
-    Module._free(res_m);
-
-    return CnUtils.bintohex(res);
+    return concealjs.crypto.sc_mulsub(
+      CnUtils.bintohex(sigc_bin),
+      CnUtils.bintohex(sec_bin),
+      CnUtils.bintohex(k_bin),
+    );
   }
 
   export function generate_ring_signature(prefix_hash: string, k_image: string, keys: string[], sec: string, real_index: number) {
@@ -673,116 +491,7 @@ export namespace CnNativeBride {
     if (real_index >= keys.length || real_index < 0) {
       throw "real_index is invalid";
     }
-    let _ge_tobytes = Module.cwrap("ge_tobytes", "void", ["number", "number"]);
-    let _ge_p3_tobytes = Module.cwrap("ge_p3_tobytes", "void", ["number", "number"]);
-    let _ge_scalarmult_base = Module.cwrap("ge_scalarmult_base", "void", ["number", "number"]);
-    let _ge_scalarmult = Module.cwrap("ge_scalarmult", "void", ["number", "number", "number"]);
-    let _sc_add = Module.cwrap("sc_add", "void", ["number", "number", "number"]);
-    let _sc_sub = Module.cwrap("sc_sub", "void", ["number", "number", "number"]);
-    let _sc_mulsub = Module.cwrap("sc_mulsub", "void", ["number", "number", "number", "number"]);
-    let _sc_0 = Module.cwrap("sc_0", "void", ["number"]);
-    let _ge_double_scalarmult_base_vartime = Module.cwrap("ge_double_scalarmult_base_vartime", "void", [
-      "number",
-      "number",
-      "number",
-      "number",
-    ]);
-    let _ge_double_scalarmult_precomp_vartime = Module.cwrap("ge_double_scalarmult_precomp_vartime", "void", [
-      "number",
-      "number",
-      "number",
-      "number",
-      "number",
-    ]);
-    let _ge_frombytes_vartime = Module.cwrap("ge_frombytes_vartime", "number", ["number", "number"]);
-    let _ge_dsm_precomp = Module.cwrap("ge_dsm_precomp", "void", ["number", "number"]);
-
-    let buf_size = STRUCT_SIZES.EC_POINT * 2 * keys.length;
-    let buf_m = Module._malloc(buf_size);
-    let sig_size = STRUCT_SIZES.SIGNATURE * keys.length;
-    let sig_m = Module._malloc(sig_size);
-
-    // Struct pointer helper functions
-    function buf_a(i: number) {
-      return buf_m + STRUCT_SIZES.EC_POINT * (2 * i);
-    }
-    function buf_b(i: number) {
-      return buf_m + STRUCT_SIZES.EC_POINT * (2 * i + 1);
-    }
-    function sig_c(i: number) {
-      return sig_m + STRUCT_SIZES.EC_SCALAR * (2 * i);
-    }
-    function sig_r(i: number) {
-      return sig_m + STRUCT_SIZES.EC_SCALAR * (2 * i + 1);
-    }
-    let image_m = Module._malloc(STRUCT_SIZES.KEY_IMAGE);
-    Module.HEAPU8.set(CnUtils.hextobin(k_image), image_m);
-    let i;
-    let image_unp_m = Module._malloc(STRUCT_SIZES.GE_P3);
-    let image_pre_m = Module._malloc(STRUCT_SIZES.GE_DSMP);
-    let sum_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    let k_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    let h_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-    let tmp2_m = Module._malloc(STRUCT_SIZES.GE_P2);
-    let tmp3_m = Module._malloc(STRUCT_SIZES.GE_P3);
-    let pub_m = Module._malloc(KEY_SIZE);
-    let sec_m = Module._malloc(KEY_SIZE);
-    Module.HEAPU8.set(CnUtils.hextobin(sec), sec_m);
-    if (_ge_frombytes_vartime(image_unp_m, image_m) != 0) {
-      throw "failed to call ge_frombytes_vartime";
-    }
-    _ge_dsm_precomp(image_pre_m, image_unp_m);
-    _sc_0(sum_m);
-    for (i = 0; i < keys.length; i++) {
-      if (i === real_index) {
-        // Real key
-        let rand = CnRandom.random_scalar();
-        Module.HEAPU8.set(CnUtils.hextobin(rand), k_m);
-        _ge_scalarmult_base(tmp3_m, k_m);
-        _ge_p3_tobytes(buf_a(i), tmp3_m);
-        let ec = CnNativeBride.hash_to_ec(keys[i]);
-        Module.HEAPU8.set(CnUtils.hextobin(ec), tmp3_m);
-        _ge_scalarmult(tmp2_m, k_m, tmp3_m);
-        _ge_tobytes(buf_b(i), tmp2_m);
-      } else {
-        Module.HEAPU8.set(CnUtils.hextobin(CnRandom.random_scalar()), sig_c(i));
-        Module.HEAPU8.set(CnUtils.hextobin(CnRandom.random_scalar()), sig_r(i));
-        Module.HEAPU8.set(CnUtils.hextobin(keys[i]), pub_m);
-        if (Module.ccall("ge_frombytes_vartime", "void", ["number", "number"], [tmp3_m, pub_m]) !== 0) {
-          throw "Failed to call ge_frombytes_vartime";
-        }
-        _ge_double_scalarmult_base_vartime(tmp2_m, sig_c(i), tmp3_m, sig_r(i));
-        _ge_tobytes(buf_a(i), tmp2_m);
-        let ec = CnNativeBride.hash_to_ec(keys[i]);
-        Module.HEAPU8.set(CnUtils.hextobin(ec), tmp3_m);
-        _ge_double_scalarmult_precomp_vartime(tmp2_m, sig_r(i), tmp3_m, sig_c(i), image_pre_m);
-        _ge_tobytes(buf_b(i), tmp2_m);
-        _sc_add(sum_m, sum_m, sig_c(i));
-      }
-    }
-    let buf_bin = Module.HEAPU8.subarray(buf_m, buf_m + buf_size);
-    let scalar = Cn.hash_to_scalar(prefix_hash + CnUtils.bintohex(buf_bin));
-    Module.HEAPU8.set(CnUtils.hextobin(scalar), h_m);
-    _sc_sub(sig_c(real_index), h_m, sum_m);
-    _sc_mulsub(sig_r(real_index), sig_c(real_index), sec_m, k_m);
-    let sig_data = CnUtils.bintohex(Module.HEAPU8.subarray(sig_m, sig_m + sig_size));
-    let sigs = [];
-    for (let k = 0; k < keys.length; k++) {
-      sigs.push(sig_data.slice(STRUCT_SIZES.SIGNATURE * 2 * k, STRUCT_SIZES.SIGNATURE * 2 * (k + 1)));
-    }
-    Module._free(image_m);
-    Module._free(image_unp_m);
-    Module._free(image_pre_m);
-    Module._free(sum_m);
-    Module._free(k_m);
-    Module._free(h_m);
-    Module._free(tmp2_m);
-    Module._free(tmp3_m);
-    Module._free(buf_m);
-    Module._free(sig_m);
-    Module._free(pub_m);
-    Module._free(sec_m);
-    return sigs;
+    return concealjs.crypto.generate_ring_signature(prefix_hash, k_image, keys, sec, real_index) as string[];
   }
 
   //    <--------------------------------------------------------
@@ -794,174 +503,24 @@ export namespace CnNativeBride {
    * @returns The generated signature as a hex string
    */
   export function generate_signature(prefixHash: string, publicKey: string, secretKey: string): string {
-    try {
-      // Validate input lengths
-      if (prefixHash.length !== HASH_SIZE * 2 || !CnUtils.valid_hex(prefixHash)) {
-        throw new Error("Invalid prefix hash length or format");
-      }
-      if (publicKey.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(publicKey)) {
-        throw new Error("Invalid public key length or format");
-      }
-      if (secretKey.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(secretKey)) {
-        throw new Error("Invalid secret key length or format");
-      }
-
-      // Convert inputs to binary format
-      const prefixHashBin = CnUtils.hextobin(prefixHash);
-      const publicKeyBin = CnUtils.hextobin(publicKey);
-      const secretKeyBin = CnUtils.hextobin(secretKey);
-
-      // Check if secret key is a valid scalar, in the C++ code that is only for DEBUG MODE
-      const secBuf = Module._malloc(KEY_SIZE);
-      if (!secBuf) {
-        throw new Error("Failed to allocate secBuf buffer");
-      }
-      try {
-        Module.HEAPU8.set(secretKeyBin, secBuf);
-        if (Module.ccall("sc_check", "number", ["number"], [secBuf]) !== 0) {
-          //console.log('Secret key is not a valid scalar');
-          throw new Error("Invalid secret key: not a valid scalar");
-        }
-        // Verify that secret key corresponds to public key
-        const tmp3 = Module._malloc(STRUCT_SIZES.GE_P3);
-        if (!tmp3) {
-          throw new Error("Failed to allocate tmp3 buffer");
-        }
-        try {
-          // Calculate public key from secret key
-          Module.ccall("ge_scalarmult_base", "void", ["number", "number"], [tmp3, secBuf]);
-
-          // Get the calculated public key
-          const calculatedPubBuf = Module._malloc(KEY_SIZE);
-          if (!calculatedPubBuf) {
-            throw new Error("Failed to allocate calculatedPubBuf buffer");
-          }
-          try {
-            Module.ccall("ge_p3_tobytes", "void", ["number", "number"], [calculatedPubBuf, tmp3]);
-            const calculatedPub = CnUtils.bintohex(Module.HEAPU8.subarray(calculatedPubBuf, calculatedPubBuf + KEY_SIZE));
-
-            // Compare calculated public key with provided public key
-            if (calculatedPub !== publicKey) {
-              //console.log('Secret key does not correspond to public key');
-              throw new Error("Invalid key pair: secret key does not correspond to public key");
-            }
-          } finally {
-            Module._free(calculatedPubBuf);
-          }
-        } finally {
-          Module._free(tmp3);
-        }
-      } finally {
-        Module._free(secBuf);
-      }
-
-      // random k
-      let k: string;
-      k = CnRandom.random_scalar();
-      // console.log('check_scalar', k, 'true'); // debug for crypto-test.cpp
-      const kBin = CnUtils.hextobin(k);
-
-      // Allocate memory for temporary buffers
-      const tmp3 = Module._malloc(STRUCT_SIZES.GE_P3);
-      if (!tmp3) {
-        throw new Error("Failed to allocate tmp3 buffer");
-      }
-
-      try {
-        const k_m = Module._malloc(STRUCT_SIZES.EC_SCALAR);
-        if (!k_m) {
-          throw new Error("Failed to allocate k_m buffer");
-        }
-
-        try {
-          Module.HEAPU8.set(kBin, k_m);
-          // Calculate commitment point: commitment = kG
-          Module.ccall("ge_scalarmult_base", "void", ["number", "number"], [tmp3, k_m]);
-
-          // Create buffer with proper structure (prefix_hash + pub + comm)
-          const buf = Module._malloc(HASH_SIZE + KEY_SIZE + KEY_SIZE);
-          if (!buf) {
-            throw new Error("Failed to allocate buffer");
-          }
-          try {
-            // Make sure the order matches the C++ s_comm struct
-            Module.HEAPU8.set(prefixHashBin, buf); // h
-            Module.HEAPU8.set(publicKeyBin, buf + HASH_SIZE); // key
-            Module.ccall("ge_p3_tobytes", "void", ["number", "number"], [buf + HASH_SIZE + KEY_SIZE, tmp3]); // comm
-
-            const c = Cn.hash_to_scalar(CnUtils.bintohex(Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE)));
-            //console.log('hash_to_scalar', CnUtils.bintohex(Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE)) ,c); // debug for crypto-test.cpp
-
-            // Calculate response scalar: r = k - (c*sec) mod l
-            const r = CnNativeBride.sc_mulsub(c, secretKey, k);
-
-            // Final signature is c || r
-            const finalSignature = c + r;
-            return finalSignature;
-          } finally {
-            Module._free(buf);
-          }
-        } finally {
-          Module._free(k_m);
-        }
-      } finally {
-        Module._free(tmp3);
-      }
-    } catch (e) {
-      console.error("Error in generate_signature:", e);
-      throw e;
+    if (prefixHash.length !== HASH_SIZE * 2 || !CnUtils.valid_hex(prefixHash)) {
+      throw new Error("Invalid prefix hash length or format");
     }
+    if (publicKey.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(publicKey)) {
+      throw new Error("Invalid public key length or format");
+    }
+    if (secretKey.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(secretKey)) {
+      throw new Error("Invalid secret key length or format");
+    }
+    return concealjs.crypto.generate_signature(prefixHash, publicKey, secretKey);
   }
 
-  export function generate_key_derivation(pub: any, sec: any) {
-    let generate_key_derivation_bind = (<any>self).Module_native.cwrap("generate_key_derivation", null, ["number", "number", "number"]);
-
-    let pub_b = CnUtils.hextobin(pub);
-    let sec_b = CnUtils.hextobin(sec);
-    let Module_native = (<any>self).Module_native;
-
-    let pub_m = Module_native._malloc(KEY_SIZE);
-    Module_native.HEAPU8.set(pub_b, pub_m);
-
-    let sec_m = Module_native._malloc(KEY_SIZE);
-    Module_native.HEAPU8.set(sec_b, sec_m);
-
-    let derivation_m = Module_native._malloc(KEY_SIZE);
-    let r = generate_key_derivation_bind(pub_m, sec_m, derivation_m);
-
-    Module_native._free(pub_m);
-    Module_native._free(sec_m);
-
-    let res = Module_native.HEAPU8.subarray(derivation_m, derivation_m + KEY_SIZE);
-    Module_native._free(derivation_m);
-
-    return CnUtils.bintohex(res);
+  export function generate_key_derivation(pub: string, sec: string) {
+    return concealjs.crypto.generate_key_derivation(pub, sec);
   }
 
   export function derive_public_key(derivation: string, output_idx_in_tx: number, pubSpend: string) {
-    let derive_public_key_bind = (<any>self).Module_native.cwrap("derive_public_key", null, ["number", "number", "number", "number"]);
-
-    let derivation_b = CnUtils.hextobin(derivation);
-    let pub_spend_b = CnUtils.hextobin(pubSpend);
-
-    let Module_native = (<any>self).Module_native;
-
-    let derivation_m = Module_native._malloc(KEY_SIZE);
-    Module_native.HEAPU8.set(derivation_b, derivation_m);
-
-    let pub_spend_m = Module_native._malloc(KEY_SIZE);
-    Module_native.HEAPU8.set(pub_spend_b, pub_spend_m);
-
-    let derived_key_m = Module_native._malloc(KEY_SIZE);
-    let r = derive_public_key_bind(derivation_m, output_idx_in_tx, pub_spend_m, derived_key_m);
-
-    Module_native._free(derivation_m);
-    Module_native._free(pub_spend_m);
-
-    let res = Module_native.HEAPU8.subarray(derived_key_m, derived_key_m + KEY_SIZE);
-    Module_native._free(derived_key_m);
-
-    return CnUtils.bintohex(res);
+    return concealjs.crypto.derive_public_key(derivation, output_idx_in_tx, pubSpend);
   }
 
   /**
@@ -971,132 +530,17 @@ export namespace CnNativeBride {
    * @returns boolean indicating if signature is valid
    */
   export function verify_signature(prefixHash: string, publicKey: string, signature: string): boolean {
+    if (prefixHash.length !== HASH_SIZE * 2 || !CnUtils.valid_hex(prefixHash)) {
+      return false;
+    }
+    if (publicKey.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(publicKey)) {
+      return false;
+    }
+    if (signature.length !== STRUCT_SIZES.SIGNATURE * 2 || !CnUtils.valid_hex(signature)) {
+      return false;
+    }
     try {
-      // Validate input lengths
-      if (prefixHash.length !== HASH_SIZE * 2 || !CnUtils.valid_hex(prefixHash)) {
-        return false;
-      }
-      if (publicKey.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(publicKey)) {
-        return false;
-      }
-      if (signature.length !== STRUCT_SIZES.SIGNATURE * 2 || !CnUtils.valid_hex(signature)) {
-        return false;
-      }
-      //console.log('check_signature', prefixHash, publicKey, signature, 'true'); // debug for crypto-test.cpp
-      // Split signature into c and r components
-      const c = signature.slice(0, 64);
-      const r = signature.slice(64, 128);
-
-      // Convert inputs to binary format
-      const prefixHashBin = CnUtils.hextobin(prefixHash);
-      const publicKeyBin = CnUtils.hextobin(publicKey);
-      const cBin = CnUtils.hextobin(c);
-      const rBin = CnUtils.hextobin(r);
-
-      // Check scalar validity for both c and r components
-      const cBuf = Module._malloc(KEY_SIZE);
-      const rBuf = Module._malloc(KEY_SIZE);
-      if (!cBuf || !rBuf) {
-        return false;
-      }
-
-      try {
-        // Copy scalars to aligned buffers
-        Module.HEAPU8.set(cBin, cBuf);
-        Module.HEAPU8.set(rBin, rBuf);
-
-        // Check scalar validity for c
-        if (Module.ccall("sc_check", "number", ["number"], [cBuf]) !== 0) {
-          console.error("c is not valid scalar");
-          return false;
-        }
-
-        // Check scalar validity for r
-        if (Module.ccall("sc_check", "number", ["number"], [rBuf]) !== 0) {
-          console.error("r is not valid scalar");
-          return false;
-        }
-
-        // Allocate memory for public key point
-        const tmp3 = Module._malloc(STRUCT_SIZES.GE_P3);
-        if (!tmp3) {
-          return false;
-        }
-        try {
-          // Copy public key to aligned buffer
-          const pubKeyBuf = Module._malloc(KEY_SIZE);
-          if (!pubKeyBuf) {
-            return false;
-          }
-          try {
-            // Copy public key to aligned buffer
-            Module.HEAPU8.set(publicKeyBin, pubKeyBuf);
-            // Convert public key to point on curve
-            const fromBytesResult = Module.ccall("ge_frombytes_vartime", "number", ["number", "number"], [tmp3, pubKeyBuf]);
-
-            if (fromBytesResult !== 0) {
-              return false;
-            }
-            // Allocate memory for double scalar multiplication
-            const tmp2 = Module._malloc(STRUCT_SIZES.GE_P2);
-            if (!tmp2) {
-              return false;
-            }
-
-            try {
-              // Perform double scalar multiplication with aligned buffers
-              Module.ccall("ge_double_scalarmult_base_vartime", "void", ["number", "number", "number", "number"], [tmp2, cBuf, tmp3, rBuf]);
-
-              // Create buffer for hash input
-              const buf = Module._malloc(HASH_SIZE + KEY_SIZE + KEY_SIZE);
-              if (!buf) {
-                return false;
-              }
-
-              try {
-                // Copy prefix hash and public key to buffer
-                Module.HEAPU8.set(prefixHashBin, buf);
-                Module.HEAPU8.set(publicKeyBin, buf + HASH_SIZE);
-
-                // Allocate memory for commitment point
-                const comm_m = Module._malloc(KEY_SIZE);
-                if (!comm_m) {
-                  return false;
-                }
-
-                try {
-                  // Get commitment point bytes
-                  Module.ccall("ge_tobytes", "void", ["number", "number"], [comm_m, tmp2]);
-
-                  // Copy commitment point to buffer
-                  const commBytes = Module.HEAPU8.subarray(comm_m, comm_m + KEY_SIZE);
-                  Module.HEAPU8.set(commBytes, buf + HASH_SIZE + KEY_SIZE);
-
-                  // Hash the buffer to create challenge scalar
-                  const buf_bin = Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE);
-                  const computed_c = Cn.hash_to_scalar(CnUtils.bintohex(buf_bin));
-
-                  // Compare computed challenge with provided challenge
-                  return computed_c === c;
-                } finally {
-                  Module._free(comm_m);
-                }
-              } finally {
-                Module._free(buf);
-              }
-            } finally {
-              Module._free(tmp2);
-            }
-          } finally {
-            Module._free(pubKeyBuf);
-          }
-        } finally {
-          Module._free(tmp3);
-        }
-      } finally {
-        Module._free(cBuf);
-        Module._free(rBuf);
-      }
+      return concealjs.crypto.check_signature(prefixHash, publicKey, signature);
     } catch (e) {
       console.error("Error in verify_signature:", e);
       return false;
@@ -1104,185 +548,23 @@ export namespace CnNativeBride {
   }
 
   export function checkTxProof(prefixHash: string, R: string, A: string, D: string, sig: string): boolean {
+    if (prefixHash.length !== HASH_SIZE * 2 || !CnUtils.valid_hex(prefixHash)) {
+      return false;
+    }
+    if (R.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(R)) {
+      return false;
+    }
+    if (A.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(A)) {
+      return false;
+    }
+    if (D.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(D)) {
+      return false;
+    }
+    if (sig.length !== STRUCT_SIZES.SIGNATURE * 2 || !CnUtils.valid_hex(sig)) {
+      return false;
+    }
     try {
-      // Validate input lengths
-      if (prefixHash.length !== HASH_SIZE * 2 || !CnUtils.valid_hex(prefixHash)) {
-        console.error("Invalid prefix hash length or format");
-        return false;
-      }
-      if (R.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(R)) {
-        console.error("Invalid R length or format");
-        return false;
-      }
-      if (A.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(A)) {
-        console.error("Invalid A length or format");
-        return false;
-      }
-      if (D.length !== KEY_SIZE * 2 || !CnUtils.valid_hex(D)) {
-        console.error("Invalid D length or format");
-        return false;
-      }
-      if (sig.length !== STRUCT_SIZES.SIGNATURE * 2 || !CnUtils.valid_hex(sig)) {
-        console.error("Invalid signature length or format");
-        return false;
-      }
-
-      // Convert inputs to binary format
-      const prefixHashBin = CnUtils.hextobin(prefixHash);
-      const RBin = CnUtils.hextobin(R);
-      const ABin = CnUtils.hextobin(A);
-      const DBin = CnUtils.hextobin(D);
-      const sigBin = CnUtils.hextobin(sig);
-
-      // Split signature into c and r components
-      const cBin = sigBin.slice(0, 32);
-      const rBin = sigBin.slice(32, 64);
-
-      // Allocate memory for points
-      const tmp3_R = Module._malloc(STRUCT_SIZES.GE_P3);
-      const tmp3_A = Module._malloc(STRUCT_SIZES.GE_P3);
-      const tmp3_D = Module._malloc(STRUCT_SIZES.GE_P3);
-      if (!tmp3_R || !tmp3_A || !tmp3_D) {
-        console.error("Failed to allocate point memory");
-        return false;
-      }
-
-      try {
-        // Convert public keys to points
-        const RBuf = Module._malloc(KEY_SIZE);
-        const ABuf = Module._malloc(KEY_SIZE);
-        const DBuf = Module._malloc(KEY_SIZE);
-        if (!RBuf || !ABuf || !DBuf) {
-          console.error("Failed to allocate key buffers");
-          return false;
-        }
-
-        try {
-          Module.HEAPU8.set(RBin, RBuf);
-          Module.HEAPU8.set(ABin, ABuf);
-          Module.HEAPU8.set(DBin, DBuf);
-
-          const fromBytesResult_R = Module.ccall("ge_frombytes_vartime", "number", ["number", "number"], [tmp3_R, RBuf]);
-          const fromBytesResult_A = Module.ccall("ge_frombytes_vartime", "number", ["number", "number"], [tmp3_A, ABuf]);
-          const fromBytesResult_D = Module.ccall("ge_frombytes_vartime", "number", ["number", "number"], [tmp3_D, DBuf]);
-
-          if (fromBytesResult_R !== 0 || fromBytesResult_A !== 0 || fromBytesResult_D !== 0) {
-            console.error("Failed to convert public keys to points:", {
-              R: fromBytesResult_R,
-              A: fromBytesResult_A,
-              D: fromBytesResult_D,
-            });
-            return false;
-          }
-
-          // Allocate memory for scalar multiplication results
-          const tmp2_cR = Module._malloc(STRUCT_SIZES.GE_P2);
-          const tmp2_rA = Module._malloc(STRUCT_SIZES.GE_P2);
-          if (!tmp2_cR || !tmp2_rA) {
-            console.error("Failed to allocate scalar multiplication memory");
-            return false;
-          }
-
-          try {
-            // Allocate memory for scalars
-            const cBuf = Module._malloc(KEY_SIZE);
-            const rBuf = Module._malloc(KEY_SIZE);
-            if (!cBuf || !rBuf) {
-              console.error("Failed to allocate scalar buffers");
-              return false;
-            }
-
-            try {
-              Module.HEAPU8.set(cBin, cBuf);
-              Module.HEAPU8.set(rBin, rBuf);
-
-              // Compute X = c*R + r*G
-              Module.ccall(
-                "ge_double_scalarmult_base_vartime",
-                "void",
-                ["number", "number", "number", "number"],
-                [tmp2_cR, cBuf, tmp3_R, rBuf]
-              );
-
-              // Compute Y = c*D + r*A
-              Module.ccall(
-                "ge_double_scalarmult_base_vartime",
-                "void",
-                ["number", "number", "number", "number"],
-                [tmp2_rA, cBuf, tmp3_D, rBuf]
-              );
-
-              /*console.log('Point computation details:', {
-								cR: CnUtils.bintohex(Module.HEAPU8.subarray(tmp2_cR, tmp2_cR + STRUCT_SIZES.GE_P2)),
-								rA: CnUtils.bintohex(Module.HEAPU8.subarray(tmp2_rA, tmp2_rA + STRUCT_SIZES.GE_P2))
-							}); */
-              // Allocate memory for X and Y
-              const XBuf = Module._malloc(KEY_SIZE);
-              const YBuf = Module._malloc(KEY_SIZE);
-              if (!XBuf || !YBuf) {
-                console.error("Failed to allocate X/Y buffers");
-                return false;
-              }
-
-              try {
-                // Get X = c*R + r*G
-                Module.ccall("ge_tobytes", "void", ["number", "number"], [XBuf, tmp2_cR]);
-                // Get Y = c*D + r*A
-                Module.ccall("ge_tobytes", "void", ["number", "number"], [YBuf, tmp2_rA]);
-
-                const X = CnUtils.bintohex(Module.HEAPU8.subarray(XBuf, XBuf + KEY_SIZE));
-                const Y = CnUtils.bintohex(Module.HEAPU8.subarray(YBuf, YBuf + KEY_SIZE));
-                //console.log('Computed points:', { X, Y });
-
-                // Create buffer for hash input
-                const buf = Module._malloc(HASH_SIZE + KEY_SIZE + KEY_SIZE + KEY_SIZE);
-                if (!buf) {
-                  console.error("Failed to allocate hash buffer");
-                  return false;
-                }
-
-                try {
-                  // Copy data to buffer: prefixHash || D || X || Y
-                  Module.HEAPU8.set(prefixHashBin, buf);
-                  Module.HEAPU8.set(DBin, buf + HASH_SIZE);
-                  Module.HEAPU8.set(Module.HEAPU8.subarray(XBuf, XBuf + KEY_SIZE), buf + HASH_SIZE + KEY_SIZE);
-                  Module.HEAPU8.set(Module.HEAPU8.subarray(YBuf, YBuf + KEY_SIZE), buf + HASH_SIZE + KEY_SIZE + KEY_SIZE);
-
-                  // Hash to scalar
-                  const buf_bin = Module.HEAPU8.subarray(buf, buf + HASH_SIZE + KEY_SIZE + KEY_SIZE + KEY_SIZE);
-                  const buf_hex = CnUtils.bintohex(buf_bin);
-
-                  const c2 = Cn.hash_to_scalar(buf_hex);
-                  // Debug logs for hash calculation
-                  const original_c = CnUtils.bintohex(cBin);
-
-                  // Compare c2 with original c
-                  return c2 === original_c;
-                } finally {
-                  Module._free(buf);
-                }
-              } finally {
-                Module._free(XBuf);
-                Module._free(YBuf);
-              }
-            } finally {
-              Module._free(cBuf);
-              Module._free(rBuf);
-            }
-          } finally {
-            Module._free(tmp2_cR);
-            Module._free(tmp2_rA);
-          }
-        } finally {
-          Module._free(RBuf);
-          Module._free(ABuf);
-          Module._free(DBuf);
-        }
-      } finally {
-        Module._free(tmp3_R);
-        Module._free(tmp3_A);
-        Module._free(tmp3_D);
-      }
+      return concealjs.crypto.check_tx_proof(prefixHash, R, A, D, sig);
     } catch (e) {
       console.error("Error in checkTxProof:", e);
       return false;
@@ -1331,8 +613,7 @@ export namespace Cn {
     if (derivation.length !== 64 || pub.length !== 64) {
       throw "Invalid input length!";
     }
-    let s = CnUtils.derivation_to_scalar(derivation, out_index);
-    return CnUtils.bintohex(nacl.ll.ge_add(CnUtils.hextobin(pub), CnUtils.hextobin(CnUtils.ge_scalarmult_base(s))));
+    return concealjs.crypto.derive_public_key(derivation, out_index, pub);
   }
 
   /**

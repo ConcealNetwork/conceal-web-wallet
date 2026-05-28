@@ -5,6 +5,8 @@ type ConcealJsGlobal = {
   cnutils: typeof import("./js/cnutils");
   random: typeof import("./js/random");
   cn: typeof import("./js/cn");
+  transactions: typeof import("./js/transactions");
+  sha3_384: typeof import("./js/tiers/sha3").sha3_384;
 };
 
 declare global {

@@ -31,7 +31,7 @@
 
 import { Wallet } from "./Wallet";
 import { BlockchainExplorer, RawDaemon_Transaction } from "./blockchain/BlockchainExplorer";
-import { Transaction, TransactionData, Deposit } from "./Transaction";
+import { TransactionData } from "./Transaction";
 import { TransactionsExplorer } from "./TransactionsExplorer";
 
 interface IBlockRange {
@@ -584,6 +584,7 @@ export class WalletWatchdog {
       range.screenNextShardIndex = range.screenNextShardIndex + 1;
       filterWorker.setIsWorking(true);
       filterWorker.incProcessed(shard.length);
+      // Worker screens shard with transactions.ownsTxBatch (one WASM receive batch per shard).
       filterWorker.getWorker().postMessage({
         type: "screen",
         transactions: shard,
@@ -616,6 +617,7 @@ export class WalletWatchdog {
     filterWorker.getWorker().postMessage({
       type: "process",
       transactions: ownedTransactions,
+      screenedOwned: true,
       readMinersTx: this.wallet.options.checkMinerTx,
       startBlock: range.startBlock,
       maxBlock: range.endBlock,
