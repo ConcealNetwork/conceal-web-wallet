@@ -1804,6 +1804,7 @@ export namespace CnTransactions {
     unlock_time: number = 0,
     rct: boolean,
     message: string,
+    messageTo: string | undefined,
     ttl: number,
     transactionType: string,
     term: number
@@ -2060,12 +2061,7 @@ export namespace CnTransactions {
       // Encrypt message and add it to the extra
       // CCX has only 1 destination for messages anyways
       if (message) {
-        let messageAddress: string | null = null;
-        for (let i = 0; i < dsts.length; i++) {
-          if (dsts[i].address !== senderAddress) {
-            messageAddress = dsts[i].address;
-          }
-        }
+        let messageAddress = messageTo;
 
         if (messageAddress) {
           let destKeys = Cn.decode_address(messageAddress);
@@ -2098,7 +2094,10 @@ export namespace CnTransactions {
         }
       }
       if (ttl !== 0) {
-        let ttlStr = CnUtils.encode_varint(ttl);
+        // Convert TTL from minutes to absolute UNIX timestamp in seconds
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        const ttlTimestamp = currentTimestamp + ttl * 60;
+        let ttlStr = CnUtils.encode_varint(ttlTimestamp);
         let ttlSize = CnUtils.encode_varint(ttlStr.length / 2);
         tx.extra = tx.extra + TX_EXTRA_TAGS.TTL_TAG + ttlSize + ttlStr;
       }
@@ -2485,6 +2484,7 @@ export namespace CnTransactions {
       unlock_time,
       rct,
       message,
+      messageTo,
       ttl,
       transactionType,
       term
