@@ -471,11 +471,7 @@ export namespace CnNativeBride {
   }
 
   export function sc_mulsub_bin(sigc_bin: Uint8Array, sec_bin: Uint8Array, k_bin: Uint8Array) {
-    return concealjs.crypto.sc_mulsub(
-      CnUtils.bintohex(sigc_bin),
-      CnUtils.bintohex(sec_bin),
-      CnUtils.bintohex(k_bin),
-    );
+    return concealjs.crypto.sc_mulsub(CnUtils.bintohex(sigc_bin), CnUtils.bintohex(sec_bin), CnUtils.bintohex(k_bin));
   }
 
   export function generate_ring_signature(prefix_hash: string, k_image: string, keys: string[], sec: string, real_index: number) {

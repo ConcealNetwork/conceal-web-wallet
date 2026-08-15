@@ -277,11 +277,7 @@ export class TransactionsExplorer {
    * Screen a sync shard via `concealjs.transactions.ownsTxBatch` (one `scan_receive_outputs_batch`
    * WASM call per shard on lib ≥0.2.2, then JS spend checks). Shard size drives FFI savings.
    */
-  static screenShardForOwnedHashes(
-    rawTransactions: RawDaemon_Transaction[],
-    wallet: Wallet,
-    readMinersTx: boolean
-  ): string[] {
+  static screenShardForOwnedHashes(rawTransactions: RawDaemon_Transaction[], wallet: Wallet, readMinersTx: boolean): string[] {
     const candidates: RawDaemon_Transaction[] = [];
 
     for (let i = 0; i < rawTransactions.length; i++) {
