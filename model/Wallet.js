@@ -559,7 +559,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer", "./Keys
                         if (needDerivation) {
                             var derivation = "";
                             try {
-                                derivation = Cn_1.CnNativeBride.generate_key_derivation(tx.txPubKey, _this.keys.priv.view);
+                                derivation = concealjs.crypto.generate_key_derivation(tx.txPubKey, _this.keys.priv.view);
                             }
                             catch (e) {
                                 continue;

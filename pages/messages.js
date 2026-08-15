@@ -342,7 +342,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     parsed = true;
                 }
             }
-            catch (e) { }
+            catch (e) {
+                console.error("Error handling scan result", e);
+            }
             try {
                 var txDetails = CoinUri_1.CoinUri.decodeWallet(result);
                 if (txDetails !== null) {
@@ -350,7 +352,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     parsed = true;
                 }
             }
-            catch (e) { }
+            catch (e) {
+                console.error("Error handling scan result", e);
+            }
             if (!parsed)
                 self.destinationAddressUser = result;
             self.stopScan();

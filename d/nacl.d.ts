@@ -13,5 +13,3 @@ declare var nacl : {
     },
     randomBytes:(bits : number) => Uint8Array
 };
-
-declare function keccak_256(bin : Uint8Array) : string;

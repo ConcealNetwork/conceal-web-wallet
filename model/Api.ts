@@ -20,7 +20,7 @@ import { Mnemonic } from "../model/Mnemonic";
 import { Translations } from "../model/Translations";
 import { MnemonicLang } from "../model/MnemonicLang";
 import { BlockchainExplorer, RawDaemon_Out } from "../model/blockchain/BlockchainExplorer";
-import { Cn, CnUtils, CnNativeBride, CnRandom } from "../model/Cn";
+import { Cn, CnUtils } from "../model/Cn";
 import { AppState } from "../model/AppState";
 import { DependencyInjectorInstance } from "../lib/numbersLab/DependencyInjector";
 import { TransactionsExplorer } from "../model/TransactionsExplorer";
@@ -120,7 +120,7 @@ export class Api {
     let self = this;
     setTimeout(function () {
       blockchainExplorer.getHeight().then(function (currentHeight) {
-        let seed = CnNativeBride.sc_reduce32(CnRandom.rand_32());
+        let seed = concealjs.random.random_scalar();
         let keys = Cn.create_address(seed);
 
         let newWallet = new Wallet();

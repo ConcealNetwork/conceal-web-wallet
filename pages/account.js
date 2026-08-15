@@ -48,6 +48,8 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             _this.isInitialized = false;
             _this.messagesCountRecord = 0;
             _this.refreshInterval = 500;
+            _this.filteredTransactionsCache = null;
+            _this.filterCacheKey = "";
             _this.initMessagesCount = wallet.txsMem.concat(wallet.getTransactionsCopy()).filter(function (tx) { return tx.message; }).length;
             _this.unsubscribeTicker = null;
             _this.optimizePanelTimeout = null;
@@ -59,6 +61,8 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                 if (_this.optimizePanelTimeout)
                     clearTimeout(_this.optimizePanelTimeout);
                 clearInterval(_this.intervalRefresh);
+                _this.filteredTransactionsCache = null;
+                _this.filterCacheKey = "";
                 return _super.prototype.destruct.call(_this);
             };
             _this.refresh = function () {
@@ -75,6 +79,28 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             };
             _this.onFilterChanged = function () {
                 _this.refreshWallet();
+            };
+            _this.getFilterCacheKey = function () {
+                return "".concat(_this.txFilter, "|").concat(wallet.modifiedTimestamp().getTime());
+            };
+            _this.getFilteredTransactions = function (allTransactions) {
+                var cacheKey = _this.getFilterCacheKey();
+                if (_this.filteredTransactionsCache !== null && _this.filterCacheKey === cacheKey) {
+                    return _this.filteredTransactionsCache;
+                }
+                if (!_this.txFilter) {
+                    _this.filteredTransactionsCache = allTransactions;
+                }
+                else {
+                    var filterUpper_1 = _this.txFilter.toUpperCase();
+                    _this.filteredTransactionsCache = allTransactions.filter(function (tx) {
+                        return (tx.hash.toUpperCase().includes(filterUpper_1) ||
+                            tx.paymentId.toUpperCase().includes(filterUpper_1) ||
+                            tx.getAmount().toString().includes(filterUpper_1));
+                    });
+                }
+                _this.filterCacheKey = cacheKey;
+                return _this.filteredTransactionsCache;
             };
             _this.checkOptimization = function () {
                 blockchainExplorer
@@ -213,13 +239,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                     _this.futureUnlockedInterest = wallet.futureDepositInterest(_this.currentScanBlock).unlocked;
                     if (_this.refreshTimestamp < wallet.modifiedTimestamp() || forceRedraw || filterChanged) {
                         var allTransactions = wallet.txsMem.concat(wallet.getTransactionsCopy().reverse());
-                        if (_this.txFilter) {
-                            allTransactions = allTransactions.filter(function (tx) {
-                                return (tx.hash.toUpperCase().includes(_this.txFilter.toUpperCase()) ||
-                                    tx.paymentId.toUpperCase().includes(_this.txFilter.toUpperCase()) ||
-                                    tx.getAmount().toString().toUpperCase().includes(_this.txFilter.toUpperCase()));
-                            });
-                        }
+                        allTransactions = _this.getFilteredTransactions(allTransactions);
                         _this.transactions = allTransactions.slice(0, _this.pagesCount * _this.txPerPage);
                         _this.allTransactionsCount = allTransactions.length;
                         if (!_this.isWalletSyncing) {
@@ -262,7 +282,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
             AppState_1.AppState.enableLeftMenu();
             _this.intervalRefresh = setInterval(function () {
                 _this.refresh();
-            }, 1 * 1000);
+            }, 3 * 1000);
             _this.refresh();
             _this.showOptimizePanel = false;
             window.accountView = _this;

@@ -223,6 +223,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                                         blockchainExplorer
                                             .sendRawTx(rawTxData.raw.raw)
                                             .then(function () {
+                                            var _a;
                                             //save the tx private key
                                             wallet.addTxPrivateKeyWithTxHashAndFusion(rawTxData.raw.hash, rawTxData.raw.prvkey, false);
                                             //force a mempool check so the user is up to date
@@ -230,12 +231,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                                             if (watchdog !== null)
                                                 watchdog.checkMempool();
                                             var promise = Promise.resolve();
-                                            if (destinationAddress_1 ===
-                                                "ccx7NzuofXxcypov8Yqm2A118xT17HereBFjp3RScjzM7wncf8BRcnHZbACy63sWD71L7NmkJRgQKXFE3weCfAh31RAVFHgttf" ||
-                                                destinationAddress_1 ===
-                                                    "ccx7V4LeUXy2eZ9waDXgsLS7Uc11e2CpNSCWVdxEqSRFAm6P6NQhSb7XMG1D6VAZKmJeaJP37WYQg84zbNrPduTX2whZ5pacfj" ||
-                                                destinationAddress_1 ===
-                                                    "ccx7YZ4RC97fqMh1bmzrFtDoSSiEgvEYzhaLE53SR9bh4QrDBUhGUH3TCmXqv8MTLjJDtnCeeaT5bLC2ZSzp3ZmQ19DoiPLLXS") {
+                                            if ((_a = config.donationAddresses) === null || _a === void 0 ? void 0 : _a.includes(destinationAddress_1)) {
                                                 promise = swal({
                                                     type: "success",
                                                     title: i18n.t("sendPage.thankYouDonationModal.title"),
@@ -257,7 +253,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                                                 });
                                             promise.then(function () {
                                                 if (self.redirectUrlAfterSend !== null) {
-                                                    window.location.href = window.encodeURIComponent(self.redirectUrlAfterSend.replace("{TX_HASH}", rawTxData.raw.hash));
+                                                    window.location.href = self.redirectUrlAfterSend.replace("{TX_HASH}", rawTxData.raw.hash);
                                                 }
                                             });
                                         })
@@ -407,7 +403,7 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
             _this.nfcAvailable = _this.nfc.has;
             _this.intervalRefresh = setInterval(function () {
                 _this.refresh();
-            }, 1 * 1000);
+            }, 3 * 1000);
             _this.refresh();
             return _this;
         }
@@ -511,7 +507,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     parsed = true;
                 }
             }
-            catch (e) { }
+            catch (e) {
+                console.error("Error handling scan result", e);
+            }
             try {
                 var txDetails = CoinUri_1.CoinUri.decodeWallet(result);
                 if (txDetails !== null) {
@@ -519,7 +517,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     parsed = true;
                 }
             }
-            catch (e) { }
+            catch (e) {
+                console.error("Error handling scan result", e);
+            }
             if (!parsed)
                 self.destinationAddressUser = result;
             self.stopScan();

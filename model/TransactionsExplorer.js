@@ -5,8 +5,7 @@
  *     Copyright (c) 2018-2020, The Qwertycoin Project
  *     Copyright (c) 2018-2020, The Masari Project
  *     Copyright (c) 2022, The Karbo Developers
- *     Copyright (c) 2022 - 2025, Conceal Devs
- *     Copyright (c) 2022 - 2025, Conceal Network
+ *     Copyright (c) 2022 - 2026, Conceal Network, Conceal Devs
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -131,114 +130,116 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 return false;
             }
         };
-        TransactionsExplorer.ownsTx = function (rawTransaction, wallet) {
-            var tx_pub_key = "";
-            var txExtras = [];
-            try {
-                var hexExtra = [];
-                var uint8Array = Cn_1.CnUtils.hextobin(rawTransaction.extra);
-                for (var i = 0; i < uint8Array.byteLength; i++) {
-                    hexExtra[i] = uint8Array[i];
+        TransactionsExplorer.toTxScanInput = function (rawTransaction) {
+            var vouts = [];
+            for (var iOut = 0; iOut < rawTransaction.vout.length; iOut++) {
+                var out = rawTransaction.vout[iOut];
+                var txout_k = out.target.data;
+                var vout = {
+                    type: out.target.type,
+                };
+                if (out.target.type == "02" && typeof txout_k.key !== "undefined") {
+                    vout.key = txout_k.key;
                 }
-                txExtras = this.parseExtra(hexExtra);
+                else if (out.target.type == "03" && typeof txout_k.keys !== "undefined") {
+                    vout.keys = txout_k.keys;
+                }
+                vouts.push(vout);
+            }
+            var vins = [];
+            for (var iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
+                var vin = rawTransaction.vin[iIn];
+                if (vin.value) {
+                    vins.push({
+                        k_image: vin.value.k_image,
+                        key_offsets: vin.value.key_offsets,
+                    });
+                }
+            }
+            return {
+                extraHex: rawTransaction.extra,
+                vouts: vouts,
+                vins: vins,
+            };
+        };
+        /** UTXO-backed scan context (matches legacy key-image / global-index checks). */
+        TransactionsExplorer.toTxScanContext = function (wallet) {
+            var hasSpend = wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== "";
+            var ctx = {
+                viewSecretHex: wallet.keys.priv.view,
+                spendPublicHex: wallet.keys.pub.spend,
+            };
+            if (hasSpend) {
+                ctx.spendSecretHex = wallet.keys.priv.spend;
+                var ownedKeyImages = [];
+                for (var _i = 0, _a = wallet.getAllOuts(); _i < _a.length; _i++) {
+                    var ut = _a[_i];
+                    if (ut.keyImage) {
+                        ownedKeyImages.push(ut.keyImage);
+                    }
+                }
+                ctx.ownedKeyImages = ownedKeyImages;
+            }
+            else {
+                var knownGlobalOutputIndexes = [];
+                for (var _b = 0, _c = wallet.getAllOuts(); _b < _c.length; _b++) {
+                    var ut = _c[_b];
+                    knownGlobalOutputIndexes.push(ut.globalIndex);
+                }
+                ctx.knownGlobalOutputIndexes = knownGlobalOutputIndexes;
+            }
+            return ctx;
+        };
+        TransactionsExplorer.ownsTx = function (rawTransaction, wallet) {
+            try {
+                var owned = concealjs.transactions.ownsTx(TransactionsExplorer.toTxScanInput(rawTransaction), TransactionsExplorer.toTxScanContext(wallet));
+                if (owned) {
+                    logDebugMsg("Found our tx...");
+                }
+                return owned;
             }
             catch (e) {
                 console.error("Error when scanning transaction on block " + rawTransaction.height, e);
                 return false;
             }
-            for (var _i = 0, txExtras_1 = txExtras; _i < txExtras_1.length; _i++) {
-                var extra = txExtras_1[_i];
-                if (extra.type === exports.TX_EXTRA_TAG_PUBKEY) {
-                    for (var i = 0; i < 32; ++i) {
-                        tx_pub_key += String.fromCharCode(extra.data[i]);
-                    }
-                    break;
+        };
+        /**
+         * Screen a sync shard via `concealjs.transactions.ownsTxBatch` (one `scan_receive_outputs_batch`
+         * WASM call per shard on lib ≥0.2.2, then JS spend checks). Shard size drives FFI savings.
+         */
+        TransactionsExplorer.screenShardForOwnedHashes = function (rawTransactions, wallet, readMinersTx) {
+            var candidates = [];
+            for (var i = 0; i < rawTransactions.length; i++) {
+                var raw = rawTransactions[i];
+                if (!(raw === null || raw === void 0 ? void 0 : raw.height)) {
+                    continue;
                 }
+                if (!readMinersTx && TransactionsExplorer.isMinerTx(raw)) {
+                    continue;
+                }
+                candidates.push(raw);
             }
-            if (tx_pub_key === "") {
-                console.error("tx_pub_key === null", rawTransaction.height, rawTransaction.hash);
-                return false;
+            if (candidates.length === 0) {
+                return [];
             }
-            tx_pub_key = Cn_1.CnUtils.bintohex(tx_pub_key);
-            var derivation = null;
+            var ctx = TransactionsExplorer.toTxScanContext(wallet);
+            var inputs = candidates.map(function (raw) { return TransactionsExplorer.toTxScanInput(raw); });
+            var ownedFlags;
             try {
-                derivation = Cn_1.CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
+                ownedFlags = concealjs.transactions.ownsTxBatch(inputs, ctx);
             }
             catch (e) {
-                console.error("UNABLE TO CREATE DERIVATION", e);
-                return false;
+                console.error("ownsTxBatch failed, falling back to per-tx screen:", e);
+                ownedFlags = candidates.map(function (raw) { return TransactionsExplorer.ownsTx(raw, wallet); });
             }
-            if (!derivation) {
-                console.error("UNABLE TO CREATE DERIVATION");
-                return false;
-            }
-            var keyIndex = 0;
-            for (var iOut = 0; iOut < rawTransaction.vout.length; iOut++) {
-                var out = rawTransaction.vout[iOut];
-                var txout_k = out.target.data;
-                if (out.target.type == "02" && typeof txout_k.key !== "undefined") {
-                    var publicEphemeral = Cn_1.CnNativeBride.derive_public_key(derivation, keyIndex, wallet.keys.pub.spend);
-                    if (txout_k.key == publicEphemeral) {
-                        logDebugMsg("Found our tx...");
-                        return true;
-                    }
-                    ++keyIndex;
-                }
-                else if (out.target.type == "03" && typeof txout_k.keys !== "undefined") {
-                    for (var iKey = 0; iKey < txout_k.keys.length; iKey++) {
-                        var key = txout_k.keys[iKey];
-                        var publicEphemeral = Cn_1.CnNativeBride.derive_public_key(derivation, iOut, wallet.keys.pub.spend);
-                        if (key == publicEphemeral) {
-                            return true;
-                        }
-                        ++keyIndex;
-                    }
+            var hashes = [];
+            for (var i = 0; i < candidates.length; i++) {
+                var hash = candidates[i].hash;
+                if (ownedFlags[i] && hash) {
+                    hashes.push(hash);
                 }
             }
-            //check if no read only wallet
-            if (wallet.keys.priv.spend !== null && wallet.keys.priv.spend !== "") {
-                var keyImages = wallet.getTransactionKeyImages();
-                for (var iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
-                    var vin = rawTransaction.vin[iIn];
-                    if (vin.value && keyImages.indexOf(vin.value.k_image) !== -1) {
-                        var walletOuts = wallet.getAllOuts();
-                        for (var _a = 0, walletOuts_1 = walletOuts; _a < walletOuts_1.length; _a++) {
-                            var ut = walletOuts_1[_a];
-                            if (ut.keyImage == vin.value.k_image) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-            else {
-                var txOutIndexes = wallet.getTransactionOutIndexes();
-                for (var iIn = 0; iIn < rawTransaction.vin.length; ++iIn) {
-                    var vin = rawTransaction.vin[iIn];
-                    if (!vin.value) {
-                        continue;
-                    }
-                    var absoluteOffets = vin.value.key_offsets.slice();
-                    for (var i = 1; i < absoluteOffets.length; ++i) {
-                        absoluteOffets[i] += absoluteOffets[i - 1];
-                    }
-                    var ownTx = -1;
-                    for (var _b = 0, absoluteOffets_1 = absoluteOffets; _b < absoluteOffets_1.length; _b++) {
-                        var index = absoluteOffets_1[_b];
-                        if (txOutIndexes.indexOf(index) !== -1) {
-                            ownTx = index;
-                            break;
-                        }
-                    }
-                    if (ownTx !== -1) {
-                        var txOut = wallet.getOutWithGlobalIndex(ownTx);
-                        if (txOut !== null) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
+            return hashes;
         };
         TransactionsExplorer.decryptMessage = function (index, txPubKey, recepientSecretSpendKey, rawMessage) {
             var decryptedMessage = "";
@@ -248,7 +249,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             }
             var derivation;
             try {
-                derivation = Cn_1.CnNativeBride.generate_key_derivation(txPubKey, recepientSecretSpendKey);
+                derivation = concealjs.crypto.generate_key_derivation(txPubKey, recepientSecretSpendKey);
             }
             catch (e) {
                 console.error("UNABLE TO CREATE DERIVATION", e);
@@ -257,14 +258,14 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             var magick1 = "80";
             var magick2 = "00";
             var keyData = derivation + magick1 + magick2;
-            var hash = Cn_1.CnUtils.cn_fast_hash(keyData);
-            var hashBuf = Cn_1.CnUtils.hextobin(hash);
+            var hash = concealjs.cnutils.cn_fast_hash(keyData);
+            var hashBuf = concealjs.cnutils.hextobin(hash);
             var nonceBuf = new Uint8Array(12);
             for (var i = 0; i < 12; i++) {
                 nonceBuf.set([index / Math.pow(0x100, i)], 11 - i);
             }
             // make a binary array out of raw message
-            var rawMessArr = Cn_1.CnUtils.hextobin(rawMessage);
+            var rawMessArr = concealjs.cnutils.hextobin(rawMessage);
             // typescripted chacha
             var cha = new ChaCha8_1.JSChaCha8(hashBuf, nonceBuf);
             var _buf = cha.decrypt(rawMessArr);
@@ -291,7 +292,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             var txExtras = [];
             try {
                 var hexExtra = [];
-                var uint8Array = Cn_1.CnUtils.hextobin(rawTransaction.extra);
+                var uint8Array = concealjs.cnutils.hextobin(rawTransaction.extra);
                 for (var i = 0; i < uint8Array.byteLength; i++) {
                     hexExtra[i] = uint8Array[i];
                 }
@@ -301,8 +302,8 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 console.error("Error when scanning transaction on block " + rawTransaction.height, e);
                 return null;
             }
-            for (var _i = 0, txExtras_2 = txExtras; _i < txExtras_2.length; _i++) {
-                var extra = txExtras_2[_i];
+            for (var _i = 0, txExtras_1 = txExtras; _i < txExtras_1.length; _i++) {
+                var extra = txExtras_1[_i];
                 if (extra.type === exports.TX_EXTRA_TAG_PUBKEY) {
                     for (var i = 0; i < 32; ++i) {
                         tx_pub_key += String.fromCharCode(extra.data[i]);
@@ -314,18 +315,18 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                 console.error("tx_pub_key === null", rawTransaction.height, rawTransaction.hash);
                 return null;
             }
-            tx_pub_key = Cn_1.CnUtils.bintohex(tx_pub_key);
+            tx_pub_key = concealjs.cnutils.bintohex(tx_pub_key);
             var encryptedPaymentId = null;
             var extraIndex = 0;
-            for (var _b = 0, txExtras_3 = txExtras; _b < txExtras_3.length; _b++) {
-                var extra = txExtras_3[_b];
+            for (var _b = 0, txExtras_2 = txExtras; _b < txExtras_2.length; _b++) {
+                var extra = txExtras_2[_b];
                 if (extra.type === exports.TX_EXTRA_NONCE) {
                     if (extra.data[0] === exports.TX_EXTRA_NONCE_PAYMENT_ID) {
                         paymentId = "";
                         for (var i = 1; i < extra.data.length; ++i) {
                             paymentId += String.fromCharCode(extra.data[i]);
                         }
-                        paymentId = Cn_1.CnUtils.bintohex(paymentId);
+                        paymentId = concealjs.cnutils.bintohex(paymentId);
                         //break;
                     }
                     else if (extra.data[0] === exports.TX_EXTRA_NONCE_ENCRYPTED_PAYMENT_ID) {
@@ -333,7 +334,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                         for (var i = 1; i < extra.data.length; ++i) {
                             encryptedPaymentId += String.fromCharCode(extra.data[i]);
                         }
-                        encryptedPaymentId = Cn_1.CnUtils.bintohex(encryptedPaymentId);
+                        encryptedPaymentId = concealjs.cnutils.bintohex(encryptedPaymentId);
                         //break;
                     }
                 }
@@ -342,22 +343,22 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     for (var i = 0; i < extra.data.length; ++i) {
                         rawMessage += String.fromCharCode(extra.data[i]);
                     }
-                    rawMessage = Cn_1.CnUtils.bintohex(rawMessage);
+                    rawMessage = concealjs.cnutils.bintohex(rawMessage);
                 }
                 else if (extra.type === exports.TX_EXTRA_TTL) {
                     var rawTTL = "";
                     for (var i = 0; i < extra.data.length; ++i) {
                         rawTTL += String.fromCharCode(extra.data[i]);
                     }
-                    var ttlStr = Cn_1.CnUtils.bintohex(rawTTL);
-                    var uint8Array = Cn_1.CnUtils.hextobin(ttlStr);
+                    var ttlStr = concealjs.cnutils.bintohex(rawTTL);
+                    var uint8Array = concealjs.cnutils.hextobin(ttlStr);
                     ttl = (0, Varint_1.decode)(uint8Array);
                 }
                 extraIndex++;
             }
             var derivation = null;
             try {
-                derivation = Cn_1.CnNativeBride.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
+                derivation = concealjs.crypto.generate_key_derivation(tx_pub_key, wallet.keys.priv.view);
             }
             catch (e) {
                 console.error("UNABLE TO CREATE DERIVATION", e);
@@ -377,7 +378,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     continue;
                 }
                 var output_idx_in_tx = iOut;
-                var generated_tx_pubkey = Cn_1.CnNativeBride.derive_public_key(derivation, output_idx_in_tx, wallet.keys.pub.spend);
+                var generated_tx_pubkey = concealjs.crypto.derive_public_key(derivation, output_idx_in_tx, wallet.keys.pub.spend);
                 // check if generated public key matches the current output's key
                 var mine_output = false;
                 if (out.target.type == "02" && typeof txout_k.key !== "undefined") {
@@ -459,8 +460,8 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                     var wasAdded = false;
                     if (vin.value && vin.value.k_image && keyImages.indexOf(vin.value.k_image) !== -1) {
                         var walletOuts = wallet.getAllOuts();
-                        for (var _c = 0, walletOuts_2 = walletOuts; _c < walletOuts_2.length; _c++) {
-                            var ut = walletOuts_2[_c];
+                        for (var _c = 0, walletOuts_1 = walletOuts; _c < walletOuts_1.length; _c++) {
+                            var ut = walletOuts_1[_c];
                             if (wasAdded) {
                                 console.log(ut.keyImage, "=", vin.value.k_image);
                             }
@@ -527,8 +528,8 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
                         absoluteOffets[i] += absoluteOffets[i - 1];
                     }
                     var ownTx = -1;
-                    for (var _d = 0, absoluteOffets_2 = absoluteOffets; _d < absoluteOffets_2.length; _d++) {
-                        var index = absoluteOffets_2[_d];
+                    for (var _d = 0, absoluteOffets_1 = absoluteOffets; _d < absoluteOffets_1.length; _d++) {
+                        var index = absoluteOffets_1[_d];
                         if (txOutIndexes.indexOf(index) !== -1) {
                             ownTx = index;
                             break;
@@ -815,7 +816,7 @@ define(["require", "exports", "./MathUtil", "./ChaCha8", "./Cn", "./Transaction"
             
                        //create random destination to keep 2 outputs always in case of 0 change
             
-                       let fakeAddress = Cn.create_address(CnRandom.random_scalar()).public_addr;
+                       let fakeAddress = Cn.create_address(concealjs.random.random_scalar()).public_addr;
                        logDebugMsg("Sending 0 CCX to a fake address to keep tx uniform (no change exists): " + fakeAddress);
                        dsts.push({
                          address: fakeAddress,

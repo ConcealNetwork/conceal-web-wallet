@@ -92,7 +92,7 @@ define(["require", "exports", "../lib/numbersLab/VueAnnotate", "../lib/numbersLa
                                     case 3:
                                         currentHeight = _b.sent();
                                         $("#pageLoading").hide();
-                                        seed = Cn_1.CnNativeBride.sc_reduce32(Cn_1.CnRandom.rand_32());
+                                        seed = concealjs.random.random_scalar();
                                         keys = Cn_1.Cn.create_address(seed);
                                         newWallet = new Wallet_1.Wallet();
                                         newWallet.keys = KeysRepository_1.KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);

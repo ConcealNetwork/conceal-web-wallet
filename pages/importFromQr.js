@@ -215,7 +215,9 @@ define(["require", "exports", "../lib/numbersLab/DestructableView", "../lib/numb
                     return true;
                 }
             }
-            catch (e) { }
+            catch (e) {
+                console.error("Error handling scan result", e);
+            }
             this.scanSuccess = false;
             return false;
         };

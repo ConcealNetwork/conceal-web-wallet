@@ -105,7 +105,7 @@ define(["require", "exports", "../model/KeysRepository", "../model/Wallet", "../
             var self = this;
             setTimeout(function () {
                 blockchainExplorer.getHeight().then(function (currentHeight) {
-                    var seed = Cn_1.CnNativeBride.sc_reduce32(Cn_1.CnRandom.rand_32());
+                    var seed = concealjs.random.random_scalar();
                     var keys = Cn_1.Cn.create_address(seed);
                     var newWallet = new Wallet_1.Wallet();
                     newWallet.keys = KeysRepository_1.KeysRepository.fromPriv(keys.spend.sec, keys.view.sec);

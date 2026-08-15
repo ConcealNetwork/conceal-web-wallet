@@ -1,7 +1,7 @@
 /**
  *     Copyright (c) 2018-2020, ExploShot
  *     Copyright (c) 2018-2020, The Qwertycoin Project
- *     Copyright (c) 2018-2023, The Conceal Network
+ *     Copyright (c) 2018-2026, The Conceal Network, Conceal Devs
  *
  *     All rights reserved.
  *     Redistribution and use in source and binary forms, with or without modification,
@@ -77,134 +77,43 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.WalletWatchdog = void 0;
+    /** Applies pre-parsed sync results on the main wallet (no second ParseTransactions pass). */
     var TxQueue = /** @class */ (function () {
         function TxQueue(wallet, processingCallback) {
             var _this = this;
-            this.initWorker = function () {
-                _this.workerProcess = new Worker("./workers/ParseTransactionsEntrypoint.js");
-                _this.workerProcess.onmessage = function (data) {
-                    var message = data.data;
-                    if (message === "ready") {
-                        logDebugMsg("worker ready...");
-                        // post the wallet to the worker
-                        _this.workerProcess.postMessage({
-                            type: "initWallet",
-                        });
-                    }
-                    else if (message === "missing_wallet") {
-                        logDebugMsg("Wallet is missing for the worker...");
-                    }
-                    else if (message.type) {
-                        if (message.type === "readyWallet") {
-                            _this.setIsReady(true);
-                        }
-                        else if (message.type === "processed") {
-                            if (message.transactions.length > 0) {
-                                for (var _i = 0, _a = message.transactions; _i < _a.length; _i++) {
-                                    var txData = _a[_i];
-                                    var txDataObject = Transaction_1.TransactionData.fromRaw(txData);
-                                    _this.wallet.addNew(txDataObject.transaction);
-                                    _this.wallet.addDeposits(txDataObject.deposits);
-                                    _this.wallet.addWithdrawals(txDataObject.withdrawals);
-                                }
-                                // increase the number of transactions we actually added to wallet
-                                _this.countAdded = _this.countAdded + message.transactions.length;
-                                //console.log(`Added ${message.transactions.length} transactions to wallet. All count ${this.countAdded}`);
-                            }
-                            // we processed all
-                            _this.isRunning = false;
-                            // signall progress and start next loop now
-                            _this.processingCallback(message.maxHeight);
-                            _this.runProcessLoop();
-                        }
-                    }
-                };
-                return _this.workerProcess;
-            };
-            this.runProcessLoop = function () {
-                if (_this.isReady) {
-                    //we destroy the worker in charge of decoding the transactions every 5k transactions to ensure the memory is not corrupted
-                    //cnUtil bug, see https://github.com/mymonero/mymonero-core-js/issues/8
-                    if (_this.countProcessed >= 5 * 1000) {
-                        logDebugMsg("Recreated parseWorker..");
-                        _this.restartWorker();
-                        setTimeout(function () {
-                            _this.runProcessLoop();
-                        }, 1000);
-                        return;
-                    }
-                    if (!_this.isRunning) {
-                        _this.isRunning = true;
-                        // dequeue one item form the processing queue and check if its valid
-                        var txQueueItem = _this.processingQueue.shift();
-                        if (txQueueItem) {
-                            // increase the number of transactions we actually processed
-                            _this.countProcessed = _this.countProcessed + txQueueItem.transactions.length;
-                            if (txQueueItem.transactions.length > 0) {
-                                //console.log(`sending ${txQueueItem.transactions.length} transactions to process. Last block ${txQueueItem.maxBlockNum}. All count ${this.countProcessed}`);
-                                _this.workerProcess.postMessage({
-                                    transactions: txQueueItem.transactions,
-                                    maxBlock: txQueueItem.maxBlockNum,
-                                    wallet: _this.wallet.exportToRaw(),
-                                    type: "process",
-                                });
-                            }
-                            else {
-                                _this.isRunning = false;
-                                _this.processingCallback(txQueueItem.maxBlockNum);
-                                _this.runProcessLoop();
-                            }
-                        }
-                        else {
-                            _this.isRunning = false;
-                        }
+            this.applyParsedTransactions = function (parsedTransactions, maxBlockNum) {
+                _this.isApplying = true;
+                try {
+                    for (var _i = 0, parsedTransactions_1 = parsedTransactions; _i < parsedTransactions_1.length; _i++) {
+                        var txData = parsedTransactions_1[_i];
+                        var txDataObject = Transaction_1.TransactionData.fromRaw(txData);
+                        _this.wallet.addNew(txDataObject.transaction);
+                        _this.wallet.addDeposits(txDataObject.deposits);
+                        _this.wallet.addWithdrawals(txDataObject.withdrawals);
                     }
                 }
-                else {
-                    if (!_this.isReady) {
-                        setTimeout(function () {
-                            _this.runProcessLoop();
-                        }, 1000);
-                    }
+                finally {
+                    _this.isApplying = false;
                 }
-            };
-            this.addTransactions = function (transactions, maxBlockNum) {
-                var txQueueItem = {
-                    transactions: transactions,
-                    maxBlockNum: maxBlockNum,
-                };
-                _this.processingQueue.push(txQueueItem);
-                _this.runProcessLoop();
-            };
-            this.restartWorker = function () {
-                _this.isReady = false;
-                _this.isRunning = false;
-                _this.countProcessed = 0;
-                _this.workerProcess.terminate();
-                _this.workerProcess = _this.initWorker();
-            };
-            this.setIsReady = function (value) {
-                _this.isReady = value;
+                _this.processingCallback(maxBlockNum);
             };
             this.hasData = function () {
-                return _this.processingQueue.length > 0;
+                return _this.isApplying;
             };
             this.getSize = function () {
-                return _this.processingQueue.length;
+                return _this.isApplying ? 1 : 0;
+            };
+            this.isIdle = function () {
+                return !_this.isApplying;
+            };
+            this.isBusy = function () {
+                return _this.isApplying;
             };
             this.reset = function () {
-                _this.isReady = false;
-                _this.isRunning = false;
-                _this.processingQueue = [];
-                _this.workerProcess = _this.initWorker();
+                _this.isApplying = false;
             };
             this.wallet = wallet;
-            this.isReady = false;
-            this.isRunning = false;
-            this.countAdded = 0;
-            this.countProcessed = 0;
-            this.processingQueue = [];
-            this.workerProcess = this.initWorker();
+            this.isApplying = false;
             this.processingCallback = processingCallback;
         }
         return TxQueue;
@@ -213,53 +122,119 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
         function BlockList(wallet, watchdog) {
             var _this = this;
             this.addBlockRange = function (startBlock, endBlock, chainHeight) {
+                if (endBlock <= startBlock) {
+                    return false;
+                }
                 _this.chainHeight = Math.max(_this.chainHeight, chainHeight);
                 var rangeData = {
                     startBlock: startBlock,
                     endBlock: endBlock,
                     finished: false,
                     timestamp: new Date(),
-                    transactions: [],
+                    parsedTransactions: [],
+                    fetched: false,
+                    fetchedTransactions: [],
+                    filterDispatched: false,
+                    screenComplete: false,
+                    screenShardTotal: 0,
+                    screenNextShardIndex: 0,
+                    screenShardsCompleted: 0,
+                    screenHashes: new Set(),
+                    parseDispatched: false,
                 };
-                if (_this.blocks.length > 0) {
-                    for (var i = _this.blocks.length - 1; i >= 0; i--) {
-                        if (startBlock === _this.blocks[i].startBlock && endBlock === _this.blocks[i].endBlock) {
-                            return;
-                        }
-                        else if (endBlock > _this.blocks[i].endBlock) {
-                            if ((i = _this.blocks.length)) {
-                                _this.blocks.push(rangeData);
-                            }
-                            else {
-                                _this.blocks.splice(i + 1, 0, rangeData);
-                            }
-                            break;
-                        }
+                for (var i = 0; i < _this.blocks.length; ++i) {
+                    if (startBlock === _this.blocks[i].startBlock && endBlock === _this.blocks[i].endBlock) {
+                        return false;
                     }
                 }
-                else {
-                    _this.blocks.push(rangeData);
+                _this.blocks.push(rangeData);
+                _this.blocks.sort(function (a, b) { return a.startBlock - b.startBlock; });
+                return true;
+            };
+            this.setFetchedTransactions = function (startBlock, endBlock, transactions) {
+                for (var i = 0; i < _this.blocks.length; ++i) {
+                    if (_this.blocks[i].startBlock === startBlock && _this.blocks[i].endBlock === endBlock) {
+                        _this.blocks[i].fetched = true;
+                        _this.blocks[i].fetchedTransactions = transactions;
+                        return;
+                    }
                 }
             };
-            this.finishBlockRange = function (lastBlock, transactions) {
-                if (lastBlock > -1) {
-                    for (var i = 0; i < _this.blocks.length; ++i) {
-                        if (lastBlock <= _this.blocks[i].endBlock) {
-                            _this.blocks[i].transactions = transactions;
-                            _this.blocks[i].finished = true;
-                            break;
-                        }
+            /** Only the head range may be filtered; strict order is enforced by the queue. */
+            this.getNextRangeForFilter = function () {
+                if (_this.blocks.length === 0) {
+                    return null;
+                }
+                var range = _this.blocks[0];
+                if (!range.fetched || range.finished) {
+                    return null;
+                }
+                if (!range.screenComplete) {
+                    if (!range.filterDispatched) {
+                        return range;
                     }
-                    // remove all finished block
-                    while (_this.blocks.length > 0) {
-                        if (_this.blocks[0].finished) {
-                            var block = _this.blocks.shift();
-                            // add any transactions to the wallet
-                            _this.txQueue.addTransactions(block.transactions, block.endBlock);
+                    return null;
+                }
+                if (!range.parseDispatched) {
+                    return range;
+                }
+                return null;
+            };
+            /** Next range can be queued once the head chunk is downloaded (filter/apply may still run). */
+            this.canPrefetchNextRange = function () {
+                if (_this.blocks.length === 0) {
+                    return true;
+                }
+                var head = _this.blocks[0];
+                return head.fetched || head.finished;
+            };
+            this.getTailQueuedEndBlock = function () {
+                if (_this.blocks.length === 0) {
+                    return Math.max(0, Number(_this.wallet.lastHeight));
+                }
+                return _this.blocks[_this.blocks.length - 1].endBlock;
+            };
+            this.recordScreenShard = function (startBlock, endBlock, hashes) {
+                for (var i = 0; i < _this.blocks.length; ++i) {
+                    if (_this.blocks[i].startBlock === startBlock && _this.blocks[i].endBlock === endBlock) {
+                        var range = _this.blocks[i];
+                        for (var h = 0; h < hashes.length; ++h) {
+                            range.screenHashes.add(hashes[h]);
                         }
-                        else {
-                            break;
+                        range.screenShardsCompleted = range.screenShardsCompleted + 1;
+                        if (range.screenShardsCompleted >= range.screenShardTotal) {
+                            range.screenComplete = true;
+                            range.filterDispatched = false;
                         }
+                        return;
+                    }
+                }
+            };
+            this.buildOwnedTransactions = function (range) {
+                var owned = [];
+                for (var _i = 0, _a = range.fetchedTransactions; _i < _a.length; _i++) {
+                    var raw = _a[_i];
+                    if ((raw === null || raw === void 0 ? void 0 : raw.height) && raw.hash && range.screenHashes.has(raw.hash)) {
+                        owned.push(raw);
+                    }
+                }
+                return owned;
+            };
+            this.finishBlockRange = function (startBlock, endBlock, parsedTransactions) {
+                for (var i = 0; i < _this.blocks.length; ++i) {
+                    if (_this.blocks[i].startBlock === startBlock && _this.blocks[i].endBlock === endBlock) {
+                        _this.blocks[i].parsedTransactions = parsedTransactions;
+                        _this.blocks[i].finished = true;
+                        break;
+                    }
+                }
+                while (_this.blocks.length > 0) {
+                    if (_this.blocks[0].finished) {
+                        var block = _this.blocks.shift();
+                        _this.txQueue.applyParsedTransactions(block.parsedTransactions, block.endBlock);
+                    }
+                    else {
+                        break;
                     }
                 }
             };
@@ -273,21 +248,20 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                 return false;
             };
             this.getFirstIdleRange = function (reset) {
-                for (var i = 0; i < _this.blocks.length; ++i) {
-                    if (!_this.blocks[i].finished) {
-                        var timeDiff = new Date().getTime() - _this.blocks[i].timestamp.getTime();
-                        if (timeDiff / 1000 > 30) {
-                            if (reset) {
-                                _this.blocks[i].timestamp = new Date();
-                            }
-                            return _this.blocks[i];
-                        }
-                    }
-                    else {
-                        return null;
-                    }
+                if (_this.blocks.length === 0) {
+                    return null;
                 }
-                // none found
+                var head = _this.blocks[0];
+                if (head.finished || head.fetched) {
+                    return null;
+                }
+                var timeDiff = new Date().getTime() - head.timestamp.getTime();
+                if (timeDiff / 1000 > 30) {
+                    if (reset) {
+                        head.timestamp = new Date();
+                    }
+                    return head;
+                }
                 return null;
             };
             this.getTxQueue = function () {
@@ -308,7 +282,10 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             this.watchdog = watchdog;
             this.txQueue = new TxQueue(wallet, function (blockNumber) {
                 _this.wallet.lastHeight = Math.min(_this.chainHeight, Math.max(_this.wallet.lastHeight, blockNumber));
+                _this.watchdog.setLastBlockLoadingFromApply(blockNumber);
                 _this.watchdog.checkMempool();
+                _this.watchdog.notifyTxQueueDrain();
+                _this.watchdog.tryScheduleFilter();
             });
         }
         return BlockList;
@@ -335,10 +312,15 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                     else if (message.type) {
                         if (message.type === "readyWallet") {
                             _this.setIsReady(true);
+                            _this.parseTxCallback();
+                        }
+                        else if (message.type === "screened") {
+                            _this.blockList.recordScreenShard(message.startBlock, message.maxHeight, message.hashes);
+                            _this.setIsWorking(false);
+                            _this.parseTxCallback();
                         }
                         else if (message.type === "processed") {
-                            // we are done processing now
-                            _this.blockList.finishBlockRange(message.maxHeight, message.transactions);
+                            _this.blockList.finishBlockRange(message.startBlock, message.maxHeight, message.transactions);
                             _this.setIsWorking(false);
                             _this.parseTxCallback();
                         }
@@ -379,28 +361,26 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
         return ParseWorker;
     }());
     var SyncWorker = /** @class */ (function () {
-        function SyncWorker(explorer, wallet) {
+        function SyncWorker(explorer, wallet, prefetchSlotIndex) {
             var _this = this;
             this.fetchBlocks = function (startBlock, endBlock) {
                 _this.isWorking = true;
-                return new Promise(function (resolve, reject) {
-                    _this.explorer
-                        .getTransactionsForBlocks(startBlock, endBlock, _this.wallet.options.checkMinerTx)
-                        .then(function (transactions) {
-                        resolve({
-                            transactions: transactions,
-                            lastBlock: endBlock,
-                        });
-                    })
-                        .catch(function (err) {
-                        reject({
-                            transactions: [],
-                            lastBlock: endBlock,
-                        });
-                    })
-                        .finally(function () {
-                        _this.isWorking = false;
-                    });
+                var fetchPromise = _this.explorer.getTransactionsForBlocksPrefetchSlot(_this.prefetchSlotIndex, startBlock, endBlock, _this.wallet.options.checkMinerTx);
+                return fetchPromise
+                    .then(function (transactions) { return ({
+                    transactions: transactions,
+                    lastBlock: endBlock,
+                    startBlock: startBlock,
+                }); })
+                    .catch(function () {
+                    throw {
+                        transactions: [],
+                        lastBlock: endBlock,
+                        startBlock: startBlock,
+                    };
+                })
+                    .finally(function () {
+                    _this.isWorking = false;
                 });
             };
             this.getIsWorking = function () {
@@ -409,6 +389,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             this.wallet = wallet;
             this.isWorking = false;
             this.explorer = explorer;
+            this.prefetchSlotIndex = prefetchSlotIndex;
         }
         return SyncWorker;
     }());
@@ -419,28 +400,29 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             this.cpuCores = 0;
             this.maxCpuCores = 0;
             this.remoteNodes = 0;
+            this.maxConcurrentFetches = 1;
             this.syncWorkers = [];
-            this.parseWorkers = [];
+            this.filterWorkers = [];
             this.intervalMempool = 0;
             this.lastBlockLoading = -1;
             this.lastMaximumHeight = 0;
-            this.transactionsToProcess = [];
+            this.txQueueWaiters = [];
             this.setupWorkers = function () {
-                _this.cpuCores = _this.maxCpuCores;
+                var poolSize = Math.max(1, _this.explorer.getPrefetchNodePoolSize());
                 if (_this.wallet.options.readSpeed == 10) {
-                    // use 3/4 of the cores for fast syncing
-                    _this.cpuCores = Math.min(Math.max(1, Math.floor(3 * (_this.maxCpuCores / 4))), config.maxWorkerCores);
+                    _this.remoteNodes = Math.min(config.maxPrefetchParallel, poolSize, config.maxRemoteNodes);
                 }
                 else if (_this.wallet.options.readSpeed == 50) {
-                    // use half of the cores for medim syncing
-                    _this.cpuCores = Math.min(Math.max(1, Math.floor(_this.maxCpuCores / 2)), config.maxWorkerCores);
+                    _this.remoteNodes = Math.min(Math.max(1, Math.floor(poolSize / 2)), config.maxPrefetchParallel, config.maxRemoteNodes);
                 }
                 else if (_this.wallet.options.readSpeed == 100) {
-                    // slowest, use only one core
-                    _this.cpuCores = 1;
+                    _this.remoteNodes = 1;
                 }
-                // random nodes are dependent both on max nodes available as well as on number of cores we have available and perfomance settings
-                _this.remoteNodes = Math.min(config.maxRemoteNodes, config.nodeList.length, _this.cpuCores);
+                else {
+                    _this.remoteNodes = Math.min(config.maxPrefetchParallel, poolSize, config.maxRemoteNodes);
+                }
+                // Main-thread apply is cheap; use full prefetch parallelism for fetches
+                _this.maxConcurrentFetches = _this.remoteNodes;
             };
             this.signalWalletUpdate = function () {
                 logDebugMsg("wallet update in progress");
@@ -460,29 +442,194 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                 }
                 _this.checkMempool();
             };
-            this.acquireWorker = function () {
-                var workingCount = 0;
-                // first check if max worker usage is reached
-                for (var i = 0; i < _this.parseWorkers.length; ++i) {
-                    if (_this.parseWorkers[i].getIsWorking()) {
-                        workingCount = workingCount + 1;
-                    }
-                }
-                if (workingCount < _this.cpuCores) {
-                    for (var i = 0; i < _this.parseWorkers.length; ++i) {
-                        if (!_this.parseWorkers[i].getIsWorking() && _this.parseWorkers[i].getIsReady()) {
-                            return _this.parseWorkers[i];
-                        }
+            this.acquireFilterWorker = function () {
+                for (var i = 0; i < _this.filterWorkers.length; ++i) {
+                    if (_this.filterWorkers[i].getIsReady() && !_this.filterWorkers[i].getIsWorking()) {
+                        return _this.filterWorkers[i];
                     }
                 }
                 return null;
             };
+            this.isFilterBusy = function () {
+                for (var i = 0; i < _this.filterWorkers.length; ++i) {
+                    if (_this.filterWorkers[i].getIsWorking()) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+            this.getScreenShardCount = function (txCount) {
+                var minPerShard = config.syncScreenMinTxPerShard;
+                var maxShards = config.maxPrefetchParallel;
+                if (txCount < minPerShard * 2) {
+                    return 1;
+                }
+                return Math.min(maxShards, Math.ceil(txCount / minPerShard));
+            };
+            this.initScreening = function (range) {
+                var txCount = range.fetchedTransactions.length;
+                range.filterDispatched = true;
+                range.screenShardTotal = _this.getScreenShardCount(txCount);
+                range.screenNextShardIndex = 0;
+                range.screenShardsCompleted = 0;
+                range.screenHashes = new Set();
+                range.screenComplete = false;
+                range.parseDispatched = false;
+                if (txCount === 0) {
+                    range.screenComplete = true;
+                    range.filterDispatched = false;
+                }
+            };
+            this.dispatchScreenShards = function (range) {
+                var txs = range.fetchedTransactions;
+                var shardSize = Math.ceil(txs.length / range.screenShardTotal);
+                var walletRaw = _this.wallet.exportToRaw();
+                while (range.screenNextShardIndex < range.screenShardTotal) {
+                    var filterWorker = _this.acquireFilterWorker();
+                    if (!filterWorker) {
+                        break;
+                    }
+                    var shardIndex = range.screenNextShardIndex;
+                    var shardStart = shardIndex * shardSize;
+                    var shardEnd = Math.min(shardStart + shardSize, txs.length);
+                    var shard = txs.slice(shardStart, shardEnd);
+                    range.screenNextShardIndex = range.screenNextShardIndex + 1;
+                    filterWorker.setIsWorking(true);
+                    filterWorker.incProcessed(shard.length);
+                    // Worker screens shard with transactions.ownsTxBatch (one WASM receive batch per shard).
+                    filterWorker.getWorker().postMessage({
+                        type: "screen",
+                        transactions: shard,
+                        shardIndex: shardIndex,
+                        readMinersTx: _this.wallet.options.checkMinerTx,
+                        startBlock: range.startBlock,
+                        maxBlock: range.endBlock,
+                        wallet: walletRaw,
+                    });
+                }
+            };
+            this.dispatchParseOwned = function (range) {
+                var filterWorker = _this.acquireFilterWorker();
+                if (!filterWorker) {
+                    return;
+                }
+                var ownedTransactions = _this.blockList.buildOwnedTransactions(range);
+                if (ownedTransactions.length === 0) {
+                    range.parseDispatched = true;
+                    _this.blockList.finishBlockRange(range.startBlock, range.endBlock, []);
+                    return;
+                }
+                range.parseDispatched = true;
+                filterWorker.setIsWorking(true);
+                filterWorker.incProcessed(ownedTransactions.length);
+                filterWorker.getWorker().postMessage({
+                    type: "process",
+                    transactions: ownedTransactions,
+                    screenedOwned: true,
+                    readMinersTx: _this.wallet.options.checkMinerTx,
+                    startBlock: range.startBlock,
+                    maxBlock: range.endBlock,
+                    wallet: _this.wallet.exportToRaw(),
+                });
+            };
+            this.tryScheduleFilter = function () {
+                if (_this.stopped) {
+                    return;
+                }
+                if (!_this.blockList.getTxQueue().isIdle()) {
+                    return;
+                }
+                var head = _this.blockList.getBlocks()[0];
+                if (head && head.fetched && !head.finished && !head.screenComplete && head.filterDispatched) {
+                    _this.dispatchScreenShards(head);
+                }
+                var range = _this.blockList.getNextRangeForFilter();
+                if (!range) {
+                    return;
+                }
+                if (!range.screenComplete) {
+                    if (!range.filterDispatched) {
+                        _this.initScreening(range);
+                    }
+                    if (!range.screenComplete) {
+                        _this.dispatchScreenShards(range);
+                    }
+                    if (range.screenComplete) {
+                        _this.tryScheduleFilter();
+                    }
+                    return;
+                }
+                _this.dispatchParseOwned(range);
+            };
             this.stop = function () {
-                _this.transactionsToProcess = [];
+                _this.releaseTxQueueWaiters();
                 clearInterval(_this.intervalMempool);
                 _this.blockList.getTxQueue().reset();
                 _this.blockList.reset();
                 _this.stopped = true;
+            };
+            this.queuedTxCount = function () {
+                var count = 0;
+                for (var _i = 0, _a = _this.blockList.getBlocks(); _i < _a.length; _i++) {
+                    var range = _a[_i];
+                    if (!range.finished) {
+                        count += range.fetchedTransactions.length;
+                    }
+                }
+                return count;
+            };
+            this.isTxQueueFull = function (incomingTxCount) {
+                if (incomingTxCount === void 0) { incomingTxCount = 0; }
+                return _this.queuedTxCount() + incomingTxCount > config.maxTxQueueHigh || _this.blockList.getSize() >= config.maxTxQueuePackets;
+            };
+            this.waitForQueueCapacity = function () {
+                var args_1 = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args_1[_i] = arguments[_i];
+                }
+                return __awaiter(_this, __spreadArray([], args_1, true), void 0, function (incomingTxCount) {
+                    var _this = this;
+                    if (incomingTxCount === void 0) { incomingTxCount = 0; }
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (!(this.isTxQueueFull(incomingTxCount) && !this.stopped)) return [3 /*break*/, 2];
+                                return [4 /*yield*/, new Promise(function (resolve) {
+                                        _this.txQueueWaiters.push(resolve);
+                                    })];
+                            case 1:
+                                _a.sent();
+                                return [3 /*break*/, 0];
+                            case 2: return [2 /*return*/];
+                        }
+                    });
+                });
+            };
+            this.releaseTxQueueWaiters = function () {
+                var waiters = _this.txQueueWaiters.splice(0);
+                for (var i = 0; i < waiters.length; i++) {
+                    waiters[i]();
+                }
+            };
+            this.getTxQueuePacketsLowWatermark = function () {
+                return Math.max(1, Math.floor(config.maxTxQueuePackets * 0.2));
+            };
+            this.isTxQueueBelowLowWatermark = function () {
+                return _this.queuedTxCount() <= config.maxTxQueueLow && _this.blockList.getSize() <= _this.getTxQueuePacketsLowWatermark();
+            };
+            this.notifyTxQueueDrain = function () {
+                if (_this.isTxQueueBelowLowWatermark()) {
+                    _this.releaseTxQueueWaiters();
+                }
+            };
+            this.setLastBlockLoadingFromApply = function (blockNumber) {
+                _this.lastBlockLoading = Math.max(_this.lastBlockLoading, blockNumber);
+            };
+            /** Wallet scan progress vs chain tip (not lastBlockLoading, which can run ahead while prefetching). */
+            this.needsMoreBlockRanges = function (chainHeight) {
+                var walletHeight = Math.max(0, Number(_this.wallet.lastHeight));
+                var queuedThrough = _this.blockList.getTailQueuedEndBlock();
+                return walletHeight < chainHeight || queuedThrough < chainHeight;
             };
             this.start = function () {
                 // init the mempool
@@ -520,26 +667,9 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                 });
                 return true;
             };
-            this.processParseTransaction = function () {
-                if (_this.transactionsToProcess.length > 0) {
-                    var parseWorker = _this.acquireWorker();
-                    if (parseWorker) {
-                        // define the transactions we need to process
-                        var transactionsToProcess = _this.transactionsToProcess.shift();
-                        if (transactionsToProcess) {
-                            parseWorker.setIsWorking(true);
-                            // increase the number of transactions we actually processed
-                            parseWorker.incProcessed(transactionsToProcess.transactions.length);
-                            parseWorker.getWorker().postMessage({
-                                transactions: transactionsToProcess.transactions,
-                                readMinersTx: _this.wallet.options.checkMinerTx,
-                                maxBlock: transactionsToProcess.lastBlock,
-                                wallet: _this.wallet.exportToRaw(),
-                                type: "process",
-                            });
-                        }
-                    }
-                }
+            this.onBlockRangeFetched = function (startBlock, endBlock, transactions) {
+                _this.blockList.setFetchedTransactions(startBlock, endBlock, transactions);
+                _this.tryScheduleFilter();
             };
             this.getMultipleRandom = function (arr, num) {
                 var shuffled = __spreadArray([], arr, true).sort(function () { return 0.5 - Math.random(); });
@@ -553,7 +683,7 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                         workingCount = workingCount + 1;
                     }
                 }
-                if (workingCount < _this.remoteNodes) {
+                if (workingCount < _this.maxConcurrentFetches) {
                     for (var i = 0; i < _this.syncWorkers.length; ++i) {
                         if (!_this.syncWorkers[i].getIsWorking()) {
                             return _this.syncWorkers[i];
@@ -576,16 +706,16 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0:
-                                        if (!!self.stopped) return [3 /*break*/, 20];
+                                        if (!!self.stopped) return [3 /*break*/, 28];
                                         _a.label = 1;
                                     case 1:
-                                        _a.trys.push([1, 17, , 19]);
+                                        _a.trys.push([1, 25, , 27]);
                                         if (self.lastBlockLoading === -1) {
                                             self.lastBlockLoading = self.wallet.lastHeight;
                                         }
-                                        if (!(self.transactionsToProcess.length > 500)) return [3 /*break*/, 3];
-                                        logDebugMsg("Having more then 500 TX packets in FIFO queue", self.transactionsToProcess.length);
-                                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 5000); })];
+                                        if (!self.isTxQueueFull(0)) return [3 /*break*/, 3];
+                                        logDebugMsg("Tx FIFO at high watermark", self.blockList.getSize(), self.queuedTxCount(), config.maxTxQueueHigh);
+                                        return [4 /*yield*/, self.waitForQueueCapacity(0)];
                                     case 2:
                                         _a.sent();
                                         return [3 /*break*/, 0];
@@ -606,69 +736,91 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
                                         _a.sent();
                                         return [3 /*break*/, 0];
                                     case 7:
+                                        self.tryScheduleFilter();
                                         freeWorker = self.getFreeWorker();
-                                        if (!freeWorker) return [3 /*break*/, 14];
+                                        if (!freeWorker) return [3 /*break*/, 22];
                                         idleRange = self.blockList.getFirstIdleRange(true);
                                         startBlock = 0;
                                         endBlock = 0;
                                         if (!idleRange) return [3 /*break*/, 8];
                                         startBlock = idleRange.startBlock;
                                         endBlock = idleRange.endBlock;
-                                        return [3 /*break*/, 13];
+                                        return [3 /*break*/, 21];
                                     case 8:
-                                        if (!(self.lastBlockLoading < height)) return [3 /*break*/, 11];
-                                        if (!(self.blockList.getSize() >= config.maxBlockQueue)) return [3 /*break*/, 10];
-                                        logDebugMsg("Block range list is to big", self.blockList.getSize());
-                                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 500); })];
+                                        if (!self.needsMoreBlockRanges(height)) return [3 /*break*/, 19];
+                                        if (!!self.blockList.canPrefetchNextRange()) return [3 /*break*/, 10];
+                                        self.tryScheduleFilter();
+                                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 200); })];
                                     case 9:
                                         _a.sent();
                                         return [3 /*break*/, 0];
                                     case 10:
-                                        startBlock = Math.max(0, Number(self.lastBlockLoading));
+                                        if (!(self.blockList.getSize() >= config.maxBlockQueue)) return [3 /*break*/, 12];
+                                        logDebugMsg("Block range list is to big", self.blockList.getSize());
+                                        self.tryScheduleFilter();
+                                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 500); })];
+                                    case 11:
+                                        _a.sent();
+                                        return [3 /*break*/, 0];
+                                    case 12:
+                                        startBlock = self.blockList.getTailQueuedEndBlock();
                                         endBlock = startBlock + config.syncBlockCount;
                                         // make sure endBlock is not over current height
                                         endBlock = Math.min(endBlock, height + 1);
+                                        if (!(startBlock >= endBlock)) return [3 /*break*/, 14];
+                                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 1000); })];
+                                    case 13:
+                                        _a.sent();
+                                        return [3 /*break*/, 0];
+                                    case 14:
                                         if (startBlock > self.lastMaximumHeight) {
                                             startBlock = self.lastMaximumHeight;
                                         }
-                                        // add the blocks to be processed to the block list
-                                        self.blockList.addBlockRange(startBlock, endBlock, height);
-                                        self.lastBlockLoading = Math.max(self.lastBlockLoading, endBlock);
-                                        return [3 /*break*/, 13];
-                                    case 11: return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 10 * 1000); })];
-                                    case 12:
+                                        if (!(startBlock >= endBlock)) return [3 /*break*/, 16];
+                                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 1000); })];
+                                    case 15:
                                         _a.sent();
                                         return [3 /*break*/, 0];
-                                    case 13:
+                                    case 16:
+                                        if (!!self.blockList.addBlockRange(startBlock, endBlock, height)) return [3 /*break*/, 18];
+                                        self.tryScheduleFilter();
+                                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 200); })];
+                                    case 17:
+                                        _a.sent();
+                                        return [3 /*break*/, 0];
+                                    case 18: return [3 /*break*/, 21];
+                                    case 19: return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 10 * 1000); })];
+                                    case 20:
+                                        _a.sent();
+                                        return [3 /*break*/, 0];
+                                    case 21:
                                         // try to fetch the block range with a currently selected sync worker
                                         freeWorker
                                             .fetchBlocks(startBlock, endBlock)
                                             .then(function (blockData) {
-                                            if (blockData.transactions.length > 0) {
-                                                self.processTransactions(blockData.transactions, blockData.lastBlock);
-                                            }
-                                            else {
-                                                self.blockList.finishBlockRange(blockData.lastBlock, []);
-                                            }
+                                            self.onBlockRangeFetched(blockData.startBlock, blockData.lastBlock, blockData.transactions);
                                         })
                                             .catch(function (blockData) {
                                             self.blockList.markIdleBlockRange(blockData.lastBlock);
+                                            self.tryScheduleFilter();
                                         });
-                                        return [3 /*break*/, 16];
-                                    case 14: return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 500); })];
-                                    case 15:
+                                        return [3 /*break*/, 24];
+                                    case 22:
+                                        self.tryScheduleFilter();
+                                        return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 500); })];
+                                    case 23:
                                         _a.sent();
-                                        _a.label = 16;
-                                    case 16: return [3 /*break*/, 19];
-                                    case 17:
+                                        _a.label = 24;
+                                    case 24: return [3 /*break*/, 27];
+                                    case 25:
                                         err_1 = _a.sent();
                                         console.error("Error occured in startSyncLoop...", err_1);
                                         return [4 /*yield*/, new Promise(function (r) { return setTimeout(r, 30 * 1000); })];
-                                    case 18:
+                                    case 26:
                                         _a.sent(); //retry 30s later if an error occurred
-                                        return [3 /*break*/, 19];
-                                    case 19: return [3 /*break*/, 0];
-                                    case 20: return [2 /*return*/];
+                                        return [3 /*break*/, 27];
+                                    case 27: return [3 /*break*/, 0];
+                                    case 28: return [2 /*return*/];
                                 }
                             });
                         });
@@ -682,28 +834,12 @@ define(["require", "exports", "./Transaction", "./TransactionsExplorer"], functi
             this.wallet = wallet;
             this.explorer = explorer;
             this.blockList = new BlockList(wallet, this);
-            // create parse workers
-            for (var i = 0; i < this.maxCpuCores; ++i) {
-                var parseWorker = new ParseWorker(this.wallet, this, this.blockList, this.processParseTransaction);
-                this.parseWorkers.push(parseWorker);
-            }
-            // create a worker for each random node
-            for (var i = 0; i < config.nodeList.length; ++i) {
-                this.syncWorkers.push(new SyncWorker(this.explorer, this.wallet));
+            for (var i = 0; i < config.maxPrefetchParallel; ++i) {
+                this.filterWorkers.push(new ParseWorker(this.wallet, this, this.blockList, this.tryScheduleFilter));
+                this.syncWorkers.push(new SyncWorker(this.explorer, this.wallet, i));
             }
             this.setupWorkers();
         }
-        WalletWatchdog.prototype.processTransactions = function (transactions, lastBlock) {
-            var txList = {
-                transactions: transactions,
-                lastBlock: lastBlock,
-            };
-            logDebugMsg("processTransactions called...", transactions);
-            // add the raw transaction to the processing FIFO list
-            this.transactionsToProcess.push(txList);
-            // parse the transactions immediately
-            this.processParseTransaction();
-        };
         return WalletWatchdog;
     }());
     exports.WalletWatchdog = WalletWatchdog;

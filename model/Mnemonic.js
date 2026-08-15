@@ -198,7 +198,9 @@ define(["require", "exports", "./MnemonicLang"], function (require, exports, Mne
                         return lang.name;
                     }
                 }
-                catch (e) { }
+                catch (e) {
+                    console.error("Error detecting language", e);
+                }
             }
             return null;
         };
