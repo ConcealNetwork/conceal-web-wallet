@@ -716,7 +716,7 @@ export class Wallet extends Observable {
         if (needDerivation) {
           let derivation = "";
           try {
-            derivation = CnNativeBride.generate_key_derivation(tx.txPubKey, this.keys.priv.view);
+            derivation = concealjs.crypto.generate_key_derivation(tx.txPubKey, this.keys.priv.view);
           } catch (e) {
             continue;
           }

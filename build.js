@@ -19,6 +19,7 @@ const workboxBuild = require('workbox-build');
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { pathToFileURL } = require('node:url');
 const dotenv = require('dotenv');
 
 // Load environment variables
@@ -42,16 +43,25 @@ const generateAllowedPagesHash = (content) => {
 	return `sha384-${hash}`;
 };
 
+let sha3_384Fn;
+const loadSha3_384 = async () => {
+	if (!sha3_384Fn) {
+		const sha3Path = path.join(__dirname, 'node_modules', 'conceal-lib-js', 'src', 'js', 'tiers', 'sha3.js');
+		const mod = await import(pathToFileURL(sha3Path).href);
+		sha3_384Fn = mod.sha3_384;
+	}
+	return sha3_384Fn;
+};
+
 // Function to generate SHA384 integrity hash for allowed exceptions
-const generateAllowedExceptionsHash = (exceptions) => {
-	// Use the same SHA-3 implementation as the browser code
-	const sha3 = require('./src/lib/sha3.js');
-	const hash = sha3.sha3_384(exceptions.join(','));
+const generateAllowedExceptionsHash = async (exceptions) => {
+	const sha3_384 = await loadSha3_384();
+	const hash = sha3_384(exceptions.join(','));
 	return `sha384-${hash}`;
 };
 
 // Function to update environment file with integrity hashes
-const updateIntegrityHashes = () => {
+const updateIntegrityHashes = async () => {
 
 	const envPath = path.join(__dirname, '.env');
 	let envContent = '';
@@ -94,7 +104,7 @@ const updateIntegrityHashes = () => {
 		.replaceAll(/\s+/g, '')  // Remove all whitespace
 		.trim();              // Final trim
 		
-	const exceptionsHash = generateAllowedExceptionsHash([exceptionsContent]);
+	const exceptionsHash = await generateAllowedExceptionsHash([exceptionsContent]);
 	
 	// Update the hash in the compiled JS file
 	const allowedPagesJsPath = path.join(__dirname, 'src', 'lib', 'config', 'allowedPages.js');
@@ -133,5 +143,10 @@ const buildSW = () => {
 };
 
 // Update integrity hashes before building SW
-updateIntegrityHashes();
-buildSW();
+(async () => {
+	await updateIntegrityHashes();
+	await buildSW();
+})().catch((err) => {
+	console.error(err);
+	process.exit(1);
+});

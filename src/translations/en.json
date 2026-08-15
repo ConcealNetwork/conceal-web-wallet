@@ -21,7 +21,7 @@
     "global": {
       "loading": "Loading",
       "disableSecurity": "Disable this security, I understand the risk",
-      "passwordInvalidRequirements": "The password needs at least 8 characters - 1 upper case letter, 1 lower case letter, one number, and one special character",
+      "passwordInvalidRequirements": "Those are strongly advised recommendations",
       "passwordConfirmationNotMatching": "The password does not match the first password you wrote",
       "download": "Download",
       "confirmText": "OK",

@@ -2,7 +2,7 @@
  * Copyright (c) 2018 Gnock
  * Copyright (c) 2018-2019 The Masari Project
  * Copyright (c) 2018-2020 The Karbo developers
- * Copyright (c) 2018-2025 Conceal Community, Conceal.Network & Conceal Devs
+ * Copyright (c) 2018-2026 Conceal Network, Conceal Devs
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
  *
@@ -18,9 +18,6 @@
 import { BlockchainExplorer, NetworkInfo, RawDaemon_Transaction, RawDaemon_Out, RemoteNodeInformation } from "./BlockchainExplorer";
 import { Wallet } from "../Wallet";
 import { Storage } from "../Storage";
-import { MathUtil } from "../MathUtil";
-import { CnTransactions, CnUtils } from "../Cn";
-import { Transaction } from "../Transaction";
 import { WalletWatchdog } from "../WalletWatchdog";
 
 export type NodeInfo = {
@@ -40,7 +37,7 @@ class NodeWorker {
   private _allErrors: number;
   private _requests: number;
   private _isWorking: boolean;
-  private errorInterval: NodeJS.Timer;
+  private errorInterval: NodeJS.Timeout;
 
   constructor(url: string) {
     this._url = url;
@@ -54,6 +51,10 @@ class NodeWorker {
       this._errors = Math.max(this._errors - 1, 0);
     }, 60 * 1000);
   }
+
+  destroy = () => {
+    clearInterval(this.errorInterval);
+  };
 
   makeRequest = (method: "GET" | "POST", path: string, body: any = undefined): Promise<any> => {
     this._isWorking = true;
@@ -322,6 +323,22 @@ class NodeWorkersList {
     return this.executeWithSessionFailover((node) => node.makeRequest(method, path, body));
   };
 
+  /** Prefetch sync: fixed node by slot (no session failover). */
+  makeRequestForPrefetchSlot = (slot: number, method: "GET" | "POST", path: string, body: any = undefined): Promise<any> => {
+    const healthy = this.nodes.filter((node) => !node.hasToManyErrors());
+    const pool = healthy.length > 0 ? healthy : this.nodes;
+    if (pool.length === 0) {
+      return Promise.reject(new Error("No available nodes"));
+    }
+    const index = ((slot % pool.length) + pool.length) % pool.length;
+    return pool[index].makeRequest(method, path, body);
+  };
+
+  getHealthyNodeCount = (): number => {
+    const healthy = this.nodes.filter((node) => !node.hasToManyErrors());
+    return healthy.length > 0 ? healthy.length : this.nodes.length;
+  };
+
   private executeWithSessionFailover = async <T>(operation: (node: NodeWorker) => Promise<T>): Promise<T> => {
     let lastError: any;
 
@@ -364,6 +381,9 @@ class NodeWorkersList {
   };
 
   start = (nodes: string[]) => {
+    if (this.nodes.length > 0) {
+      this.stop();
+    }
     console.log(`NodeWorkersList.start: Initializing ${nodes.length} nodes`);
     for (let i = 0; i < nodes.length; i++) {
       this.nodes.push(new NodeWorker(nodes[i]));
@@ -373,6 +393,9 @@ class NodeWorkersList {
   };
 
   stop = () => {
+    for (const node of this.nodes) {
+      node.destroy();
+    }
     this.nodes = [];
   };
 }
@@ -442,7 +465,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
 
     this.lastTimeRetrieveHeight = Date.now();
     return this.nodeWorkers.makeRequest("GET", "getheight").then((data: any) => {
-      let height = parseInt(data.height);
+      let height = parseInt(data.height, 10);
       this.cacheHeight = height;
       return height;
     });
@@ -536,7 +559,7 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
             for (let i = 0; i < result.list.length; ++i) {
               let finalUrl = "https://" + result.list[i].url.host + "/";
 
-              if (config.nodeList.findIndex(doesMatch(finalUrl)) == -1) {
+              if (config.nodeList.findIndex(doesMatch(finalUrl)) === -1) {
                 config.nodeList.push(finalUrl);
               }
             }
@@ -584,13 +607,57 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
     return numbers;
   }
 
-  getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTxs: boolean): Promise<RawDaemon_Transaction[]> {
-    let tempStartBlock: number;
-    if (startBlock === 0) {
-      tempStartBlock = 1;
-    } else {
-      tempStartBlock = startBlock;
+  private formatTransactionsByHeightsResponse = (response: {
+    status: "OK" | "string";
+    transactions: {
+      transaction: any;
+      timestamp: number;
+      output_indexes: number[];
+      height: number;
+      block_hash: string;
+      hash: string;
+      fee: number;
+    }[];
+  }): RawDaemon_Transaction[] => {
+    const formatted: RawDaemon_Transaction[] = [];
+
+    if (response.status !== "OK") {
+      throw "invalid_transaction_answer";
     }
+
+    if (response.transactions.length > 0) {
+      for (let rawTx of response.transactions) {
+        let tx: RawDaemon_Transaction | null = null;
+
+        if (rawTx && rawTx.transaction) {
+          tx = rawTx.transaction;
+
+          if (tx !== null) {
+            tx.ts = rawTx.timestamp;
+            tx.height = rawTx.height;
+            tx.hash = rawTx.hash;
+            tx.fee = rawTx.fee;
+            if (rawTx.output_indexes.length > 0) tx.global_index_start = rawTx.output_indexes[0];
+            tx.output_indexes = rawTx.output_indexes;
+            formatted.push(tx);
+          }
+        }
+      }
+    }
+
+    return formatted;
+  };
+
+  private normalizeBlockRangeStart = (startBlock: number): number => {
+    return startBlock === 0 ? 1 : startBlock;
+  };
+
+  getPrefetchNodePoolSize = (): number => {
+    return this.nodeWorkers.getHealthyNodeCount();
+  };
+
+  getTransactionsForBlocks(startBlock: number, endBlock: number, includeMinerTxs: boolean): Promise<RawDaemon_Transaction[]> {
+    const tempStartBlock = this.normalizeBlockRangeStart(startBlock);
 
     return this.nodeWorkers
       .makeRequest("POST", "get_raw_transactions_by_heights", {
@@ -598,49 +665,25 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
         include_miner_txs: includeMinerTxs,
         range: true,
       })
-      .then(
-        (response: {
-          status: "OK" | "string";
-          transactions: {
-            transaction: any;
-            timestamp: number;
-            output_indexes: number[];
-            height: number;
-            block_hash: string;
-            hash: string;
-            fee: number;
-          }[];
-        }) => {
-          let formatted: RawDaemon_Transaction[] = [];
-
-          if (response.status !== "OK") {
-            throw "invalid_transaction_answer";
-          }
-
-          if (response.transactions.length > 0) {
-            for (let rawTx of response.transactions) {
-              let tx: RawDaemon_Transaction | null = null;
-
-              if (rawTx && rawTx.transaction) {
-                tx = rawTx.transaction;
-
-                if (tx !== null) {
-                  tx.ts = rawTx.timestamp;
-                  tx.height = rawTx.height;
-                  tx.hash = rawTx.hash;
-                  tx.fee = rawTx.fee;
-                  if (rawTx.output_indexes.length > 0) tx.global_index_start = rawTx.output_indexes[0];
-                  tx.output_indexes = rawTx.output_indexes;
-                  formatted.push(tx);
-                }
-              }
-            }
-          }
-
-          return formatted;
-        }
-      );
+      .then((response) => this.formatTransactionsByHeightsResponse(response));
   }
+
+  getTransactionsForBlocksPrefetchSlot = (
+    prefetchSlot: number,
+    startBlock: number,
+    endBlock: number,
+    includeMinerTxs: boolean
+  ): Promise<RawDaemon_Transaction[]> => {
+    const tempStartBlock = this.normalizeBlockRangeStart(startBlock);
+
+    return this.nodeWorkers
+      .makeRequestForPrefetchSlot(prefetchSlot, "POST", "get_raw_transactions_by_heights", {
+        heights: [tempStartBlock, endBlock],
+        include_miner_txs: includeMinerTxs,
+        range: true,
+      })
+      .then((response) => this.formatTransactionsByHeightsResponse(response));
+  };
 
   getTransactionPool(): Promise<RawDaemon_Transaction[]> {
     return this.nodeWorkers.makeRequest("GET", "getrawtransactionspool").then(
@@ -706,14 +749,15 @@ export class BlockchainExplorerRpcDaemon implements BlockchainExplorer {
       })
       .then((transactions: any) => {
         if (!transactions.status || transactions.status !== "OK") {
-          // Create a meaningful error message from the status
           let errorMessage = "Failed to send raw transaction";
 
           if (transactions.status) {
             errorMessage += `: ${transactions.status}`;
           }
+          if (transactions.reason) {
+            errorMessage += ` (${transactions.reason})`;
+          }
 
-          // Create and throw a proper Error object
           const error = new Error(errorMessage);
           // Attach the original response for debugging if needed
           (error as any).originalResponse = transactions;
