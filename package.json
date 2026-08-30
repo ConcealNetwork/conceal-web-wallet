@@ -19,7 +19,7 @@
   "main": "index.js",
   "dependencies": {
     "@babel/helper-validator-identifier": "^7.28.5",
-    "@types/node": "^25.5.0",
+    "@types/node": "^26.2.0",
     "conceal-lib-js": "https://github.com/ConcealNetwork/conceal-lib-js/releases/download/v0.2.4/conceal-lib-js-0.2.4.tgz",
     "dotenv": "^17.4.2",
     "typescript": "^5.9.3",
@@ -37,7 +37,7 @@
   "homepage": "https://github.com/ConcealNetwork/conceal-web-wallet#readme",
   "devDependencies": {
     "@biomejs/biome": "2.5.6",
-    "@types/node": "^25.5.0"
+    "@types/node": "^26.2.0"
   },
   "overrides": {
     "@babel/core": "^7.29.7",
