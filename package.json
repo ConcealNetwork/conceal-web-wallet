@@ -18,7 +18,7 @@
   },
   "main": "index.js",
   "dependencies": {
-    "@babel/helper-validator-identifier": "^7.28.5",
+    "@babel/helper-validator-identifier": "^8.0.4",
     "@types/node": "^25.5.0",
     "conceal-lib-js": "https://github.com/ConcealNetwork/conceal-lib-js/releases/download/v0.2.4/conceal-lib-js-0.2.4.tgz",
     "dotenv": "^17.4.2",
