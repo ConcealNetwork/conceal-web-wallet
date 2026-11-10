@@ -2,6 +2,35 @@
 /* eslint-disable */
 
 /**
+ * Derive a 32-byte key with Argon2id v0x13 (Argon2 v1.3).
+ *
+ * Low-level **byte-oriented** primitive: `password_hex` and `salt_hex` are
+ * hex encodings of raw bytes. UTF-8 encoding of passwords is the caller's
+ * responsibility (avoids Unicode ambiguity inside the library).
+ *
+ * - `memory_kib` — memory cost in **kibibytes** (KiB)
+ * - `iterations` — time cost (passes)
+ * - `parallelism` — lane count (`p`); without WASM threads, lanes run sequentially
+ *
+ * Returns 64 lowercase hex characters (32 bytes). Does not accept a variable
+ * output length.
+ *
+ * Memory-hard; when invoked from a UI thread, run in a Worker (or equivalent
+ * background context). Does not require SharedArrayBuffer or WASM threads.
+ *
+ * # Errors
+ *
+ * Malformed hex, out-of-range parameters, or Argon2 failures. Parameters are
+ * never silently clamped.
+ *
+ * # See also
+ *
+ * - [RFC 9106](https://www.rfc-editor.org/rfc/rfc9106.html)
+ * - Project README (Argon2id / Worker guidance)
+ */
+export function argon2id(password_hex: string, salt_hex: string, memory_kib: number, iterations: number, parallelism: number): string;
+
+/**
  * Verifies a ring signature.
  *
  * Port of `crypto::check_ring_signature`.
@@ -39,8 +68,8 @@ export function create_address(seed_hex: string): any;
 
 /**
  * decode_address: validate and extract spend/view public keys from an address string.
- * Returns `{spend: hex, view: hex, intPaymentId: null}`.
- * Matches `Cn.decode_address(address)`.
+ * Returns `{ spend: hex, view: hex, intPaymentId: hex | null }`.
+ * Surfaces the embedded payment ID for integrated addresses.
  */
 export function decode_address(address: string): any;
 
@@ -55,6 +84,17 @@ export function derive_public_key(derivation_hex: string, out_index: number, bas
  * Matches `CnNativeBride.derive_secret_key(derivation, index, sec)`.
  */
 export function derive_secret_key(derivation_hex: string, out_index: number, base_sec_hex: string): string;
+
+/**
+ * encode_address: build a standard CCX address from spend + view public keys.
+ * Matches `address.encode_address` / `pubkeys_to_string` in conceal-web-wallet.
+ */
+export function encode_address(spend_pub_hex: string, view_pub_hex: string): string;
+
+/**
+ * encode_integrated_address: build a CCX integrated address with an 8-byte payment ID.
+ */
+export function encode_integrated_address(spend_pub_hex: string, view_pub_hex: string, payment_id_hex: string): string;
 
 /**
  * ge_add: point_a + point_b (Edwards addition).
