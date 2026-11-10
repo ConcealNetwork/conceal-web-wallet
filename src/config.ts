@@ -1,4 +1,8 @@
 //export {};
+
+/** Mirrors conceal-core parameters::DEFAULT_DUST_THRESHOLD (CryptoNoteConfig.h) */
+const DEFAULT_DUST_THRESHOLD = 10;
+
 let myGlobal : any = typeof window !== 'undefined' ? window : self;
 myGlobal.config = {
   debug: false,
@@ -38,7 +42,7 @@ myGlobal.config = {
 	remoteNodeFee: new JSBigInt('10000'),
 	feePerKB: new JSBigInt('1000'), //for testnet its not used, as fee is dynamic.
 	
-	dustThreshold: new JSBigInt('10'),//used for choosing outputs/change - we decompose all the way down if the receiver wants now regardless of threshold
+	dustThreshold: new JSBigInt(String(DEFAULT_DUST_THRESHOLD)),
 	defaultMixin: 5, // default value mixin
   optimizeOutputs: 100, // Qty of outputs we consider for the need of optimization, 100 to be like C++ ...might be too big to handle
   optimizeThreshold: 100, // amount of CCX in units we consider as the threshold for optimization. 100 to be like C++ ...might be too small...open for discussion

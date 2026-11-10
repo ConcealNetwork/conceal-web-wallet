@@ -6,7 +6,7 @@
 (and TweetNaCl CN extensions) where that wins on latency.
 
 **License:** [PolyForm Noncommercial 1.0.0](LICENSE) — use, modify, and redistribute for
-**noncommercial** purposes. Commercial use requires permission from the copyright holder.
+**noncommercial** purposes. See [Licensing](#licensing) for commercial or other exceptions.
 
 ---
 
@@ -15,7 +15,7 @@
 ### Bundlers and Node (ESM)
 
 ```js
-import { mnemonic, random, cn, cnutils, crypto, cypher, transactions } from "concealjs";
+import { mnemonic, random, cn, cnutils, crypto, cypher, transactions, address } from "concealjs";
 ```
 
 Works with Vite, webpack, Rollup, and Node when your toolchain resolves the package `import` condition. WASM is loaded by the bundler automatically.
@@ -71,13 +71,13 @@ const result = concealjs.crypto.derive_secret_key(derivation, out_index, sec);
 |---|---|---|---|
 | `mn_encode(str, wordset_name?)` | `str`: 64-char hex seed; `wordset_name`: `'english'` (default) / `'electrum'` / `'japanese'` | 25-word mnemonic string | Throws on invalid input |
 | `mn_decode(str, wordset_name?)` | `str`: space-separated mnemonic (25 words for English); `wordset_name`: same options | 64-char hex seed string | Verifies checksum word; throws on mismatch |
-| `mn_random(bits)` | `bits`: multiple of 32 — typically `256` | hex string of length `bits/4` | Browser only — uses `window.crypto.getRandomValues` |
+| `mn_random(bits)` | `bits`: multiple of 32 — typically `256` | hex string of length `bits/4` | Web Crypto via `globalThis.crypto.getRandomValues` (browsers, Node 20+, Workers) |
 
 ---
 
 ### Namespace `random` — plain JavaScript (`src/js/random.js`)
 
-> `rand*` wrappers use `mnemonic.mn_random` (browser Web Crypto).
+> `rand*` wrappers use `mnemonic.mn_random` (Web Crypto).
 > `random_scalar` also calls WASM `sc_reduce32`.
 
 | Function | Parameters | Returns | Notes |
@@ -102,6 +102,26 @@ Wallet integrity checks use `sha384-${sha3_384(content)}` — the `sha384-` pref
 
 ---
 
+### `secretbox` — plain JavaScript (`src/js/tiers/secretbox.js`)
+
+> XSalsa20-Poly1305 authenticated encryption — TweetNaCl / `nacl-fast` compatible.
+> Same implementation as `conceal-web-wallet/src/lib/nacl-fast.js` (public domain, TweetNaCl 20140427).
+> Used by `WalletRepository` for encrypted wallet files (`data` + `nonce` envelope).
+
+| Function | Parameters | Returns | Notes |
+|---|---|---|---|
+| `secretbox(msg, nonce, key)` | `msg`: `Uint8Array`; `nonce`: `Uint8Array[24]`; `key`: `Uint8Array[32]` | `Uint8Array` (ciphertext + 16-byte Poly1305 tag) | Throws `bad key size` / `bad nonce size` |
+| `secretbox.open(box, nonce, key)` | Same sizes as above | `Uint8Array` plaintext, or `null` if auth fails | Matches `nacl.secretbox.open` |
+| `secretbox.keyLength` | — | `32` | |
+| `secretbox.nonceLength` | — | `24` | Wallet stores ASCII nonce from 16 random bytes (base64) → 24 UTF-8 bytes |
+| `secretbox.overheadLength` | — | `16` | Poly1305 tag size |
+
+Top-level export: `import { secretbox } from "concealjs"`.
+
+Wallet password normalization (32-char zero-padded ASCII, last 32 UTF-8 bytes for non-Latin) is done in `WalletRepository`, not in this module.
+
+---
+
 ### Namespace `cnutils` — JavaScript (`src/js/cnutils.js`)
 
 > Port of `CnUtils` from `conceal-web-wallet/src/model/Cn.ts`.
@@ -113,16 +133,16 @@ Exported constant: `STRUCT_SIZES`.
 | Function | Parameters | Returns | Notes |
 |---|---|---|---|
 | `hextobin` / `bintohex` | hex ↔ bytes | `Uint8Array` / hex | |
-| `swapEndian` / `swapEndianC` | string | string | Byte or char order |
-| `d2h` / `d2s` / `h2d` / `d2b` | integer / hex | hex or number | `JSBigInt` internally; `d2s` = endian-swapped scalar |
-| `encode_varint` / `encode_varint_term` | `number \| string \| JSBigInt` | hex | CryptoNote varint |
+| `swapEndian` / `swapEndianC` | string | string | Byte or char order; `swapEndian` throws on non-hex input or odd length |
+| `d2h` / `d2s` / `h2d` / `d2b` | integer / hex | hex or number | `JSBigInt` internally; `d2s` = endian-swapped scalar; `d2h` / `d2s` / `d2b` throw on negative or fractional input; `h2d` requires exactly 16-char hex and throws otherwise, and throws if the value exceeds `Number.MAX_SAFE_INTEGER` |
+| `encode_varint` / `encode_varint_term` | `number \| string \| JSBigInt` | hex | Unsigned CryptoNote varint; throws if the input is missing, fractional, or negative |
 | `cn_fast_hash` | hex string | 64-char hex | `keccak_256(hextobin(input))` via `tiers/sha3.js` |
 | `derivation_to_scalar` | 64-char derivation + index | 64-char scalar | WASM `hash_to_scalar` |
 | `valid_hex` / `hex_xor` / `trimRight` / `padLeft` | — | — | Utilities |
-| `sec_key_to_pub` / `ge_scalarmult*` / `ge_add` / `ge_sub` / `ge_neg` | 64-char hex | 64-char hex | `nacl.ll` |
+| `sec_key_to_pub` / `ge_scalarmult*` / `ge_add` / `ge_sub` / `ge_neg` | 64-char hex | 64-char hex | `nacl.ll`; `ge_neg` / `ge_sub` throw if not 64-char hex |
 | `ge_double_scalarmult_base_vartime` | `c`, `P`, `r` | 64-char hex | |
 | `ge_double_scalarmult_postcomp_vartime` | `r`, `P`, `c`, `I` | 64-char hex | Uses `crypto.hash_to_ec32` on `P` (32-byte point) |
-| `decompose_amount_into_digits` | amount | `JSBigInt[]` | |
+| `decompose_amount_into_digits` | amount | `JSBigInt[]` | Power-of-ten digit components; throws on negative or fractional amounts |
 | `decode_rct_ecdh` / `encode_rct_ecdh` | `{ mask, amount }`, key | `{ mask, amount }` | WASM scalar add/sub |
 
 ---
@@ -147,12 +167,36 @@ Exported constant: `STRUCT_SIZES`.
 | Function | Parameters | Returns | Notes |
 |---|---|---|---|
 | `extractTxPublicKey(extraHex)` | transaction `extra` as hex | 64-char hex or `null` | Parses tx_extra; first `TX_EXTRA_TAG_PUBKEY` |
-| `parseTxExtra(bytes)` | `number[]` or `Uint8Array` | `{ type, data }[]` | Port of `TransactionsExplorer.parseExtra` |
+| `parseTxExtra(bytes)` | `number[]` or `Uint8Array` | `{ type, data, truncated? }[]` | Port of `TransactionsExplorer.parseExtra`; a chunk whose declared size exceeds the remaining bytes is clamped and flagged `truncated: true` instead of being silently accepted |
 | `buildReceiveOutputChecks(vouts)` | `TxVout[]` | `{ indices, keys }` | Type `"02"` uses incrementing index; `"03"` uses vout index |
 | `scanReceiveOutputs(txPub, viewSec, spendPub, vouts)` | keys + vouts | `boolean` | **One** `crypto.scan_receive_outputs` WASM call |
 | `scanSpendInputs(vins, ctx)` | vins + context | `boolean` | Key images (spend wallet) or global indexes (view-only) |
 | `ownsTx(tx, ctx)` | `TxScanInput` + `TxScanContext` | `boolean` | Receive scan, then spend scan |
-| `ownsTxBatch(txs, ctx)` | array + context | `boolean[]` | **One** `crypto.scan_receive_outputs_batch` WASM call + JS spend checks |
+| `ownsTxBatch(txs, ctx)` | array + context | `boolean[]` | **One** `crypto.scan_receive_outputs_batch` WASM call + JS spend checks; malformed output keys are skipped per transaction instead of failing the batch |
+| `serializeTransaction(tx, headerOnly?)` | `TxToSerialize` + optional `boolean` | hex string | Broadcast-ready serialization (plain ring-signature path, non-RingCT). When `headerOnly` is `true`, omits signatures (prefix only). Supports `input_to_key` / `input_to_deposit_key` and matching vout targets. Throws on invalid hex, signature count mismatch, or unhandled vin/vout types. |
+| `getTransactionPrefixHash(tx)` | `TxToSerialize` | 64-char hex | `cn_fast_hash(serializeTransaction(tx, true))` — prefix hash used for signing. |
+| `serializeTransactionWithHash(tx)` | `TxToSerialize` | `{ raw, hash }` | Full serialization plus `cn_fast_hash(raw)`. Port of `CnTransactions.serialize_tx_with_hash`. |
+
+**Serialization sketch** (plain spend; deposit / withdrawal paths use `input_to_deposit_key` / `txout_to_deposit_key`):
+
+```js
+const { raw, hash } = transactions.serializeTransactionWithHash({
+  version: 1,
+  unlock_time: 0,
+  vin: [{
+    type: "input_to_key",
+    amount: 1000,
+    key_offsets: [42, 7],
+    k_image: "<64-char hex>",
+  }],
+  vout: [{
+    amount: 1000,
+    target: { type: "txout_to_key", data: { key: "<64-char hex>" } },
+  }],
+  extra: "0102abcd",
+  signatures: [["<64-byte sig hex>", "<64-byte sig hex>"]],
+});
+```
 
 **Low-level WASM (advanced):** `crypto.scan_receive_outputs(...)` per tx; `crypto.scan_receive_outputs_batch(view_sec, spend_pub, tx_pub_hex[], indices, keys, tx_offsets)` — `tx_offsets` length `txs.length + 1` (CSR slices into flat output arrays).
 
@@ -184,6 +228,27 @@ const owned = transactions.ownsTx(
 
 ---
 
+### Namespace `address` — JavaScript (`src/js/address.js`, `src/js/base58.js`)
+
+> **Zero-init JS tier** — no WASM, works without `await init()`.
+> Canonical logic lives in Rust (`rust/crypto/src/address.rs`); this namespace mirrors it
+> for view-only wallets that already hold public keys. When WASM is loaded,
+> `crypto.encode_address` / `crypto.encode_integrated_address` / `crypto.decode_address`
+> expose the same behavior from Rust.
+
+Exported constants: `ADDRESS_PREFIX` (`0x7ad4`), `INTEGRATED_ADDRESS_PREFIX` (`0x7ad5`), `SUBADDRESS_PREFIX` (`0x7ad6`), `ADDRESS_CHECKSUM_SIZE` (4), `INTEGRATED_ID_SIZE` (8).
+
+| Function | Parameters | Returns | Notes |
+|---|---|---|---|
+| `encode_address(spendPub, viewPub)` | two 64-char hex public keys | Base58 CCX address | `varint(ADDRESS_PREFIX) + spend + view + checksum`; throws on bad hex/length |
+| `encode_integrated_address(spendPub, viewPub, paymentId)` | two 64-char hex keys + 16-char hex payment ID | Base58 CCX integrated address | `varint(INTEGRATED_ADDRESS_PREFIX) + spend + view + paymentId + checksum`; throws on bad input |
+| `decode_address(address)` | Base58 CCX address | `{ spend, view, intPaymentId }` | Validates prefix, exact length, and checksum. Surfaces `intPaymentId` for integrated addresses. |
+| `base58_encode(hex)` / `base58_decode(b58)` | hex ↔ base58 | base58 / hex | CryptoNote block-based base58 (re-exported from `base58.js`) |
+
+**Low-level base58 (`src/js/base58.js`):** `encode(hex)` / `decode(b58)` — block-based CryptoNote base58 (8-byte blocks → 11 chars), native `BigInt`. Throws `Invalid block size` / `Overflow` / `Invalid symbol` / `Invalid encoded length` on malformed input.
+
+---
+
 ### Namespace `crypto` — Rust WASM (`rust/crypto/`)
 
 > All functions accept and return **hex strings** (lowercase).
@@ -195,6 +260,17 @@ const owned = transactions.ownsTx(
 |---|---|---|---|
 | `cn_fast_hash(data_hex)` | hex string (any length) | 64-char hex (Keccak-256) | `hash-ops.h: cn_fast_hash` |
 | `hash_to_scalar(data_hex)` | hex string (any length) | 64-char hex scalar | `cn_fast_hash` then `sc_reduce32` |
+
+#### Key derivation (Argon2id)
+
+> Low-level **byte-oriented** Argon2id ([RFC 9106](https://www.rfc-editor.org/rfc/rfc9106.html)) via RustCrypto.
+> Password/salt are hex-encoded bytes — UTF-8 encoding is the caller’s job.
+> Memory-hard; from a UI, run in a **Worker** (or equivalent). No WASM threads / SharedArrayBuffer.
+> 64&nbsp;MiB memory cap is a wasm policy limit (covers wallet profiles 19/32/64&nbsp;MiB); not full RFC 2&nbsp;GiB.
+
+| Function | Parameters | Returns | Notes |
+|---|---|---|---|
+| `argon2id(passwordHex, saltHex, memoryKiB, iterations, parallelism)` | hex password; hex salt (8–64 bytes); memory **KiB** (`8×p`…`65536`); iterations `1…64`; parallelism `1…4` | 64-char lowercase hex (32 bytes) | Argon2id v0x13; fixed 32-byte output; rejects invalid params (no silent clamp) |
 
 #### Scalar arithmetic (`crypto-ops.h`)
 
@@ -261,7 +337,9 @@ Rust unit tests verify **generate → check** round-trips against the same C `cr
 | Function | Parameters | Returns | Notes |
 |---|---|---|---|
 | `create_address(seed_hex)` | 64-char hex seed | `{ spend: {sec, pub}, view: {sec, pub}, public_addr: string }` | Monero-compatible: `view = generate_keys(cn_fast_hash(spend.sec))` |
-| `decode_address(address)` | Base58 Conceal address string | `{ spend: hex, view: hex, intPaymentId: null }` | Validates checksum; throws on invalid prefix or checksum |
+| `encode_address(spend_pub_hex, view_pub_hex)` | two 64-char hex public keys | Base58 CCX address | Same output as `address.encode_address` (Rust canonical) |
+| `encode_integrated_address(spend_pub_hex, view_pub_hex, payment_id_hex)` | two keys + 16-char hex payment ID | Base58 integrated address | Same output as `address.encode_integrated_address` |
+| `decode_address(address)` | Base58 Conceal address string | `{ spend: hex, view: hex, intPaymentId: hex \| null }` | Validates prefix, exact length, and checksum; surfaces integrated payment ID |
 
 #### Conceal Network constants baked in
 
@@ -293,12 +371,13 @@ Rust unit tests verify **generate → check** round-trips against the same C `cr
 |---|---|---|---|
 | `mn_encode` | `mnemonic` | **plain JS** | String-heavy; JS JIT ~2.8× faster than WASM boundary |
 | `mn_decode` | `mnemonic` | **plain JS** | Same as above |
-| `mn_random` | `mnemonic` | **plain JS** | Thin wrapper over `window.crypto` |
+| `mn_random` | `mnemonic` | **plain JS** | Thin wrapper over `globalThis.crypto` (Web Crypto) |
 | `rand32` / `rand16` / `rand8` | `random` | **plain JS** | Fixed-size wrappers over `mn_random` |
 | `random_scalar` | `random` | **mixed** | `mn_random` + WASM `sc_reduce32` |
 | `random_keypair` / `underive_public_key` | `cn` | **mixed** | `random` + `cnutils` + `crypto` WASM |
 | `hextobin`, `encode_varint`, `ge_add`, … | `cnutils` | **plain JS** (+ `nacl.ll`) | `CnUtils` helpers |
 | `sha3_384` | package root | **plain JS** (`tiers/sha3.js`) | NIST SHA3-384; wallet `ALLOWED_EXCEPTIONS_INTEGRITY_HASH` |
+| `secretbox` / `secretbox.open` | package root | **plain JS** (`tiers/secretbox.js`) | XSalsa20-Poly1305; wallet encrypted wallet envelope |
 | `cn_fast_hash` | `cnutils` | **plain JS** (`tiers/sha3.js`) | Same Keccak as wallet; faster than WASM boundary for typical hex |
 | `cn_fast_hash` | `crypto` | **Rust WASM** | Same digest; use when already in WASM-only path |
 | `derivation_to_scalar`, RCT ECDH | `cnutils` → `crypto` | **mixed** | JS glue + WASM scalars |
@@ -314,7 +393,11 @@ Rust unit tests verify **generate → check** round-trips against the same C `cr
 | `scan_receive_outputs` | `crypto` | **Rust WASM** | Batched receive-output scan |
 | `ownsTx` / `scanReceiveOutputs` | `transactions` | **mixed** | JS extra parse + one WASM receive scan |
 | `scanSpendInputs` | `transactions` | **plain JS** | Wallet context sets |
-| `create_address / decode_address` | `crypto` | **Rust WASM** | Address encode/decode |
+| `serializeTransaction` / `getTransactionPrefixHash` | `transactions` | **plain JS** | CryptoNote tx wire format (non-RingCT); uses `cnutils` varint + `cn_fast_hash` |
+| `create_address` | `crypto` | **Rust WASM** | Seed-based key generation + address |
+| `encode_address / encode_integrated_address` | `crypto` or `address` | **Rust WASM** or **plain JS** | Encode from public keys; JS tier avoids WASM init |
+| `decode_address` | `crypto` or `address` | **Rust WASM** or **plain JS** | Same semantics in both tiers (payment ID + malleability checks) |
+| `encode / decode` (base58) | `address` | **plain JS** | CryptoNote block-based base58 (native `BigInt`) |
 | `chacha8 / chacha12 / chacha20` | `cypher` | **Rust WASM** | Stream cipher — compute-heavy |
 
 ---
